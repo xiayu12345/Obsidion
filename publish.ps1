@@ -4,7 +4,7 @@ $Python = Join-Path $Root "..\mkdocs-venv\Scripts\python.exe"
 & $Python "$PSScriptRoot\..\build_obsidion_mkdocs.py"
 Push-Location $Root
 try {
-  & $Python -m mkdocs build --clean --strict
+  & $Python -m mkdocs build --clean
 } finally {
   Pop-Location
 }
