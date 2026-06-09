@@ -3,6 +3,6 @@
   display: none;
 }
 
-.md-sidebar--primary .md-nav__title {
-  font-weight: 700;
+.md-sidebar--primary > .md-sidebar__scrollwrap > .md-sidebar__inner > .md-nav > .md-nav__title {
+  display: none;
 }
