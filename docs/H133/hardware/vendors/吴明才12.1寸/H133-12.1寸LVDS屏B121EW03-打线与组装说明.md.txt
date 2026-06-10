@@ -1,0 +1,537 @@
+# H133 + B121EW03 12.1寸 LVDS 屏 + 12.1寸 TP — 打线与组装说明
+
+> **适用硬件**  
+> - 主板：TP-H10-H133-V1（`主板原理图/TP-H10-H133-V1_20260408.pdf`）  
+> - 屏：AUO **B121EW03 V6**（`屏规格/12.1寸lvds屏B121EW03.pdf`）  
+> - TP：联信泓 **12.1寸电容触摸屏**（`TP/12.1寸tp-吴明才项目/12.1寸  规格书.pdf`）  
+>  
+> **文档版本**：v1.0 · 2026-05 · 供打线供应商 / 硬件组装 / 软件 bring-up 使用
+
+---
+
+## 1. 系统架构总览
+
+```mermaid
+flowchart TB
+    subgraph MB["TP-H10-H133 主板"]
+        SOC["H133 SoC"]
+        CON123["CON123<br/>17P LVDS"]
+        JP13["JP13<br/>6P CTP"]
+        JP12["JP12<br/>2P LED VLED±"]
+        JP14["JP14<br/>3P BL-EN/PWM"]
+        PWR["5V / 12V 电源"]
+        SOC --> CON123
+        SOC --> JP13
+        JP14 --> JP12
+    end
+
+    subgraph CBL["定制线材 ×3"]
+        L1["① LVDS 显示线"]
+        L2["② TP 触摸线"]
+        L3["③ CCFL 高压线"]
+    end
+
+    subgraph PNL["12.1寸 显示模组"]
+        LCD["B121EW03<br/>1280×800 LVDS"]
+        TP["电容 TP<br/>I2C 6P FPC"]
+        CCFL["CCFL 灯管<br/>JST 2P"]
+    end
+
+    INV["CCFL 逆变器<br/>（外购）"]
+
+    CON123 --> L1 --> LCD
+    JP13 --> L2 --> TP
+    PWR --> INV
+    JP14 -.->|EN/PWM 可选| INV
+    INV --> L3 --> CCFL
+
+    JP12 -.->|❌ 不接 CCFL| CCFL
+```
+
+### 1.1 需要加工的线材（共 3 套）
+
+| 序号 | 线名 | A 端 | B 端 | 有效线芯 |
+|:----:|------|------|------|:--------:|
+| **①** | LVDS 显示线 | CON123（17Pin） | DF19G-20S（20Pin） | 16 |
+| **②** | TP 触摸线 | JP13（MX1.25-6P） | TP FPC（6Pin） | 6 |
+| **③** | CCFL 背光高压线 | 逆变器 HV 输出 | 屏 JST 2Pin | 2 |
+
+### 1.2 主板能力边界
+
+```mermaid
+flowchart LR
+    subgraph OK["✅ 可用于本方案"]
+        A1["CON123 LVDS 显示"]
+        A2["CON123 VDD 3.3V 逻辑电"]
+        A3["JP13 触摸 I2C"]
+        A4["JP14 BL-EN/PWM → 逆变器"]
+        A5["SoC / HDMI / 系统"]
+    end
+
+    subgraph NG["❌ 不能用于 B121EW03 背光"]
+        B1["JP12 VLED± LED 恒流"]
+    end
+```
+
+| 功能 | 结论 | 说明 |
+|------|:----:|------|
+| LVDS 显示 + 3.3V 逻辑电 | ✅ | CON123 Pin15/16，跳线选 **3.3V** |
+| 触摸 | ✅ | JP13 → TP FPC |
+| **JP12 LED 背光** | ❌ | 仅 LED 灯条；**不可直接驱动 CCFL** |
+| LCD-BL-EN / LCD-PWM | ⚠️ | 可接 **CCFL 逆变器** 使能/调光脚 |
+
+---
+
+## 2. 屏 / TP / 主板接口规格
+
+### 2.1 B121EW03 屏
+
+```mermaid
+flowchart LR
+    subgraph LCD["B121EW03 V6"]
+        SIG["DF19LA-20P<br/>LVDS 信号"]
+        BL["BHSR-02VS-1<br/>CCFL 2P"]
+    end
+
+    SIG --- P1["1280×800 @60Hz"]
+    SIG --- P2["6bit 单链路 LVDS"]
+    SIG --- P3["VDD +3.3V"]
+    BL --- P4["CCFL 无逆变器"]
+```
+
+| 项目 | 规格 |
+|------|------|
+| 分辨率 | 1280 × 800 @ 60Hz |
+| LVDS | 单链路、6bit、**3 数据 + 1 时钟**（4 对差分） |
+| 像素时钟 | 71.1 MHz（典型） |
+| 逻辑电 | +3.3V（Pin 2、3） |
+| 信号座 | Hirose **DF19LA-20P-1H** → 线材插头 **DF19G-20S-1C** |
+| 背光 | **CCFL**；JST **BHSR-02VS-1**（配套 **SM02B-BHSS-1-TB**） |
+| H133 手册 LVDS 上限 | 1366×768（本屏 800 行略超，需实机验证） |
+
+### 2.2 12.1寸 TP
+
+| 项目 | 规格 |
+|------|------|
+| 接口 | **I2C**，FPC **6Pin** |
+| 供电 | VDD **+3.3V**（1.8～3.3V） |
+| 图纸标注 IC | GT928（软件驱动需与硬件核对） |
+
+### 2.3 主板关键连接器
+
+| 位号 | 规格 | 用途 |
+|------|------|------|
+| **CON123** | 17Pin（建议实测 1.25mm pitch） | LVDS + VDD_LCD |
+| **JP13** | MX1.25-**6P** | CTP（SCK/SDA/INT/RST/VCC/GND） |
+| **JP12** | MX1.25-**2P** | LED VLED±（**本方案不接屏**） |
+| **JP14** | MX1.25-**3P** | LCD-BL-EN / LCD-PWM / GND |
+
+### 2.4 VDD_LCD 跳线（接 B121EW03 必改）
+
+```mermaid
+flowchart LR
+    J33["VCC-3V3"] -->|R559=0R| VDD["VDD_LCD<br/>Pin15/16"]
+    J5["5V"] -.->|R557=NC| VDD
+    J12["12V"] -.->|R716=NC| VDD
+```
+
+| 电阻 | 默认 | 接本屏 |
+|------|------|--------|
+| **R559** | NC | **焊接 0R → 3.3V** |
+| **R557** | 0R（5V） | **NC** |
+
+---
+
+## 3. 线材① — LVDS 显示线
+
+### 3.1 信号架构
+
+```mermaid
+flowchart LR
+    subgraph SOC["H133 PD0~PD9"]
+        V0["V0±"]
+        V1["V1±"]
+        V2["V2±"]
+        CK["CK±"]
+        V3["V3±"]
+    end
+
+    subgraph CON["CON123"]
+        C0["13/14"]
+        C1["10/11"]
+        C2["7/8"]
+        C3["4/5"]
+        C4["1/2 NC"]
+    end
+
+    subgraph SCR["屏 Rx"]
+        R0["8/9 RxIN0"]
+        R1["11/12 RxIN1"]
+        R2["14/15 RxIN2"]
+        RC["17/18 CLK"]
+    end
+
+    V0 --> C0 --> R0
+    V1 --> C1 --> R1
+    V2 --> C2 --> R2
+    CK --> C3 --> RC
+    V3 --> C4
+```
+
+### 3.2 主板 CON123 线序（Pin 1→17）
+
+| Pin | 信号 | 本线 |
+|:---:|------|:----:|
+| 1 | LVDS-V3P | ❌ |
+| 2 | LVDS-V3N | ❌ |
+| 3 | GND | ✅ |
+| 4 | LVDS-CKP | ✅ |
+| 5 | LVDS-CKN | ✅ |
+| 6 | GND | ✅ |
+| 7 | LVDS-V2P | ✅ |
+| 8 | LVDS-V2N | ✅ |
+| 9 | GND | ✅ |
+| 10 | LVDS-V1P | ✅ |
+| 11 | LVDS-V1N | ✅ |
+| 12 | GND | ✅ |
+| 13 | LVDS-V0P | ✅ |
+| 14 | LVDS-V0N | ✅ |
+| 15 | VDD_LCD | ✅ +3.3V |
+| 16 | VDD_LCD | ✅ +3.3V |
+| 17 | GND | ✅ |
+
+> **Pin1 方向**：以 **PCB 丝印** 为准（原理图 Pin1=V3P 在插座下方）。  
+> **屏 Pin1**：规格书从 **连接器右侧** 为 Pin1（屏背面视角）。
+
+### 3.3 屏 DF19L 线序（Pin 1→20）
+
+| Pin | 信号 | 本线 |
+|:---:|------|:----:|
+| 1 | GND | ✅ |
+| 2 | VDD | ✅ |
+| 3 | VDD | ✅ |
+| 4 | VDDEDID | ❌ |
+| 5 | AGING | ❌ |
+| 6 | CLKEDID | ❌ |
+| 7 | DATAEDID | ❌ |
+| 8 | RxIN0N | ✅ |
+| 9 | RxIN0P | ✅ |
+| 10 | GND | ✅ |
+| 11 | RxIN1N | ✅ |
+| 12 | RxIN1P | ✅ |
+| 13 | GND | ✅ |
+| 14 | RxIN2N | ✅ |
+| 15 | RxIN2P | ✅ |
+| 16 | GND | ✅ |
+| 17 | RxCLKINN | ✅ |
+| 18 | RxCLKINP | ✅ |
+| 19 | GND | ✅ |
+| 20 | GND | ✅ |
+
+### 3.4 打线表（供应商施工用）
+
+| 线号 | A Pin | A 信号 | B Pin | B 信号 | 线型 |
+|:----:|:-----:|--------|:-----:|--------|------|
+| W01 | 13 | V0P | 9 | RxIN0P | 差分+ |
+| W02 | 14 | V0N | 8 | RxIN0N | 差分− |
+| W03 | 10 | V1P | 12 | RxIN1P | 差分+ |
+| W04 | 11 | V1N | 11 | RxIN1N | 差分− |
+| W05 | 7 | V2P | 15 | RxIN2P | 差分+ |
+| W06 | 8 | V2N | 14 | RxIN2N | 差分− |
+| W07 | 4 | CKP | 18 | RxCLKINP | 差分+ |
+| W08 | 5 | CKN | 17 | RxCLKINN | 差分− |
+| W09 | 15 | VDD | 2 | VDD | 电源 |
+| W10 | 16 | VDD | 3 | VDD | 电源 |
+| W11 | 3 | GND | 1 | GND | 地 |
+| W12 | 6 | GND | 10 | GND | 地 |
+| W13 | 9 | GND | 13 | GND | 地 |
+| W14 | 12 | GND | 16 | GND | 地 |
+| W15 | 17 | GND | 19 | GND | 地 |
+| W16 | 17 | GND | 20 | GND | 地 |
+
+**工艺**：差分 **100Ω ±10%**，同对绞合，等长 ≤5mm。
+
+### 3.5 对角线连接图
+
+```
+主板 CON123 (17P)                    屏 DF19L (20P)
+Pin  信号                            Pin  信号
+───  ─────                           ───  ─────
+ 1   V3P   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    (NC)
+ 2   V3N   ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─    (NC)
+ 3   GND   ═══════════════════════►  1   GND
+ 4   CKP   ═══════════════════════► 18   RxCLKINP
+ 5   CKN   ═══════════════════════► 17   RxCLKINN
+ 6   GND   ═══════════════════════► 10   GND
+ 7   V2P   ═══════════════════════► 15   RxIN2P
+ 8   V2N   ═══════════════════════► 14   RxIN2N
+ 9   GND   ═══════════════════════► 13   GND
+10   V1P   ═══════════════════════► 12   RxIN1P
+11   V1N   ═══════════════════════► 11   RxIN1N
+12   GND   ═══════════════════════► 16   GND
+13   V0P   ═══════════════════════►  9   RxIN0P
+14   V0N   ═══════════════════════►  8   RxIN0N
+15   VDD   ═══════════════════════►  2   VDD
+16   VDD   ═══════════════════════►  3   VDD
+17   GND   ════════════╗
+                        ╠══════════► 19   GND
+                        ╚══════════► 20   GND
+                        4~7 (NC)
+```
+
+---
+
+## 4. 线材② — TP 触摸线
+
+### 4.1 触摸信号架构
+
+```mermaid
+flowchart LR
+    subgraph SOC2["H133 SoC"]
+        TWI1["TWI1<br/>PG8 SCK / PG9 SDA"]
+        INT["PG3 INT"]
+        RST["PG2 RST"]
+    end
+
+    subgraph JP["JP13 6P"]
+        SCK["CTP-SCK"]
+        SDA["CTP-SDA"]
+        I["CTP-INT"]
+        R["CTP-RST"]
+        V["VCC-CTP 3.3V"]
+        G["GND"]
+    end
+
+    subgraph FPC["TP FPC 6P"]
+        P1["1 SCL"]
+        P2["2 SDA"]
+        P3["3 INT"]
+        P4["4 GND"]
+        P5["5 VDD"]
+        P6["6 RST"]
+    end
+
+    TWI1 --> SCK --> P1
+    TWI1 --> SDA --> P2
+    INT --> I --> P3
+    RST --> R --> P6
+    V --> P5
+    G --> P4
+```
+
+### 4.2 打线表
+
+| 线号 | 信号 | 主板 JP13 | 屏 FPC Pin |
+|:----:|------|-----------|:----------:|
+| T01 | SCL | **CTP-SCK** | **1** |
+| T02 | SDA | **CTP-SDA** | **2** |
+| T03 | INT | **CTP-INT** | **3** |
+| T04 | GND | **GND** | **4** |
+| T05 | VCC | **VCC-CTP** (+3.3V) | **5** |
+| T06 | RST | **CTP-RST** | **6** |
+
+> 打线前用万用表/原理图核对 **JP13 Pin1 与各信号**对应关系。
+
+---
+
+## 5. 线材③ — CCFL 背光高压线
+
+### 5.1 CCFL 是什么
+
+**CCFL**（Cold Cathode Fluorescent Lamp）= **冷阴极荧光灯管**。B121EW03 屏内只有灯管，**不含逆变器**；点亮需外配 **CCFL Inverter**（高压输出）。
+
+### 5.2 背光架构（LED 路 vs CCFL 路）
+
+```mermaid
+flowchart TB
+    subgraph MB_BL["主板原设计 — LED 背光"]
+        BLEN["LCD-BL-EN PB12"]
+        BLPM["LCD-PWM"]
+        PT["PT4117B 升压恒流"]
+        JP12O["JP12 VLED±"]
+        LED["LED 灯条"]
+        BLEN --> PT --> JP12O --> LED
+    end
+
+    subgraph CCFL_BL["本方案 — CCFL 背光"]
+        BLEN2["LCD-BL-EN ─可选─►"]
+        BLPM2["LCD-PWM ─可选─►"]
+        INV["CCFL 逆变器"]
+        HV["高压 2P 线"]
+        LAMP["CCFL 灯管"]
+        PWR2["5V/12V 供电"]
+        PWR2 --> INV
+        BLEN2 --> INV
+        BLPM2 --> INV
+        INV --> HV --> LAMP
+    end
+
+    JP12O -.->|❌ 禁止直连| LAMP
+```
+
+### 5.3 屏端灯管线序
+
+| Pin | 线色 | 信号 |
+|:---:|------|------|
+| 1 | **粉** | Lamp High Voltage |
+| 2 | **白** | Lamp Low Voltage |
+
+### 5.4 逆变器参考参数（B121EW03 规格书）
+
+| 参数 | 典型 |
+|------|------|
+| 灯电流 ICCFL | 6.0 mA |
+| 频率 | 45～70 kHz |
+| PWM 调光（若支持） | **210Hz ±5Hz** |
+
+### 5.5 背光控制流程
+
+```mermaid
+sequenceDiagram
+    participant SW as 软件 / DTS
+    participant GPIO as LCD-BL-EN (PB12)
+    participant INV as CCFL 逆变器
+    participant LAMP as CCFL 灯管
+
+    Note over SW,LAMP: 上电顺序（规格书）
+    SW->>LAMP: VDD 3.3V 稳定
+    SW->>LAMP: LVDS 有效数据
+    SW->>GPIO: BL-EN = High
+    GPIO->>INV: 使能 ON
+    INV->>LAMP: 高压输出（T4≥400ms 后）
+
+    opt PWM 调光
+        SW->>INV: LCD-PWM ~210Hz
+    end
+```
+
+| 控制方式 | 硬件连接 | 软件 |
+|----------|----------|------|
+| 仅亮/灭 | LCD-BL-EN → 逆变器 EN | `lcd_bl_en` / PB12 |
+| 调光 | LCD-PWM → 逆变器 DIM | `lcd_pwm_used=1`（频率匹配逆变器） |
+
+---
+
+## 6. 三套线材关系总图
+
+```mermaid
+flowchart TB
+    MB["TP-H10-H133 主板"]
+
+    MB -->|① CON123 17P| L1["LVDS 线<br/>16 芯"]
+    MB -->|② JP13 6P| L2["TP 线<br/>6 芯"]
+    MB -->|5V/12V| INV["CCFL 逆变器"]
+    MB -.->|JP14 EN/PWM| INV
+    MB -.->|JP12 ❌| X["不接 CCFL"]
+
+    L1 --> LCD["B121EW03<br/>DF19L 20P"]
+    L2 --> TP["12.1 TP<br/>FPC 6P"]
+    INV -->|③ 高压 2P| LAMP["CCFL JST 2P"]
+
+    style X fill:#fee,stroke:#c00
+    style INV fill:#efe,stroke:#090
+```
+
+---
+
+## 7. 软件配置参考
+
+### 7.1 显示 bring-up 流程
+
+```mermaid
+flowchart TD
+    A["改 board.dts"] --> B["lcd_if = 3 LVDS"]
+    B --> C["关 MIPI / 开 lvds0_pins"]
+    C --> D["1280×800 时序<br/>ht=1440 vt=823 dclk=71"]
+    D --> E["6bit single link<br/>lvds_mode 0/1 试"]
+    E --> F["&disp fb0 = 1280×800"]
+    F --> G["编译烧录"]
+    G --> H{"有图?"}
+    H -->|否| I["查 Pin1/3.3V/NS-JEIDA"]
+    H -->|是| J{"有背光?"}
+    J -->|否| K["查逆变器/高压线/BL-EN"]
+    J -->|是| L["调 TP / 触摸"]
+```
+
+### 7.2 DTS 关键参数
+
+| 参数 | 建议值 | 说明 |
+|------|--------|------|
+| `lcd_if` | `3` | LVDS |
+| `lcd_x` / `lcd_y` | 1280 / 800 | 与屏一致 |
+| `lcd_dclk_freq` | 71 | MHz |
+| `lcd_ht` / `lcd_vt` | 1440 / 823 | 屏规格书典型 |
+| `lcd_lvds_if` | 0 | 单链路 |
+| `lcd_lvds_colordepth` | 1 | 6bit |
+| `lcd_lvds_mode` | 0 或 1 | NS / JEIDA，无图可互换试 |
+| `pinctrl` | `lvds0_pins_a/b` | 与 MIPI **互斥** |
+
+### 7.3 触摸
+
+| 信号 | SoC | 说明 |
+|------|-----|------|
+| I2C | TWI1 @ **0x40** | PG8 SCK / PG9 SDA |
+| INT | **PG3** | |
+| RST | **PG2** | |
+| 分辨率 | 1280 × 800 | 需改 `ctp_screen_max_x/y` |
+| IC | 规格书 **GT928** | 与当前 GSL 驱动需核对 |
+
+---
+
+## 8. 上电与调试
+
+### 8.1 硬件检查流程
+
+```mermaid
+flowchart TD
+    S["开始组装"] --> A{"LVDS 与 MIPI<br/>只接一种?"}
+    A -->|否| E1["❌ 冲突"]
+    A -->|是| B{"VDD 跳线 3.3V?"}
+    B -->|否| E2["❌ 可能烧屏"]
+    B -->|是| C{"Pin1 方向正确?"}
+    C -->|否| E3["❌ 无图/花屏"]
+    C -->|是| D{"CCFL 逆变器+高压线?"}
+    D -->|否| E4["⚠ 有图无背光"]
+    D -->|是| F{"JP12 未接 CCFL?"}
+    F -->|否| E5["❌ 危险"]
+    F -->|是| OK["✅ 可上电测试"]
+```
+
+### 8.2 现象排查
+
+| 现象 | 可能原因 |
+|------|----------|
+| 完全无图 | Pin1 反、仍走 MIPI、3.3V 未选 |
+| 有图无背光 | 逆变器/高压线/BL-EN 未接 |
+| 偏色/花屏 | `lcd_lvds_mode` NS/JEIDA 错配 |
+| 无触摸 | JP13 线序、TWI1、IC 驱动不匹配 |
+
+---
+
+## 9. 供应商加工勾选单
+
+```
+□ 线① LVDS：CON123(17P) → DF19G(20P)，16 芯，主板 Pin1/2、屏 Pin4~7 不接
+□ 线② TP：JP13(6P) → TP FPC(6P)，6 芯，按 SCL/SDA/INT/GND/VCC/RST
+□ 线③ 背光：逆变器 → JST(2P)，2 芯高压，粉=HV、白=LV
+□ 已核对 CON123 / JP13 / 屏座 / TP FPC 的 Pin1 与 pitch
+□ 背光线未接主板 JP12
+□ 客户自备 CCFL 逆变器（灯电流 ~6mA）
+```
+
+---
+
+## 10. 相关文档
+
+| 文档 | 路径 |
+|------|------|
+| 主板原理图 | `主板原理图/TP-H10-H133-V1_20260408.pdf` |
+| 屏规格 | `屏规格/12.1寸lvds屏B121EW03.pdf` |
+| TP 规格 | `TP/12.1寸tp-吴明才项目/12.1寸  规格书.pdf` |
+| LVDS 驱动 | `../H133-LVDS驱动开发.md` |
+| TP 驱动 | `../驱动/TP驱动/H133-TP驱动开发.md` |
+| 背光供电 | `../H133-LCD背光亮度-硬件供电分析.md` |
+
+---
+
+*文档版本 v1.0 · 打线供应商可直接使用第 3～5 节打线表与第 9 节勾选单*
