@@ -1,0 +1,12 @@
+.md-header__button.md-logo,
+.md-header__title {
+  display: none;
+}
+
+.md-sidebar--primary > .md-sidebar__scrollwrap > .md-sidebar__inner > .md-nav > .md-nav__title {
+  display: none;
+}
+
+.md-footer {
+  display: none;
+}

@@ -1,0 +1,2854 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+        <link rel="canonical" href="https://xiayu12345.github.io/Obsidion/BK7252N-AI%E6%89%93%E5%8D%B0%E6%9C%BA/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E6%97%A5%E5%BF%97/2026-05-15_%E8%AF%AD%E9%9F%B3%E7%94%9F%E6%88%90%E9%A1%B5%E9%99%AA%E4%BC%B4%E6%9C%BA%E5%99%A8%E4%BA%BA%E5%B8%A7%E5%8A%A8%E7%94%BB%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/">
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>P?? 语音生成中页面：陪伴机器人帧动画开发记录 - Obsidion</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    <body dir="ltr">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#p" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../../.." title="Obsidion" class="md-header__button md-logo" aria-label="Obsidion" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Obsidion
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              P?? 语音生成中页面：陪伴机器人帧动画开发记录
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/xiayu12345/Obsidion" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Obsidion" class="md-nav__button md-logo" aria-label="Obsidion" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Obsidion
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/xiayu12345/Obsidion" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Career 笔记索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    BK7252N AI打印机
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    BK7252N AI打印机
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../BK7252N-AI%E6%89%93%E5%8D%B0%E6%9C%BA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目主页
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    H133
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    H133
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_1" id="__nav_3_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    项目速览
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    项目速览
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E9%A1%B9%E7%9B%AE%E9%80%9F%E8%A7%88/%E5%9F%BA%E6%9C%AC%E4%BF%A1%E6%81%AF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    基本信息
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E9%A1%B9%E7%9B%AE%E9%80%9F%E8%A7%88/%E7%A1%AC%E4%BB%B6%E5%B9%B3%E5%8F%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件平台
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E9%A1%B9%E7%9B%AE%E9%80%9F%E8%A7%88/%E8%BD%AF%E4%BB%B6%E5%B9%B3%E5%8F%B0/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    软件平台
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E9%A1%B9%E7%9B%AE%E9%80%9F%E8%A7%88/%E4%BB%A3%E7%A0%81%E4%BB%93%E5%BA%93/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    代码仓库
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_2" id="__nav_3_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件接线
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    硬件接线
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E6%8E%A5%E7%BA%BF/%E7%A1%AC%E4%BB%B6%E6%8E%A5%E7%BA%BF/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件接线
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发环境
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    开发环境
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    环境搭建
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_4" id="__nav_3_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    代码结构
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    代码结构
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E7%9B%AE%E5%BD%95%E6%A0%91/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    目录树
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E4%B8%BB%E7%A8%8B%E5%BA%8F%E5%85%A5%E5%8F%A3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    主程序入口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E5%85%B3%E9%94%AE%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    关键配置文件
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E9%A9%B1%E5%8A%A8%E5%B1%82%E7%BB%93%E6%9E%84/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    驱动层结构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E5%BA%94%E7%94%A8%E5%B1%82%E7%BB%93%E6%9E%84/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用层结构
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E4%BB%A3%E7%A0%81%E7%BB%93%E6%9E%84/%E4%BB%BB%E5%8A%A1%E7%BA%BF%E7%A8%8B%E5%88%97%E8%A1%A8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    任务线程列表
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5" id="__nav_3_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    开发记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    开发记录索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5_2" id="__nav_3_5_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    驱动开发
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    驱动开发
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    驱动开发索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/%E6%98%BE%E7%A4%BA-HDMI-MIPI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显示 / HDMI / MIPI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/G2D%E6%98%BE%E7%A4%BAABI/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    G2D / 显示 ABI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/%E8%A7%A6%E6%91%B8%E8%BE%93%E5%85%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    触摸 / 输入
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/%E9%9F%B3%E9%A2%91%E5%8A%9F%E6%94%BE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    音频 / 功放
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/WiFi%E7%BD%91%E7%BB%9C/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    WiFi / 网络
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/%E5%AD%98%E5%82%A8SD%E5%8D%A1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    存储 / SD 卡
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E9%A9%B1%E5%8A%A8%E5%BC%80%E5%8F%91/%E8%A7%86%E9%A2%91%E6%97%8B%E8%BD%ACTPlayer/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    视频旋转 / TPlayer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_5_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_5_3" id="__nav_3_5_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用开发
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_3_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    应用开发
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用开发索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/lv_projector/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    lv_projector 主应用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/%E7%83%A7%E5%BD%95%E9%83%A8%E7%BD%B2/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    烧录部署 / ADB 替换
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/SFTP%E5%BC%80%E5%8F%91/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SFTP / OpenSSH 集成
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E5%BC%80%E5%8F%91/rootfs%E7%A9%BA%E9%97%B4/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    rootfs 空间与应用占用
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_6" id="__nav_3_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试记录
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    测试记录
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    测试记录索引
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/%E7%A1%AC%E4%BB%B6%E8%BF%9E%E9%80%9A%E6%80%A7%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件连通性测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9F%E5%90%AF%E5%8A%A8%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    系统启动测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/%E6%98%BE%E7%A4%BA%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    显示测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/%E5%BA%94%E7%94%A8%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    应用测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E6%B5%8B%E8%AF%95%E8%AE%B0%E5%BD%95/%E5%9B%9E%E5%BD%92%E6%B5%8B%E8%AF%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    回归测试
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E8%B8%A9%E5%9D%91%E8%AE%B0%E5%BD%95/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    踩坑记录
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_8" id="__nav_3_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    常用命令速查
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    常用命令速查
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/%E7%BC%96%E8%AF%91%E7%9B%B8%E5%85%B3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    编译相关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/%E7%83%A7%E5%BD%95%E7%9B%B8%E5%85%B3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    烧录相关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/%E8%B0%83%E8%AF%95%E7%9B%B8%E5%85%B3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    调试相关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/%E4%B8%B2%E5%8F%A3%E6%97%A5%E5%BF%97%E7%9B%B8%E5%85%B3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    串口日志相关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4%E9%80%9F%E6%9F%A5/Git%E7%9B%B8%E5%85%B3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Git相关
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_3_9" id="__nav_3_9_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件资料
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    硬件资料
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%96%99/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    硬件资料入口
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%96%99/%E6%8B%93%E6%AD%A510.1%E5%AF%B8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    拓步 10.1 寸
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%96%99/%E5%90%B4%E6%98%8E%E6%89%8D12.1%E5%AF%B8/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    吴明才 12.1 寸
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%96%99/%E6%AC%A3%E6%AC%A3%E6%99%BA%E8%83%BD/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    欣欣智能
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E7%A1%AC%E4%BB%B6%E8%B5%84%E6%96%99/%E9%80%9A%E7%94%A8%E8%B5%84%E6%96%99/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    通用资料
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../H133/%E5%BC%95%E8%84%9A%E5%AE%9A%E4%B9%89%E9%80%9F%E6%9F%A5/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    引脚定义速查
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. 背景
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. 改动文件清单
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. 技术方案演进
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. 技术方案演进">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-lvgl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 方案一：LVGL 原生绘制（小熊 → 恐龙）
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-bmp-rgb565" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 方案二：BMP RGB565 逐帧
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-lv_img_cf_indexed_4bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 方案三（最终方案）：LV_IMG_CF_INDEXED_4BIT
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. 详细改动
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. 详细改动">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-gen_dino_framespy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 gen_dino_frames.py — 像素画生成脚本
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1 gen_dino_frames.py — 像素画生成脚本">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#411" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.1 画布与调色板
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#412-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.2 4 帧设计
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#413" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.3 机器人结构布局
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#414" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1.4 输出格式
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-dino_frames_bmph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 dino_frames_bmp.h — 帧表头文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-lv_example_meterc-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 lv_example_meter.c — UI 集成
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 lv_example_meter.c — UI 集成">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#431" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.1 新增头文件
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#432" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.2 新增静态变量
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#433" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.3 帧切换回调
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#434" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.4 替换绘制函数
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#435" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3.5 清理逻辑增强
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. 未改动项
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. 效果
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-flash" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Flash 占用对比
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. 注意事项
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="p">P?? 语音生成中页面：陪伴机器人帧动画开发记录<a class="headerlink" href="#p" title="Permanent link">&para;</a></h1>
+<p><strong>日期</strong>：2026-05-15<br />
+<strong>工程</strong>：<code>bk7252n_sdk-SDK_3.0.76.1_witch_lcd</code><br />
+<strong>编译命令</strong>：<code>scons --beken=bk7252n -j4</code></p>
+<hr />
+<h2 id="1">1. 背景<a class="headerlink" href="#1" title="Permanent link">&para;</a></h2>
+<p>语音生成中页面（<code>VOICE_UI_GENERATING</code> 状态）此前使用 LVGL 原生绘制的卡通小熊 + 上下弹跳动画作为等待指示。效果粗糙、生硬，且 LVGL 原生几何体绘制能力有限，无法呈现丰富的角色细节。</p>
+<p>为提升产品"陪伴感"，需要一个更可爱的动画角色在 AI 生成语音内容期间展示，目标受众为 <strong>6-10 岁儿童</strong>。经过方案对比（小狗/小猫/恐龙/福星），最终选定 <strong>小机器人</strong>，因其方形几何结构在像素画中表现力最佳，且契合 AI 打印机产品调性。</p>
+<hr />
+<h2 id="2">2. 改动文件清单<a class="headerlink" href="#2" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>改动类型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>applications/images/gen_dino_frames.py</code></td>
+<td><strong>新增</strong></td>
+<td>Python 像素画生成脚本，绘制 4 帧机器人并输出 C 数组</td>
+</tr>
+<tr>
+<td><code>applications/images/dino_frames_bmp.h</code></td>
+<td><strong>新增</strong></td>
+<td>帧图描述符头文件，暴露 <code>LV_IMG_CF_INDEXED_4BIT</code> 格式图片及帧表</td>
+</tr>
+<tr>
+<td><code>applications/images/dino_frames_bmp.c</code></td>
+<td><strong>新增</strong></td>
+<td>4 帧 56×68 INDEXED_4BIT 像素数据，自动生成不手动维护</td>
+</tr>
+<tr>
+<td><code>applications/pages/lv_example_meter.c</code></td>
+<td>修改</td>
+<td>新增帧动画变量/回调/清理逻辑；替换小熊为机器人帧动画</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3">3. 技术方案演进<a class="headerlink" href="#3" title="Permanent link">&para;</a></h2>
+<h3 id="31-lvgl">3.1 方案一：LVGL 原生绘制（小熊 → 恐龙）<a class="headerlink" href="#31-lvgl" title="Permanent link">&para;</a></h3>
+<p>最初尝试用 <code>lv_obj_create</code> + <code>lv_palette_main</code> 等 LVGL 原生 API 绘制卡通角色。先后尝试了小熊和恐龙，效果均不佳——几何体拼接感强，圆形/圆角矩形组合无法呈现"可爱"质感。</p>
+<p><strong>结论</strong>：放弃原生绘制路线，改用像素图片。</p>
+<h3 id="32-bmp-rgb565">3.2 方案二：BMP RGB565 逐帧<a class="headerlink" href="#32-bmp-rgb565" title="Permanent link">&para;</a></h3>
+<p>用 Python 脚本生成 4 帧 80×80 的 BMP RGB565 图片，编译进固件后用 <code>lv_img_set_src</code> 轮换。  </p>
+<p><strong>问题</strong>：
+- <strong>Flash 占用大</strong>：80×80×2 字节/像素 ≈ 12.8 KB/帧，4 帧 ≈ 51 KB
+- <strong>透明处理依赖 chroma-key</strong>：需将背景设为 <code>LV_COLOR_CHROMA_KEY</code> 纯绿（<code>0x00FF00</code>），LVGL 渲染时跳过该颜色。实际出现过品红背景（因脚本颜色常量写错）、白色卡片上透明色差等问题</p>
+<p><strong>结论</strong>：可用但 Flash 不友好，chroma-key 调试麻烦。</p>
+<h3 id="33-lv_img_cf_indexed_4bit">3.3 方案三（最终方案）：LV_IMG_CF_INDEXED_4BIT<a class="headerlink" href="#33-lv_img_cf_indexed_4bit" title="Permanent link">&para;</a></h3>
+<p>LVGL v8 内置 <strong>4-bit 索引色格式</strong>：</p>
+<ul>
+<li>每像素仅 <strong>4 bit</strong>（2 像素打包为 1 字节）</li>
+<li>前 64 字节为 16 色调色板（RGBA8888 格式），之后为打包像素 nibble</li>
+<li><strong>天然支持 alpha 透明</strong>：调色板中背景色 alpha=0x00，其余颜色 alpha=0xFF</li>
+<li>无需 BMP 解码器，LVGL 直接渲染</li>
+</ul>
+<p><strong>数据布局</strong>：</p>
+<div class="highlight"><pre><span></span><code>[调色板 16×4=64B] [像素数据 (56×68+1)/2=1904B] = 1968B/帧
+</code></pre></div>
+<p>4 帧总计 <strong>~7.9 KB</strong>，比 BMP 方案省 <strong>~84% Flash</strong>。</p>
+<p><strong>尺寸优化</strong>：80×80 → 56×68，裁剪掉上下无用透明区域，进一步节省。</p>
+<p><strong>背景色</strong>：白色（<code>0xFFFFFF</code>），与语音面板 150×150 白色圆形卡片同色融合。</p>
+<hr />
+<h2 id="4">4. 详细改动<a class="headerlink" href="#4" title="Permanent link">&para;</a></h2>
+<h3 id="41-gen_dino_framespy">4.1 <code>gen_dino_frames.py</code> — 像素画生成脚本<a class="headerlink" href="#41-gen_dino_framespy" title="Permanent link">&para;</a></h3>
+<h4 id="411">4.1.1 画布与调色板<a class="headerlink" href="#411" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="n">W</span><span class="p">,</span> <span class="n">H</span> <span class="o">=</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">68</span>  <span class="c1"># 最终尺寸</span>
+
+<span class="n">C_TRANS</span>  <span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">)</span>  <span class="c1"># 背景白 → alpha=0</span>
+<span class="n">C_BODY</span>   <span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0x90</span><span class="p">,</span> <span class="mh">0xCA</span><span class="p">,</span> <span class="mh">0xF9</span><span class="p">)</span>  <span class="c1"># 浅蓝身体</span>
+<span class="n">C_BODY_D</span> <span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0x5C</span><span class="p">,</span> <span class="mh">0x9C</span><span class="p">,</span> <span class="mh">0xE6</span><span class="p">)</span>  <span class="c1"># 深蓝（腿/天线杆）</span>
+<span class="n">C_FACE</span>   <span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0xE0</span><span class="p">,</span> <span class="mh">0xE0</span><span class="p">,</span> <span class="mh">0xE0</span><span class="p">)</span>  <span class="c1"># 灰白脸盘</span>
+<span class="n">C_ANTENNA</span><span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0xF4</span><span class="p">,</span> <span class="mh">0x43</span><span class="p">,</span> <span class="mh">0x36</span><span class="p">)</span>  <span class="c1"># 红色天线球</span>
+<span class="n">C_EYE_BG</span> <span class="o">=</span> <span class="n">rgb565</span><span class="p">(</span><span class="mh">0xFE</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">,</span> <span class="mh">0xFF</span><span class="p">)</span>  <span class="c1"># 近白眼白（与背景白区分，确保 alpha=0xFF）</span>
+</code></pre></div>
+<blockquote>
+<p>背景纯白 <code>0xFFFFFF</code> 与卡片底色一致；眼白用 <code>0xFEFFFF</code> 微妙区分，确保索引色调色板中眼白 alpha 不被误设为 0。</p>
+</blockquote>
+<h4 id="412-4">4.1.2 4 帧设计<a class="headerlink" href="#412-4" title="Permanent link">&para;</a></h4>
+<table>
+<thead>
+<tr>
+<th>帧</th>
+<th>名称</th>
+<th>动作</th>
+<th>视觉特征</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>idle</td>
+<td>待机</td>
+<td>圆眼+高光、胸口绿灯、天线旁小星 ?</td>
+</tr>
+<tr>
+<td>1</td>
+<td>blink</td>
+<td>眨眼</td>
+<td>双眼变横线、身体微沉 1px</td>
+</tr>
+<tr>
+<td>2</td>
+<td>wave</td>
+<td>挥手</td>
+<td>右臂举过头顶、胸口灯变亮绿、动作弧线+大星</td>
+</tr>
+<tr>
+<td>3</td>
+<td>love</td>
+<td>爱心</td>
+<td>爱心眼(?)、天线变黄星、胸口脉冲、两颗漂浮 ?</td>
+</tr>
+</tbody>
+</table>
+<h4 id="413">4.1.3 机器人结构布局<a class="headerlink" href="#413" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code>        ?        ← 天线红球 (y=9)
+        |         ← 天线杆
+    ┌───────┐     ← 蓝头 + 灰白脸盘 (y=15~35)
+    │ ?   ? │     ← 眼睛 (y=23)
+    │  ___  │     ← 嘴巴 (y=28)
+    └──┬─┬──┘
+      ╱   ╲       ← 手臂
+    ┌───────┐     ← 身体 (y=41~59)
+    │ [?]  │     ← 胸口灯 (y=49)
+    └──┬─┬──┘
+     ┌┘ └┐       ← 腿 + 脚 (y=54~73)
+     └───┘
+</code></pre></div>
+<p>相对 80×80 版本，整体上移 14px，高度缩至 68px（头顶 y=4~9，脚底 y≈71~73），天线红球完整可见。</p>
+<h4 id="414">4.1.4 输出格式<a class="headerlink" href="#414" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">write_indexed_c_array</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="c1"># 1. 提取调色板（去重，限制 16 色）</span>
+    <span class="c1"># 2. 背景白排第 0 位，alpha=0x00</span>
+    <span class="c1"># 3. 其余颜色 alpha=0xFF</span>
+    <span class="c1"># 4. 像素打包：高 nibble 为左像素，低 nibble 为右像素</span>
+    <span class="c1"># 5. 输出 lv_img_dsc_t，.header.cf = LV_IMG_CF_INDEXED_4BIT</span>
+</code></pre></div>
+<h3 id="42-dino_frames_bmph">4.2 <code>dino_frames_bmp.h</code> — 帧表头文件<a class="headerlink" href="#42-dino_frames_bmph" title="Permanent link">&para;</a></h3>
+<div class="highlight"><pre><span></span><code><span class="cp">#define DINO_FRAME_COUNT 4</span>
+
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lv_img_dsc_t</span><span class="w"> </span><span class="n">DINO_IDLE_BMP</span><span class="p">;</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lv_img_dsc_t</span><span class="w"> </span><span class="n">DINO_BLINK_BMP</span><span class="p">;</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lv_img_dsc_t</span><span class="w"> </span><span class="n">DINO_WIGGLE_BMP</span><span class="p">;</span>
+<span class="k">extern</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lv_img_dsc_t</span><span class="w"> </span><span class="n">DINO_HAPPY_BMP</span><span class="p">;</span>
+
+<span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">lv_img_dsc_t</span><span class="w"> </span><span class="o">*</span><span class="k">const</span><span class="w"> </span><span class="n">s_dino_frame_table</span><span class="p">[</span><span class="n">DINO_FRAME_COUNT</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">DINO_IDLE_BMP</span><span class="p">,</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">DINO_BLINK_BMP</span><span class="p">,</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">DINO_WIGGLE_BMP</span><span class="p">,</span>
+<span class="w">    </span><span class="o">&amp;</span><span class="n">DINO_HAPPY_BMP</span><span class="p">,</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>帧表 <code>s_dino_frame_table</code> 为 <code>static const</code>，在包含此头文件的每个 <code>.c</code> 中独立实例化，避免全局符号冲突，同时允许编译器内联优化。</p>
+<h3 id="43-lv_example_meterc-ui">4.3 <code>lv_example_meter.c</code> — UI 集成<a class="headerlink" href="#43-lv_example_meterc-ui" title="Permanent link">&para;</a></h3>
+<h4 id="431">4.3.1 新增头文件<a class="headerlink" href="#431" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;images/dino_frames_bmp.h&quot;</span>
+</code></pre></div>
+<p>置于 <code>images/thermal_happy_lv.h</code> 之后。</p>
+<h4 id="432">4.3.2 新增静态变量<a class="headerlink" href="#432" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="cm">/* Dino frame animation */</span>
+<span class="k">static</span><span class="w"> </span><span class="n">lv_timer_t</span><span class="w"> </span><span class="o">*</span><span class="n">s_dino_frame_timer</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="n">s_dino_frame_img</span><span class="p">;</span>
+<span class="k">static</span><span class="w"> </span><span class="kt">uint8_t</span><span class="w"> </span><span class="n">s_dino_frame_idx</span><span class="p">;</span>
+</code></pre></div>
+<h4 id="433">4.3.3 帧切换回调<a class="headerlink" href="#433" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">dino_frame_timer_cb</span><span class="p">(</span><span class="n">lv_timer_t</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="n">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">t</span><span class="o">-&gt;</span><span class="n">user_data</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s_dino_frame_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint8_t</span><span class="p">)((</span><span class="n">s_dino_frame_idx</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="n">DINO_FRAME_COUNT</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_img_set_src</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="w"> </span><span class="n">s_dino_frame_table</span><span class="p">[</span><span class="n">s_dino_frame_idx</span><span class="p">]);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>周期 200ms，4 帧循环一次约 800ms。</p>
+<h4 id="434">4.3.4 替换绘制函数<a class="headerlink" href="#434" title="Permanent link">&para;</a></h4>
+<p><code>voice_panel_generating_cartoon_pet()</code> 由原来的 LVGL 原生小熊绘制替换为：</p>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">voice_panel_generating_cartoon_pet</span><span class="p">(</span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="n">slot</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="n">pet</span><span class="p">;</span>
+<span class="w">    </span><span class="n">lv_obj_t</span><span class="w"> </span><span class="o">*</span><span class="n">img</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">pet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lv_obj_create</span><span class="p">(</span><span class="n">slot</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_remove_style_all</span><span class="p">(</span><span class="n">pet</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_set_size</span><span class="p">(</span><span class="n">pet</span><span class="p">,</span><span class="w"> </span><span class="mi">56</span><span class="p">,</span><span class="w"> </span><span class="mi">68</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_set_style_bg_opa</span><span class="p">(</span><span class="n">pet</span><span class="p">,</span><span class="w"> </span><span class="n">LV_OPA_TRANSP</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_clear_flag</span><span class="p">(</span><span class="n">pet</span><span class="p">,</span><span class="w"> </span><span class="n">LV_OBJ_FLAG_SCROLLABLE</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_add_flag</span><span class="p">(</span><span class="n">pet</span><span class="p">,</span><span class="w"> </span><span class="n">LV_OBJ_FLAG_OVERFLOW_VISIBLE</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_obj_center</span><span class="p">(</span><span class="n">pet</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lv_img_create</span><span class="p">(</span><span class="n">pet</span><span class="p">);</span>
+<span class="w">    </span><span class="n">lv_img_set_src</span><span class="p">(</span><span class="n">img</span><span class="p">,</span><span class="w"> </span><span class="n">s_dino_frame_table</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+<span class="w">    </span><span class="n">lv_obj_center</span><span class="p">(</span><span class="n">img</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">s_dino_frame_img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">img</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s_dino_frame_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="cm">/* Frame cycle: ~200ms per frame */</span>
+<span class="w">    </span><span class="n">s_dino_frame_timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lv_timer_create</span><span class="p">(</span><span class="n">dino_frame_timer_cb</span><span class="p">,</span><span class="w"> </span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="n">img</span><span class="p">);</span>
+
+<span class="w">    </span><span class="cm">/* Keep the gentle bounce on the pet root */</span>
+<span class="w">    </span><span class="n">s_vpanel_voice_anim_obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pet</span><span class="p">;</span>
+<span class="w">    </span><span class="n">voice_panel_start_generating_bounce</span><span class="p">(</span><span class="n">pet</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<ul>
+<li><strong>容器尺寸</strong>：56×68（与图片尺寸一致）</li>
+<li><strong>弹跳动画</strong>：继承原有 <code>voice_panel_start_generating_bounce</code>，translate_y 在 0 ? -6 之间缓动，周期 ~1s</li>
+<li><strong>两层动画叠加</strong>：容器弹跳 + 内部帧切换，形成"蹦蹦跳跳的机器人"效果</li>
+</ul>
+<h4 id="435">4.3.5 清理逻辑增强<a class="headerlink" href="#435" title="Permanent link">&para;</a></h4>
+<div class="highlight"><pre><span></span><code><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">voice_anim_cleanup</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s_vpanel_voice_anim_obj</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">lv_anim_del</span><span class="p">(</span><span class="n">s_vpanel_voice_anim_obj</span><span class="p">,</span><span class="w"> </span><span class="nb">NULL</span><span class="p">);</span>
+<span class="w">        </span><span class="n">s_vpanel_voice_anim_obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">s_dino_frame_timer</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="n">lv_timer_del</span><span class="p">(</span><span class="n">s_dino_frame_timer</span><span class="p">);</span>
+<span class="w">        </span><span class="n">s_dino_frame_timer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">s_dino_frame_img</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">;</span>
+<span class="w">    </span><span class="n">s_dino_frame_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在原有 bounce 动画清理基础上增加帧 timer 销毁和图片指针置空。<code>voice_anim_cleanup</code> 在以下场景被调用：</p>
+<ul>
+<li>语音面板重建（<code>voice_panel_rebuild</code>）</li>
+<li>语音状态切换（<code>voice_ui_apply_under_lock</code>）</li>
+<li>界面销毁（<code>ui_destroy_layers</code>）</li>
+<li>二级桌面刷新（<code>second_desktop_refresh_center</code>）</li>
+</ul>
+<p>确保离开生成状态后 timer 立即停止，无内存泄漏和野指针。</p>
+<hr />
+<h2 id="5">5. 未改动项<a class="headerlink" href="#5" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong><code>voice_panel_icon_slot_layout</code></strong>：图标槽尺寸和布局逻辑不变</li>
+<li><strong><code>voice_panel_footer_labels</code></strong>：底部文字（"AI 生成中..." + 副标题）不变</li>
+<li><strong><code>voice_panel_build_generating</code></strong>：调用 <code>voice_panel_generating_cartoon_pet</code> 的入口不变</li>
+<li><strong><code>voice_ui_state_t</code> 枚举</strong>：<code>VOICE_UI_GENERATING</code> 状态定义不变</li>
+<li><strong>LVGL 配置</strong>：<code>lv_conf.h</code> 中 <code>LV_IMG_CF_INDEXED_4BIT</code> 为 LVGL v8 内置支持，无需额外启用宏</li>
+</ul>
+<hr />
+<h2 id="6">6. 效果<a class="headerlink" href="#6" title="Permanent link">&para;</a></h2>
+<p>语音生成中页面，150×150 白色圆形卡片内：</p>
+<div class="highlight"><pre><span></span><code>┌─────────────────────────────┐
+│       ? (天线红球+星)       │
+│     ┌───────┐               │
+│     │ ?   ? │  ← 圆眼/眯眼/?│
+│     │  ___  │               │
+│     └──┬─┬──┘               │
+│      ╱│ │╲   ← 挥手帧右臂举起│
+│    ┌───────┐                │
+│    │ [?]  │  ← 胸口灯闪烁   │
+│    └──┬─┬──┘                │
+│      │ │    ← 整体上下弹跳   │
+│     ┌┘ └┐                   │
+│     └───┘                   │
+├─────────────────────────────┤
+│      AI 生成中...           │  ← 文字
+│      请稍候片刻             │
+└─────────────────────────────┘
+</code></pre></div>
+<p>4 帧以 200ms/帧循环（800ms 一周期），容器以 520ms 周期上下弹跳（translate_y 0?-6px），两个动画相位错开，形成自然灵动的陪伴效果。</p>
+<hr />
+<h2 id="7-flash">7. Flash 占用对比<a class="headerlink" href="#7-flash" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>格式</th>
+<th>单帧</th>
+<th>4帧</th>
+<th>透明方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>方案二</td>
+<td>BMP RGB565 (80×80)</td>
+<td>~13 KB</td>
+<td>~51 KB</td>
+<td>chroma-key</td>
+</tr>
+<tr>
+<td><strong>方案三（最终）</strong></td>
+<td><strong>INDEXED_4BIT (56×68)</strong></td>
+<td><strong>~2.0 KB</strong></td>
+<td><strong>~7.9 KB</strong></td>
+<td><strong>alpha 通道</strong></td>
+</tr>
+</tbody>
+</table>
+<p>固件总大小 2312 KB（app 分区），帧动画数据占比约 0.34%，几乎可忽略。</p>
+<blockquote>
+<p>注：<code>gen_dino_frames.py</code> 脚本不参与编译，仅开发阶段使用。运行时 <code>dino_frames_bmp.c</code> 为编译产物。</p>
+</blockquote>
+<hr />
+<h2 id="8">8. 注意事项<a class="headerlink" href="#8" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>修改帧图</strong>：编辑 <code>gen_dino_frames.py</code> 中的 <code>draw_robot</code> 函数，运行 <code>python3 gen_dino_frames.py</code> 重新生成 <code>.c/.h</code>，再编译即可。无需手动编辑 C 数组。</li>
+<li><strong>调整帧速</strong>：修改 <code>lv_timer_create(dino_frame_timer_cb, 200, img)</code> 中的 <code>200</code>（毫秒）。值越小越快。</li>
+<li><strong>颜色限制</strong>：INDEXED_4BIT 最多 16 色（含透明）。当前 12 色，有 4 色余量可添加新颜色。</li>
+<li><strong>设计师替换</strong>：如需设计师提供像素画，可提供 56×68 的 PNG 模板，由脚本导入替代 <code>draw_robot</code> 生成逻辑；或设计师直接出 INDEXED_4BIT 格式的调色板+像素数据替换 <code>dino_frames_bmp.c</code>。</li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.instant", "navigation.tracking", "navigation.top", "search.suggest", "search.highlight"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

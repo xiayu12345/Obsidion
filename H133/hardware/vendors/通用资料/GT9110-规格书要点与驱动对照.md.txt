@@ -1,0 +1,110 @@
+# GT9110 规格书要点与 H133 驱动对照
+
+> **PDF 原件（工程内）**：[`GT9110-Datasheet_20121205.pdf`](./GT9110-Datasheet_20121205.pdf)  
+> 文档版本：**Rev.03 — 2012-12-06**（汇顶科技；与 Rev.02 相比主要修订上电/地址时序 T4 等）  
+> 备用下载：同目录 `download_GT9110_datasheet.sh` 或 <https://dl.linux-sunxi.org/touchscreen/GT9110%20Datasheet.pdf>
+
+---
+
+## 1. 芯片概要
+
+| 项目 | 规格 |
+|------|------|
+| 型号 | GT9110，单芯片 **10 点**电容触控 |
+| 通道 | **42 Tx × 30 Rx** |
+| 屏尺寸 | **7" ~ 12.1"** |
+| 扫描/上报 | 触摸扫描约 **100Hz**；Normal 模式坐标刷新约 **7~10ms** |
+| 封装 | **88 pin**，10mm×10mm QFN（与 GT911 的 52pin 不同） |
+| 供电 | 单电源 **2.8V ~ 3.3V**，内置 1.8V LDO；VDDIO 可 1.8V/与 AVDD 同接 |
+| 接口 | 标准 **I2C 从机**，建议 **≤400kHz** |
+
+---
+
+## 2. 与主机连接的关键管脚
+
+| 脚位 | 名称 | 说明 |
+|------|------|------|
+| 29 | I2C_SDA | I2C 数据 |
+| 30 | I2C_SCL | I2C 时钟 |
+| 27 | INT | 中断，边沿可在配置寄存器选择 |
+| 37 | /RSTB | 复位，**外部 10K 上拉**，低电平复位 |
+| 33 | VDDIO | GPIO/I2C 电平（1.8V 或接 AVDD 为 3.3V） |
+
+主机侧需：**SCL、SDA、INT、RST、VCC、GND**（与模组 FPC 一致）。
+
+---
+
+## 3. I2C 从地址（上电/复位时选定）
+
+规格书 **§7.2**：两组 8 位地址（写地址示例）：
+
+| 8 位写地址 | 8 位读地址 | Linux 7 位地址 |
+|------------|------------|----------------|
+| **0x28** | 0x29 | **0x14** |
+| **0xBA** | 0xBB | **0x5d** |
+
+**地址选择时序（与 `gt9xxnew/gt9xx.c` 中 `gtp_reset_guitar()` 一致）：**
+
+1. **Reset 拉低**
+2. 保持 **>10ms**（规格书 T2）
+3. 选地址：
+   - 要 **0x28/0x29（0x14）**：**INT 输出高** → 再 **Reset 拉高** → **>5ms** 后 INT 改为输入（Rev.03 T4）
+   - 要 **0xBA/0xBB（0x5d）**：**INT 输出低** → 再 **Reset 拉高** → **>5ms** 后 INT 改为输入
+4. Reset 低电平保持 **>100µs**（规格书 T3）
+
+Bring-up 时：`i2cdetect -y <bus>` 看到 **0x14** 或 **0x5d** 后，DTS 里 `reg` / `ctp_twi_addr` 与之相同。
+
+---
+
+## 4. 中断触发（§7.4）
+
+配置寄存器 **INT 触发方式**（`0x804D` 相关位）：
+
+- **0**：上升沿触发（有触摸时 INT 由低变高）
+- **1**：下降沿触发（有触摸时 INT 由高变低）
+
+内核 `gt9xx.h` 中 `GTP_INT_TRIGGER` 需与模组/FPC 一致。
+
+---
+
+## 5. 本工程驱动映射
+
+| 规格书能力 | 工程实现 |
+|------------|----------|
+| I2C 0x14 / 0x5d | `gt9xxnew/gt9xx.c`：`normal_i2c[]`、`gtp_reset_guitar()` |
+| RST / INT GPIO | `board.dts`：`ctp_wakeup`、`ctp_int_port` + `init-input.c` |
+| 分辨率/镜像/配置 | `gt9xx.h` 的 `CTP_CFG_GROUPx` + DTS `ctp_screen_max_*`、`ctp_revert_*` |
+| 全志板级绑定 | `compatible = "allwinner,goodix"`，`ctp_name = "gt9xxnew_ts"` 或 `gt9110_*` |
+| 内核开关 | `CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y`，关闭 `GSLX680NEW` |
+
+内置 GT9110 配置名（`gt9xx.c`）：
+
+- `gt9110_wt097` → `CTP_CFG_GROUP2`
+- `gt9110_g200` → `CTP_CFG_GROUP4`
+
+---
+
+## 6. 换片修改文件清单（p1_nor 已实施 2026-05）
+
+| 文件 | 改动 |
+|------|------|
+| `device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig` | 关 GSL/固件，开 `GT9XXNEW_TS` |
+| `device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts` | `ctp@14` goodix，800×1280 |
+| `kernel/.../gt9xxnew/gt9xx.h` | GROUP1 分辨率 800×1280，上升沿中断 |
+| `lv_projector` `lv_drv_conf.h` / `main.c` | 触摸 `evdev_read` + `evdev_touch_init` |
+| `lv_drivers/indev/evdev.c` | 自动查找 `gt9xxnew_ts` 节点 |
+
+详细开发过程见：[`docs/驱动/TP驱动&鼠标&触摸/H133-GT9110触摸驱动开发过程.md`](../驱动/TP驱动&鼠标&触摸/H133-GT9110触摸驱动开发过程.md)
+
+---
+
+## 7. 与 GT911（5 点）的区别
+
+| | GT9110 | GT911 |
+|--|--------|-------|
+| 触点数 | 10 | 5 |
+| 通道 | 42×30 | 26×14 |
+| 封装 | 88pin 10×10 | 52pin 6×6 |
+| I2C 地址规则 | 同左表 0x14/0x5d | 相同 |
+
+勿混用 **GT911** 的 datasheet / 配置表到 **GT9110** 模组。
