@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<base href="/Obsidion/">
-<title>未找到 · H133 板件</title>
-<style>
+
 :root { --bg:#f6f4f1; --card:#fff; --fg:#222; --muted:#666; --line:#e4e0da; --acc:#284b63; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#161618; --card:#1e1e22; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -27,14 +20,3 @@ pre code { background:none; color:inherit; padding:0; }
 ul { padding-left: 1.2rem; }
 input[type=checkbox] { margin-right:.4rem; }
 footer { max-width:880px; margin:0 auto 2rem; padding:0 1.2rem; color:var(--muted); font-size:.85rem; }
-</style>
-</head>
-<body>
-<header><a href="index.html">H133 板件</a></header>
-<main><article>
-
-<h1>没有这一页</h1><p><a href="index.html">回首页</a></p>
-</article></main>
-<footer>一块板一个项目 · </footer>
-</body>
-</html>
