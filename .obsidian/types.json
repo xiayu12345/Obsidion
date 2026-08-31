@@ -1,0 +1,11 @@
+{
+  "types": {
+    "type": "text",
+    "kind": "text",
+    "status": "text",
+    "project": "text",
+    "config": "text",
+    "start": "date",
+    "date": "date"
+  }
+}

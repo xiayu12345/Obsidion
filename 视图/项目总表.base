@@ -1,0 +1,28 @@
+filters:
+  and:
+    - 'type == "project"'
+properties:
+  status:
+    displayName: 状态
+  config:
+    displayName: 板型
+  start:
+    displayName: 开始
+views:
+  - type: table
+    name: 进行中
+    filters:
+      and:
+        - 'status != "交付"'
+    order:
+      - file.name
+      - status
+      - config
+      - start
+  - type: table
+    name: 全部
+    order:
+      - file.name
+      - status
+      - config
+      - start

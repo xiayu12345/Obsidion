@@ -1,0 +1,21 @@
+filters:
+  and:
+    - 'project == this.file.basename'
+    - 'file.path != this.file.path'
+properties:
+  kind:
+    displayName: 类型
+  status:
+    displayName: 状态
+  date:
+    displayName: 日期
+views:
+  - type: table
+    name: 本项目
+    groupBy:
+      property: kind
+    order:
+      - file.name
+      - kind
+      - status
+      - date
