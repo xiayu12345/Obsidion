@@ -14,21 +14,25 @@ nav.side a.item { display:flex; align-items:center; height:30px; width:100%; pad
   border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
   background:transparent; box-sizing:border-box; line-height:1; }
 nav.side a.item .txt { display:inline-block; transform-origin:left center; }
-nav.side a.item.current { background:#6f8b9c; color:#fff; }
-nav.side a.item.current .txt { transform:scale(1.12); }
 nav.side a.item:hover { background:rgba(127,127,127,.12); }
 nav.side a.item.home { font-weight:600; }
 nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt,
+nav.side a.item.board.on .txt { transform:scale(1.12); }
 nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
 nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
 nav.side a.item.cat { padding-left:10px; color:var(--muted); }
 nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
-nav.side a.item.cat.current, nav.side a.item.child.current { color:#fff; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
 article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
-article h1 { display:inline-block; transform-origin:left center; transform:scale(1.04); }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
 a { color:var(--acc); }
 table { width:100%; border-collapse:collapse; margin:1rem 0; }
 th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
