@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 应用层适配硬编码 — 开发记录（树内落地） · H133 板件</title>
-<style>/* nav-v13 */ 
+<style>/* nav-v14 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -44,8 +44,13 @@ nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
 article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+.docimg { max-width:100%; height:auto; border-radius:8px; }
+pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
 table { width:100%; border-collapse:collapse; margin:1rem 0; }
 th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
@@ -62,7 +67,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v13</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -116,7 +121,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
 <main>
-<article>
+<article class="">
 <p class="meta">kind: log · date: 2026-07-14</p>
 <h1>JYY070 应用层适配硬编码 — 开发记录（树内落地）</h1>
 <p>| 项 | 内容 |</p>
@@ -301,7 +306,7 @@ return ktv_player_ui_apply_rect(115,
 <li>视频 WB：<a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">20260713-…WB-mirror</a></li>
 </ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 08:46 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
 </main>
 <script>
 (function () {
