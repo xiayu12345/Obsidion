@@ -20,7 +20,9 @@ nav.side a.item { display:block; color:var(--fg); text-decoration:none; padding:
 nav.side a.item:hover { background:var(--bg); }
 nav.side a.item.current { background:var(--acc); color:#fff; }
 nav.side .sec { color:var(--muted); font-size:.75rem; letter-spacing:.06em; padding:.85rem .6rem .25rem; }
-nav.side .child { padding-left:1.35rem; font-size:.88rem; color:var(--muted); }
+nav.side .cat { padding-left:1.15rem; font-size:.9rem; color:var(--muted); }
+nav.side .cat.current { color:#fff; }
+nav.side .child { padding-left:1.85rem; font-size:.88rem; color:var(--muted); }
 nav.side .child.current { color:#fff; }
 main { padding:1.4rem 1.6rem 2.5rem; min-width:0; }
 article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; }
@@ -46,9 +48,13 @@ footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px;
 <a class="item " href="index.html">首页</a>
 <div class="sec">板件</div>
 <a class="item  current" href="项目/JL_M101.html">JL_M101</a>
-<a class="item child" href="项目/JL_M101/20260730-HDMI黑边.html">HDMI 同显 1:1 黑边</a>
+<a class="item cat" href="项目/JL_M101/记录.html">记录</a>
 <a class="item child" href="项目/JL_M101/20260831-GPADC三键.html">GPADC 三键识别</a>
+<a class="item cat" href="项目/JL_M101/外设.html">外设</a>
 <a class="item child" href="项目/JL_M101/外设-GPADC.html">GPADC 电阻按键</a>
+<a class="item cat" href="项目/JL_M101/修复.html">修复</a>
+<a class="item child" href="项目/JL_M101/20260730-HDMI黑边.html">HDMI 同显 1:1 黑边</a>
+<a class="item cat" href="项目/JL_M101/资料.html">资料</a>
 <a class="item " href="项目/JYY070.html">JYY070</a>
 <a class="item " href="项目/LQ140M1JW61.html">LQ140M1JW61</a>
 <a class="item " href="项目/LQ190.html">LQ190</a>
@@ -70,11 +76,13 @@ footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px;
 <li><input type="checkbox" disabled /> 板甲电压表别写进当前镜像</li>
 </ul>
 <h2>本板事项</h2>
-<p><h3>外设</h3><ul><li><a href="项目/JL_M101/外设-GPADC.html">GPADC 电阻按键</a></li></ul></p>
-<p><h3>开发记录</h3><ul><li><a href="项目/JL_M101/20260831-GPADC三键.html">GPADC 三键识别</a></li></ul></p>
-<p><h3>修复</h3><ul><li><a href="项目/JL_M101/20260730-HDMI黑边.html">HDMI 同显 1:1 黑边</a></li></ul></p>
+<p><p class="meta">左侧可进记录 / 外设 / 修复 / 资料。</p></p>
+<p><h3><a href="项目/JL_M101/记录.html">记录</a></h3><ul><li><a href="项目/JL_M101/20260831-GPADC三键.html">GPADC 三键识别</a></li></ul></p>
+<p><h3><a href="项目/JL_M101/外设.html">外设</a></h3><ul><li><a href="项目/JL_M101/外设-GPADC.html">GPADC 电阻按键</a></li></ul></p>
+<p><h3><a href="项目/JL_M101/修复.html">修复</a></h3><ul><li><a href="项目/JL_M101/20260730-HDMI黑边.html">HDMI 同显 1:1 黑边</a></li></ul></p>
+<p><h3><a href="项目/JL_M101/资料.html">资料</a></h3><ul><li>脚：原理图 KEY ADC，球 C11 = GPADC0；J9536 外侧接电阻，RA20 51k + RA22 6.8k</li><li>资料：<code>H133-AI-Skills/硬件资料/四川京龙/s10-h133-v1_0625.pdf</code></li></ul></p>
 </article>
-<footer>一块板一个项目 · 2026-09-01 02:08 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 02:14 UTC</footer>
 </main>
 </body>
 </html>
