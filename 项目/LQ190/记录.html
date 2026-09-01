@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LQ190 · 记录 · H133 板件</title>
-<style>/* nav-v16 */ 
+<style>/* nav-v17 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -42,18 +42,18 @@ nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
-main { padding:1rem 1.2rem 1.5rem; min-width:0; display:flex; flex-direction:column; align-items:stretch; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
 article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
-article.wide { max-width:none; margin:0; padding:1rem 1.2rem 1.2rem; flex:1; display:flex; flex-direction:column; min-height:0; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
 main:has(article.wide) footer { max-width:none; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
 a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
   background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
-a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
-iframe.docview { display:block; width:100%; height:calc(100vh - 11rem); min-height:640px; border:1px solid var(--line); border-radius:8px; background:#fff; }
-.docimg { max-width:100%; height:auto; border-radius:8px; }
-pre.file { height:calc(100vh - 12rem); min-height:640px; max-height:none; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
 a { color:var(--acc); }
 table { width:100%; border-collapse:collapse; margin:1rem 0; }
 th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
@@ -70,7 +70,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v16</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v17</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -115,7 +115,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>LQ190 · 记录</h1><p><a href="项目/LQ190.html">回板件概览</a></p><ul><li><a href="项目/LQ190/开发记录/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.html">资料梳理</a></li><li><a href="项目/LQ190/开发记录/20260810-LQ190-背光BL-EN拉高实机验证/README.html">背光使能</a></li><li><a href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.html">GM8775C 显示</a></li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 10:16 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:29 UTC</footer>
 </main>
 <script>
 (function () {
@@ -183,7 +183,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v16";
+  var VER = "v17";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
