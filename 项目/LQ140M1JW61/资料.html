@@ -15,15 +15,20 @@ body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; backgroun
   display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
 nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
   border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
-nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.35rem .6rem .9rem; font-size:1.05rem; }
-nav.side a.item { display:block; color:var(--fg); text-decoration:none; padding:.32rem .6rem; border-radius:6px; font-size:.95rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.35rem .6rem .85rem; font-size:1.08rem; }
+nav.side a.item { display:block; text-decoration:none; border-radius:6px; }
 nav.side a.item:hover { background:var(--bg); }
 nav.side a.item.current { background:var(--acc); color:#fff; }
-nav.side .sec { color:var(--muted); font-size:.75rem; letter-spacing:.06em; padding:.85rem .6rem .25rem; }
-nav.side .cat { padding-left:1.15rem; font-size:.9rem; color:var(--muted); }
-nav.side .cat.current { color:#fff; }
-nav.side .child { padding-left:1.85rem; font-size:.88rem; color:var(--muted); }
-nav.side .child.current { color:#fff; }
+nav.side a.item.home { color:var(--fg); font-weight:600; font-size:.95rem; padding:.35rem .6rem; }
+nav.side a.item.board { color:var(--fg); font-weight:650; font-size:.95rem; padding:.38rem .6rem; }
+nav.side a.item.board.current { background:var(--acc); color:#fff; }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.9rem .6rem .2rem; }
+nav.side .sub { margin:.1rem 0 .55rem .7rem; padding:.15rem 0 .15rem .45rem; border-left:2px solid var(--line); }
+nav.side a.item.cat { color:var(--muted); font-size:.78rem; font-weight:500; padding:.18rem .45rem .18rem .35rem; }
+nav.side a.item.cat::before { content:"› "; opacity:.7; }
+nav.side a.item.cat.current { background:var(--acc); color:#fff; }
+nav.side a.item.child { color:var(--muted); font-size:.72rem; font-weight:400; padding:.12rem .45rem .12rem 1.05rem; opacity:.85; }
+nav.side a.item.child.current { background:var(--acc); color:#fff; opacity:1; }
 main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
 article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
@@ -37,7 +42,6 @@ pre code { background:none; color:inherit; padding:0; }
 .meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
 ul { padding-left: 1.2rem; }
 input[type=checkbox] { margin-right:.4rem; }
-footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; }
 @media (max-width: 800px) {
   body { grid-template-columns: 1fr; }
   nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
@@ -46,25 +50,27 @@ footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px;
 </head>
 <body>
 <nav class="side"><a class="brand" href="index.html">H133 板件</a>
-<a class="item " href="index.html">首页</a>
+<a class="item home" href="index.html">首页</a>
 <div class="sec">板件</div>
-<a class="item " href="项目/JL_M101.html">JL_M101</a>
-<a class="item " href="项目/JYY070.html">JYY070</a>
-<a class="item " href="项目/LQ140M1JW61.html">LQ140M1JW61</a>
+<a class="item board" href="项目/JL_M101.html">JL_M101</a>
+<a class="item board" href="项目/JYY070.html">JYY070</a>
+<a class="item board" href="项目/LQ140M1JW61.html">LQ140M1JW61</a>
+<div class="sub">
 <a class="item cat" href="项目/LQ140M1JW61/记录.html">记录</a>
 <a class="item cat" href="项目/LQ140M1JW61/外设.html">外设</a>
 <a class="item cat" href="项目/LQ140M1JW61/修复.html">修复</a>
 <a class="item cat current" href="项目/LQ140M1JW61/资料.html">资料</a>
-<a class="item " href="项目/LQ190.html">LQ190</a>
-<a class="item " href="项目/ZS101.html">ZS101</a>
-<a class="item " href="项目/p1_emmc_LQ140M1JW61.html">p1_emmc_LQ140M1JW61</a>
-<a class="item " href="项目/p1_nor_4k.html">p1_nor_4k</a></nav>
+</div>
+<a class="item board" href="项目/LQ190.html">LQ190</a>
+<a class="item board" href="项目/ZS101.html">ZS101</a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html">p1_emmc_LQ140M1JW61</a>
+<a class="item board" href="项目/p1_nor_4k.html">p1_nor_4k</a></nav>
 <main>
 <article>
 
 <h1>LQ140M1JW61 · 资料</h1><p><a href="项目/LQ140M1JW61.html">回板件概览</a></p><ul><li>暂无。在笔记里写「资料：路径」。文件在工程仓库里，不在本站。</li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 02:17 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 02:25 UTC</footer>
 </main>
 </body>
 </html>
