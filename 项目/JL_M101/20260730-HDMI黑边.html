@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>HDMI 同显 1:1 黑边 · H133 板件</title>
-<style>/* nav-v11 */ 
+<style>/* nav-v12 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -21,15 +21,16 @@ nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decorati
 nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
 nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
   border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
-  background:transparent; box-sizing:border-box; line-height:1; }
-nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
 nav.side a.item:hover { background:rgba(127,127,127,.12); }
 nav.side a.item.home { font-weight:600; }
 nav.side a.item.board { font-weight:650; }
 nav.side a.item.current,
 nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
-nav.side a.item.current .txt,
-nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
 nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
 nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
 nav.side a.item.cat { padding-left:10px; color:var(--muted); }
@@ -57,49 +58,36 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v11</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v12</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
 <div class="sub">
 <a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
-<a class="item child" href="项目/JL_M101/20260831-GPADC三键.html"><span class="txt">GPADC 三键识别</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">20260720-JL_M101-JD9365DA-MIPI适配 · JL-M101 JD9365DA MIPI 适配 — 开发记录</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">02 — Panel 驱动与京龙 init</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">03 — DTS、时序与背光 PWM</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑（到完整出图）</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/README.html"><span class="txt">20260722-JL_M101-板件新建与MIPI显示定稿 · JL-M101 板件新建与 MIPI 显示定稿 — 文档索引</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/README.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 文档索引</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 开发记录</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/README.html"><span class="txt">20260831-三键识别 · GPADC 三键识别</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">20260831-三键识别 · 如何改 GPADC 电阻按键配置</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">20260831-三键识别 · GPADC 按键识别 — 开发记录</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">20260831-三键识别 · GPADC 测试方法</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/README.html"><span class="txt">GPADC电阻按键 · GPADC 电阻按键</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/README.html"><span class="txt">开发记录 · JL-M101 JD9365DA MIPI — 文档索引</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/README.html"><span class="txt">20260825-三路旋转控制 · 三路旋转控制（定稿）</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/patches/README.html"><span class="txt">patches · 三路旋转 — 新板对照补丁</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">20260825-三路旋转控制 · 如何改 HDMI / UI / 视频旋转</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">20260825-三路旋转控制 · HDMI / UI / 视频三路旋转 — 开发记录</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/README.html"><span class="txt">显示旋转 · 显示旋转（架构级）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">MIPI 适配</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">MIPI 定稿 · 总览</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">MIPI 定稿 · 新建板件</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">MIPI 定稿 · Panel init</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">MIPI 定稿 · DTS 背光</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">MIPI 定稿 · 实机踩坑</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">MIPI 定稿 · 编译验收</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">GSL3670 触摸</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">GPADC 三键 · 怎么改</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">GPADC 三键</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">GPADC 三键 · 怎么测</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">三路旋转 · 怎么改</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">三路旋转</span></a>
 <a class="item cat" href="项目/JL_M101/外设.html"><span class="txt">外设</span></a>
-<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">GPADC 电阻按键</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">GPADC 按键</span></a>
 <a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
-<a class="item child current" href="项目/JL_M101/20260730-HDMI黑边.html"><span class="txt">HDMI 同显 1:1 黑边</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/README.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显：DE1 linebuf 超宽 1:1 黑边</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显 DE1 linebuf：超宽 YUV「1:1」黑边</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/README.html"><span class="txt">系统BUG修复 · 系统 BUG 修复（跨板公共内核）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">HDMI 黑边</span></a>
 <a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
-<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1)</span></a>
-<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">D101Q45A15</span></a>
-<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670_DataSheet_Chinese_RevA2.2</span></a>
-<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">JL-M101B196-P21WX-M402632 规格书V1.0</span></a>
-<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">conf_3670(3)</span></a>
-<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">屏 init</span></a>
+<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">屏 D101</span></a>
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
+<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">屏规格书</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
 </div>
 <a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
 <a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
@@ -118,7 +106,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <li>回归：同显 1:1 无黑边</li>
 </ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 07:01 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 08:13 UTC</footer>
 </main>
 <script>
 (function () {

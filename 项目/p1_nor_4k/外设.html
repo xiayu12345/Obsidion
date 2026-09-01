@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>p1_nor_4k · 外设 · H133 板件</title>
-<style>/* nav-v11 */ 
+<style>/* nav-v12 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -21,15 +21,16 @@ nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decorati
 nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
 nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
   border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
-  background:transparent; box-sizing:border-box; line-height:1; }
-nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
 nav.side a.item:hover { background:rgba(127,127,127,.12); }
 nav.side a.item.home { font-weight:600; }
 nav.side a.item.board { font-weight:650; }
 nav.side a.item.current,
 nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
-nav.side a.item.current .txt,
-nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
 nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
 nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
 nav.side a.item.cat { padding-left:10px; color:var(--muted); }
@@ -57,7 +58,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v11</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v12</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -69,30 +70,26 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sub">
 <a class="item cat" href="项目/p1_nor_4k/记录.html"><span class="txt">记录</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/00-总览.html"><span class="txt">00 — 总览</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/02-HDMI-4K-DTS与setting.html"><span class="txt">02 — HDMI 4K DTS 与 setting.ini</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/03-编译与验收.html"><span class="txt">03 — 编译与验收</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/README.html"><span class="txt">20260723-p1_nor_4k-板件新建与HDMI4K分离 · p1_nor_4k 板件新建与 HDMI 4K 分离 — 文档索引</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/README.html"><span class="txt">patches · patches — p1_nor_4k 板件新建</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/patches/README.html"><span class="txt">patches · patches — p1_nor_4k HDMI 1080p fb0 对齐</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.html"><span class="txt">20260724-p1_nor_4k-HDMI1080p-fb0对齐 · p1_nor_4k：HDMI 1080p + fb0 与输出 1:1</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解/开发记录.html"><span class="txt">CMA与lv_img_header-4K硬解 · p1_nor_4k：CMA 与 lv_img_header（4K 硬解）开发记录</span></a>
-<a class="item child" href="项目/p1_nor_4k/开发记录/README.html"><span class="txt">开发记录 · p1_nor_4k 开发记录</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/00-总览.html"><span class="txt">HDMI 4K 分离 · 总览</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.html"><span class="txt">HDMI 4K 分离 · 新建板件</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/02-HDMI-4K-DTS与setting.html"><span class="txt">HDMI-4K-DTS与setting</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/03-编译与验收.html"><span class="txt">HDMI 4K 分离 · 编译验收</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.html"><span class="txt">HDMI 1080p</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解/开发记录.html"><span class="txt">CMA 硬解</span></a>
 <a class="item cat current" href="项目/p1_nor_4k/外设.html"><span class="txt">外设</span></a>
 <a class="item cat" href="项目/p1_nor_4k/修复.html"><span class="txt">修复</span></a>
 <a class="item cat" href="项目/p1_nor_4k/资料.html"><span class="txt">资料</span></a>
-<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI透传卡顿与raw-DMA修复.html"><span class="txt">H133-HDMI透传卡顿与raw-DMA修复</span></a>
-<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.html"><span class="txt">H133-HDMI音频透传-与官方补丁差异及问题反馈</span></a>
-<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传架构.html"><span class="txt">H133 HDMI 音频透传方案</span></a>
-<a class="item child" href="项目/p1_nor_4k/资料/杜比透传-开发笔记.html"><span class="txt">杜比/DTS HDMI·SPDIF 透传 开发笔记</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI透传卡顿与raw-DMA修复.html"><span class="txt">透传卡顿修复</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.html"><span class="txt">透传差异</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传架构.html"><span class="txt">透传架构</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/杜比透传-开发笔记.html"><span class="txt">杜比透传</span></a>
 </div></nav>
 <main>
 <article>
 
 <h1>p1_nor_4k · 外设</h1><p><a href="项目/p1_nor_4k.html">回板件概览</a></p><ul><li>暂无。YAML 写 <code>kind: peripheral</code>。</li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 07:01 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 08:13 UTC</footer>
 </main>
 <script>
 (function () {
