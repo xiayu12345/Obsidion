@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>ZS101 · 资料 · H133 板件</title>
-<style>/* nav-v12 */ 
+<style>/* nav-v13 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -33,8 +33,12 @@ nav.side a.item.board.current .txt,
 nav.side a.item.home.current .txt { transform:scale(1.08); }
 nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
 nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
 nav.side a.item.cat { padding-left:10px; color:var(--muted); }
-nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
@@ -58,7 +62,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v12</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v13</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -67,13 +71,23 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
 <a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
 <div class="sub">
+<div class="group">
 <a class="item cat" href="项目/ZS101/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
 <a class="item child" href="项目/ZS101/开发记录/20260817-纽曼ZS101-资料梳理与待确认/README.html"><span class="txt">资料梳理</span></a>
 <a class="item child" href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮/开发记录.html"><span class="txt">MIPI 点亮</span></a>
 <a class="item child" href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配/开发记录.html"><span class="txt">GT928 触摸</span></a>
+</div>
+</div>
+<div class="group">
 <a class="item cat" href="项目/ZS101/外设.html"><span class="txt">外设</span></a>
+</div>
+<div class="group">
 <a class="item cat" href="项目/ZS101/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group open">
 <a class="item cat current" href="项目/ZS101/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
 <a class="item child" href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html"><span class="txt">触摸规格</span></a>
 <a class="item child" href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html"><span class="txt">GT928 配置</span></a>
 <a class="item child" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html"><span class="txt">NI4042J4H8II-B</span></a>
@@ -82,6 +96,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item child" href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html"><span class="txt">主板原理图</span></a>
 <a class="item child" href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html"><span class="txt">新代码02群创10.1+ILI9881C-0D_2P_20190920</span></a>
 </div>
+</div>
+</div>
 <a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
 <main>
@@ -89,7 +105,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>ZS101 · 资料</h1><p><a href="项目/ZS101.html">回板件概览</a></p><ul><li><a href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html">触摸规格</a></li><li><a href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html">GT928 配置</a></li><li><a href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html">NI4042J4H8II-B</a></li><li><a href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html">位号图</a></li><li><a href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html">测试报告</a></li><li><a href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html">主板原理图</a></li><li><a href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html">新代码02群创10.1+ILI9881C-0D_2P_20190920</a></li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 08:13 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 08:46 UTC</footer>
 </main>
 <script>
 (function () {
@@ -117,9 +133,32 @@ input[type=checkbox] { margin-right:.4rem; }
     prefetch();
   }
   function bind() {
-    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
       a.addEventListener("click", onNav);
     });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
   }
   function mark(a) {
     document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
