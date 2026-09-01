@@ -20,8 +20,7 @@ nav.side a.item.board { font-weight:650; }
 nav.side a.item.current,
 nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
 nav.side a.item.current .txt,
-nav.side a.item.current:hover .txt,
-nav.side a.item.board.on .txt { transform:scale(1.12); }
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
 nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
 nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
 nav.side a.item.cat { padding-left:10px; color:var(--muted); }
