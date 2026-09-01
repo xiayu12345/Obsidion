@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 · 修复 · H133 板件</title>
-<style>/* nav-v9 */ 
+<style>/* nav-v10 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -57,16 +57,40 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v9</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
 <a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
 <div class="sub">
 <a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">00 — 背景与路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">01 — Kernel Panel 驱动</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">02 — U-Boot Panel / 启动 Logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">03 — DTS 切换 LVDS</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">04 — App 层与 sunxifb 统一路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">05 — HDMI 异显 dual_display_rot</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">06 — 编译与实机验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">07 — DE0 硬件缩放 1280×800 → 1024×600</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.html"><span class="txt">20260708-JYY070-LVDS显示开发 · JYY070 LVDS 显示开发 — 文档索引</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">20260708-JYY070-LVGL显示不旋转 · JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">20260713-JYY070-8733BU-WiFi适配 · JYY070 RTL8733BU WiFi 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">20260714-JYY070-视频小窗全屏rect双板兼容 · JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">20260714-双板串编验证 · 双板串编验证脚本（个人用，非 SDK tools）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">20260717-JYY070-默认HDMI音频 · JYY070 默认声音输出切 HDMI — 补丁</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/README.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射（定稿）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/README.html"><span class="txt">GSL触摸坐标映射 · GSL 触摸坐标映射（架构级）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/README.html"><span class="txt">开发记录 · p1_nor_JYY070 开发记录索引</span></a>
 <a class="item cat" href="项目/JYY070/外设.html"><span class="txt">外设</span></a>
 <a class="item cat current" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
 <a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">p1_nor_JYY070主板测试报告(2)(2)(1)</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">本板资料说明</span></a>
 </div>
 <a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
 <a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
@@ -78,7 +102,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>JYY070 · 修复</h1><p><a href="项目/JYY070.html">回板件概览</a></p><ul><li>暂无。YAML 写 <code>kind: fix</code>。</li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 03:11 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
 </main>
 <script>
 (function () {

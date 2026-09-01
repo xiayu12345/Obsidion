@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260811-LQ190-GM8775C-MIPI显示定稿 · 20260811 — LQ190 + GM8775C MIPI 显示定稿 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<div class="sub">
+<a class="item cat" href="项目/LQ190/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/LQ190/开发记录/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.html"><span class="txt">20260807-鸿博LQ190E1LX65-资料梳理与待确认 · 20260807 — 鸿博 LQ190E1LX65 资料梳理与待确认</span></a>
+<a class="item child" href="项目/LQ190/开发记录/20260810-LQ190-背光BL-EN拉高实机验证/README.html"><span class="txt">20260810-LQ190-背光BL-EN拉高实机验证 · 20260810 — LQ190 背光 BL-EN 拉高实机验证</span></a>
+<a class="item child current" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.html"><span class="txt">20260811-LQ190-GM8775C-MIPI显示定稿 · 20260811 — LQ190 + GM8775C MIPI 显示定稿</span></a>
+<a class="item child" href="项目/LQ190/开发记录/README.html"><span class="txt">开发记录 · LQ190 — 文档索引</span></a>
+<a class="item cat" href="项目/LQ190/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/LQ190/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/LQ190/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/LQ190/资料/1280x1024_2024.html"><span class="txt">1280x1024_2024</span></a>
+<a class="item child" href="项目/LQ190/资料/1280x1024_20260811144404.html"><span class="txt">1280x1024_20260811144404</span></a>
+<a class="item child" href="项目/LQ190/资料/GM8775C_SBOARD_1V3.html"><span class="txt">GM8775C_SBOARD_1V3</span></a>
+<a class="item child" href="项目/LQ190/资料/GM8775C数据手册V1.0_20190731.html"><span class="txt">GM8775C数据手册V1.0_20190731</span></a>
+<a class="item child" href="项目/LQ190/资料/HB-SPJ-PTN1101D 1.0 Sch.html"><span class="txt">HB-SPJ-PTN1101D 1.0 Sch</span></a>
+<a class="item child" href="项目/LQ190/资料/LQ190E1LX65_LD-27X08A_20151127_202407011157(1).html"><span class="txt">LQ190E1LX65_LD-27X08A_20151127_202407011157(1)</span></a>
+<a class="item child" href="项目/LQ190/资料/MIPI TO D LVDS V1.2 SCH.html"><span class="txt">MIPI TO D LVDS V1.2 SCH</span></a>
+<a class="item child" href="项目/LQ190/资料/TP-H10_H133 V2.0 2026.6.12.html"><span class="txt">TP-H10_H133 V2.0 2026.6.12</span></a>
+<a class="item child" href="项目/LQ190/资料/接线框图.html"><span class="txt">接线框图</span></a>
+</div>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-08-11</p>
+<h1>20260811 — LQ190 + GM8775C MIPI 显示定稿</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-08-11（出图）；<strong>2026-08-12 灌表修订（消糊）</strong> |</p>
+<p>| 板型 | <strong><code>p1_nor_LQ190</code>（NOR）</strong> |</p>
+<p>| 状态 | <strong>实机显示已正常、清晰</strong>（主机 MIPI 灌表 + DSI 出图） |</p>
+<p>| 板级档案 | <a href="../../../../skills/h133-display/board-profile-p1_nor_LQ190.md">board-profile-p1_nor_LQ190.md</a> |</p>
+<p>---</p>
+<h2>1. 一句话结论</h2>
+<p>Sharp <strong>LQ190E1LX65</strong>（1280×1024 双 LVDS）经转接板 <strong>GM8775C</strong> 接 H133 MIPI；主机用 <strong><code>dsi_gen_wr</code></strong> 灌表（<strong><code>0x27=0xAA</code> 解锁</strong>，<strong><code>0x13=0x63</code></strong>，<strong>LINE 交换保留</strong>，<strong><code>0x2A=0x01</code> 关 BIST</strong>）；桥片 RST 走 <strong>PG2（CTP-RST）</strong>，本板 <strong>不开触摸</strong>。</p>
+<p>---</p>
+<h2>2. 硬件要点</h2>
+<p>| 项 | 定稿 |</p>
+<p>|---|---|</p>
+<p>| 屏 | LQ190E1LX65，1280×1024，双 LVDS 8bit VESA |</p>
+<p>| 桥片 | GM8775C / 资料亦写 GM8875C；转接板 <strong>IIC_TYPE=Slave</strong>，地址 <strong>0x58</strong> |</p>
+<p>| 主机→桥 | MIPI FPC 4-lane；<strong>CTP-SDA/SCK→桥 IIC</strong>；<strong>CTP-RST→桥 RST</strong> |</p>
+<p>| 转接板 LCD_RST | 原理图电阻 <strong>NC</strong>，主控 <strong>PB11 打不到桥片</strong> |</p>
+<p>| 背光 | PB12=PWM0；PG15=<code>lcd_bl_en</code>（已验 3.3V） |</p>
+<p>| 触摸 | <strong>无</strong>；<code>ctp@5d</code> 必须 <code>disabled</code>（否则 GT911 失败会拉 PG2 冲掉桥片表） |</p>
+<p>工具资料：<code>硬件资料/鸿博芯业/转接板资料/</code>、<code>1280x1024_*.txt</code>（与驱动 <code>gm8775_reglist[]</code> 对齐）。</p>
+<p>---</p>
+<h2>3. 软件定稿</h2>
+<p>| 项 | 值 |</p>
+<p>|---|---|</p>
+<p>| panel | <code>lq190_mipi2edp</code>（kernel + uboot 同表） |</p>
+<p>| 灌表 | <code>dsi_clk_enable</code> → <code>dsi_gen_wr</code> 扫表（对齐 JL_M101 写法；<strong>禁止 DSI 读</strong>） |</p>
+<p>| 解锁 | MIPI：<strong><code>0x27=0xAA</code></strong>（IIC 工具里是 <code>0x00=0xAA</code>，勿混用） |</p>
+<p>| <strong>关键寄存器</strong> | <strong><code>0x13=0x63</code></strong>（<strong>禁止</strong>用 <code>0x53</code>：实机会发糊） |</p>
+<p>| BIST | <strong><code>0x2A=0x01</code></strong>（<code>0x5D</code>/<code>0x3D</code> 等为测试图打开态） |</p>
+<p>| LINE 交换 | LINK0/1 均保留实机可用映射（<strong><code>0x14/18=0x34</code></strong> 等；勿改回工具偶发直通） |</p>
+<p>| 时序 DTS | 1280×1024，<code>dclk=108</code>；HFP194/HSW20/HBP194 → <code>hbp=214</code> <code>ht=1688</code>；VFP19/VSW4/VBP19 → <code>vbp=23</code> <code>vt=1066</code> |</p>
+<p>| UI | <code>disp_rotate=0</code>；<code>fb0</code>=1280×1024 直出；Guider 页仍 1280×800 |</p>
+<p>| <code>disp_init_enable</code> | <strong>1</strong> |</p>
+<p>| 桥片 RST | <strong><code>lcd_gpio_0</code>=PG2</strong> |</p>
+<p>关键路径：</p>
+<ul>
+<li><code>kernel/.../lcd/lq190_mipi2edp.c</code></li>
+<li><code>brandy/.../lcd/lq190_mipi2edp.c</code></li>
+<li><code>device/config/chips/h133/configs/p1_nor_LQ190/{linux-5.4/board.dts,uboot-board.dts}</code></li>
+</ul>
+<p>参考灌表（与驱动一致）：</p>
+<ul>
+<li><code>H133-AI-Skills/硬件资料/鸿博芯业/1280x1024_20260811144404.txt</code></li>
+<li><code>H133-AI-Skills/硬件资料/鸿博芯业/1280x1024_2024.txt</code></li>
+</ul>
+<p>---</p>
+<h2>4. 踩坑（根因级）</h2>
+<p>| 现象 | 根因 | 处理 |</p>
+<p>|---|---|---|</p>
+<p>| 软件 open 成功但无图 | 桥片 RST 接 <strong>CTP-RST=PG2</strong>，旧代码拉 PB11 无效；内核 CTP 探失败又 <strong>Process reset</strong> 清表；smooth 不再 <code>panel_init</code> | <code>lcd_gpio_0=PG2</code>；<code>ctp</code> disabled |</p>
+<p>| MIPI 灌了仍像没配 | IIC 解锁 <code>0x00=0xAA</code> 不能当 MIPI 首条；MIPI 必须 <strong><code>0x27=0xAA</code></strong> | 按工具 MIPI 导出 |</p>
+<p>| 开机全是黑白棋盘 | 上位机 BIST 未关（<code>0x2A</code> 非 <code>0x01</code>），内部测试图盖住视频 | 表末 <strong><code>0x2A=0x01</code></strong>；灌前关工具测试模式 |</p>
+<p>| <strong>UI/字发糊、边缘发虚</strong> | 灌表 <strong><code>0x13=0x53</code></strong> 不对（20260811 初稿） | <strong>改为 <code>0x13=0x63</code></strong>（2026-08-12 实机确认消糊） |</p>
+<p>| 调屏时 CH341 灌不上 | 主机 DSI/RST 抢桥片 | 临时 BL-only / <code>lcd_used</code> 关显；灌完再恢复出图路径 |</p>
+<p>说明：JL_M101 的 <code>dsi_gen_wr</code> 写法可参考，但 <strong>JD9365 是真 MIPI 屏</strong>，GM8775 是桥片，RST/解锁/BIST/<code>0x13</code> 约束不同。</p>
+<p>---</p>
+<h2>5. 验收</h2>
+<ul>
+<li><input type="checkbox" disabled checked /> U-Boot 有 <code>panel_init dsi_gen_wr (0x13=0x63, swap keep, BIST off)</code>，<code>LCD open finish</code></li>
+<li><input type="checkbox" disabled checked /> 背光亮，系统 UI 正常（非彩条/棋盘格）</li>
+<li><input type="checkbox" disabled checked /> <strong>画面清晰，无整体发糊</strong>（<code>0x13=0x63</code>）</li>
+<li><input type="checkbox" disabled checked /> 无 GTP/<code>0x5d</code> 复位风暴</li>
+<li><input type="checkbox" disabled /> <code>setting.ini</code> 视频窗坐标仍残留竖屏 800×1280 克隆值（不影响本次出图；后续可按 1280×1024 改）</li>
+<li><input type="checkbox" disabled /> UI 仍为 Guider 1280×800 资源嵌在 1280×1024；低 PPI 下点阵观感与桥片发糊不同，勿混为一谈</li>
+</ul>
+<p>---</p>
+<h2>6. 编译</h2>
+<pre><code>./tools/build_p1_nor_LQ190.sh kernel   # 或 full
+# 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img</code></pre>
+<p>| 镜像说明 | md5（以当次 <code>md5sum</code> 为准） |</p>
+<p>|---|---|</p>
+<p>| 2026-08-11 初稿出图（<code>0x13=0x53</code>，可糊） | <code>ba6b9a14144a46cf9544711873f6b601</code> |</p>
+<p>| <strong>2026-08-12 定稿清晰（<code>0x13=0x63</code>）</strong> | <strong><code>2ab2ac2697d27072dba4fa7e064427f9</code></strong> |</p>
+<p>---</p>
+<h2>7. 补丁（定稿，相对无 LQ190 干净基线）</h2>
+<p>路径：<a href="./patches/">patches/</a></p>
+<p>| 文件 | 内容 |</p>
+<p>|---|---|</p>
+<p>| <code>01-kernel-uboot-panel.patch</code> | 内核+U-Boot <code>lq190_mipi2edp</code>（MIPI 灌表）+ 注册 + defconfig |</p>
+<p>| <code>02-board-tree.patch</code> | <code>p1_nor_LQ190</code> + OpenWrt target + <code>build_p1_nor_LQ190.sh</code>（含 1280×1024 / RST=PG2 / CTP off） |</p>
+<p>| <code>03-shared-hooks.patch</code> | 兄弟板 <code>LQ190</code> not-set |</p>
+<p>| <code>04-docs.patch</code> | 本定稿文档 + board-profile + LQ190 索引 |</p>
+<p>| <code>lq190-display-final.patch</code> | 以上合并（<strong>干净树一键落地用这个</strong>） |</p>
+<p>| <code>apply-lq190-display-final.sh</code> | 应用 |</p>
+<p>| <code>gen-lq190-display-final-patch.sh</code> | 从当前树重生成 |</p>
+<pre><code># 干净 SDK 根目录
+bash H133-AI-Skills/开发记录/板件开发记录/LQ190/20260811-LQ190-GM8775C-MIPI显示定稿/patches/apply-lq190-display-final.sh
+
+# 分段 / dry-run
+bash …/patches/apply-lq190-display-final.sh 01
+bash …/patches/apply-lq190-display-final.sh --check
+
+# 重生成（已有出图树时；须含 0x13=0x63）
+bash …/patches/gen-lq190-display-final-patch.sh</code></pre>
+<p><code>bootlogo.bmp</code> 不进补丁；apply 时若缺失会从 <code>p1_nor_LQ140M1JW61</code> 复制。</p>
+<p>> 若树里<strong>已经</strong>有 LQ190 板（当前出图树），<code>--check</code> / 再 apply 会报 already exists，属正常。</p>
+<p>---</p>
+<p>*2026-08-11：实机出图；文档与 final 补丁同步。*  </p>
+<p>*2026-08-12：确认 <code>0x13=0x63</code> 消糊；灌表 txt / 文档 / board-profile 修订为当前定稿；驱动内旧表备份已删除。*</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

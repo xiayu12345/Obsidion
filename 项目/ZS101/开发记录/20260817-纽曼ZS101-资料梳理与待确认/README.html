@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260817-纽曼ZS101-资料梳理与待确认 · 20260817 — 纽曼 ZS101NI4042 资料梳理 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<div class="sub">
+<a class="item cat" href="项目/ZS101/记录.html"><span class="txt">记录</span></a>
+<a class="item child current" href="项目/ZS101/开发记录/20260817-纽曼ZS101-资料梳理与待确认/README.html"><span class="txt">20260817-纽曼ZS101-资料梳理与待确认 · 20260817 — 纽曼 ZS101NI4042 资料梳理</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮/README.html"><span class="txt">20260825-ZS101-ILI9881C-MIPI显示点亮 · ZS101 ILI9881C MIPI 显示点亮 — 文档索引</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮/开发记录.html"><span class="txt">20260825-ZS101-ILI9881C-MIPI显示点亮 · 20260825 — ZS101 ILI9881C MIPI 显示点亮</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配/README.html"><span class="txt">20260827-ZS101-GT928触摸适配 · ZS101 GT928 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配/开发记录.html"><span class="txt">20260827-ZS101-GT928触摸适配 · ZS101 GT928 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/ZS101/开发记录/README.html"><span class="txt">开发记录 · ZS101 — 文档索引</span></a>
+<a class="item cat" href="项目/ZS101/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/ZS101/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/ZS101/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html"><span class="txt">FXT101041-MN-A1电容屏规格书(客户型号VP01)</span></a>
+<a class="item child" href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html"><span class="txt">FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本</span></a>
+<a class="item child" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html"><span class="txt">ZS101NI4042J4H8II-B</span></a>
+<a class="item child" href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html"><span class="txt">ZX30-D618-H133-V1_位号图</span></a>
+<a class="item child" href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html"><span class="txt">p1_nor_ZS101主板测试报告</span></a>
+<a class="item child" href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html"><span class="txt">zx30-d618-h133-v1_0730</span></a>
+<a class="item child" href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html"><span class="txt">新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920</span></a>
+</div>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-08-17</p>
+<h1>20260817 — 纽曼 ZS101NI4042 资料梳理</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-08-17 |</p>
+<p>| 板型 | <strong><code>p1_nor_ZS101</code>（NOR，已确认）</strong> |</p>
+<p>| 基线 | <strong><code>p1_nor_JL_M101</code>（已确认）</strong> |</p>
+<p>| 状态 | <strong>板件已克隆</strong>（2026-08-17）；<strong>点亮见 <a href="../20260825-ZS101-ILI9881C-MIPI显示点亮/">20260825</a></strong> |</p>
+<p>| 资料目录 | <code>H133-AI-Skills/硬件资料/纽曼/</code> |</p>
+<p>---</p>
+<h2>1. 一句话结论</h2>
+<p>纽曼屏是 <strong>中深 ZS101NI4042J4H8II-B：10.1" 800×1280 MIPI 4-lane + ILI9881C</strong>，直连 SoC DSI，不是桥片。  </p>
+<p>规格书扫描方向是 <strong>横 800 / 竖 1280</strong>（模组外形 143×228.6，竖条），和京龙 JL_M101 同类。  </p>
+<p>产品横屏 UI → <strong><code>disp_rotate=3</code></strong>；HDMI 同理 <strong><code>dual_display_rot=3</code></strong>（缺省已是 3）、<strong><code>VIDEO_WB_MIRROR_ROTATE=90</code></strong>。</p>
+<p>---</p>
+<h2>2. 硬件资料摘要</h2>
+<h3>2.1 屏：ZS101NI4042J4H8II-B</h3>
+<p>| 项 | 值 | 来源 |</p>
+<p>|---|---|---|</p>
+<p>| 型号 | 中深 <strong>ZS101NI4042J4H8II-B</strong>（Innolux T2 10.1"） | 规格书封面 |</p>
+<p>| 尺寸 | 10.1"；外形 <strong>143×228.6×2.5 mm</strong>；AA 135.36×216.58 | 规格书 §1 / 模组图 |</p>
+<p>| 分辨率 | <strong>800(RGB)×1280</strong> | 页脚 / §1 Number of Dots |</p>
+<p>| 接口 | <strong>MIPI 4-lane</strong>（pin8–21：D0/D1/CK/D2/D3） | §5 |</p>
+<p>| IC | <strong>ILI9881C</strong>（规格书未写型号；init <code>0xFF,0x98,0x81</code>） | 厂商 <code>.c</code> 文件名 |</p>
+<p>| 供电 | VCI <strong>3.3V</strong> typ；RST 2.8–3.6V typ 3.3V | §3 / §5 pin5 |</p>
+<p>| 背光 | LED+/LED−，<strong>12V / 180mA</strong>（4S8P）；屏上 PWM0 脚 <strong>NC</strong> | §3.1 / pin27、31–32、39–40 |</p>
+<p>| 视角 | Full View（IPS） | §1 |</p>
+<p>规格书：<code>硬件资料/纽曼/ZS101NI4042J4H8II-B.pdf</code></p>
+<h3>2.2 时序（规格书 §6.1，Rev 1.2）</h3>
+<p>| Vendor | 值 | Allwinner |</p>
+<p>|---|---|---|</p>
+<p>| HSA / HBP / HFP / X | 16 / 60 / 60 / 800 | <code>hspw=16</code> <code>hbp=76</code> <code>ht=936</code> |</p>
+<p>| VSA / VBP / VFP / Y | 4 / 10 / 10 / 1280 | <code>vspw=4</code> <code>vbp=14</code> <code>vt=1304</code> |</p>
+<p>| 校验 | HT=936、VT=1304 | 与表一致 |</p>
+<p>| dclk | 规格书无像素钟 | 60Hz 估算 <strong>73 MHz</strong>（<code>936×1304×60</code>） |</p>
+<p>| DSI | 4-lane video，non-burst + sync pulses | <code>lcd_if=4</code> <code>lane=4</code> <code>dsi_if=0</code> |</p>
+<h3>2.3 Init</h3>
+<p><code>硬件资料/纽曼/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.c</code></p>
+<ul>
+<li>页切换 <code>DCS_Long_Write_3P(0xFF,0x98,0x81,page)</code> → ILI9881</li>
+<li><code>SSD_LANE(4,0)</code>；收尾 <code>0x11</code> delay 120ms、<code>0x29</code> delay 20ms</li>
+<li><code>SSD_MODE(0,1)</code>：video non-burst sync pulses + HS</li>
+<li>文件头 <code>Set_POWER(1.8/2.8/5V)</code> 是点屏夹具，H133 上不用</li>
+<li>注释写过 <code>HX8394D</code>，与 <code>0xFF 0x98 0x81</code> 不符，以 ILI9881C 为准</li>
+</ul>
+<p>树内已有 Allwinner 样例 <code>ili9881c.c</code>（init 不同，无板启用、Kconfig 甚至无条目）。<strong>一屏一驱动</strong>：新建 <code>zs101_ili9881c</code>，不改该样例。</p>
+<h3>2.4 主板</h3>
+<p><code>硬件资料/纽曼/纽曼h133主板：ZX30-D618-H133.rar</code>（RAR5，当前环境未解开）。  </p>
+<p>RESET/PWM 克隆期先继承京龙 s10：<strong>PB11=RST、PB12=PWM0@50kHz</strong>；原理图解开后复核。</p>
+<p>触摸：当时无 TP 资料。定稿见 <a href="../20260827-ZS101-GT928触摸适配/">20260827 GT928</a>。</p>
+<p>---</p>
+<h2>3. 旋转（规格书，非抄京龙习惯）</h2>
+<p>规格书把 <strong>800 标成 Horizontal Display、1280 标成 Vertical Display Area</strong>，模组图短边 143 / 长边 228.6。  </p>
+<p>结论：<strong>面板原生竖屏 800×1280</strong>（和 LQ140/LQ190 那种原生横屏不同）。</p>
+<p>产品要横屏 UI / 横屏 HDMI，必须软旋：</p>
+<p>| 链路 | 值 | 理由 |</p>
+<p>|---|---|---|</p>
+<p>| <code>fb0</code> | <strong>800×1280</strong> | 跟物理 <code>lcd_x/y</code>，不做 DE 把 fb 转成 1280×800 |</p>
+<p>| UI <code>disp_rotate</code> | <strong>3</strong>（270°） | LVGL 逻辑 <strong>1280×800</strong> |</p>
+<p>| HDMI <code>dual_display_rot</code> | <strong>3</strong> | WB 抓竖屏 DE0 → 横屏 HDMI；属性缺省已是 3 |</p>
+<p>| 视频 <code>VIDEO_WB_MIRROR_ROTATE</code> | <strong>90</strong> | 与 8733 / JL_M101 竖屏 MIPI 一致 |</p>
+<p>| <code>tp_rotate</code> | <strong>0</strong> | 触摸定稿见 <a href="../20260827-ZS101-GT928触摸适配/">20260827 GT928</a>（<code>revert_y=1</code>，仍 <code>tp_rotate=0</code>） |</p>
+<p>HDMI 本身是横屏输出（基线 <code>screen1</code> 1080p），要旋的是 <strong>从竖屏主显镜像过去的那帧</strong>，不是把 HDMI 时序改成 800×1280。</p>
+<p>---</p>
+<h2>4. 与基线对照</h2>
+<p>| 项 | <code>p1_nor_JL_M101</code> | 本板应有 |</p>
+<p>|---|---|---|</p>
+<p>| 分辨率 / lane | 800×1280 / 4 | <strong>同</strong>（porch/dclk/init 不同） |</p>
+<p>| panel | <code>jl_m101_jd9365da</code> | <strong><code>zs101_ili9881c</code></strong> |</p>
+<p>| <code>disp_rotate</code> / WB / HDMI rot | 3 / 90 / 缺省 3 | <strong>同</strong>（规格书原生竖屏） |</p>
+<p>| RESET / PWM | PB11 / PB12 PWM0 | 克隆先继承；主板 rar 后复核 |</p>
+<p>| WiFi | RTL8733BU | 继承 |</p>
+<p>| 存储 | NOR | <strong>NOR</strong> |</p>
+<p>---</p>
+<h2>5. 克隆已落地（2026-08-17）</h2>
+<p>从 <code>p1_nor_JL_M101</code> 克隆 <code>p1_nor_ZS101</code>：独立 <code>zs101_ili9881c</code>、本板 DTS 时序/<code>dclk=73</code>、<code>disp_rotate=3</code>、<code>dual_display_rot=3</code>、WB=90、调屏期 U-Boot <code>disp_init_enable=0</code>。CTP 先 disabled。</p>
+<p>编译：<code>./tools/build_p1_nor_ZS101.sh kernel</code>（或 <code>full</code>）。</p>
+<p><strong>禁止</strong>：改兄弟板 DTS、改 <code>default_panel.c</code> / 现有 <code>ili9881c.c</code>、改 <code>generated/</code>。点亮见 <a href="../20260825-ZS101-ILI9881C-MIPI显示点亮/">20260825</a>。</p>
+<p>---</p>
+<h2>6. 已确认 / 仍待</h2>
+<p>| # | 问题 | 状态 |</p>
+<p>|---|---|---|</p>
+<p>| 1 | 存储 | <strong>NOR（<code>p1_nor_ZS101</code>）</strong> |</p>
+<p>| 2 | 基线 | <strong><code>p1_nor_JL_M101</code></strong> |</p>
+<p>| 3 | UI / HDMI 旋转 | <strong>规格书原生竖屏 → rot=3 / dual_display_rot=3 / WB=90</strong> |</p>
+<p>| 4 | RESET / 背光脚 | 克隆先跟京龙 PB11/PB12；主板 rar 未解 |</p>
+<p>| 5 | 触摸 | 无资料，本阶段不做（CTP disabled） |</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

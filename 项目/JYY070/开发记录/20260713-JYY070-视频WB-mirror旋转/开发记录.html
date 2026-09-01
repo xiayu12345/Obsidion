@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">00 — 背景与路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">01 — Kernel Panel 驱动</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">02 — U-Boot Panel / 启动 Logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">03 — DTS 切换 LVDS</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">04 — App 层与 sunxifb 统一路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">05 — HDMI 异显 dual_display_rot</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">06 — 编译与实机验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">07 — DE0 硬件缩放 1280×800 → 1024×600</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.html"><span class="txt">20260708-JYY070-LVDS显示开发 · JYY070 LVDS 显示开发 — 文档索引</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">20260708-JYY070-LVGL显示不旋转 · JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">20260713-JYY070-8733BU-WiFi适配 · JYY070 RTL8733BU WiFi 适配 — 开发记录</span></a>
+<a class="item child current" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">20260714-JYY070-视频小窗全屏rect双板兼容 · JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">20260714-双板串编验证 · 双板串编验证脚本（个人用，非 SDK tools）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">20260717-JYY070-默认HDMI音频 · JYY070 默认声音输出切 HDMI — 补丁</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/README.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射（定稿）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/README.html"><span class="txt">GSL触摸坐标映射 · GSL 触摸坐标映射（架构级）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/README.html"><span class="txt">开发记录 · p1_nor_JYY070 开发记录索引</span></a>
+<a class="item cat" href="项目/JYY070/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">p1_nor_JYY070主板测试报告(2)(2)(1)</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">本板资料说明</span></a>
+</div>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-13</p>
+<h1>JYY070 视频 WB mirror 旋转角 — 开发记录</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-13 |</p>
+<p>| 板型 | <code>p1_nor_JYY070</code> |</p>
+<p>| 关联板型 | <code>p1_nor</code>、<code>p1_nor_8733</code>（保持 <code>VIDEO_WB_MIRROR_ROTATE=90</code>） |</p>
+<p>| 需求 | JYY070 播视频不再多转 90°，与 UI 横屏 1280×800（不软旋）一致 |</p>
+<p>| 补丁 | <a href="./jyy070-video-wb-mirror-rotate.patch">jyy070-video-wb-mirror-rotate.patch</a> |</p>
+<p>| 前置 | UI 现由 <code>setting.ini</code> <code>disp_rotate=0</code> 控制（见 <a href="../../../../skills/h133-display/board-profile-p1_nor_JYY070.md">板级档案</a>）；本补丁只定视频宏 |</p>
+<p>| 定稿 | JYY070：<code>VIDEO_WB_MIRROR_ROTATE=0</code>；p1_nor / 8733：<code>90</code>（与远端 <code>tp_good_xia_jyy070</code> 一致） |</p>
+<p>---</p>
+<h2>1. 背景</h2>
+<p>JYY070 实机现象：<strong>LVGL 界面方向正确，TPlayer 视频仍被旋转 90°</strong>。</p>
+<p>UI 与视频是两条独立链路：</p>
+<p>| 链路 | 配置入口 | JYY070 取值 |</p>
+<p>|---|---|---|</p>
+<p>| UI（LVGL / sunxifb） | <code>setting.ini</code> <code>disp_rotate</code>（<code>lv_orient_disp_rotate_boot</code>） | <code>0</code>（不软旋） |</p>
+<p>| 视频（TPlayer DE 层） | <code>libtmedia/Makefile</code> → <code>VIDEO_WB_MIRROR_ROTATE</code> | <code>0</code>（本补丁） |</p>
+<p>应用层 <code>TPlayerSetRotate(0)</code>（如 <code>ktv_player_ui.c</code>）只关播放器 G2D 旋转，<strong>不能</strong>覆盖 WB mirror 路径里的 <code>DispNvRotate90</code>。</p>
+<p>---</p>
+<h2>2. 根因</h2>
+<p><strong>文件：</strong> <code>platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></p>
+<ol>
+<li><code>LayerCreate()</code> 写死 <code>disp_screen = 1</code>（WB mirror：视频只送 DE0/MIPI，HDMI 镜像 DE0 合成）</li>
+<li><code>SetLayerParam()</code> → <code>dualDispPreparePerScreen()</code> → 原逻辑对 <code>disp_screen==1</code> <strong>固定</strong> <code>DispNvRotate90()</code>（CPU 90°）</li>
+<li><code>cedarx.conf</code> 的 <code>g2d_rotate_flag</code>、<code>dual_disp_mipi_rotate</code> 等为 0，不是主因</li>
+</ol>
+<pre><code>解码帧 (横屏 NV21)
+  → SetLayerParam
+  → dualDispPreparePerScreen（改前：无条件 DispNvRotate90）
+  → per_screen_* → queueToDisplay → DE0(MIPI)
+  → HDMI WB 镜像</code></pre>
+<p>---</p>
+<h2>3. 放弃的方案</h2>
+<p>| 方案 | 不采用原因 |</p>
+<p>|---|---|</p>
+<p>| <code>cedarx.conf</code> 改 <code>dual_disp_mipi_rotate</code> | 运行时配置，板型差异难维护；与编译期板型选型不一致 |</p>
+<p>| <code>rc.final</code> sed 改配置 | 权宜之计，非根治 |</p>
+<p>| <code>libcedarx/Makefile</code> + <code>set_cedar_conf.sh</code> 注入 | 同上，已撤销 |</p>
+<p>| 板型宏 <code>BOARD_P1_NOR_JYY070</code> + C 内映射 | 用户要求用<strong>角度</strong>命名，不用板型宏 |</p>
+<p>| Makefile 开 <code>VIDEO_WB_MIRROR_ROTATE_90</code> / <code>_0</code> 选型宏，C 再映射成数值 | 多一层间接，与 <code>sunxifb.mk</code> 的 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code> 风格不一致 |</p>
+<p>---</p>
+<h2>4. 最终实现</h2>
+<h3>4.1 编译宏（按 target 传角度，与 UI 对齐）</h3>
+<p><strong><code>openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile</code></strong></p>
+<pre><code># WB mirror CPU 旋转角（度）；对齐 sunxifb LV_PROJECTOR_DISP_ROTATE
+ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733),y)
+TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+endif
+ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
+TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=0
+endif</code></pre>
+<p><strong><code>openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk</code>：</strong> UI 双板 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code> <strong>不进树</strong>（见 LVGL 不旋转双板补丁）；本记录补丁若含该 hunk，与当前最小 UI 树互斥，打补丁时跳过或先恢复头文件默认 3。</p>
+<h3>4.2 <code>tlayer_ctrl.c</code> 消费宏</h3>
+<p><strong>顶部：</strong> 未定义时默认 0，不再维护 <code>_90</code>/<code>_0</code> 选型宏映射块。</p>
+<pre><code>#ifndef VIDEO_WB_MIRROR_ROTATE
+#define VIDEO_WB_MIRROR_ROTATE 0
+#endif</code></pre>
+<p><strong><code>dualDispPreparePerScreen()</code> 按角度分支：</strong></p>
+<p>| <code>VIDEO_WB_MIRROR_ROTATE</code> | 行为 |</p>
+<p>|---|---|</p>
+<p>| <code>90</code> | <code>createRotateBuf</code> + <code>DispNvRotate90</code>，填 <code>per_screen_*</code>（p1_nor 原行为） |</p>
+<p>| <code>180</code> / <code>270</code> | 打 log，<code>return -1</code>（预留） |</p>
+<p>| <code>0</code> | 原横屏 buffer 直填 <code>per_screen_*</code>，走同一 <code>queueToDisplay</code> 路径 |</p>
+<p><strong><code>SetLayerParam()</code>：</strong> <code>disp_screen==1 || disp_screen==3</code> 时<strong>始终</strong>调 <code>dualDispPreparePerScreen</code>（不再 <code>#if</code> 写死 90°）。</p>
+<p><strong><code>LayerCreate()</code>：</strong> 启动 log</p>
+<pre><code>[WB-MIRROR] video disp_screen=1 (DE0 only, HDMI WB), VIDEO_WB_MIRROR_ROTATE=%d</code></pre>
+<h3>4.3 板型隔离</h3>
+<p>| Target | UI 宏 | 视频宏 |</p>
+<p>|---|---|---|</p>
+<p>| <code>h133_p1_nor</code> / <code>h133_p1_nor_8733</code> | 默认 <code>LV_PROJECTOR_DISP_ROTATE=3</code> | <code>VIDEO_WB_MIRROR_ROTATE=90</code> |</p>
+<p>| <code>h133_p1_nor_JYY070</code> | <code>LV_PROJECTOR_DISP_ROTATE=0</code> | <code>VIDEO_WB_MIRROR_ROTATE=0</code> |</p>
+<p>---</p>
+<h2>5. 变更文件</h2>
+<p>| 文件 | 说明 |</p>
+<p>|---|---|</p>
+<p>| <code>openwrt/.../libtmedia/Makefile</code> | 按 target <code>-DVIDEO_WB_MIRROR_ROTATE=90/0</code> |</p>
+<p>| <code>platform/.../tlayer_ctrl.c</code> | 角度分支、<code>SetLayerParam</code> 统一走 <code>dualDispPreparePerScreen</code>、启动 log |</p>
+<p>| <code>openwrt/.../sunxifb.mk</code> | 注释更新（UI/视频均为 0） |</p>
+<p><strong>未改动：</strong> <code>generated/</code>、<code>cedarx.conf</code>、<code>rc.final</code>、<code>TPlayerSetRotate</code> 调用处、内核 disp。</p>
+<p>---</p>
+<h2>6. 补丁应用</h2>
+<p><strong>前置：</strong> 若尚未打 <a href="../20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">jyy070-lvgl-no-rotate.patch</a>，本补丁含 <code>sunxifb.mk</code> 的 <code>LV_PROJECTOR_DISP_ROTATE=0</code> 块；若已打过 LVGL 补丁，打本补丁时 <code>sunxifb.mk</code> 可能冲突，可只保留注释行改动或跳过该 hunk。</p>
+<pre><code>cd /path/to/H133-AIKTV
+patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch</code></pre>
+<p>撤销：</p>
+<pre><code>patch -R -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch</code></pre>
+<p><strong>补丁含 3 个文件：</strong></p>
+<p>| 文件 | 必要性 |</p>
+<p>|---|---|</p>
+<p>| <code>libtmedia/Makefile</code> | 必须 |</p>
+<p>| <code>tlayer_ctrl.c</code> | 必须 |</p>
+<p>| <code>sunxifb.mk</code> | 可选（注释同步；LVGL 补丁已含逻辑块） |</p>
+<p>---</p>
+<h2>7. 编译与镜像</h2>
+<pre><code># 改 libtmedia 后至少编 rootfs
+touch platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+./tools/build_p1_nor_JYY070.sh rootfs</code></pre>
+<p>| 项 | 值 |</p>
+<p>|---|---|</p>
+<p>| 镜像 | <code>out/h133_linux_p1_nor_JYY070_uart0_nor.img</code> |</p>
+<p>| MD5（2026-07-13 编） | <code>da6c29dea4c406a3af47eb3f2b4d78fa</code> |</p>
+<p>| 编译日志 | <code>/tmp/build_p1_nor_JYY070_video_rotate.log</code> |</p>
+<p><strong>编译侧确认：</strong> JYY070 的 <code>tlayer_ctrl.o</code> 中无 <code>DispNvRotate90</code> 符号引用，仅有 <code>per_screen fallback: landscape buffer</code>，说明 <code>VIDEO_WB_MIRROR_ROTATE=0</code> 分支生效。</p>
+<p>---</p>
+<h2>8. 板上验收</h2>
+<pre><code># 1. 启动/播视频时搜 WB mirror 日志
+logread | grep WB-MIRROR
+# 期望：VIDEO_WB_MIRROR_ROTATE=0
+
+# 2. 不应再出现 CPU 90° 旋转路径（除非 fallback 失败）
+logread | grep -E &quot;DispNvRotate90|MIPI-VID&quot;
+
+# 3. 肉眼
+# 点歌/播放 MV，画面应与 UI 同向，不再横着多转 90°</code></pre>
+<p>| 检查项 | JYY070 期望 |</p>
+<p>|---|---|</p>
+<p>| 视频方向 | 与竖屏 UI 一致 |</p>
+<p>| <code>VIDEO_WB_MIRROR_ROTATE</code> log | <code>0</code> |</p>
+<p>| p1_nor 回归 | 仍 <code>90</code>，HDMI/MIPI 行为不变 |</p>
+<p>---</p>
+<h2>9. 后续新板</h2>
+<ol>
+<li><strong>仅 UI 旋转：</strong> 在 <code>sunxifb.mk</code> 加 target 分支 <code>-DLV_PROJECTOR_DISP_ROTATE=&lt;0|1|2|3&gt;</code></li>
+<li><strong>仅视频 WB mirror 旋转：</strong> 在 <code>libtmedia/Makefile</code> 加 <code>-DVIDEO_WB_MIRROR_ROTATE=&lt;0|90|180|270&gt;</code></li>
+<li>两宏独立配置；JYY070 为 UI=0、视频=0 的组合</li>
+<li><code>180</code>/<code>270</code> 需在 <code>dualDispPreparePerScreen</code> 补实现后再开宏</li>
+</ol>
+<p>---</p>
+<h2>10. 相关</h2>
+<ul>
+<li>UI 不旋转：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
+<li>LVDS/异显背景：<a href="../20260708-JYY070-LVDS显示开发/README.md">20260708-JYY070-LVDS显示开发</a></li>
+<li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
+<li>核心源码：<code>platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></li>
+</ul>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

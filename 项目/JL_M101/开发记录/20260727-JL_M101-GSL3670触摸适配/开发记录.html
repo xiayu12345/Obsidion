@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 开发记录 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JL_M101/20260831-GPADC三键.html"><span class="txt">GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">20260720-JL_M101-JD9365DA-MIPI适配 · JL-M101 JD9365DA MIPI 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">02 — Panel 驱动与京龙 init</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">03 — DTS、时序与背光 PWM</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑（到完整出图）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/README.html"><span class="txt">20260722-JL_M101-板件新建与MIPI显示定稿 · JL-M101 板件新建与 MIPI 显示定稿 — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/README.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 文档索引</span></a>
+<a class="item child current" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/README.html"><span class="txt">20260831-三键识别 · GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">20260831-三键识别 · 如何改 GPADC 电阻按键配置</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">20260831-三键识别 · GPADC 按键识别 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">20260831-三键识别 · GPADC 测试方法</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/README.html"><span class="txt">GPADC电阻按键 · GPADC 电阻按键</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/README.html"><span class="txt">开发记录 · JL-M101 JD9365DA MIPI — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/README.html"><span class="txt">20260825-三路旋转控制 · 三路旋转控制（定稿）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/patches/README.html"><span class="txt">patches · 三路旋转 — 新板对照补丁</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">20260825-三路旋转控制 · 如何改 HDMI / UI / 视频旋转</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">20260825-三路旋转控制 · HDMI / UI / 视频三路旋转 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/README.html"><span class="txt">显示旋转 · 显示旋转（架构级）</span></a>
+<a class="item cat" href="项目/JL_M101/外设.html"><span class="txt">外设</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">GPADC 电阻按键</span></a>
+<a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
+<a class="item child" href="项目/JL_M101/20260730-HDMI黑边.html"><span class="txt">HDMI 同显 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/README.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显：DE1 linebuf 超宽 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显 DE1 linebuf：超宽 YUV「1:1」黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/README.html"><span class="txt">系统BUG修复 · 系统 BUG 修复（跨板公共内核）</span></a>
+<a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1)</span></a>
+<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">D101Q45A15</span></a>
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670_DataSheet_Chinese_RevA2.2</span></a>
+<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">JL-M101B196-P21WX-M402632 规格书V1.0</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">conf_3670(3)</span></a>
+<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-27</p>
+<h1>JL-M101 GSL3670 触摸适配 — 开发记录</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-27（报点）→ 2026-07-28（固件/四角）→ <strong>2026-08-03（report 对齐 LVGL）</strong> |</p>
+<p>| 板型 | <code>p1_nor_JL_M101</code> |</p>
+<p>| 显示定稿 | <a href="../20260722-JL_M101-板件新建与MIPI显示定稿/">20260722-…定稿</a> |</p>
+<p>| 结论 | <strong>触摸可用</strong>：<code>event3</code> 报点；固件 startup <strong><code>0xb0=5a5a5a5a</code></strong>；上报量程 <strong>1280×800</strong>（对齐 <code>disp_rotate=3</code> 的 LVGL）；<code>tp_rotate=0</code> |</p>
+<p>---</p>
+<h2>1. 结论（一句话）</h2>
+<p>板载 GSL3670 用技术支持定稿 <code>GSL3670_JL_M101.h</code> 打成 <code>gsl3670.bin</code> 内嵌内核后可报点且 <code>0xb0</code> 通过；芯片原生轴与屏对调，<strong><code>ctp_exchange_x_y_flag=1</code></strong>，<strong><code>screen_max=report_max=1280×800</code></strong>（交换后保持横屏量程，<strong>直接对齐 LVGL</strong>，不映回 fb 800×1280）。</p>
+<p>源 <code>.h</code> 放在 <strong><code>kernel/.../gslx680new/</code></strong>（与其它板型固件头同目录），<strong>不放</strong>硬件资料。</p>
+<p>---</p>
+<h2>2. 硬件与管脚</h2>
+<p>| 项 | 值 |</p>
+<p>|---|---|</p>
+<p>| 芯片 | GSL3670 |</p>
+<p>| 总线 | TWI1（PG8/PG9），地址 <strong>0x40</strong> |</p>
+<p>| INT | PG3 |</p>
+<p>| RST | PG2 |</p>
+<p>| 屏 / UI | fb <strong>800×1280</strong> 竖屏 → LVGL <strong>1280×800</strong>（<code>sunxifb_rot=3</code> / <code>disp_rotate=3</code>） |</p>
+<p>显示定稿阶段 DTS 仍是克隆自 8733 的 <strong>gt911@0x5d</strong>，与本板不符，须改为 gslX680@0x40。</p>
+<p>---</p>
+<h2>3. 固件来源与打包</h2>
+<h3>3.1 原厂文件角色</h3>
+<p>| 文件 | 角色 | 能否单独灌芯片 |</p>
+<p>|---|---|---|</p>
+<p>| <code>conf_3670(3).set</code> | 项目配置 + <strong>残缺</strong> FW（~264 条） | 否 |</p>
+<p>| <code>GSL3670_JL_M101.h</code>（技术支持定稿） | 完整 FW+config（<code>0x3200500</code> / 800×1280） | 是（经打包） |</p>
+<p>| 工具包 <code>set/GSL3670.h</code> / <code>default_3670.h</code> | 出厂默认 <strong>480×800</strong>（<code>0x1e00320</code>） | 是，但量程不对 |</p>
+<p>| <code>main_3670.set</code> / <code>.dump</code> | 工具写入流 / 符号表 | 不直接给 Linux |</p>
+<p>早期不完整包 startup 后 <code>0xb0=eed48611</code>（驱动判 FAIL）仍可报点；<strong>定稿 <code>.h</code> 后两次 startup 均为 <code>5a5a5a5a</code>，无二次失败重 init</strong>。勿把旧魔数 FAIL 当成「芯片坏」。</p>
+<h3>3.2 定稿路径与 bin</h3>
+<p>| 角色 | 路径 |</p>
+<p>|---|---|</p>
+<p>| 源 <code>.h</code> | <code>kernel/linux-5.4/drivers/input/touchscreen/gslx680new/GSL3670_JL_M101.h</code> |</p>
+<p>| 打包工具 | <code>tools/gsl_pack_firmware.py</code> |</p>
+<p>| 运行 / EXTRA_FIRMWARE | <code>openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/lib/firmware/gsl_firmware/gsl3670.bin</code> |</p>
+<p>| 补丁副本 | <code>…/patches/files/gsl3670.bin</code> |</p>
+<pre><code>tools/gsl_pack_firmware.py \
+  kernel/linux-5.4/drivers/input/touchscreen/gslx680new/GSL3670_JL_M101.h \
+  --fw-array GSLX680_FW --config-array gsl_config_data_id \
+  --name gsl3670 \
+  -o openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/lib/firmware/gsl_firmware/gsl3670.bin
+# 同步一份到 patches/files/gsl3670.bin 供 apply 脚本</code></pre>
+<p>| 属性 | 值 |</p>
+<p>|---|---|</p>
+<p>| md5 | <code>26c831f3d9884fecc5fdbd329d863a3e</code> |</p>
+<p>| 大小 | 42227 |</p>
+<p>| config 分辨率字段 | <code>0x3200500</code> → 800×1280（芯片侧；userspace 上报见 §4） |</p>
+<p>| config id | <code>0xd93b89</code> |</p>
+<p>| startup <code>0xb0</code> | <code>5a5a5a5a</code> (OK) |</p>
+<p>备件（历史 A/B）：旧 800×1280 不完整包 <code>426e9c81…</code>（<code>0xb0=eed48611</code> 仍可报点）；默认 480×800 包 <code>82f220d2…</code>。</p>
+<h3>3.3 必须内嵌内核</h3>
+<pre><code>CONFIG_EXTRA_FIRMWARE=&quot;gsl_firmware/gsl3670.bin&quot;
+CONFIG_EXTRA_FIRMWARE_DIR=&quot;../../openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/lib/firmware&quot;</code></pre>
+<p>probe 优先用 builtin。<strong>只换 rootfs 无效</strong>。换 bin 后：</p>
+<pre><code>rm -rf out/h133/kernel/build/drivers/base/firmware_loader/builtin/gsl_firmware
+./tools/build_p1_nor_JL_M101.sh kernel
+# 再 p 打包</code></pre>
+<p>---</p>
+<h2>4. 软件改动清单</h2>
+<p>| 路径 | 改动 |</p>
+<p>|---|---|</p>
+<p>| <code>device/.../p1_nor_JL_M101/linux-5.4/board.dts</code>（及同板 <code>board.dts</code>） | <code>ctp@5d</code> gt911 → <code>ctp@40</code> gsl3670；坐标见下 |</p>
+<p>| <code>device/.../p1_nor_JL_M101/linux-5.4/config-5.4</code> | <code>EXTRA_FIRMWARE</code> 指向 <code>gsl3670.bin</code> |</p>
+<p>| <code>openwrt/.../gsl_firmware/gsl3670.bin</code> | 定稿芯片 800×1280 包（md5 <code>26c831f3…</code>） |</p>
+<p>| <code>kernel/.../gslx680new/GSL3670_JL_M101.h</code> | 技术支持定稿源头（与其它板型 <code>.h</code> 并列） |</p>
+<p>| <code>tools/gsl_pack_firmware.py</code> | <code>.h</code> → Allwinner bin 打包工具 |</p>
+<p>| <code>kernel/.../gslx680new/gslX680.c</code> | <code>CTP_IRQ_MODE = IRQF_TRIGGER_FALLING</code>；<code>request_firmware</code> 加载 <code>gsl3670.bin</code> |</p>
+<h3>4.1 坐标定稿（DTS，2026-08-03）</h3>
+<pre><code>/* exchange 后 1280×800；report 保持同量程，对齐 LVGL（disp_rotate=3） */
+ctp_screen_max_x = &lt;1280&gt;;
+ctp_screen_max_y = &lt;800&gt;;
+ctp_report_max_x = &lt;1280&gt;;
+ctp_report_max_y = &lt;800&gt;;
+ctp_revert_x_flag = &lt;0x0&gt;;
+ctp_revert_y_flag = &lt;0x0&gt;;
+ctp_exchange_x_y_flag = &lt;0x1&gt;;</code></pre>
+<p>驱动 <code>report_data()</code> 顺序：先 <code>exchange</code> → 再按 <code>screen_max</code> 裁剪 → 再 <code>tp_map_to_report(screen→report)</code>。  </p>
+<p><code>report_max == screen_max</code> 时为恒等映射（无缩放）。  </p>
+<p><code>setting.ini</code> 的 <strong><code>tp_rotate=0</code></strong>（方向在 DTS；<strong>不要</strong>靠改 <code>tp_rotate</code> 凑 UI）。</p>
+<p>---</p>
+<h2>5. 实机现象与判定</h2>
+<h3>5.1 A/B（固件）</h3>
+<p>| 固件 | <code>0xb0</code> | 触摸 |</p>
+<p>|---|---|---|</p>
+<p>| 480×800（<code>82f220d2…</code>） | <code>5a5a5a5a</code> | 有报点，量程约 480×800 |</p>
+<p>| 早期 800×1280（<code>426e9c81…</code>） | <strong><code>eed48611</code></strong> | 有报点；驱动打 mismatch，但不挡 IRQ |</p>
+<p>| <strong>定稿 800×1280（<code>26c831f3…</code>）</strong> | <strong><code>5a5a5a5a</code></strong> | <strong>有报点；startup 通过，无二次失败重 init</strong> |</p>
+<p>说明：<code>eed48611</code> 时 <code>_check_chip_state</code> 判未就绪；本板曾关 monitor 重灌仍可读点。<strong>定稿后不再依赖该绕过</strong>。试验过 <code>GSL_MONITOR</code> 盯 <code>0xb4</code>，<strong>不能</strong>把坏包的 <code>0xb0</code> 变成 <code>5a5a5a5a</code>。</p>
+<h3>5.2 坐标调校过程（2026-07-28，历史）</h3>
+<p>四角点击顺序：<strong>左上 → 右上 → 左下 → 右下</strong>。</p>
+<p>| 阶段 | DTS | 现象 |</p>
+<p>|---|---|---|</p>
+<p>| 仅报点 | <code>exchange=0</code>，<code>screen/report=800×1280</code> | 有点，但 X/Y 对调（左右进 Y，上下进 X） |</p>
+<p>| 只开 exchange | <code>exchange=1</code>，<code>screen_max</code> 仍 800×1280 | 左半边正常；<strong>右半边只有 BTN、无 ABS</strong>（交换后 X≈1266 > <code>SCREEN_MAX_X=800</code>，驱动直接 <code>return</code>） |</p>
+<p>| 07-28 阶段 | <code>exchange=1</code>，<code>screen_max=1280×800</code>，<code>report_max=800×1280</code> | getevent 四角落在约 800×1280，与物理竖屏一致 |</p>
+<p>07-28 验收样例（<code>report_max=800×1280</code> 时）：</p>
+<p>| 位置 | 上报 (X,Y) |</p>
+<p>|---|---|</p>
+<p>| 左上 | (11, 35) |</p>
+<p>| 右上 | (783, 27) |</p>
+<p>| 左下 | (7, 1251) |</p>
+<p>| 右下 | (781, 1252) |</p>
+<h3>5.3 对齐 LVGL（2026-08-03）</h3>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 现象 | getevent 四角约 800×1280 正常，但 desk（<code>disp_rotate=3</code>，LVGL 1280×800）点图标无响应 |</p>
+<p>| 根因 | <code>report_max</code> 把交换后的 <strong>1280×800</strong> 又映回 <strong>fb 800×1280</strong>；<code>EVDEV_CALIBRATE=0</code> 且 <code>tp_rotate=0</code> 时 raw 直接当 LVGL 坐标，对不上 |</p>
+<p>| 处理 | <code>ctp_report_max_*</code> 改为 <strong>1280×800</strong>（与 <code>screen_max</code> 相同）；<strong>不改</strong> <code>tp_rotate</code> |</p>
+<p>| 改动文件 | <code>device/.../p1_nor_JL_M101/{,linux-5.4/}board.dts</code> |</p>
+<p>| 镜像 | <code>out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code> md5 <code>e8bb8718230399d5c2ed958d73f9a29b</code> |</p>
+<p>| DTB 核对 | <code>ctp_report_max_x/y = &lt;0x500&gt;/&lt;0x320&gt;</code>（1280/800） |</p>
+<p>刷机后期望：<code>getevent</code> 四角落在约 <strong>1280×800</strong>；desk 点图标命中（仍 <code>tp_rotate=0</code>）。</p>
+<h3>5.4 验收命令</h3>
+<pre><code>cat /proc/bus/input/devices   # Name=gslX680 → event3
+dmesg | grep -E &#x27;gsl|0xb0|irq-status|ctp-startup|report map&#x27;
+getevent -p /dev/input/event3
+getevent -l /dev/input/event3   # 左上→右上→左下→右下</code></pre>
+<p>期望：startup <code>0xb0=5a5a5a5a</code>；ABS 量程约 <strong>1280×800</strong>；四角与横屏 UI 一致；<strong>无需</strong>改 <code>tp_rotate</code>。</p>
+<h3>5.5 踩坑</h3>
+<ol>
+<li><strong><code>.set</code> 不能单独打包</strong>：须完整 <code>.h</code>；工具包默认头是 480×800。</li>
+<li><strong>builtin 固件缓存</strong>：不删 <code>…/builtin/gsl_firmware</code> 会链到旧 bin。</li>
+<li><strong>早期 <code>0xb0≠5a5a</code> ≠ 硬件坏</strong>：不完整包仍可报点；定稿后应看到 <code>5a5a5a5a</code>。</li>
+<li><strong>上升沿曾试过</strong>：空闲 INT 为低时 <code>irq_cnt=0</code>；本板用 <strong>falling</strong>。</li>
+<li><strong>显示定稿里的 gt911 节点必须换掉</strong>，否则不会绑到 0x40。</li>
+<li><strong>只开 <code>exchange</code> 不够</strong>：<code>screen_max</code> 须跟交换后芯片量程（1280×800），否则右侧点被丢掉。</li>
+<li><strong><code>report_max</code> 勿映回 fb</strong>：映回 800×1280 只对齐物理 fb，<strong>不对齐</strong> <code>disp_rotate=3</code> 后的 LVGL；应保持 1280×800。</li>
+<li><strong><code>.h</code> 放哪</strong>：与其它板型一样放 <code>gslx680new/</code>；不要放硬件资料或仅开发记录 <code>patches/files/</code>。</li>
+</ol>
+<p>---</p>
+<h2>6. 回归清单</h2>
+<ul>
+<li><input type="checkbox" disabled checked /> <code>event3</code> 按下/抬起有 <code>BTN_TOUCH</code> 与坐标</li>
+<li><input type="checkbox" disabled checked /> 定稿 bin startup <code>0xb0=5a5a5a5a</code>；Image/boot 内嵌 md5 <code>26c831f3…</code></li>
+<li><input type="checkbox" disabled checked /> <code>exchange=1</code> + <code>screen_max=1280×800</code>（右侧不丢 ABS）</li>
+<li><input type="checkbox" disabled checked /> <strong>2026-08-03</strong>：<code>report_max=1280×800</code> 进 DTB / 镜像 <code>e8bb8718…</code></li>
+<li><input type="checkbox" disabled /> 刷机后四角 getevent 落在约 1280×800，desk 点图标命中</li>
+<li><input type="checkbox" disabled /> MIPI 显示 / HDMI 双显无回归</li>
+</ul>
+<p>---</p>
+<h2>7. 补丁落地</h2>
+<p>见同目录 <a href="./README.md">README.md</a> 与 <a href="./patches/apply-jl-m101-gsl3670-tp.sh">patches/apply-jl-m101-gsl3670-tp.sh</a>。</p>
+<p>仅 DTS <code>report_max</code> 变更时：</p>
+<pre><code>./tools/build_p1_nor_JL_M101.sh kernel
+# lunch 后 p</code></pre>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

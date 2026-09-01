@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>杜比/DTS HDMI·SPDIF 透传 开发笔记 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sub">
+<a class="item cat" href="项目/p1_nor_4k/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/00-总览.html"><span class="txt">00 — 总览</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/02-HDMI-4K-DTS与setting.html"><span class="txt">02 — HDMI 4K DTS 与 setting.ini</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/03-编译与验收.html"><span class="txt">03 — 编译与验收</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/README.html"><span class="txt">20260723-p1_nor_4k-板件新建与HDMI4K分离 · p1_nor_4k 板件新建与 HDMI 4K 分离 — 文档索引</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/README.html"><span class="txt">patches · patches — p1_nor_4k 板件新建</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/patches/README.html"><span class="txt">patches · patches — p1_nor_4k HDMI 1080p fb0 对齐</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.html"><span class="txt">20260724-p1_nor_4k-HDMI1080p-fb0对齐 · p1_nor_4k：HDMI 1080p + fb0 与输出 1:1</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解/开发记录.html"><span class="txt">CMA与lv_img_header-4K硬解 · p1_nor_4k：CMA 与 lv_img_header（4K 硬解）开发记录</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/README.html"><span class="txt">开发记录 · p1_nor_4k 开发记录</span></a>
+<a class="item cat" href="项目/p1_nor_4k/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/p1_nor_4k/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/p1_nor_4k/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI透传卡顿与raw-DMA修复.html"><span class="txt">H133-HDMI透传卡顿与raw-DMA修复</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.html"><span class="txt">H133-HDMI音频透传-与官方补丁差异及问题反馈</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传架构.html"><span class="txt">H133 HDMI 音频透传方案</span></a>
+<a class="item child current" href="项目/p1_nor_4k/资料/杜比透传-开发笔记.html"><span class="txt">杜比/DTS HDMI·SPDIF 透传 开发笔记</span></a>
+</div></nav>
+<main>
+<article>
+<p class="meta">kind: docs</p>
+<h1>杜比/DTS HDMI·SPDIF 透传 开发笔记</h1>
+<p>> 目标：在 <code>p1_nor_JL_DOLBY</code> build 上，把<strong>未解码</strong>的 Dolby(AC3/EAC3/EAC3-JOC)与 DTS/DTS-HD 码流，经 IEC61937 打包后从 <strong>HDMI(i2s2)</strong> 或 <strong>SPDIF(owa)</strong> 直通给功放/AVR，同时保证画面正常显示。单路由输出（HDMI 或 SPDIF 二选一，不同时）。</p>
+<p>---</p>
+<h2>1. 一句话现状</h2>
+<p>链路代码（parser 认 EAC3 → player 置透传标志 → 假解码器搬码流 → render 直出 → sink 做 IEC61937 打包直写 hw + 设内核 <code>audio data format</code> 控件）<strong>在源码里已经全部打通</strong>；HDMI 硬件经 <code>aplay</code> 实测能吃 48k/192k S16 立体声。但实机放 <code>Xiaokaiye_Atmos.ts</code> <strong>没声音</strong>，真正断点尚未用运行时打印定位（需再编一版拿 <code>[RAWPT]</code> 日志）。</p>
+<p>---</p>
+<h2>2. 硬件/环境事实（实测）</h2>
+<p>| 项 | 结论 | 依据 |</p>
+<p>|---|---|---|</p>
+<p>| ALSA 声卡 | <code>sndi2s2</code>(HDMI)、<code>audiocodec</code>、<code>sndowa</code>(SPDIF) | <code>cat /proc/asound/cards</code> |</p>
+<p>| HDMI 直写 48k S16 立体声 | ✅ 成功 | <code>aplay -D hw:sndi2s2,0 -f S16_LE -r 48000 -c 2</code> → <code>HDMI Audio enable successfully</code> |</p>
+<p>| HDMI 直写 192k S16 立体声 | ✅ 成功 | 同上 <code>-r 192000</code> 也成功（EAC3/DDP 透传需 192k 载体） |</p>
+<p>| 内核 HDMI 音频格式控件 | <code>amixer -c sndi2s2</code> 的 <strong><code>audio data format</code></strong>（枚举：1=PCM,2=AC3,7=DTS,10=DOLBY_DIGITAL_PLUS,11=DTS_HD…） | <code>sunxi_v2</code> 驱动，非旧版 <code>hdmi audio format Function</code> |</p>
+<p>| 音频后端 | <strong>ALSALIB</strong>（非 libaudioroute） | <code>defconfig</code>: <code>CONFIG_TR_AUDIO_API_ALSA_LIB=y</code> |</p>
+<p>| 路由选择 | <code>/etc/audio_output.mode</code>（<code>hdmi</code>/<code>spdif</code>）+ <code>/etc/asound.conf</code> 的 <code>PlaybackHDMI</code>/<code>PlaybackSPDIF</code>(plug) | rootfs 实际文件 |</p>
+<p>---</p>
+<h2>3. 整体架构 / 数据流</h2>
+<pre><code>flowchart TD
+    A[&quot;TS/MKV/MOV 文件&quot;] --&gt; B[&quot;Parser 解封装&lt;br/&gt;定 eCodecFormat&quot;]
+    B --&gt; C{&quot;player.c PlayerSetAudioStreamInfo&lt;br/&gt;codec ∈ AC3/EAC3/EAC3_JOC/DTS/DTS_HD ?&quot;}
+
+    C --&gt;|&quot;是&quot;| D[&quot;raw_data.nNeedDirect=1&lt;br/&gt;nDataType = AC3/DDP/EAC3_JOC/DTS/DTS_HD&quot;]
+    C --&gt;|&quot;否&quot;| E[&quot;nNeedDirect=0（普通解码）&quot;]
+
+    D --&gt; F[&quot;AudioDecCompCreate(passthrough=1)&lt;br/&gt;adecoderPassthough：假解码器，只搬码流&lt;br/&gt;不 dlopen libadecoder.so&quot;]
+    E --&gt; G[&quot;AudioDecCompCreate(0)&lt;br/&gt;dlopen 真解码器&quot;]
+
+    F --&gt; H[&quot;audioRenderComponent（directOut）&lt;br/&gt;把 cfg(nNeedDirect/nDataType) 透传给 sink&quot;]
+    G --&gt; I[&quot;render 普通 PCM&quot;]
+
+    H --&gt; J[&quot;tsound_ctrl.c SoundDeviceSetFormat&lt;br/&gt;mNeedDirect=1&quot;]
+    I --&gt; K[&quot;tsound_ctrl.c 普通 PCM 路&lt;br/&gt;PlaybackHDMI/SPDIF (plug)&quot;]
+
+    J --&gt; L[&quot;直开 hw:sndi2s2,0(HDMI) 或 hw:sndowa,0(SPDIF)&lt;br/&gt;强制 rate: AC3/DTS=48k, DDP/EAC3/DTS-HD=192k, ch=2&quot;]
+    L --&gt; M[&quot;设内核 &#x27;audio data format&#x27; = AC3/DDP/DTS&quot;]
+    M --&gt; N[&quot;TSoundDeviceWrite:&lt;br/&gt;SunxiPassthough → IEC61937 打包 → 直写 hw&lt;br/&gt;跳过 mono/gain/EQ 后处理&quot;]
+    N --&gt; O[&quot;功放/AVR 收到 bitstream&quot;]
+
+    style D fill:#2d6,color:#000
+    style C fill:#fd6,color:#000
+    style K fill:#f88,color:#000</code></pre>
+<h3>3.1 透传开关 <code>nNeedDirect</code> 传递链（命脉）</h3>
+<pre><code>sequenceDiagram
+    participant P as Parser (CdxTsParser.c)
+    participant PL as player.c
+    participant DC as audioDecComponent
+    participant RD as audioRenderComponent
+    participant SK as tsound_ctrl (sink)
+
+    P-&gt;&gt;PL: eCodecFormat（必须先被认成 AC3/EAC3/DTS）
+    Note over PL: 按 codec 置 raw_data.nNeedDirect / nDataType
+    PL-&gt;&gt;PL: 拷入 p-&gt;pAudioStreamInfo[selected]
+    PL-&gt;&gt;DC: AudioDecCompCreate(nNeedDirect)
+    DC-&gt;&gt;RD: cfg.nNeedDirect / cfg.nDataType（AudioDecCompGetAudioDataType）
+    RD-&gt;&gt;SK: SoundDeviceSetFormat(cfg)
+    Note over SK: mNeedDirect=1 → 走 raw 分支&lt;br/&gt;否则退回普通 PCM(PlaybackHDMI plug)</code></pre>
+<h3>3.2 模块分层与仓库位置</h3>
+<pre><code>flowchart LR
+    subgraph L1[&quot;libcedarx（解码前端，源码可改）&quot;]
+        direction TB
+        p1[&quot;parser/ts/CdxTsParser.c&lt;br/&gt;PMT/descriptor 认 EAC3&quot;]
+        p2[&quot;parser/ts/MediaProbe.c&lt;br/&gt;probe_ac3: 0x0B77 syncword 嗅探兜底&quot;]
+        p3[&quot;playback/player.c&lt;br/&gt;置 nNeedDirect/nDataType&quot;]
+        p4[&quot;playback/audioDecComponent.{c,h}&lt;br/&gt;AudioDecCompCreate(int)+GetAudioDataType&quot;]
+        p5[&quot;playback/adecoderPassthough.c&lt;br/&gt;假解码器&quot;]
+        p6[&quot;playback/audioRenderComponent.c&lt;br/&gt;directOut&quot;]
+        p7[&quot;external/include/adecoder/adecoder.h&lt;br/&gt;EAC3/EAC3_JOC/DTS_HD 枚举 + AUDIO_RAW_DATA_*&quot;]
+    end
+    subgraph L2[&quot;libtmedia（音频输出 sink，源码可改）&quot;]
+        direction TB
+        s1[&quot;tplayer/awsink/tsound_ctrl.{c,h}&lt;br/&gt;raw 分支：直开hw+设控件+IEC直写&quot;]
+        s2[&quot;tplayer/awsink/spdif/*.cpp&lt;br/&gt;SPDIFEncoder/SunxiPassthough/wrapper&lt;br/&gt;IEC61937 打包&quot;]
+        s3[&quot;tplayer/Makefile + openwrt 包 Makefile&lt;br/&gt;C/C++ 混编、传 CXX&quot;]
+    end
+    L1 --&gt; L2
+    L2 --&gt; HW[&quot;ALSA hw: sndi2s2(HDMI) / sndowa(SPDIF)&quot;]</code></pre>
+<p>---</p>
+<h2>4. 改动清单</h2>
+<h3>阶段 A — libcedarx（解码前端）</h3>
+<ul>
+<li><code>external/include/adecoder/adecoder.h</code>：新增 <code>AUDIO_CODEC_FORMAT_EAC3/EAC3_JOC/DTS_HD</code> 及 <code>AUDIO_RAW_DATA_EAC3_JOC</code> 等枚举。</li>
+<li><code>libcore/parser/ts/CdxTsParser.c</code>：EAC3 识别（PMT <code>stream_type</code>、parsePES、descriptor）。<strong>注：本文件在工程里是有源码的（6987 行），一度误判为“无源码/预编译”，实为大文件 grep 假阴性。</strong></li>
+<li><code>libcore/parser/ts/MediaProbe.c</code>：<code>probe_ac3</code> 用 syncword <code>0x0B77</code>+bsid 嗅探 AC3/EAC3 兜底（参考 <code>cedarx.diff</code>）。</li>
+<li><code>libcore/playback/player.c</code>：<code>PlayerSetAudioStreamInfo</code> 按 <code>eCodecFormat</code> 置 <code>raw_data.nNeedDirect/nDataType</code>；<code>PlayerInitialAudio</code> 用 <code>nNeedDirect</code> 传参 <code>AudioDecCompCreate</code>。</li>
+<li><code>libcore/playback/audioDecComponent.{c,h}</code>：<code>AudioDecCompCreate(int isNeedDirect)</code>；新增 <code>AudioDecCompGetAudioDataType</code>；passthrough 分支（<code>memcpy adec_passth</code>，不 dlopen 真解码器）。</li>
+<li><code>libcore/playback/adecoderPassthough.c</code>：新增“假解码器”，只把码流入队；<code>Makefile.am</code> 收录。</li>
+<li><code>libcore/playback/audioRenderComponent.c</code>：directOut 链路（读 dataType/needDirect → cfg → <code>SoundDeviceSetFormat</code>）。</li>
+</ul>
+<h3>阶段 B — libtmedia（音频输出 sink，ALSALIB）</h3>
+<ul>
+<li><code>tplayer/awsink/tsound_ctrl.{c,h}</code>：</li>
+<li><code>SoundCtrlContext</code> 加 <code>passth / raw_type / mNeedDirect / raw_dev_open</code>。</li>
+<li><code>TSoundDeviceCreate</code> 初始化 <code>sunxi_passthrough_create</code>。</li>
+<li><code>TSoundDeviceSetFormat</code>：raw 分支置 <code>mNeedDirect=1</code>、<code>raw_type</code>，强制 rate（AC3/DTS=48k，DDP/EAC3/DTS-HD=192k）、ch=2。</li>
+<li><code>TSoundDeviceStart</code>：raw/PCM 切换时重开设备（<code>hw:sndi2s2,0</code>/<code>hw:sndowa,0</code> vs plug），<code>sunxi_passthough_open</code> + <code>setAudioDataFormatCtl</code>；重开时保存/恢复 <code>pcm_in_channels</code>。</li>
+<li><code>TSoundDeviceWrite</code>：raw 分支 <code>sunxi_passthough_process</code> 打包后 <code>writePcmWithRecover</code> 直写，跳过后处理。</li>
+<li><code>TSoundDeviceStop/Destroy</code>：复位 <code>audio data format</code>=PCM，关闭并重建 passth。</li>
+<li>修复 <code>SunxiPassthough</code> 析构未释放（内存泄漏）。</li>
+<li><code>tplayer/awsink/spdif/*.cpp</code>：SPDIFEncoder/SunxiPassthough/wrapper 编入 tplayer。</li>
+<li><code>tplayer/Makefile</code>：新增 C++ 源/对象/依赖规则，链接改用 <code>$(CXX)</code>。</li>
+<li><code>openwrt/.../libtmedia/Makefile</code>：<code>tplayer</code> make 传 <code>CXX=&quot;$(TARGET_CXX)&quot;</code>。</li>
+</ul>
+<h3>诊断打印（<code>[RAWPT]</code>，输出到 stderr，始终打印）</h3>
+<ul>
+<li><code>player.c</code>：<code>audio stream[i] eCodecFormat=0x?</code>；<code>create dec: needDirect/dataType/codec</code>。</li>
+<li><code>tsound_ctrl.c</code>：<code>SetFormat type/rate</code>、<code>pcm_open &lt;dev&gt; ok/FAIL</code>、<code>hw_params ok/FAIL rate/ch/fmt</code>、<code>set &#x27;audio data format&#x27;=N ok/FAIL</code>、<code>Start raw route/type/dev</code>、<code>write in/iec/frames/res</code>。</li>
+</ul>
+<p>---</p>
+<h2>5. 与全志参考包（<code>透传/透传/</code>）的对照</h2>
+<ul>
+<li><code>cedarx.diff</code>：EAC3 枚举、mkv/mov/<strong>ts</strong> parser 认 EAC3、MediaProbe 嗅探、player/decoder/render 透传链——我们的阶段 A 与之对齐。</li>
+<li><strong>差异</strong>：参考里有 TS <strong>descriptor <code>0x87</code>(EAC3 audio descriptor)</strong> 与 registration <code>EAC3</code> 分支；本工程 <code>CdxTsParser.c</code> 里这两处<strong>未打上</strong>（仅有 <code>stream_type</code> 直判 + descriptor 0x81/0x7A）。若某 .ts 用 0x87 descriptor 标 EAC3，可能漏判。</li>
+<li><code>tsound_ctrl.diff</code> / <code>libaudioroute.diff</code>：sink 侧 IEC 打包与直写，针对 <strong>libaudioroute</strong>；我们是 <strong>ALSALIB</strong>，思路移植到 <code>tsound_ctrl.c</code>。</li>
+<li><code>spdif/</code>：<code>SPDIFEncoder / SunxiPassthough / *_wrapper</code> 即 IEC61937 打包三件套，直接编入 tplayer。</li>
+</ul>
+<p>---</p>
+<h2>6. 关键坑与教训</h2>
+<ol>
+<li><strong>并行 configure 竞态 → 机器 thrashing（严重）</strong>：<code>mmo libcedarx -B</code> 清掉 <code>.configured</code> 后，<code>m -j$(nproc) world</code> 阶段 <code>cedarx</code> 与 <code>libcedarx</code> 两个包<strong>并行在同一 <code>build_dir/target/cedarx</code> 跑 configure</strong>，互删 <code>conftest.c</code> → <code>C preprocessor &quot;arm-openwrt-linux-gcc -E&quot; fails sanity check</code>；<code>-j$(nproc)</code> 还把内存打爆，<code>uptime</code> 都要 40s+。</li>
+</ol>
+<ul>
+<li><strong>安全编法</strong>：<strong>不加 <code>-B</code></strong>（保留 configure，避免竞态）；<code>mmo &lt;pkg&gt;</code> 本身串行（无 -j）；整包 <code>m</code> 用 <strong>低并发 <code>-j2</code>/<code>-j1</code></strong>。只改了源文件时优先增量。</li>
+<li>若已被 <code>-B</code> 破坏，先串行 <code>mmo libcedarx</code> 重新配好，再 <code>m -j2 &amp;&amp; p</code>。</li>
+</ul>
+<ol>
+<li><strong>大文件 grep 假阴性</strong>：对 6987 行的 <code>CdxTsParser.c</code> 及整目录 grep 偶发“未找到”实为超时/截断，导致一度误判“TS 无源码”。<strong>结论要以精确路径的二次核实为准。</strong></li>
+<li><strong>本 build 无 Dolby 软解</strong>：启动只加载 aac/mp3/flac/wav/ape/alac 解码插件，<strong>没有 AC3/EAC3 解码器</strong>——所以透传是唯一出声路径；一旦 <code>nNeedDirect</code> 没置上退回普通路，必然静音。</li>
+<li><strong>HDMI 比 SPDIF 严格</strong>：HDMI 需正确 InfoFrame / N-CTS（靠 <code>audio data format</code> 控件），SPDIF 常可被 AVR 自适应。</li>
+<li><strong>禁止在 WSL/x86 源码树本地 <code>make</code>/<code>gcc -c</code></strong>（会留 x86 <code>.o</code> 污染交叉编译）；语法自检只读 log。</li>
+</ol>
+<p>---</p>
+<h2>7. 待办 / 下一步</h2>
+<ol>
+<li><strong>拿运行时 <code>[RAWPT]</code> 打印定位</strong>（需安全编一版 libcedarx + 打包）：</li>
+</ol>
+<ul>
+<li>看 <code>eCodecFormat</code>：<code>0x5</code>=AC3 / <code>0x20</code>=EAC3 / <code>0x21</code>=EAC3_JOC / <code>0x4</code>=AAC / <code>0x0</code>=UNKNOWN。</li>
+<li>看 <code>create dec: needDirect=?</code>：透传开关是否打开。</li>
+</ul>
+<ol>
+<li>按打印分流：</li>
+</ol>
+<ul>
+<li>codec 是 AC3/EAC3 但 <code>needDirect=0</code> → 标志传递链有 bug（源码可修）。</li>
+<li>codec 是 AAC/UNKNOWN → 该 .ts 靠 descriptor 标 EAC3，补 <code>CdxTsParser.c</code> 的 <strong>0x87 / registration EAC3</strong> 分支（参考 <code>cedarx.diff</code>），或用 <code>MediaProbe.probe_ac3</code> 嗅探。</li>
+<li>选中音轨不对 → 检查 <code>nAudioStreamSelected</code>（多音轨时可能选了非杜比轨）。</li>
+</ul>
+<ol>
+<li>HDMI 若因 192k 不排空而卡，考虑 N/CTS 或 EAC3 走 HBR/降级。</li>
+</ol>
+<p>---</p>
+<h2>8. 快速定位命令（设备侧）</h2>
+<pre><code>cat /proc/asound/cards
+# 测 HDMI i2s2 载体（先确保没有在播、设备不被占）
+aplay -D hw:sndi2s2,0 -f S16_LE -r 48000  -c 2 -d 3 /dev/urandom
+aplay -D hw:sndi2s2,0 -f S16_LE -r 192000 -c 2 -d 3 /dev/urandom
+# 内核 HDMI 音频格式控件
+amixer -c sndi2s2 controls | grep -i &#x27;audio data format&#x27;
+# 放 Atmos.ts 后抓透传日志
+# 关注串口里所有 [RAWPT] 行</code></pre>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

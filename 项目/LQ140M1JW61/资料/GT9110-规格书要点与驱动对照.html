@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>GT9110 规格书要点与 H133 驱动对照 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">20260729-LQ140M1JW61-双显LCD-HDMI排查.bak · LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">01 — 板件新建</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">02 — panel 与 init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">03 — DTS 与双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/README.html"><span class="txt">20260729-LQ140M1JW61-板件新建与双显定稿 · LQ140M1JW61 板件新建与双显定稿 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/README.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/README.html"><span class="txt">开发记录 · LQ140M1JW61 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/README.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/README.html"><span class="txt">patches · 20260805 TEMP 补丁（历史对照，勿作产品默认）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证 — 开发记录（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/README.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换（定稿）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">LV_DS 双屏异显中间件 — 技术架构</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/README.html"><span class="txt">双屏异显 · 双屏异显（架构级）</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">1401598-v1(25.2.26)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110-Datasheet_20121205</span></a>
+<a class="item child current" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110 规格书要点与 H133 驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: docs</p>
+<h1>GT9110 规格书要点与 H133 驱动对照</h1>
+<p>> <strong>PDF 原件（工程内）</strong>：<a href="./GT9110-Datasheet_20121205.pdf"><code>GT9110-Datasheet_20121205.pdf</code></a>  </p>
+<p>> 文档版本：<strong>Rev.03 — 2012-12-06</strong>（汇顶科技；与 Rev.02 相比主要修订上电/地址时序 T4 等）  </p>
+<p>> 备用下载：同目录 <code>download_GT9110_datasheet.sh</code> 或 <https://dl.linux-sunxi.org/touchscreen/GT9110%20Datasheet.pdf></p>
+<p>---</p>
+<h2>1. 芯片概要</h2>
+<p>| 项目 | 规格 |</p>
+<p>|------|------|</p>
+<p>| 型号 | GT9110，单芯片 <strong>10 点</strong>电容触控 |</p>
+<p>| 通道 | <strong>42 Tx × 30 Rx</strong> |</p>
+<p>| 屏尺寸 | <strong>7" ~ 12.1"</strong> |</p>
+<p>| 扫描/上报 | 触摸扫描约 <strong>100Hz</strong>；Normal 模式坐标刷新约 <strong>7~10ms</strong> |</p>
+<p>| 封装 | <strong>88 pin</strong>，10mm×10mm QFN（与 GT911 的 52pin 不同） |</p>
+<p>| 供电 | 单电源 <strong>2.8V ~ 3.3V</strong>，内置 1.8V LDO；VDDIO 可 1.8V/与 AVDD 同接 |</p>
+<p>| 接口 | 标准 <strong>I2C 从机</strong>，建议 <strong>≤400kHz</strong> |</p>
+<p>---</p>
+<h2>2. 与主机连接的关键管脚</h2>
+<p>| 脚位 | 名称 | 说明 |</p>
+<p>|------|------|------|</p>
+<p>| 29 | I2C_SDA | I2C 数据 |</p>
+<p>| 30 | I2C_SCL | I2C 时钟 |</p>
+<p>| 27 | INT | 中断，边沿可在配置寄存器选择 |</p>
+<p>| 37 | /RSTB | 复位，<strong>外部 10K 上拉</strong>，低电平复位 |</p>
+<p>| 33 | VDDIO | GPIO/I2C 电平（1.8V 或接 AVDD 为 3.3V） |</p>
+<p>主机侧需：<strong>SCL、SDA、INT、RST、VCC、GND</strong>（与模组 FPC 一致）。</p>
+<p>---</p>
+<h2>3. I2C 从地址（上电/复位时选定）</h2>
+<p>规格书 <strong>§7.2</strong>：两组 8 位地址（写地址示例）：</p>
+<p>| 8 位写地址 | 8 位读地址 | Linux 7 位地址 |</p>
+<p>|------------|------------|----------------|</p>
+<p>| <strong>0x28</strong> | 0x29 | <strong>0x14</strong> |</p>
+<p>| <strong>0xBA</strong> | 0xBB | <strong>0x5d</strong> |</p>
+<p><strong>地址选择时序（与 <code>gt9xxnew/gt9xx.c</code> 中 <code>gtp_reset_guitar()</code> 一致）：</strong></p>
+<ol>
+<li><strong>Reset 拉低</strong></li>
+<li>保持 <strong>>10ms</strong>（规格书 T2）</li>
+<li>选地址：</li>
+</ol>
+<ul>
+<li>要 <strong>0x28/0x29（0x14）</strong>：<strong>INT 输出高</strong> → 再 <strong>Reset 拉高</strong> → <strong>>5ms</strong> 后 INT 改为输入（Rev.03 T4）</li>
+<li>要 <strong>0xBA/0xBB（0x5d）</strong>：<strong>INT 输出低</strong> → 再 <strong>Reset 拉高</strong> → <strong>>5ms</strong> 后 INT 改为输入</li>
+</ul>
+<ol>
+<li>Reset 低电平保持 <strong>>100µs</strong>（规格书 T3）</li>
+</ol>
+<p>Bring-up 时：<code>i2cdetect -y &lt;bus&gt;</code> 看到 <strong>0x14</strong> 或 <strong>0x5d</strong> 后，DTS 里 <code>reg</code> / <code>ctp_twi_addr</code> 与之相同。</p>
+<p>---</p>
+<h2>4. 中断触发（§7.4）</h2>
+<p>配置寄存器 <strong>INT 触发方式</strong>（<code>0x804D</code> 相关位）：</p>
+<ul>
+<li><strong>0</strong>：上升沿触发（有触摸时 INT 由低变高）</li>
+<li><strong>1</strong>：下降沿触发（有触摸时 INT 由高变低）</li>
+</ul>
+<p>内核 <code>gt9xx.h</code> 中 <code>GTP_INT_TRIGGER</code> 需与模组/FPC 一致。</p>
+<p>---</p>
+<h2>5. 本工程驱动映射</h2>
+<p>| 规格书能力 | 工程实现 |</p>
+<p>|------------|----------|</p>
+<p>| I2C 0x14 / 0x5d | <code>gt9xxnew/gt9xx.c</code>：<code>normal_i2c[]</code>、<code>gtp_reset_guitar()</code> |</p>
+<p>| RST / INT GPIO | <code>board.dts</code>：<code>ctp_wakeup</code>、<code>ctp_int_port</code> + <code>init-input.c</code> |</p>
+<p>| 分辨率/镜像/配置 | <code>gt9xx.h</code> 的 <code>CTP_CFG_GROUPx</code> + DTS <code>ctp_screen_max_*</code>、<code>ctp_revert_*</code> |</p>
+<p>| 全志板级绑定 | <code>compatible = &quot;allwinner,goodix&quot;</code>，<code>ctp_name = &quot;gt9xxnew_ts&quot;</code> 或 <code>gt9110_*</code> |</p>
+<p>| 内核开关 | <code>CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y</code>，关闭 <code>GSLX680NEW</code> |</p>
+<p>内置 GT9110 配置名（<code>gt9xx.c</code>）：</p>
+<ul>
+<li><code>gt9110_wt097</code> → <code>CTP_CFG_GROUP2</code></li>
+<li><code>gt9110_g200</code> → <code>CTP_CFG_GROUP4</code></li>
+</ul>
+<p>---</p>
+<h2>6. 换片修改文件清单（p1_nor 已实施 2026-05）</h2>
+<p>| 文件 | 改动 |</p>
+<p>|------|------|</p>
+<p>| <code>device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code> | 关 GSL/固件，开 <code>GT9XXNEW_TS</code> |</p>
+<p>| <code>device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code> | <code>ctp@14</code> goodix，800×1280 |</p>
+<p>| <code>kernel/.../gt9xxnew/gt9xx.h</code> | GROUP1 分辨率 800×1280，上升沿中断 |</p>
+<p>| <code>lv_projector</code> <code>lv_drv_conf.h</code> / <code>main.c</code> | 触摸 <code>evdev_read</code> + <code>evdev_touch_init</code> |</p>
+<p>| <code>lv_drivers/indev/evdev.c</code> | 自动查找 <code>gt9xxnew_ts</code> 节点 |</p>
+<p>详细开发过程见：<a href="../驱动/TP驱动&amp;鼠标&amp;触摸/H133-GT9110触摸驱动开发过程.md"><code>docs/驱动/TP驱动&amp;amp;鼠标&amp;amp;触摸/H133-GT9110触摸驱动开发过程.md</code></a></p>
+<p>---</p>
+<h2>7. 与 GT911（5 点）的区别</h2>
+<p>| | GT9110 | GT911 |</p>
+<p>|--|--------|-------|</p>
+<p>| 触点数 | 10 | 5 |</p>
+<p>| 通道 | 42×30 | 26×14 |</p>
+<p>| 封装 | 88pin 10×10 | 52pin 6×6 |</p>
+<p>| I2C 地址规则 | 同左表 0x14/0x5d | 相同 |</p>
+<p>勿混用 <strong>GT911</strong> 的 datasheet / 配置表到 <strong>GT9110</strong> 模组。</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

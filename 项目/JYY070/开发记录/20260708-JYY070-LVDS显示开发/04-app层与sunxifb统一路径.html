@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>04 — App 层与 sunxifb 统一路径 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">00 — 背景与路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">01 — Kernel Panel 驱动</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">02 — U-Boot Panel / 启动 Logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">03 — DTS 切换 LVDS</span></a>
+<a class="item child current" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">04 — App 层与 sunxifb 统一路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">05 — HDMI 异显 dual_display_rot</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">06 — 编译与实机验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">07 — DE0 硬件缩放 1280×800 → 1024×600</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.html"><span class="txt">20260708-JYY070-LVDS显示开发 · JYY070 LVDS 显示开发 — 文档索引</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">20260708-JYY070-LVGL显示不旋转 · JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">20260713-JYY070-8733BU-WiFi适配 · JYY070 RTL8733BU WiFi 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">20260714-JYY070-视频小窗全屏rect双板兼容 · JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">20260714-双板串编验证 · 双板串编验证脚本（个人用，非 SDK tools）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">20260717-JYY070-默认HDMI音频 · JYY070 默认声音输出切 HDMI — 补丁</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/README.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射（定稿）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/README.html"><span class="txt">GSL触摸坐标映射 · GSL 触摸坐标映射（架构级）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/README.html"><span class="txt">开发记录 · p1_nor_JYY070 开发记录索引</span></a>
+<a class="item cat" href="项目/JYY070/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">p1_nor_JYY070主板测试报告(2)(2)(1)</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">本板资料说明</span></a>
+</div>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-08</p>
+<h1>04 — App 层与 sunxifb 统一路径</h1>
+<p><strong>上一步：</strong> <a href="./03-DTS切换LVDS.md">03-DTS切换LVDS.md</a>  </p>
+<p><strong>下一步：</strong> <a href="./05-HDMI异显dual_display_rot.md">05-HDMI异显dual_display_rot.md</a></p>
+<p><strong>背景：</strong> <a href="./00-背景与路径统一.md">00-背景与路径统一.md</a> §2～3</p>
+<p>---</p>
+<h2>1. 本步目标</h2>
+<ol>
+<li>JYY070 以 <code>lv_projector 0</code> / <code>sunxifb_rot=0</code> 启动 desk  </li>
+<li><strong>sunxifb 与 p1_nor 同框架</strong>：rot=0 也走 <code>rotatefbp + split_fb</code>（不用 fix_lcd）  </li>
+<li>改 sunxifb 后 lv_projector 能可靠重编</li>
+</ol>
+<p><strong>补丁段：</strong> <code>04</code>（无 sunxifb.c 段）+ 合并补丁内 <code>sunxifb.c</code> diff</p>
+<p>---</p>
+<h2>2. App / 编译链（4a）</h2>
+<p>| 文件 | 说明 |</p>
+<p>|---|---|</p>
+<p>| <code>openwrt/.../lv_projector/Makefile</code> | <code>PKG_FILE_DEPENDS</code> 含 sunxifb.c，改驱动触发重编 |</p>
+<p>| <code>openwrt/.../rc.final</code> | desk 启动，<code>lv_projector 0</code> |</p>
+<p>| <code>openwrt/.../lv_daemon.sh</code> | 守护进程参数 |</p>
+<p>| <code>platform/.../projector_config.h</code> | JYY070 显示旋转宏 |</p>
+<p>| <code>H133-AI-Skills/.../build_p1_nor_jyy070.sh</code> | 板级编译脚本 |</p>
+<p>---</p>
+<h2>3. sunxifb 关键改动（4b）</h2>
+<p><strong>文件：</strong> <code>platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c</code></p>
+<p>| 改动 | 说明 |</p>
+<p>|---|---|</p>
+<p>| 去掉 <code>if (rotated != LV_DISP_ROT_NONE)</code> | rot=0 也分配 <code>rotatefbp</code>、启用 <code>split_fb</code> |</p>
+<p>| <code>case LV_DISP_ROT_NONE</code> | <code>SUNXIFB_ROT_0</code>，尺寸 = <code>vinfo.xres/yres</code> |</p>
+<p>| <code>sunxifb_copy_area(dst, ...)</code> | HDMI / LCD 页共用脏区拷贝 |</p>
+<p>| <code>soft_rotate_area</code> default | rot=0 拷贝到 <strong>LCD dst</strong> |</p>
+<p>| <code>sunxifb_detach_fbcon()</code> | 启动时脱离 fbcon |</p>
+<p>| <strong>不含</strong> <code>fix_lcd_page_en</code> | 与 bringup <code>04-app-sunxifb.patch</code> sunxifb 段 <strong>互斥</strong> |</p>
+<h3>与 p1_nor rot=3 对照</h3>
+<p>| 层级 | p1_nor | JYY070 |</p>
+<p>|---|---|---|</p>
+<p>| 框架 | rotatefbp + split_fb | <strong>相同</strong> |</p>
+<p>| LCD 页 | 软转 270° | 直拷贝 |</p>
+<p>| desk log | <code>sunxifb_rot=3</code> | <code>sunxifb_rot=0</code> |</p>
+<p>---</p>
+<h2>4. 重新生成 sunxifb 补丁段</h2>
+<pre><code>bash H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh</code></pre>
+<p>脚本从当前 <code>sunxifb.c</code> 的 <code>git diff</code> 生成 4b 段并写入 phase1-5 合并补丁。</p>
+<p>---</p>
+<h2>5. 本步验收</h2>
+<p>| 必须出现 | 含义 |</p>
+<p>|---|---|</p>
+<p>| <code>[desk] fb 1024x600 -&gt; LVGL 1024x600, sunxifb_rot=0</code> | rot=0 横屏 |</p>
+<p>| <code>[desk] started</code> | UI 进程正常 |</p>
+<p>| 必须不出现 | 含义 |</p>
+<p>|---|---|</p>
+<p>| <code>rotate=0: draw ping-pong, LCD fixed page1</code> | 旧 fix_lcd 路径 |</p>
+<p>| <code>fix_lcd_page</code> | 旧 fix_lcd 路径 |</p>
+<p>debug 开（<code>-DLV_SUNXIFB_DEBUG=1</code>）可选看到：</p>
+<pre><code>Turn on software rotate path (rot=0).
+Split fb: dirty sync HDMI page0 1024x600, MIPI page1 copy</code></pre>
+<p>完整编译与串口 checklist 见 <a href="./06-编译与实机验证.md">06-编译与实机验证.md</a>。</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

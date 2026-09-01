@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>s10-h133-v1_0625 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JL_M101/20260831-GPADC三键.html"><span class="txt">GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">20260720-JL_M101-JD9365DA-MIPI适配 · JL-M101 JD9365DA MIPI 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">02 — Panel 驱动与京龙 init</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">03 — DTS、时序与背光 PWM</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑（到完整出图）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/README.html"><span class="txt">20260722-JL_M101-板件新建与MIPI显示定稿 · JL-M101 板件新建与 MIPI 显示定稿 — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/README.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/README.html"><span class="txt">20260831-三键识别 · GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">20260831-三键识别 · 如何改 GPADC 电阻按键配置</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">20260831-三键识别 · GPADC 按键识别 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">20260831-三键识别 · GPADC 测试方法</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/README.html"><span class="txt">GPADC电阻按键 · GPADC 电阻按键</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/README.html"><span class="txt">开发记录 · JL-M101 JD9365DA MIPI — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/README.html"><span class="txt">20260825-三路旋转控制 · 三路旋转控制（定稿）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/patches/README.html"><span class="txt">patches · 三路旋转 — 新板对照补丁</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">20260825-三路旋转控制 · 如何改 HDMI / UI / 视频旋转</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">20260825-三路旋转控制 · HDMI / UI / 视频三路旋转 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/README.html"><span class="txt">显示旋转 · 显示旋转（架构级）</span></a>
+<a class="item cat" href="项目/JL_M101/外设.html"><span class="txt">外设</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">GPADC 电阻按键</span></a>
+<a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
+<a class="item child" href="项目/JL_M101/20260730-HDMI黑边.html"><span class="txt">HDMI 同显 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/README.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显：DE1 linebuf 超宽 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显 DE1 linebuf：超宽 YUV「1:1」黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/README.html"><span class="txt">系统BUG修复 · 系统 BUG 修复（跨板公共内核）</span></a>
+<a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1)</span></a>
+<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">D101Q45A15</span></a>
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670_DataSheet_Chinese_RevA2.2</span></a>
+<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">JL-M101B196-P21WX-M402632 规格书V1.0</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">conf_3670(3)</span></a>
+<a class="item child current" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: docs</p>
+<h1>s10-h133-v1_0625</h1>
+<p><a href="项目/JL_M101/资料/s10-h133-v1_0625.pdf">打开文件</a></p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

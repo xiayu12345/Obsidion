@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260729-LQ140M1JW61-双显LCD-HDMI排查.bak · LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<a class="item child current" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">20260729-LQ140M1JW61-双显LCD-HDMI排查.bak · LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">01 — 板件新建</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">02 — panel 与 init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">03 — DTS 与双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/README.html"><span class="txt">20260729-LQ140M1JW61-板件新建与双显定稿 · LQ140M1JW61 板件新建与双显定稿 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/README.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/README.html"><span class="txt">开发记录 · LQ140M1JW61 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/README.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/README.html"><span class="txt">patches · 20260805 TEMP 补丁（历史对照，勿作产品默认）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证 — 开发记录（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/README.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换（定稿）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">LV_DS 双屏异显中间件 — 技术架构</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/README.html"><span class="txt">双屏异显 · 双屏异显（架构级）</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">1401598-v1(25.2.26)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110-Datasheet_20121205</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110 规格书要点与 H133 驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-29</p>
+<p>> <strong>已并入定稿</strong>：请读 <a href="../20260729-LQ140M1JW61-板件新建与双显定稿/README.md">../20260729-LQ140M1JW61-板件新建与双显定稿/</a>。本文仅作早期短记备份。</p>
+<h1>LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-29 |</p>
+<p>| 板型 | <code>p1_nor_LQ140M1JW61</code> |</p>
+<p>| 屏 | Sharp LQ140M1JW61 1920×1080（MIPI→eDP bridge <code>lq140_mipi2edp</code>） |</p>
+<p>| 副屏 | HDMI 1080p（双显：DE0 合成 → 抓帧 → DE1/HDMI） |</p>
+<p>| 结论 | <strong>LCD + HDMI 均正常、均不旋转（直出）</strong>；主因是 <strong>板级 DTS/env 配置未自洽或未真正生效</strong>，不是 <code>dev_disp.c</code> 必改 |</p>
+<p>索引：<a href="../README.md">../README.md</a></p>
+<p>---</p>
+<h2>1. 结论（一句话）</h2>
+<p>双显出图异常（HDMI 全绿 → 偏绿横纹 / LCD 异常）排查后，<strong>回退 <code>dev_disp.c</code> 试验改动后仍正常</strong>，说明稳定点在 <strong>板级配置链路（DTS / env / 打包刷写一致性）</strong>，而非 dual-display 驱动逻辑本身。LCD 当前为 <strong>软件直出</strong>（<code>sunxifb_rot=0</code>，<code>dual_display_rot=0</code>）。</p>
+<p>---</p>
+<h2>2. 现象演进</h2>
+<p>| 阶段 | 现象 | 日志要点 |</p>
+<p>|---|---|---|</p>
+<p>| A | HDMI 无图、整屏绿 | 双显未稳定建立 / 缓冲或时序不足 |</p>
+<p>| B | 有图但偏绿横纹；LCD/HDMI 不一致 | <code>dual display enabled ... NV21 ... dual_display_rot=0</code> |</p>
+<p>| C | 调参后 LCD 也曾异常 | 配置组合不自洽 |</p>
+<p>| D | <code>dual_display_rot=3</code> | LCD 正常，HDMI 被旋转 |</p>
+<p>| E | <code>dual_display_rot=0</code> + 配置一致 | <strong>LCD/HDMI 均正常、不旋转</strong> |</p>
+<p>| F | 回退 <code>dev_disp.c</code> 后再编再刷 | <strong>仍正常</strong> → 排除驱动试验改动为根因 |</p>
+<p>---</p>
+<h2>3. 稳定态验收日志（关键）</h2>
+<pre><code>[DISP] dual display HDMI G2D rot0: 1920x1080 full on 1920x1080 (WB 1920x1080)
+[DISP] dual display enabled: 1920x1080 NV21, ... (dual_display_rot=0)
+[desk] fb 1920x1080 -&gt; LVGL 1920x1080, sunxifb_rot=0 tp_rotate=0</code></pre>
+<p>含义：</p>
+<ul>
+<li>HDMI 双显路径：<code>rot=0</code></li>
+<li>desk / LCD 绘制：<strong>不做软件旋转（直出）</strong></li>
+</ul>
+<p>---</p>
+<h2>4. 排查过程（按时间）</h2>
+<h3>4.1 板级资源与时序</h3>
+<ul>
+<li>关注点：<code>lcd_dclk_freq</code>、<code>cma</code>、<code>chn_cfg_mode</code>、<code>dual_display_rot</code></li>
+<li>过程中出现过「改了源文件，但启动日志仍是旧值」→ <strong>打包/刷写/分区生效不一致</strong></li>
+</ul>
+<h3>4.2 <code>dual_display_rot</code> 对照</h3>
+<p>| 值 | 结果 |</p>
+<p>|---|---|</p>
+<p>| <code>3</code> | LCD 正常；HDMI 旋转 |</p>
+<p>| <code>0</code> | 目标态：LCD/HDMI 均不旋转；在配置自洽时可用 |</p>
+<p>说明：<code>0</code>/<code>3</code> 在代码上都走 apply_rot，但 G2D/拷贝与几何不同；<strong>不能只凭「结构差不多」忽略参数差异与生效情况</strong>。</p>
+<h3>4.3 <code>dev_disp.c</code> 试验与回退（对照实验）</h3>
+<p>曾改 <code>disp_dual_display_apply_rot()</code>（<code>rot=0</code> 时 memcpy / G2D 顺序）。</p>
+<p>| 步骤 | 结果 |</p>
+<p>|---|---|</p>
+<p>| 应用试验改动 | 现象反复，无法单独证伪/证实 |</p>
+<p>| <strong><code>git checkout -- …/dev_disp.c</code> 回退</strong> | 重编 kernel 后刷机，<strong>LCD+HDMI 仍正常</strong> |</p>
+<p>→ <strong>试验改动不是最终稳定条件。</strong></p>
+<h3>4.4 仍保留的板级相关改动（非 <code>dev_disp.c</code>）</h3>
+<p>为新屏接入而存在、与「双显绿纹」根因正交的改动（面板编译入口等），例如：</p>
+<p>| 类别 | 路径（示例） | 作用 |</p>
+<p>|---|---|---|</p>
+<p>| panel 注册 | kernel/u-boot <code>disp/lcd/Kconfig</code>、<code>panels.c/.h</code>、<code>Makefile</code> | <code>LCD_SUPPORT_LQ140_MIPI2EDP</code> / <code>lq140_mipi2edp.o</code> |</p>
+<p>| OpenWrt target | <code>openwrt/.openwrt_targets</code>、各 <code>defconfig</code> | 增加 <code>h133-p1_nor_LQ140M1JW61</code> |</p>
+<p>| WB 旋转宏 | <code>libtmedia/Makefile</code> | <code>LQ140M1JW61</code> 走 <code>VIDEO_WB_MIRROR_ROTATE=0</code> |</p>
+<p><strong>这些是新板编译/接入需要的，不要当成「绿屏根因补丁」误删。</strong></p>
+<p>---</p>
+<h2>5. 根因判断</h2>
+<p>| 判断 | 依据 |</p>
+<p>|---|---|</p>
+<p>| <strong>主因：DTS/env 等板级配置未配齐或不一致生效</strong> | 参数与启动日志曾对不上；<code>rot</code> 等切换后行为变化；其它板同驱动镜像正常 |</p>
+<p>| <strong>非主因：<code>dev_disp.c</code> 试验逻辑</strong> | 回退后仍正常 |</p>
+<p>| <strong>LCD 当前非软件旋转再出图</strong> | <code>sunxifb_rot=0</code>、<code>tp_rotate=0</code>、<code>dual_display_rot=0</code> |</p>
+<p>---</p>
+<h2>6. 当前板级显示要点（定稿观察）</h2>
+<p>| 项 | 取值（源树观察） |</p>
+<p>|---|---|</p>
+<p>| <code>fb0</code> | 1920×1080 |</p>
+<p>| <code>chn_cfg_mode</code> | <code>1</code> |</p>
+<p>| <code>dual_display_rot</code> | <code>0</code> |</p>
+<p>| <code>lcd_driver_name</code> | <code>lq140_mipi2edp</code> |</p>
+<p>| <code>lcd_dclk_freq</code> | <code>139</code>（EDID typ ~138.53MHz） |</p>
+<p>| <code>cma</code>（env.cfg） | <code>8M</code>（调试中曾试过 16M；以实机 cmdline 为准核对） |</p>
+<p><strong>验收时必须对日志，不要只看源文件。</strong></p>
+<p>---</p>
+<h2>7. 编译与产物</h2>
+<pre><code>./tools/build_p1_nor_LQ140M1JW61.sh kernel
+# 或 full
+# 产物：out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img</code></pre>
+<p>---</p>
+<h2>8. 经验固化</h2>
+<ol>
+<li>双显异常先核对启动日志三件套是否与预期一致：<code>cma</code>、<code>chn_cfg</code>、<code>dual_display_rot</code>。</li>
+<li>先保证 <strong>配置真正进镜像</strong>，再改 <code>dev_disp.c</code>。</li>
+<li>驱动试验必须做 <strong>回退对照</strong>；回退后仍好 = 试验代码不是根因。</li>
+<li>新屏 panel 编译入口与双显绿纹问题分开归档，勿混为一谈。</li>
+</ol>
+<p>---</p>
+<h2>9. 关联路径</h2>
+<p>| 角色 | 路径 |</p>
+<p>|---|---|</p>
+<p>| 内核/U-Boot DTS | <code>device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts</code>、<code>uboot-board.dts</code> |</p>
+<p>| env | <code>…/p1_nor_LQ140M1JW61/env.cfg</code>、<code>bsp/env.cfg</code> |</p>
+<p>| panel | <code>kernel/.../disp/lcd/lq140_mipi2edp.c</code>、u-boot 同名 |</p>
+<p>| dual display | <code>kernel/.../disp2/disp/dev_disp.c</code>（<strong>本专题最终未保留改动</strong>） |</p>
+<p>| 编译脚本 | <code>tools/build_p1_nor_LQ140M1JW61.sh</code> |</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

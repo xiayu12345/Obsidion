@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260825-三路旋转控制 · 如何改 HDMI / UI / 视频旋转 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JL_M101/20260831-GPADC三键.html"><span class="txt">GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">20260720-JL_M101-JD9365DA-MIPI适配 · JL-M101 JD9365DA MIPI 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">01 — 板件新建（从 p1_nor_8733 克隆）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">02 — Panel 驱动与京龙 init</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">03 — DTS、时序与背光 PWM</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑（到完整出图）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/README.html"><span class="txt">20260722-JL_M101-板件新建与MIPI显示定稿 · JL-M101 板件新建与 MIPI 显示定稿 — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/README.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">20260727-JL_M101-GSL3670触摸适配 · JL-M101 GSL3670 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/README.html"><span class="txt">20260831-三键识别 · GPADC 三键识别</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">20260831-三键识别 · 如何改 GPADC 电阻按键配置</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">20260831-三键识别 · GPADC 按键识别 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">20260831-三键识别 · GPADC 测试方法</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/README.html"><span class="txt">GPADC电阻按键 · GPADC 电阻按键</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/README.html"><span class="txt">开发记录 · JL-M101 JD9365DA MIPI — 文档索引</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/README.html"><span class="txt">20260825-三路旋转控制 · 三路旋转控制（定稿）</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/patches/README.html"><span class="txt">patches · 三路旋转 — 新板对照补丁</span></a>
+<a class="item child current" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">20260825-三路旋转控制 · 如何改 HDMI / UI / 视频旋转</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">20260825-三路旋转控制 · HDMI / UI / 视频三路旋转 — 开发记录</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/README.html"><span class="txt">显示旋转 · 显示旋转（架构级）</span></a>
+<a class="item cat" href="项目/JL_M101/外设.html"><span class="txt">外设</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">GPADC 电阻按键</span></a>
+<a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
+<a class="item child" href="项目/JL_M101/20260730-HDMI黑边.html"><span class="txt">HDMI 同显 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/README.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显：DE1 linebuf 超宽 1:1 黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">20260730-HDMI同显-DE1-linebuf超宽1比1黑边 · HDMI 同显 DE1 linebuf：超宽 YUV「1:1」黑边</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/README.html"><span class="txt">系统BUG修复 · 系统 BUG 修复（跨板公共内核）</span></a>
+<a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1)</span></a>
+<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">D101Q45A15</span></a>
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670_DataSheet_Chinese_RevA2.2</span></a>
+<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">JL-M101B196-P21WX-M402632 规格书V1.0</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">conf_3670(3)</span></a>
+<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-08-25</p>
+<h1>如何改 HDMI / UI / 视频旋转</h1>
+<p>机制已在树，<strong>不要改</strong> <code>dev_disp.c</code> / <code>sunxifb.c</code> / <code>tlayer_ctrl.c</code> 的旋转逻辑。新板只改下面三处旋钮。对照片段：<a href="./patches/">patches/</a>。</p>
+<p>先看规格书扫描方向：原生竖屏（如 800×1280）产品要横屏 UI → 用竖屏套件；原生横屏 → 用横屏套件。</p>
+<p>---</p>
+<h2>0. 选套件</h2>
+<p>| | 竖屏 MIPI（跟 8733 / ZS101） | 横屏（跟 JYY070 / LQ140） |</p>
+<p>|---|---|---|</p>
+<p>| <code>disp_rotate</code> | <code>3</code> | <code>0</code> |</p>
+<p>| <code>dual_display_rot</code> | <code>3</code>（缺省已是 3，建议显式写） | <strong>必须</strong> <code>&lt;0&gt;</code> |</p>
+<p>| <code>VIDEO_WB_MIRROR_ROTATE</code> | <code>90</code>（Makefile 必须点名本 target） | <code>0</code> |</p>
+<p>| <code>video_rotate</code> | 一般不写（默认 0） | 一般不写 |</p>
+<p>三路改完后 <strong>分别验收</strong>，不要一次改完再猜是哪路错。</p>
+<p>---</p>
+<h2>1. 改 HDMI（kernel）</h2>
+<p><strong>文件：</strong> <code>device/config/chips/h133/configs/&lt;BOARD&gt;/linux-5.4/board.dts</code>  </p>
+<p>在 <code>disp</code> 节点、<code>chn_cfg_mode</code> 附近：</p>
+<pre><code>dual_display_rot         = &lt;3&gt;; /* 竖屏 DE0 → 横屏 HDMI；横屏板改 &lt;0&gt; */</code></pre>
+<p>| 值 | G2D | 何时用 |</p>
+<p>|---|---|---|</p>
+<p>| <code>0</code> | rot0 | 主屏已是横屏，HDMI 不要再转 |</p>
+<p>| <code>1</code> | 90° | 少见 |</p>
+<p>| <code>2</code> | 180° | 少见 |</p>
+<p>| <code>3</code> | 270° | 竖屏主显镜像到横屏电视 |</p>
+<p>不写 = 内核当 <strong>3</strong>。横屏漏写会 HDMI 方向错 / 全绿。</p>
+<pre><code>./tools/build_&lt;BOARD&gt;.sh kernel</code></pre>
+<p>串口期望：<code>[DISP] dual display HDMI G2D rot270:</code> 或 <code>rot0:</code>。</p>
+<p>---</p>
+<h2>2. 改 UI（rootfs ini）</h2>
+<p><strong>文件：</strong> <code>openwrt/target/h133/h133-&lt;BOARD&gt;/busybox-init-base-files/etc/setting.ini</code></p>
+<pre><code>[display]
+# 0=0° 1=90° 2=180° 3=270°
+disp_rotate = 3</code></pre>
+<p>板上若有 <code>/mnt/UDISK/setting.ini</code>，它会盖掉 <code>/etc</code>。改完看不见效果先：</p>
+<pre><code>grep disp_rotate /mnt/UDISK/setting.ini /etc/setting.ini</code></pre>
+<p><code>argv[1]</code> 也能盖 ini（如 <code>sing_ktv 0</code>），desk 启动一般不传。</p>
+<pre><code>./tools/build_&lt;BOARD&gt;.sh rootfs</code></pre>
+<p>启动 log 期望：<code>sunxifb_rot=3</code>（或 <code>0</code>）。</p>
+<p>触摸是第四路：<code>tp_rotate</code>，与 UI 独立；勿拿 <code>disp_rotate</code> 去「顺便修触摸」。</p>
+<p>---</p>
+<h2>3. 改视频 WB（libtmedia）</h2>
+<p><strong>文件：</strong> <code>openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile</code></p>
+<p>新竖屏板：把本 target 加进 <code>=90</code> 那行的 <code>ifeq</code>，例如：</p>
+<pre><code>ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_ZS101)$(CONFIG_TARGET_h133_&lt;BOARD&gt;),y)
+TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+endif</code></pre>
+<p>新横屏板：加进 <code>=0</code> 那行，或什么都不加（C 默认 0）。<strong>不要</strong>在 <code>tlayer_ctrl.c</code> 里按板名写死。</p>
+<p>只改 ini 的 <code>video_rotate</code> <strong>解决不了</strong>「UI 对、视频横着」——那是 WB 宏。</p>
+<pre><code>touch platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+./tools/build_&lt;BOARD&gt;.sh rootfs</code></pre>
+<p>log 期望：<code>[WB-MIRROR] ... VIDEO_WB_MIRROR_ROTATE=90</code>（或 <code>0</code>）。</p>
+<p>播放器微调朝向（少用）：同 ini 加 <code>video_rotate = 0..3</code>，走 <code>TPlayerSetRotate</code>，与 WB 宏独立。</p>
+<p>---</p>
+<h2>4. 编译对照</h2>
+<p>| 改了什么 | 编什么 |</p>
+<p>|---|---|</p>
+<p>| <code>board.dts</code> <code>dual_display_rot</code> | <strong>kernel</strong> |</p>
+<p>| <code>setting.ini</code> <code>disp_rotate</code> / <code>video_rotate</code> | <strong>rootfs</strong>（不必重编 desk） |</p>
+<p>| <code>libtmedia/Makefile</code> WB 宏 | <strong>rootfs</strong>（重编 libtmedia） |</p>
+<p>| <code>sunxifb.c</code> / <code>tlayer_ctrl.c</code>（不要为改角度动） | GUI 包 / libtmedia |</p>
+<p>禁止在 WSL 本地 <code>make</code> 出 <code>.o</code> 污染交叉编译。</p>
+<p>---</p>
+<h2>5. 排错</h2>
+<p>| 现象 | 先查 |</p>
+<p>|---|---|</p>
+<p>| LCD 方向错、HDMI 还行 | <code>disp_rotate</code>；UDISK 是否覆盖 |</p>
+<p>| HDMI 绿/歪、LCD 正常 | <code>dual_display_rot</code>（横屏是否忘了写 0） |</p>
+<p>| UI 对、视频横着/竖着 | <code>VIDEO_WB_MIRROR_ROTATE</code> 是否编进本 target |</p>
+<p>| 改 ini 无效 | UDISK；是否误改了 <code>LV_PROJECTOR_DISP_ROTATE</code> 当运行时 |</p>
+<p>| 子 app 切走后 HDMI 方向没了 | 子进程误 <code>sunxifb_exit</code> |</p>
+<p><code>cedarx.conf</code> 的 <code>g2d_rotate_flag</code> / <code>dual_disp_mipi_rotate</code> <strong>不是</strong>当前板型主入口，不要靠改 conf 分板。</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

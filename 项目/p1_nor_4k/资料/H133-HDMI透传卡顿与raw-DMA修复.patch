@@ -1,0 +1,1938 @@
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c
+@@ -1,11 +1,14 @@
+ #define LOG_TAG "tsoundcontrol"
+ #include "tsound_ctrl.h"
+-#ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+-#include "sunxi_passthough_wrapper.h"
+-#endif
++#include "spdif/include/sunxi_passthough_wrapper.h"
+ 
+ #include <assert.h>
+ #include <pthread.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <stdint.h>
++#include <errno.h>
+ #include <sys/time.h>
+ #include <stdbool.h>
+ 
+@@ -16,142 +19,831 @@
+ 
+ 
+ #define AUDIO_SURROUND 0
++#define SPDIF_RING_BYTES (AUDIO_POST_PROC_PCM_BUFSIZE * 2)
+ #define AUDIO_WRITE_TIMEDIFF (0)
++#define MAX_SOUND_CTRL_INSTANCES 8
+ extern long long TPlayerGetNowMs();
+ int BLOCK_MODE = 0;
+ int NON_BLOCK_MODE = 1;
++
++static SoundCtrlContext* g_sound_ctrls[MAX_SOUND_CTRL_INSTANCES];
++static pthread_mutex_t g_sound_ctrl_list_mutex = PTHREAD_MUTEX_INITIALIZER;
++
++static void sound_ctrl_register(SoundCtrlContext* sc)
++{
++    int i;
++
++    if (!sc)
++        return;
++    pthread_mutex_lock(&g_sound_ctrl_list_mutex);
++    for (i = 0; i < MAX_SOUND_CTRL_INSTANCES; i++) {
++        if (g_sound_ctrls[i] == sc) {
++            pthread_mutex_unlock(&g_sound_ctrl_list_mutex);
++            return;
++        }
++    }
++    for (i = 0; i < MAX_SOUND_CTRL_INSTANCES; i++) {
++        if (g_sound_ctrls[i] == NULL) {
++            g_sound_ctrls[i] = sc;
++            break;
++        }
++    }
++    pthread_mutex_unlock(&g_sound_ctrl_list_mutex);
++}
++
++static void sound_ctrl_unregister(SoundCtrlContext* sc)
++{
++    int i;
++
++    if (!sc)
++        return;
++    pthread_mutex_lock(&g_sound_ctrl_list_mutex);
++    for (i = 0; i < MAX_SOUND_CTRL_INSTANCES; i++) {
++        if (g_sound_ctrls[i] == sc) {
++            g_sound_ctrls[i] = NULL;
++            break;
++        }
++    }
++    pthread_mutex_unlock(&g_sound_ctrl_list_mutex);
++}
++
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
++#define AUDIO_ROUTE_MODE_FILE "/etc/audio_output.mode"
++#define HDMI_PCM_PRIMARY      "hw:sndi2s2,0"
++#define HDMI_PCM_FALLBACK     "hw:sndhdmi,0"
++#define HDMI_CTL_PRIMARY      "hw:sndi2s2"
++#define HDMI_CTL_FALLBACK     "hw:sndhdmi"
++#define PT_HDMI_IEC_VERBOSE_LOG 0
++#define HDMI_IEC_STUFF_MAX_FRAMES 3072 /* stuffing 单次上限，对齐 EAC3 period_size */
++
++typedef enum {
++    AUDIO_ROUTE_SPDIF = 0,
++    AUDIO_ROUTE_HDMI,
++    AUDIO_ROUTE_DUAL
++} AudioRouteMode;
++
+ static int openSoundDevice(SoundCtrlContext* sc,int mode);
+ static int closeSoundDevice(SoundCtrlContext* sc);
+ static int setSoundDeviceParams(SoundCtrlContext* sc);
++static int setPcmHwParams(SoundCtrlContext* sc, snd_pcm_t *pcm, int is_spdif_slave);
++static snd_pcm_sframes_t writePcmWithRecover(SoundCtrlContext* sc, snd_pcm_t *pcm,
++        void *pData, snd_pcm_uframes_t num_frames);
++static int writeHdmiIecStuffingIfStarved(SoundCtrlContext* sc);
++static int isRawPassthroughType(enum AUIDO_RAW_DATA_TYPE raw_type);
++static void spdifRingReset(SoundCtrlContext* sc);
++static int spdifRingWrite(SoundCtrlContext* sc, const void *data, size_t bytes);
++static int startSpdifThread(SoundCtrlContext* sc);
++static void stopSpdifThread(SoundCtrlContext* sc);
++static void *spdifThreadMain(void *arg);
++static size_t masterFrameBytes(SoundCtrlContext* sc);
++static unsigned getAppSampleRate(SoundCtrlContext* sc);
++static unsigned getPcmInChannels(SoundCtrlContext* sc);
++static unsigned getPcmOutChannels(SoundCtrlContext* sc);
++static void expandMonoToStereo(SoundCtrlContext* sc, int16_t* buf, int mono_frames);
++
++static unsigned getPcmInChannels(SoundCtrlContext* sc)
++{
++    if (!sc || sc->pcm_in_channels == 0)
++        return 1;
++    return sc->pcm_in_channels;
++}
++
++static unsigned getPcmOutChannels(SoundCtrlContext* sc)
++{
++    unsigned ch = sc ? sc->nChannelNum : 0;
++
++    if (ch == 0)
++        ch = sc && sc->app_channel_num ? sc->app_channel_num : 2;
++    return ch >= 2 ? ch : 2;
++}
++
++static void expandMonoToStereo(SoundCtrlContext* sc, int16_t* buf, int mono_frames)
++{
++    int i;
++
++    (void)sc;
++    if (!buf || mono_frames <= 0)
++        return;
++    for (i = mono_frames - 1; i >= 0; i--) {
++        buf[i * 2] = buf[i];
++        buf[i * 2 + 1] = buf[i];
++    }
++}
++
++static unsigned getAppSampleRate(SoundCtrlContext* sc)
++{
++    if (!sc)
++        return 48000;
++    if (sc->app_sample_rate)
++        return sc->app_sample_rate;
++    if (sc->src_sample_rate)
++        return sc->src_sample_rate;
++    if (sc->nSampleRate)
++        return sc->nSampleRate;
++    return 48000;
++}
++
++static size_t masterFrameBytes(SoundCtrlContext* sc)
++{
++    unsigned channels = sc->app_channel_num ? sc->app_channel_num : sc->nChannelNum;
++
++    if (channels == 0)
++        channels = 2;
++    if (sc->bytes_per_sample == 0)
++        return channels * 2;
++    return sc->bytes_per_sample * channels;
++}
++
++static void spdifRingReset(SoundCtrlContext* sc)
++{
++    if (!sc)
++        return;
++    pthread_mutex_lock(&sc->spdif_ring_mutex);
++    sc->spdif_ring_rd = 0;
++    sc->spdif_ring_wr = 0;
++    sc->spdif_ring_used = 0;
++    pthread_mutex_unlock(&sc->spdif_ring_mutex);
++}
++
++static int spdifRingWrite(SoundCtrlContext* sc, const void *data, size_t bytes)
++{
++    size_t first;
++    const char *src = (const char*)data;
++
++    if (!sc || !data || bytes == 0)
++        return 0;
++
++    pthread_mutex_lock(&sc->spdif_ring_mutex);
++    while (sc->spdif_ring_used + bytes > sc->spdif_ring_size && !sc->spdif_thread_stop) {
++        pthread_cond_wait(&sc->spdif_ring_cond, &sc->spdif_ring_mutex);
++    }
++    if (sc->spdif_thread_stop) {
++        pthread_mutex_unlock(&sc->spdif_ring_mutex);
++        return -1;
++    }
++
++    first = sc->spdif_ring_size - sc->spdif_ring_wr;
++    if (bytes <= first) {
++        memcpy(sc->spdif_ring_buf + sc->spdif_ring_wr, src, bytes);
++    } else {
++        memcpy(sc->spdif_ring_buf + sc->spdif_ring_wr, src, first);
++        memcpy(sc->spdif_ring_buf, src + first, bytes - first);
++    }
++    sc->spdif_ring_wr = (sc->spdif_ring_wr + bytes) % sc->spdif_ring_size;
++    sc->spdif_ring_used += bytes;
++    pthread_cond_signal(&sc->spdif_ring_cond);
++    pthread_mutex_unlock(&sc->spdif_ring_mutex);
++    return 0;
++}
++
++static size_t spdifRingRead(SoundCtrlContext* sc, void *dst, size_t bytes)
++{
++    size_t first;
++    char *out = (char*)dst;
++
++    pthread_mutex_lock(&sc->spdif_ring_mutex);
++    while (sc->spdif_ring_used < bytes && !sc->spdif_thread_stop) {
++        if (sc->sound_status != STATUS_START)
++            break;
++        pthread_cond_wait(&sc->spdif_ring_cond, &sc->spdif_ring_mutex);
++    }
++    if (sc->spdif_ring_used < bytes) {
++        bytes = sc->spdif_ring_used;
++    }
++    if (bytes == 0) {
++        pthread_mutex_unlock(&sc->spdif_ring_mutex);
++        return 0;
++    }
++
++    first = sc->spdif_ring_size - sc->spdif_ring_rd;
++    if (bytes <= first) {
++        memcpy(out, sc->spdif_ring_buf + sc->spdif_ring_rd, bytes);
++    } else {
++        memcpy(out, sc->spdif_ring_buf + sc->spdif_ring_rd, first);
++        memcpy(out + first, sc->spdif_ring_buf, bytes - first);
++    }
++    sc->spdif_ring_rd = (sc->spdif_ring_rd + bytes) % sc->spdif_ring_size;
++    sc->spdif_ring_used -= bytes;
++    pthread_cond_signal(&sc->spdif_ring_cond);
++    pthread_mutex_unlock(&sc->spdif_ring_mutex);
++    return bytes;
++}
++
++static void *spdifThreadMain(void *arg)
++{
++    SoundCtrlContext* sc = (SoundCtrlContext*)arg;
++    char chunk[AUDIO_POST_PROC_PCM_BUFSIZE];
++    size_t frame_bytes;
++    size_t chunk_bytes;
++
++    frame_bytes = masterFrameBytes(sc);
++    if (frame_bytes == 0)
++        frame_bytes = 4;
++    chunk_bytes = frame_bytes * 1024;
++
++    while (!sc->spdif_thread_stop) {
++        size_t got = spdifRingRead(sc, chunk, chunk_bytes);
++        if (got == 0) {
++            if (sc->spdif_thread_stop)
++                break;
++            continue;
++        }
++        if (sc->sound_status == STATUS_START && sc->alsa_handler_spdif) {
++            snd_pcm_uframes_t frames = got / frame_bytes;
++            if (frames > 0)
++                (void)writePcmWithRecover(sc, sc->alsa_handler_spdif, chunk, frames);
++        }
++    }
++    return NULL;
++}
++
++static int startSpdifThread(SoundCtrlContext* sc)
++{
++    int ret;
++
++    if (!sc || !sc->dual_output || !sc->alsa_handler_spdif || sc->spdif_thread_started)
++        return 0;
++
++    sc->spdif_thread_stop = 0;
++    spdifRingReset(sc);
++    ret = pthread_create(&sc->spdif_thread, NULL, spdifThreadMain, sc);
++    if (ret != 0) {
++        TLOGE("spdif thread create failed:%s", strerror(ret));
++        return -1;
++    }
++    sc->spdif_thread_started = 1;
++    TLOGD("spdif thread started");
++    return 0;
++}
++
++static void stopSpdifThread(SoundCtrlContext* sc)
++{
++    if (!sc || !sc->spdif_thread_started)
++        return;
++
++    pthread_mutex_lock(&sc->spdif_ring_mutex);
++    sc->spdif_thread_stop = 1;
++    pthread_cond_broadcast(&sc->spdif_ring_cond);
++    pthread_mutex_unlock(&sc->spdif_ring_mutex);
++    pthread_join(sc->spdif_thread, NULL);
++    sc->spdif_thread_started = 0;
++    sc->spdif_thread_stop = 0;
++    spdifRingReset(sc);
++    TLOGD("spdif thread stopped");
++}
++
++static AudioRouteMode readAudioRouteMode(void)
++{
++    FILE *f;
++    char buf[16];
++
++    f = fopen(AUDIO_ROUTE_MODE_FILE, "r");
++    if (!f)
++        return AUDIO_ROUTE_SPDIF;
++    if (!fgets(buf, sizeof(buf), f)) {
++        fclose(f);
++        return AUDIO_ROUTE_SPDIF;
++    }
++    fclose(f);
++    if (strncmp(buf, "spdif", 5) == 0)
++        return AUDIO_ROUTE_SPDIF;
++    if (strncmp(buf, "hdmi", 4) == 0)
++        return AUDIO_ROUTE_HDMI;
++    if (strncmp(buf, "dual", 4) == 0)
++        return AUDIO_ROUTE_DUAL;
++    return AUDIO_ROUTE_SPDIF;
++}
++
++static const char *hdmiRawMixerValue(enum AUIDO_RAW_DATA_TYPE raw_type)
++{
++    switch (raw_type) {
++    case AUDIO_RAW_DATA_AC3:
++        return "AC3";
++    case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
++    case AUDIO_RAW_DATA_EAC3_JOC:
++        return "DOLBY_DIGITAL_PLUS";
++    case AUDIO_RAW_DATA_DTS:
++    case AUDIO_RAW_DATA_DTS_HD:
++        return "DTS";
++    case AUDIO_RAW_DATA_PCM:
++    default:
++        return "PCM";
++    }
++}
++
++static int setAlsaEnumControl(const char *card, const char *control_name, const char *value)
++{
++    snd_ctl_t *ctl = NULL;
++    snd_ctl_elem_id_t *id = NULL;
++    snd_ctl_elem_info_t *info = NULL;
++    snd_ctl_elem_value_t *ctl_value = NULL;
++    unsigned int item;
++    unsigned int items;
++    int ret;
++
++    ret = snd_ctl_open(&ctl, card, 0);
++    if (ret < 0)
++        return ret;
++
++    snd_ctl_elem_id_malloc(&id);
++    snd_ctl_elem_info_malloc(&info);
++    snd_ctl_elem_value_malloc(&ctl_value);
++    if (id == NULL || info == NULL || ctl_value == NULL) {
++        ret = -ENOMEM;
++        goto out;
++    }
++
++    snd_ctl_elem_id_set_interface(id, SND_CTL_ELEM_IFACE_MIXER);
++    snd_ctl_elem_id_set_name(id, control_name);
++    snd_ctl_elem_info_set_id(info, id);
++    ret = snd_ctl_elem_info(ctl, info);
++    if (ret < 0)
++        goto out;
++
++    items = snd_ctl_elem_info_get_items(info);
++    for (item = 0; item < items; item++) {
++        const char *item_name;
++
++        snd_ctl_elem_info_set_item(info, item);
++        ret = snd_ctl_elem_info(ctl, info);
++        if (ret < 0)
++            goto out;
++
++        item_name = snd_ctl_elem_info_get_item_name(info);
++        if (item_name != NULL && strcmp(item_name, value) == 0) {
++            snd_ctl_elem_value_set_id(ctl_value, id);
++            snd_ctl_elem_value_set_enumerated(ctl_value, 0, item);
++            ret = snd_ctl_elem_write(ctl, ctl_value);
++            goto out;
++        }
++    }
++
++    ret = -EINVAL;
++
++out:
++    if (ctl_value != NULL)
++        snd_ctl_elem_value_free(ctl_value);
++    if (info != NULL)
++        snd_ctl_elem_info_free(info);
++    if (id != NULL)
++        snd_ctl_elem_id_free(id);
++    snd_ctl_close(ctl);
++    return ret;
++}
++
++static int setHdmiRawFlag(enum AUIDO_RAW_DATA_TYPE raw_type)
++{
++    const char *value = hdmiRawMixerValue(raw_type);
++    const char *fallback_value = (raw_type == AUDIO_RAW_DATA_PCM) ? "pcm" : NULL;
++    const char *controls[] = {
++        "audio data format",
++        "hdmi audio format Function",
++    };
++    const char *cards[] = {
++        HDMI_CTL_PRIMARY,
++        HDMI_CTL_FALLBACK,
++    };
++    size_t ci;
++    size_t vi;
++    int ret = -EINVAL;
++
++    for (ci = 0; ci < sizeof(cards) / sizeof(cards[0]); ci++) {
++        for (vi = 0; vi < sizeof(controls) / sizeof(controls[0]); vi++) {
++            ret = setAlsaEnumControl(cards[ci], controls[vi], value);
++            if (ret < 0 && fallback_value != NULL)
++                ret = setAlsaEnumControl(cards[ci], controls[vi], fallback_value);
++            if (ret >= 0) {
++                printf("PT HDMI raw flag card=%s control=%s value=%s\n",
++                       cards[ci], controls[vi], value);
++                return 0;
++            }
++        }
++    }
++
++    TLOGE("set HDMI raw flag %s failed, ret=%d", value, ret);
++    return ret;
++}
++
++static int openOnePcm(snd_pcm_t **handler, const char *name, int mode)
++{
++    int ret;
++
++    if (*handler) {
++        printf("PT ALSA audio device %s already open\n", name);
++        return 0;
++    }
++    ret = snd_pcm_open(handler, name, SND_PCM_STREAM_PLAYBACK, mode);
++    if (ret < 0) {
++        TLOGE("open audio device %s failed:%s, errno = %d", name, strerror(errno), errno);
++        printf("PT ALSA open audio device %s failed ret=%d errno=%d\n", name, ret, errno);
++    } else {
++        TLOGD("open audio device %s ok", name);
++        printf("PT ALSA open audio device %s ok\n", name);
++    }
++    return ret;
++}
++
++static int openHdmiRawPcm(SoundCtrlContext* sc, int mode)
++{
++    int ret;
++
++    printf("PT HDMI raw open begin raw=%d rate=%u period=%u/%u\n",
++           sc->raw_type, sc->nSampleRate, sc->period_size, sc->period_count);
++    ret = setHdmiRawFlag(sc->raw_type);
++    if (ret < 0)
++        return ret;
++
++    ret = openOnePcm(&sc->alsa_handler, HDMI_PCM_PRIMARY, mode);
++    if (ret < 0)
++        ret = openOnePcm(&sc->alsa_handler, HDMI_PCM_FALLBACK, mode);
++
++    if (ret < 0) {
++        setHdmiRawFlag(AUDIO_RAW_DATA_PCM);
++        return ret;
++    }
++
++    sc->hdmi_raw_active = 1;
++    printf("PT HDMI raw open ok raw=%d\n", sc->raw_type);
++    return 0;
++}
++
++static void restoreHdmiRawPcm(SoundCtrlContext* sc)
++{
++    if (sc != NULL && sc->hdmi_raw_active) {
++        setHdmiRawFlag(AUDIO_RAW_DATA_PCM);
++        sc->hdmi_raw_active = 0;
++    }
++}
++
+ static int openSoundDevice(SoundCtrlContext* sc ,int mode)
+ {
++    AudioRouteMode route;
+     int ret = 0;
+-    TLOGD("openSoundDevice() in default style");
++
++    TLOGD("openSoundDevice()");
+     TP_CHECK(sc);
+-    if(!sc->alsa_handler){
+-	//if((ret = snd_pcm_open(&sc->alsa_handler, "default",SND_PCM_STREAM_PLAYBACK ,mode))<0){
+-		//if use dimix func,use the below parms open the sound card
+-        if((ret = snd_pcm_open(&sc->alsa_handler, "default",SND_PCM_STREAM_PLAYBACK ,mode))<0)
+-	{
+-            TLOGE("open audio device failed:%s, errno = %d",strerror(errno),errno);
+-			/*
+-            if(errno == 16){//the device is busy,sleep 2 second and try again.notice:this will not happen when open in dmix mode
+-		sleep(2);
+-		if((ret = snd_pcm_open(&sc->alsa_handler, "default",SND_PCM_STREAM_PLAYBACK ,mode))<0){
+-			TLOGE("second open audio device failed:%s, errno = %d",strerror(errno),errno);
+-		}
+-            }
+-            */
+-        }
+-    }else{
+-	TLOGD("the audio device has been opened");
++
++    route = readAudioRouteMode();
++    sc->dual_output = (route == AUDIO_ROUTE_DUAL) ? 1 : 0;
++    printf("PT ALSA openSoundDevice route=%d direct=%d raw=%d hdmi_raw_active=%d\n",
++           route, sc->mNeedDirect, sc->raw_type, sc->hdmi_raw_active);
++
++    switch (route) {
++    case AUDIO_ROUTE_SPDIF:
++        ret = openOnePcm(&sc->alsa_handler, "PlaybackSPDIF", mode);
++        break;
++    case AUDIO_ROUTE_HDMI:
++        if (sc->mNeedDirect == 1 && isRawPassthroughType(sc->raw_type))
++            ret = openHdmiRawPcm(sc, mode);
++        else
++            ret = openOnePcm(&sc->alsa_handler, "PlaybackHDMI", mode);
++        break;
++    case AUDIO_ROUTE_DUAL:
++        if (sc->mNeedDirect == 1 && isRawPassthroughType(sc->raw_type))
++            ret = openHdmiRawPcm(sc, mode);
++        else
++            ret = openOnePcm(&sc->alsa_handler, "PlaybackHDMI", mode);
++        if (ret >= 0)
++            ret = openOnePcm(&sc->alsa_handler_spdif, "PlaybackSPDIF", BLOCK_MODE);
++        break;
++    default:
++        ret = -1;
++        break;
+     }
++
++    if (ret < 0)
++        closeSoundDevice(sc);
++
+     return ret;
+ }
+ 
+ static int closeSoundDevice(SoundCtrlContext* sc)
+ {
+     int ret = 0;
++
+     TLOGD("closeSoundDevice()");
+     TP_CHECK(sc);
+-    if (sc->alsa_handler){
++
++    restoreHdmiRawPcm(sc);
++    stopSpdifThread(sc);
++    if (sc->alsa_handler_spdif) {
++        if (snd_pcm_close(sc->alsa_handler_spdif) < 0)
++            TLOGE("snd_pcm_close spdif failed:%s", strerror(errno));
++        sc->alsa_handler_spdif = NULL;
++    }
++    if (sc->alsa_handler) {
+         if ((ret = snd_pcm_close(sc->alsa_handler)) < 0)
+-        {
+-            TLOGE("snd_pcm_close failed:%s",strerror(errno));
+-        }
++            TLOGE("snd_pcm_close failed:%s", strerror(errno));
+         else
+-        {
+-            sc->alsa_handler = NULL;
+-            TLOGE("alsa-uninit: pcm closed");
+-        }
++            TLOGD("alsa-uninit: pcm closed");
++        sc->alsa_handler = NULL;
+     }
++    sc->dual_output = 0;
++    sc->pcm_in_channels = 0;
+     return ret;
+ }
+ 
+-static int setSoundDeviceParams(SoundCtrlContext* sc)
++static int setPcmHwParams(SoundCtrlContext* sc, snd_pcm_t *pcm, int is_spdif_slave)
+ {
+     int ret = 0;
+-    TLOGD("setSoundDeviceParams()");
++    snd_pcm_uframes_t chunk_size;
++    unsigned int fragcount;
++    unsigned int rate;
++    unsigned int channels;
++    snd_pcm_hw_params_t *hwparams = NULL;
++
+     TP_CHECK(sc);
++    if (!pcm)
++        return -1;
++
++    rate = getAppSampleRate(sc);
++    channels = sc->app_channel_num ? sc->app_channel_num : sc->nChannelNum;
++    if (channels == 0)
++        channels = 2;
++
+     sc->bytes_per_sample = snd_pcm_format_physical_width(sc->alsa_format) / 8;
+-    sc->alsa_fragcount = 8;//cache count
+-    sc->chunk_size = 1024;//each cache size,unit : sample
+-    if ((ret = snd_pcm_hw_params_malloc(&sc->alsa_hwparams)) < 0)
+-    {
+-	TLOGE("snd_pcm_hw_params_malloc failed:%s",strerror(errno));
+-	return ret;
++    fragcount = sc->dual_output ? 12 : 8;
++    chunk_size = sc->dual_output ? 1024 : 1024;
++    if (sc->mNeedDirect == 1) {
++        channels = 2;
++        if (sc->nSampleRate)
++            rate = sc->nSampleRate;
++        if (sc->period_size)
++            chunk_size = sc->period_size;
++        if (sc->period_count)
++            fragcount = sc->period_count;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_any(sc->alsa_handler, sc->alsa_hwparams)) < 0)
+-    {
+-	TLOGE("snd_pcm_hw_params_any failed:%s",strerror(errno));
+-	goto SET_PAR_ERR;
++    if ((ret = snd_pcm_hw_params_malloc(&hwparams)) < 0) {
++        TLOGE("snd_pcm_hw_params_malloc failed:%s", strerror(errno));
++        return ret;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_access(sc->alsa_handler, sc->alsa_hwparams,
+-                SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
+-    {
+-	TLOGE("snd_pcm_hw_params_set_access failed:%s",strerror(errno));
+-	goto SET_PAR_ERR;
++    if ((ret = snd_pcm_hw_params_any(pcm, hwparams)) < 0) {
++        TLOGE("snd_pcm_hw_params_any failed:%s", strerror(errno));
++        goto SET_PAR_ERR;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_test_format(sc->alsa_handler, sc->alsa_hwparams,
+-            sc->alsa_format)) < 0)
+-    {
+-        TLOGE("snd_pcm_hw_params_test_format fail , MSGTR_AO_ALSA_FormatNotSupportedByHardware");
++    if ((ret = snd_pcm_hw_params_set_access(pcm, hwparams,
++                SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_access failed:%s", strerror(errno));
++        goto SET_PAR_ERR;
++    }
++
++    if ((ret = snd_pcm_hw_params_test_format(pcm, hwparams, sc->alsa_format)) < 0) {
++        TLOGE("snd_pcm_hw_params_test_format fail");
+         sc->alsa_format = SND_PCM_FORMAT_S16_LE;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_format(sc->alsa_handler, sc->alsa_hwparams,
+-                sc->alsa_format)) < 0)
+-    {
+-        TLOGE("snd_pcm_hw_params_set_format failed:%s",strerror(errno));
++    if ((ret = snd_pcm_hw_params_set_format(pcm, hwparams, sc->alsa_format)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_format failed:%s", strerror(errno));
+         goto SET_PAR_ERR;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_channels_near(sc->alsa_handler,
+-            sc->alsa_hwparams, &sc->nChannelNum)) < 0) {
+-        TLOGE("snd_pcm_hw_params_set_channels_near failed:%s",strerror(errno));
++    if ((ret = snd_pcm_hw_params_set_channels_near(pcm, hwparams, &channels)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_channels_near failed:%s", strerror(errno));
+         goto SET_PAR_ERR;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_rate_near(sc->alsa_handler, sc->alsa_hwparams,
+-            &sc->nSampleRate, NULL)) < 0) {
+-        TLOGE("snd_pcm_hw_params_set_rate_near failed:%s",strerror(errno));
++    /* Write PCM at source rate; ALSA plug in asound.conf handles route conversion. */
++    if ((ret = snd_pcm_hw_params_set_rate_near(pcm, hwparams, &rate, NULL)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_rate_near failed:%s", strerror(errno));
+         goto SET_PAR_ERR;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_period_size_near(sc->alsa_handler,
+-		sc->alsa_hwparams, &sc->chunk_size, NULL)) < 0) {
+-	TLOGE("snd_pcm_hw_params_set_period_size_near fail , MSGTR_AO_ALSA_UnableToSetPeriodSize");
+-	goto SET_PAR_ERR;
+-    } else {
+-	TLOGD("alsa-init: chunksize set to %ld", sc->chunk_size);
++    if ((ret = snd_pcm_hw_params_set_period_size_near(pcm, hwparams, &chunk_size, NULL)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_period_size_near fail");
++        goto SET_PAR_ERR;
+     }
+ 
+-    if ((ret = snd_pcm_hw_params_set_periods_near(sc->alsa_handler,
+-            sc->alsa_hwparams, (unsigned int*)&sc->alsa_fragcount, NULL)) < 0)
+-    {
+-        TLOGE("snd_pcm_hw_params_set_periods_near fail , MSGTR_AO_ALSA_UnableToSetPeriods");
++    if ((ret = snd_pcm_hw_params_set_periods_near(pcm, hwparams, &fragcount, NULL)) < 0) {
++        TLOGE("snd_pcm_hw_params_set_periods_near fail");
+         goto SET_PAR_ERR;
+-    } else {
+-        TLOGD("alsa-init: fragcount=%d", sc->alsa_fragcount);
+     }
+ 
+-    if ((ret = snd_pcm_hw_params(sc->alsa_handler, sc->alsa_hwparams)) < 0) {
+-        TLOGE("snd_pcm_hw_params failed:%s",strerror(errno));
++    if ((ret = snd_pcm_hw_params(pcm, hwparams)) < 0) {
++        TLOGE("snd_pcm_hw_params failed:%s", strerror(errno));
+         goto SET_PAR_ERR;
+     }
+ 
+-    sc->alsa_can_pause = snd_pcm_hw_params_can_pause(sc->alsa_hwparams);
++    if (pcm == sc->alsa_handler)
++        sc->alsa_can_pause = snd_pcm_hw_params_can_pause(hwparams);
++
++    if (sc->mNeedDirect == 1) {
++        snd_pcm_uframes_t nperiod = chunk_size;
++        snd_pcm_uframes_t nbuffer = 0;
++
++        snd_pcm_hw_params_get_period_size(hwparams, &nperiod, NULL);
++        snd_pcm_hw_params_get_buffer_size(hwparams, &nbuffer);
++        if (pcm == sc->alsa_handler) {
++            if (nperiod)
++                sc->period_size = (unsigned int)nperiod;
++            if (nbuffer && nperiod)
++                sc->period_count = (unsigned int)(nbuffer / nperiod);
++        }
++    }
++
++    TLOGD("setPcmHwParams %s: app_rate=%u negotiated=%u ch=%u period=%lu",
++          is_spdif_slave ? "spdif" : "primary",
++          getAppSampleRate(sc), rate, channels, (unsigned long)chunk_size);
+ 
+-    TLOGD("setSoundDeviceParams():sc->alsa_can_pause = %d",sc->alsa_can_pause);
+ SET_PAR_ERR:
+-    snd_pcm_hw_params_free(sc->alsa_hwparams);
++    snd_pcm_hw_params_free(hwparams);
++    return ret;
++}
+ 
++static int setSoundDeviceParams(SoundCtrlContext* sc)
++{
++    int ret;
++
++    TLOGD("setSoundDeviceParams() app_rate=%u", sc->app_sample_rate);
++    TP_CHECK(sc);
++
++    ret = setPcmHwParams(sc, sc->alsa_handler, 0);
++    if (ret < 0)
++        return ret;
++
++    if (sc->alsa_handler_spdif) {
++        ret = setPcmHwParams(sc, sc->alsa_handler_spdif, 1);
++        if (ret < 0)
++            return ret;
++    }
++
++    TLOGD("setSoundDeviceParams(): dual=%d can_pause=%d app_rate=%u",
++          sc->dual_output, sc->alsa_can_pause, sc->app_sample_rate);
++    return 0;
++}
++
++static int prepareAllPcms(SoundCtrlContext* sc)
++{
++    int ret;
++
++    if (!sc->alsa_handler)
++        return -1;
++    ret = snd_pcm_prepare(sc->alsa_handler);
++    if (ret < 0) {
++        TLOGE("snd_pcm_prepare primary failed:%s", strerror(errno));
++        return ret;
++    }
++    if (sc->alsa_handler_spdif) {
++        ret = snd_pcm_prepare(sc->alsa_handler_spdif);
++        if (ret < 0) {
++            TLOGE("snd_pcm_prepare spdif failed:%s", strerror(errno));
++            return ret;
++        }
++    }
++    return 0;
++}
++
++static int dropAllPcms(SoundCtrlContext* sc)
++{
++    int ret = 0;
++    int ret2;
++
++    if (sc->alsa_handler && (ret2 = snd_pcm_drop(sc->alsa_handler)) < 0)
++        ret = ret2;
++    if (sc->alsa_handler_spdif && (ret2 = snd_pcm_drop(sc->alsa_handler_spdif)) < 0)
++        ret = ret2;
+     return ret;
++}
++
++static snd_pcm_sframes_t writePcmWithRecover(SoundCtrlContext* sc, snd_pcm_t *pcm,
++        void *pData, snd_pcm_uframes_t num_frames)
++{
++    snd_pcm_uframes_t written = 0;
++    snd_pcm_uframes_t remaining = num_frames;
++    char *ptr = (char*)pData;
++    size_t frame_bytes = masterFrameBytes(sc);
++
++    if (!pcm)
++        return -EINVAL;
++    if (num_frames == 0)
++        return 0;
++    if (frame_bytes == 0)
++        frame_bytes = 4;
++
++    while (remaining > 0) {
++        snd_pcm_sframes_t res = snd_pcm_writei(pcm, ptr, remaining);
++
++        if (res == -EINTR) {
++            continue;
++        }
++        if (res == -ESTRPIPE) {
++            while ((res = snd_pcm_resume(pcm)) == -EAGAIN)
++                sleep(1);
++            continue;
++        }
++        if (res == -EPIPE) {
++            TLOGD("MSGTR_AO_ALSA_PcmXrunTryingRecover");
++            res = snd_pcm_recover(pcm, (int)res, 1);
++            if (res < 0) {
++                snd_pcm_prepare(pcm);
++            }
++            continue;
++        }
++        if (res < 0) {
++            TLOGE("MSGTR_AO_ALSA_WriteError,res = %ld", (long)res);
++            snd_pcm_prepare(pcm);
++            return (written > 0) ? (snd_pcm_sframes_t)written : res;
++        }
++
++        written += (snd_pcm_uframes_t)res;
++        remaining -= (snd_pcm_uframes_t)res;
++        ptr += (size_t)res * frame_bytes;
++    }
++
++    return (snd_pcm_sframes_t)written;
++}
++
++/* IEC61937 burst 间允许补 0；只在 HDMI raw 已 RUNNING 且剩余不足 2 period 时补一包。 */
++static int writeHdmiIecStuffingIfStarved(SoundCtrlContext* sc)
++{
++    static int16_t zero[HDMI_IEC_STUFF_MAX_FRAMES * 2];
++    snd_pcm_sframes_t avail;
++    snd_pcm_uframes_t period;
++    snd_pcm_uframes_t buffer;
++    snd_pcm_uframes_t filled;
++    snd_pcm_uframes_t chunk;
++    snd_pcm_state_t st;
++
++    if (!sc || !sc->alsa_handler || !sc->hdmi_raw_active)
++        return 0;
++
++    st = snd_pcm_state(sc->alsa_handler);
++    if (st != SND_PCM_STATE_RUNNING)
++        return 0;
++
++    avail = snd_pcm_avail(sc->alsa_handler);
++    if (avail < 0)
++        return 0;
++
++    period = sc->period_size ? sc->period_size : HDMI_IEC_STUFF_MAX_FRAMES;
++    buffer = period * (sc->period_count ? sc->period_count : 8);
++    if ((snd_pcm_uframes_t)avail >= buffer)
++        filled = 0;
++    else
++        filled = buffer - (snd_pcm_uframes_t)avail;
++
++    if (filled >= period * 2)
++        return 0;
++
++    chunk = period;
++    if (chunk > HDMI_IEC_STUFF_MAX_FRAMES)
++        chunk = HDMI_IEC_STUFF_MAX_FRAMES;
++    (void)writePcmWithRecover(sc, sc->alsa_handler, zero, chunk);
++    return 0;
++}
++
++static int reopenSoundDeviceLocked(SoundCtrlContext* sc)
++{
++    int ret;
++    SoundStatus old_status;
++
++    TP_CHECK(sc);
++    old_status = sc->sound_status;
++
++    if (old_status == STATUS_START)
++        dropAllPcms(sc);
++    closeSoundDevice(sc);
++
++    ret = openSoundDevice(sc, BLOCK_MODE);
++    if (ret < 0)
++        return ret;
++
++    if (old_status == STATUS_START || old_status == STATUS_PAUSE) {
++        ret = setSoundDeviceParams(sc);
++        if (ret < 0) {
++            closeSoundDevice(sc);
++            sc->sound_status = STATUS_STOP;
++            return ret;
++        }
++        sc->sound_status = old_status;
++        if (old_status == STATUS_START) {
++            ret = prepareAllPcms(sc);
++            if (ret < 0)
++                TLOGE("reopen prepare failed:%s", strerror(errno));
++            else if (sc->dual_output)
++                startSpdifThread(sc);
++        } else if (old_status == STATUS_PAUSE && sc->alsa_can_pause) {
++            ret = snd_pcm_pause(sc->alsa_handler, 1);
++            if (ret < 0)
++                TLOGE("reopen snd_pcm_pause failed:%s", strerror(errno));
++            if (sc->alsa_handler_spdif)
++                snd_pcm_pause(sc->alsa_handler_spdif, 1);
++        }
++    } else if (sc->nSampleRate > 0 && sc->nChannelNum > 0) {
++        ret = setSoundDeviceParams(sc);
++        if (ret < 0) {
++            closeSoundDevice(sc);
++            sc->sound_status = STATUS_STOP;
++            return ret;
++        }
++        sc->sound_status = STATUS_STOP;
++    } else {
++        sc->sound_status = STATUS_STOP;
++    }
+ 
++    return 0;
+ }
+ #endif
+ 
+@@ -189,57 +881,6 @@
+     TP_CHECK(sc);
+     return audio_port_close_device(sc->audio_port_config);
+ }
+-
+-/* 内核 hdmi_fmt 靠 mixer 枚举；官方补丁未设，功放会把 IEC 当 PCM */
+-static const char *hdmiRawMixerValue(enum AUIDO_RAW_DATA_TYPE raw_type)
+-{
+-    switch (raw_type) {
+-    case AUDIO_RAW_DATA_AC3:
+-        return "AC3";
+-    case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
+-    case AUDIO_RAW_DATA_EAC3_JOC:
+-        return "DOLBY_DIGITAL_PLUS";
+-    case AUDIO_RAW_DATA_DTS:
+-    case AUDIO_RAW_DATA_DTS_HD:
+-        return "DTS";
+-    default:
+-        return "PCM";
+-    }
+-}
+-
+-static int setHdmiRawFlag(enum AUIDO_RAW_DATA_TYPE raw_type)
+-{
+-    static const char *control_names[] = {
+-        "audio data format",
+-        "hdmi audio format Function",
+-    };
+-    const char *value = hdmiRawMixerValue(raw_type);
+-    unsigned int card;
+-    size_t i;
+-
+-    for (card = 0; card < 8; card++) {
+-        struct mixer *mixer = mixer_open(card);
+-        if (mixer == NULL)
+-            continue;
+-        for (i = 0; i < sizeof(control_names) / sizeof(control_names[0]); i++) {
+-            struct mixer_ctl *ctl = mixer_get_ctl_by_name(mixer, control_names[i]);
+-            if (ctl == NULL)
+-                continue;
+-            if (mixer_ctl_set_enum_by_string(ctl, value) == 0) {
+-                mixer_close(mixer);
+-                return 0;
+-            }
+-            if (raw_type == AUDIO_RAW_DATA_PCM &&
+-                mixer_ctl_set_enum_by_string(ctl, "pcm") == 0) {
+-                mixer_close(mixer);
+-                return 0;
+-            }
+-        }
+-        mixer_close(mixer);
+-    }
+-    TLOGE("set HDMI raw flag %s failed", value);
+-    return -1;
+-}
+ #endif
+ 
+ 
+@@ -261,8 +902,29 @@
+     s->alsa_format = SND_PCM_FORMAT_S16_LE;
+     s->alsa_can_pause = 0;
+ #endif
+-    s->nSampleRate = 48000;
++    s->nSampleRate = 0;
+     s->nChannelNum = 2;
++    s->src_sample_rate = 0;
++    s->app_sample_rate = 0;
++    s->app_channel_num = 2;
++#ifdef TPLAYER_AUDIO_API_ALSALIB
++    s->master_pcm_buf = (char*)malloc(AUDIO_POST_PROC_PCM_BUFSIZE);
++    if (s->master_pcm_buf == NULL) {
++        TLOGE("malloc master_pcm_buf fail.");
++        free(s);
++        return NULL;
++    }
++    s->spdif_ring_buf = (char*)malloc(SPDIF_RING_BYTES);
++    if (s->spdif_ring_buf == NULL) {
++        TLOGE("malloc spdif_ring_buf fail.");
++        free(s->master_pcm_buf);
++        free(s);
++        return NULL;
++    }
++    s->spdif_ring_size = SPDIF_RING_BYTES;
++    pthread_mutex_init(&s->spdif_ring_mutex, NULL);
++    pthread_cond_init(&s->spdif_ring_cond, NULL);
++#endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+     int ret = -1;
+     if (s->adev == NULL) {
+@@ -276,8 +938,8 @@
+     adev_set_device_change_callback(s->adev, handleAudioDeviceChange, s);
+     s->audio_port_config = adev_create_audio_port_config(s->adev, OUT_DEFAULT);
+     s->base.ops = &mSoundControlOps;
+-    s->passth = sunxi_passthrough_create();
+ #endif
++    s->passth = sunxi_passthrough_create();
+     s->sound_status = STATUS_STOP;
+     s->mVolume = 0;
+     s->mSoundChannelMode = s->nChannelNum;
+@@ -286,13 +948,7 @@
+     s->multi_player_disable_eq_flag = GetConfigParamterInt("multi_player_disable_eq_flag", 0);
+     pthread_mutex_init(&s->mutex, NULL);
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+-    int ret = openSoundDevice(s, BLOCK_MODE);
+-    if(ret != 0){
+-		TLOGD("open sound device fail");
+-        free(s);
+-        s = NULL;
+-        return NULL;
+-    }
++    printf("PT ALSA defer open until SetFormat\n");
+ #endif
+     if (!s->multi_player_disable_eq_flag) {
+         // Initialize parameter for aduio post pocess
+@@ -349,6 +1005,7 @@
+     s->sur_st = NULL;
+     s->sur_flag = 0;
+ #endif
++    sound_ctrl_register(s);
+     return (SoundCtrl*)&s->base;
+ }
+ 
+@@ -356,10 +1013,22 @@
+     SoundCtrlContext* sc;
+     sc = (SoundCtrlContext*)s;
+     TP_CHECK(sc);
++    sound_ctrl_unregister(sc);
+     pthread_mutex_lock(&sc->mutex);
+     TLOGD("%s, close sound device", __func__);
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
++    stopSpdifThread(sc);
+     closeSoundDevice(sc);
++    if (sc->master_pcm_buf) {
++        free(sc->master_pcm_buf);
++        sc->master_pcm_buf = NULL;
++    }
++    if (sc->spdif_ring_buf) {
++        free(sc->spdif_ring_buf);
++        sc->spdif_ring_buf = NULL;
++    }
++    pthread_cond_destroy(&sc->spdif_ring_cond);
++    pthread_mutex_destroy(&sc->spdif_ring_mutex);
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+     if (sc->adev != NULL) {
+@@ -369,6 +1038,10 @@
+         adev_close(sc->adev);
+     }
+ #endif
++    if (sc->passth != NULL) {
++        sunxi_passthough_close(sc->passth);
++        sc->passth = NULL;
++    }
+     pthread_mutex_unlock(&sc->mutex);
+     pthread_mutex_destroy(&sc->mutex);
+     if (!sc->multi_player_disable_eq_flag) {
+@@ -399,48 +1072,107 @@
+ }
+ 
+ void TSoundDeviceSetFormat(SoundCtrl* s, CdxPlaybkCfg* cfg) {
+-    TLOGD("%s", __func__);
+     SoundCtrlContext* sc;
+     sc = (SoundCtrlContext*)s;
+     TP_CHECK(sc);
+     pthread_mutex_lock(&sc->mutex);
+-    TLOGD("%s,sc->sound_status == %d", __func__, sc->sound_status);
++    printf("PT %s status=%d cfg direct=%d raw=%d rate=%d ch=%d bit=%d\n",
++           __func__, sc->sound_status, cfg->nNeedDirect, cfg->nDataType,
++           cfg->nSamplerate, cfg->nChannels, cfg->nBitpersample);
+     if (sc->sound_status == STATUS_STOP) {
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+-	TLOGD("TinaSoundDeviceSetFormat()");
+-	sc->nSampleRate = cfg->nSamplerate;
+-	sc->nChannelNum = cfg->nChannels;
++	printf("PT ALSA SetFormat nNeedDirect=%d nDataType=%d rate=%d ch=%d\n",
++	       cfg->nNeedDirect, cfg->nDataType, cfg->nSamplerate, cfg->nChannels);
++	sc->mNeedDirect = cfg->nNeedDirect;
++	sc->raw_type = cfg->nDataType;
++	if (cfg->nNeedDirect == 1) {
++        AudioRouteMode route = readAudioRouteMode();
++		sc->period_count = 4;
++		switch (cfg->nDataType) {
++		case AUDIO_RAW_DATA_AC3:
++			sc->nSampleRate = 48000;
++			sc->period_size = 1536;
++			break;
++		case AUDIO_RAW_DATA_DTS:
++			sc->nSampleRate = 48000;
++			sc->period_size = 512;
++			break;
++		case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
++		case AUDIO_RAW_DATA_EAC3_JOC:
++			sc->nSampleRate = 192000;
++			printf("PT passthrough rate mode=iec61937 raw=%d route=%d rate=%u\n",
++			       cfg->nDataType, route, sc->nSampleRate);
++			/* EAC3 一包 6144 帧@192k=32ms，常两包一起吐再空窗；HDMI periods_max=8、CMA 128KB
++			 * 3072*8*4=96KB → 128ms，盖住空窗。不可把 period_count 加到 16。 */
++			sc->period_size = 3072;
++			sc->period_count = 8;
++			break;
++		default:
++			sc->nSampleRate = (cfg->nSamplerate < 32000) ? 48000 : cfg->nSamplerate;
++			sc->period_size = 1536;
++			break;
++		}
++		sc->nChannelNum = 2;
++		sc->pcm_in_channels = 2;
++		sc->app_channel_num = 2;
++		sc->src_sample_rate = sc->nSampleRate;
++		sc->app_sample_rate = sc->nSampleRate;
++	} else {
++        restoreHdmiRawPcm(sc);
++        sc->mNeedDirect = 0;
++        sc->raw_type = AUDIO_RAW_DATA_PCM;
++        sc->period_size = 0;
++        sc->period_count = 0;
++		sc->src_sample_rate = cfg->nSamplerate;
++		sc->app_sample_rate = cfg->nSamplerate;
++		sc->nSampleRate = cfg->nSamplerate;
++		/* Match decoder PCM layout: directOut uses cfg->nChannels (often 2). */
++		if (cfg->nChannels == 1)
++			sc->pcm_in_channels = 1;
++		else if (cfg->nChannels >= 2)
++			sc->pcm_in_channels = cfg->nChannels;
++		sc->nChannelNum = cfg->nChannels >= 2 ? cfg->nChannels : 2;
++		sc->app_channel_num = sc->nChannelNum;
++	}
+ 	sc->alsa_format = SND_PCM_FORMAT_S16_LE;
+-	//sc->bytes_per_sample = sc->nChannelNum*snd_pcm_format_physical_width(sc->alsa_format) / 8;
+ 	sc->bytes_per_sample = cfg->nBitpersample / 8;
+-	TLOGD("TinaSoundDeviceSetFormat()>>>sample_rate:%d,channel_num:%d,sc->bytes_per_sample:%d",
+-		cfg->nSamplerate,cfg->nChannels,sc->bytes_per_sample);
++	printf("PT ALSA SetFormat result rate=%u in_ch=%u out_ch=%u direct=%d period=%u/%u raw=%d\n",
++		sc->nSampleRate, getPcmInChannels(sc), getPcmOutChannels(sc),
++        sc->mNeedDirect, sc->period_size, sc->period_count, sc->raw_type);
++        printf("PT ALSA SetFormat reopen for route/direct update\n");
++        if (reopenSoundDeviceLocked(sc) < 0)
++            printf("PT ALSA SetFormat reopen failed direct=%d raw=%d\n",
++                   sc->mNeedDirect, sc->raw_type);
++        else
++            printf("PT ALSA SetFormat reopen ok direct=%d raw=%d hdmi_raw_active=%d\n",
++                   sc->mNeedDirect, sc->raw_type, sc->hdmi_raw_active);
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+-        TLOGD("__SetFormat cfg->nDataType=%d cfg->nChannels=%d cfg->nSamplerate=%d cfg->nNeedDirect=%d",cfg->nDataType,cfg->nChannels,cfg->nSamplerate,cfg->nNeedDirect);
++        TLOGD("__SetFormat cfg->nDataType=%d cfg->nChannels=%d cfg->nSamplerate=%d cfg->nNeedDirect=%d",
++              cfg->nDataType, cfg->nChannels, cfg->nSamplerate, cfg->nNeedDirect);
+         if (cfg->nNeedDirect == 1) {
+-            switch(cfg->nDataType)
+-            {
+-                case AUDIO_RAW_DATA_AC3:
+-                    sc->nSampleRate = 48000;
+-                    sc->period_size = 1536;
+-                    break;
+-                case AUDIO_RAW_DATA_DTS:
+-                    sc->nSampleRate = 48000;
+-                    sc->period_size = 512;
+-                    break;
+-                case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
+-                case AUDIO_RAW_DATA_EAC3_JOC:
+-                    sc->nSampleRate = 192000;
+-                    sc->period_size = 1536;
+-                    break;
+-                default:
+-                    sc->nSampleRate = (cfg->nSamplerate < 32000) ? 48000 : cfg->nSamplerate;
+-                    break;
++            sc->period_count = 4;
++            switch (cfg->nDataType) {
++            case AUDIO_RAW_DATA_AC3:
++                sc->nSampleRate = 48000;
++                sc->period_size = 1536;
++                break;
++            case AUDIO_RAW_DATA_DTS:
++                sc->nSampleRate = 48000;
++                sc->period_size = 512;
++                break;
++            case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
++            case AUDIO_RAW_DATA_EAC3_JOC:
++                sc->nSampleRate = 192000;
++                sc->period_size = 3072;
++                sc->period_count = 8;
++                break;
++            default:
++                sc->nSampleRate = (cfg->nSamplerate < 32000) ? 48000 : cfg->nSamplerate;
++                break;
+             }
+             sc->nChannelNum = 2;
+             sc->raw_type = cfg->nDataType;
+-            sc->period_count = 4;
+             sc->mNeedDirect = cfg->nNeedDirect;
+             if (audio_port_close_device(sc->audio_port_config) < 0) {
+                 TLOGE("audio_port_close_device failed!");
+@@ -450,7 +1182,6 @@
+             audio_port_set_config_period_size(sc->audio_port_config, sc->period_size);
+             audio_port_set_config_period_count(sc->audio_port_config, sc->period_count);
+             audio_port_set_config_direct_mode(sc->audio_port_config, sc->mNeedDirect);
+-            setHdmiRawFlag(sc->raw_type);
+         } else {
+             if (sc->nSampleRate != cfg->nSamplerate) {
+                 if (audio_port_close_device(sc->audio_port_config) < 0) {
+@@ -466,24 +1197,39 @@
+             audio_port_set_config_direct_mode(sc->audio_port_config, 0);
+             sc->nSampleRate = cfg->nSamplerate;
+             sc->nChannelNum = cfg->nChannels;
+-            setHdmiRawFlag(AUDIO_RAW_DATA_PCM);
++            sc->mNeedDirect = 0;
+         }
+         // sc->bytes_per_sample = sc->nChannelNum*snd_pcm_format_physical_width(sc->alsa_format) / 8;
+         sc->bytes_per_sample = cfg->nBitpersample / 8;
+         TLOGD("%s>>>sample_rate:%d,channel_num:%d,sc->bytes_per_sample:%d", __func__,
+-              cfg->nSamplerate, cfg->nChannels, sc->bytes_per_sample);
++              sc->nSampleRate, sc->nChannelNum, sc->bytes_per_sample);
+ #endif
+     }
+     pthread_mutex_unlock(&sc->mutex);
+ }
+ 
++static int isRawPassthroughType(enum AUIDO_RAW_DATA_TYPE raw_type)
++{
++    switch (raw_type) {
++    case AUDIO_RAW_DATA_AC3:
++    case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
++    case AUDIO_RAW_DATA_EAC3_JOC:
++    case AUDIO_RAW_DATA_DTS:
++    case AUDIO_RAW_DATA_DTS_HD:
++        return 1;
++    default:
++        return 0;
++    }
++}
++
+ int TSoundDeviceStart(SoundCtrl* s) {
+     SoundCtrlContext* sc;
+     sc = (SoundCtrlContext*)s;
+     TP_CHECK(sc);
+     pthread_mutex_lock(&sc->mutex);
+     int ret = 0;
+-    TLOGD("%s: sc->sound_status = %d", __func__, sc->sound_status);
++    printf("PT %s status=%d direct=%d raw=%d\n", __func__,
++           sc->sound_status, sc->mNeedDirect, sc->raw_type);
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+     if (sc->sound_status == STATUS_START) {
+ 	TLOGD("Sound device already start.");
+@@ -495,6 +1241,11 @@
+ 		while((ret = snd_pcm_resume(sc->alsa_handler)) == -EAGAIN){
+ 			sleep(1);
+ 		}
++        if (sc->alsa_handler_spdif &&
++            snd_pcm_state(sc->alsa_handler_spdif) == SND_PCM_STATE_SUSPENDED) {
++            while ((ret = snd_pcm_resume(sc->alsa_handler_spdif)) == -EAGAIN)
++                sleep(1);
++        }
+ 	}
+ 	if(sc->alsa_can_pause){
+             if((ret = snd_pcm_pause(sc->alsa_handler, 0))<0){
+@@ -502,8 +1253,14 @@
+ 		pthread_mutex_unlock(&sc->mutex);
+ 		return ret;
+             }
++            if (sc->alsa_handler_spdif &&
++                (ret = snd_pcm_pause(sc->alsa_handler_spdif, 0)) < 0) {
++                TLOGE("snd_pcm_pause spdif failed:%s", strerror(errno));
++                pthread_mutex_unlock(&sc->mutex);
++                return ret;
++            }
+         }else{
+-            if ((ret = snd_pcm_prepare(sc->alsa_handler)) < 0)
++            if ((ret = prepareAllPcms(sc)) < 0)
+             {
+ 		TLOGE("snd_pcm_prepare failed:%s",strerror(errno));
+ 		pthread_mutex_unlock(&sc->mutex);
+@@ -511,6 +1268,8 @@
+             }
+         }
+ 	sc->sound_status = STATUS_START;
++        if (sc->dual_output && !isRawPassthroughType(sc->raw_type))
++            startSpdifThread(sc);
+     }
+     else if(sc->sound_status == STATUS_STOP){
+         ret = setSoundDeviceParams(sc);
+@@ -519,7 +1278,23 @@
+             pthread_mutex_unlock(&sc->mutex);
+             return ret;
+         }
++        ret = prepareAllPcms(sc);
++        if (ret < 0) {
++            TLOGE("prepareAllPcms fail , ret = %d", ret);
++            pthread_mutex_unlock(&sc->mutex);
++            return ret;
++        }
+         sc->sound_status = STATUS_START;
++        if (sc->mNeedDirect == 1 && isRawPassthroughType(sc->raw_type)) {
++            if (sc->passth == NULL)
++                sc->passth = sunxi_passthrough_create();
++            if (sc->passth != NULL) {
++                printf("PT ALSA before sunxi_passthough_open raw=%d\n", sc->raw_type);
++                sunxi_passthough_open(sc->passth, sc->raw_type);
++            }
++        }
++        if (sc->dual_output && !isRawPassthroughType(sc->raw_type))
++            startSpdifThread(sc);
+     }
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+@@ -528,8 +1303,7 @@
+         pthread_mutex_unlock(&sc->mutex);
+         return ret;
+     } else if (sc->sound_status == STATUS_PAUSE || sc->sound_status == STATUS_STOP) {
+-        if (sc->mNeedDirect == 1)
+-            setHdmiRawFlag(sc->raw_type);
++        int from_stop = (sc->sound_status == STATUS_STOP);
+         ret = openSoundDevice(sc, BLOCK_MODE);
+         if (ret != 0) {
+             TLOGD("open sound device fail");
+@@ -538,10 +1312,13 @@
+             return -1;
+         }
+         sc->sound_status = STATUS_START;
+-
+-        if((sc->mNeedDirect == 1) && (sc->passth != NULL)) {
+-            TLOGV("before sunxi_passthough_open called,sc->raw_type=%d",sc->raw_type);
+-            sunxi_passthough_open(sc->passth,sc->raw_type);
++        if (sc->mNeedDirect == 1 && isRawPassthroughType(sc->raw_type)) {
++            if (sc->passth == NULL)
++                sc->passth = sunxi_passthrough_create();
++            if (from_stop && sc->passth != NULL) {
++                printf("PT LIBAUDIOROUTE before sunxi_passthough_open raw=%d\n", sc->raw_type);
++                sunxi_passthough_open(sc->passth, sc->raw_type);
++            }
+         }
+     }
+ #endif
+@@ -563,26 +1340,31 @@
+         return ret;
+     } else {
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+-        if ((ret = snd_pcm_drop(sc->alsa_handler)) < 0) {
++        stopSpdifThread(sc);
++        if ((ret = dropAllPcms(sc)) < 0) {
+             TLOGE("snd_pcm_drop():MSGTR_AO_ALSA_PcmPrepareError");
+             pthread_mutex_unlock(&sc->mutex);
+             return ret;
+ 	}
+-	if ((ret = snd_pcm_prepare(sc->alsa_handler)) < 0) {
++	if ((ret = prepareAllPcms(sc)) < 0) {
+             TLOGE("snd_pcm_prepare():MSGTR_AO_ALSA_PcmPrepareError");
+             pthread_mutex_unlock(&sc->mutex);
+             return ret;
+ 	}
+ 	sc->sound_status = STATUS_STOP;
++        restoreHdmiRawPcm(sc);
++        if ((sc->mNeedDirect == 1) && (sc->passth != NULL)) {
++            sunxi_passthough_close(sc->passth);
++            sc->passth = NULL;
++        }
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+         closeSoundDevice(sc);
+         sc->sound_status = STATUS_STOP;
+         if ((sc->mNeedDirect == 1) && (sc->passth != NULL)) {
+             sunxi_passthough_close(sc->passth);
+-            sc->mNeedDirect = 0;
++            sc->passth = NULL;
+         }
+-        setHdmiRawFlag(AUDIO_RAW_DATA_PCM);
+ #endif
+     }
+     pthread_mutex_unlock(&sc->mutex);
+@@ -606,15 +1388,18 @@
+ 		pthread_mutex_unlock(&sc->mutex);
+                 return ret;
+             }
++            if (sc->alsa_handler_spdif)
++                snd_pcm_pause(sc->alsa_handler_spdif, 1);
+         } else {
+             TLOGD("alsa can not pause,use snd_pcm_drop");
+-            if ((ret = snd_pcm_drop(sc->alsa_handler)) < 0) {
++            if ((ret = dropAllPcms(sc)) < 0) {
+ 		TLOGE("snd_pcm_drop failed:%s",strerror(errno));
+ 		pthread_mutex_unlock(&sc->mutex);
+ 		return ret;
+             }
+ 	}
+ 	sc->sound_status = STATUS_PAUSE;
++        pthread_cond_broadcast(&sc->spdif_ring_cond);
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+         ret = audio_port_pause_device(sc->audio_port_config);
+@@ -629,13 +1414,20 @@
+ 
+ int TSoundDeviceWrite(SoundCtrl* s, void* pData, int nDataSize) {
+     int ret = 0;
++    int input_bytes = nDataSize;
+     SoundCtrlContext* sc;
+-    void * outBuffer = NULL;
++    void *outBuffer = NULL;
+     size_t out_Size = 0;
+     size_t real_Size = (size_t)nDataSize;
+-
++    int skip_dsp = 0;
++    int direct_passth = 0;
++#if PT_HDMI_IEC_VERBOSE_LOG
++    static int sNoBurstLogCount = 0;
++#endif
+     sc = (SoundCtrlContext*)s;
+     TP_CHECK(sc);
++    direct_passth = (sc->mNeedDirect == 1 && isRawPassthroughType(sc->raw_type));
++    skip_dsp = direct_passth;
+     if (sc->bytes_per_sample == 0) {
+         sc->bytes_per_sample = 2;
+     }
+@@ -643,7 +1435,9 @@
+         TLOGE("%s %d sound_status %d", __FUNCTION__, __LINE__, sc->sound_status);
+         return ret;
+     }
+-    int num_frames = nDataSize / (sc->bytes_per_sample * sc->nChannelNum);
++    unsigned in_ch = getPcmInChannels(sc);
++    unsigned out_ch = getPcmOutChannels(sc);
++    int num_frames = nDataSize / (int)(sc->bytes_per_sample * in_ch);
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+     snd_pcm_sframes_t res = 0;
+ 
+@@ -663,13 +1457,36 @@
+     memset(&pcmData, 0x00, sizeof(SoundPcmData));
+     pcmData.pData = pData;
+     pcmData.nSize = nDataSize;
+-    pcmData.samplerate = sc->nSampleRate;
+-    pcmData.channels = sc->nChannelNum;
++    pcmData.samplerate = getAppSampleRate(sc);
++    pcmData.channels = in_ch;
+     pcmData.accuracy = 16;
+-    if(sc->mAudioframeCallback != NULL) {
+-        sc->mAudioframeCallback(sc->pUserData, &pcmData);
++	if(sc->mAudioframeCallback != NULL) {
++		sc->mAudioframeCallback(sc->pUserData, &pcmData);
++	}
++#ifdef TPLAYER_AUDIO_API_ALSALIB
++    /* adecoder expands mono to stereo for directOut; only expand true mono here. */
++    if (!skip_dsp && in_ch == 1 && out_ch >= 2) {
++        int16_t* pcm = (int16_t*)pData;
++
++        if (pData != sc->master_pcm_buf) {
++            size_t mono_bytes = (size_t)num_frames * sc->bytes_per_sample;
++
++            if (mono_bytes * 2 > AUDIO_POST_PROC_PCM_BUFSIZE) {
++                TLOGE("mono expand buffer too small need=%zu", mono_bytes * 2);
++                return 0;
++            }
++            memcpy(sc->master_pcm_buf, pData, mono_bytes);
++            pcm = (int16_t*)sc->master_pcm_buf;
++        }
++        expandMonoToStereo(sc, pcm, num_frames);
++        pData = pcm;
+     }
++    if (!skip_dsp) {
++        nDataSize = num_frames * (int)(sc->bytes_per_sample * out_ch);
++    }
++#endif
+ #if !defined(c600)
++    if (!skip_dsp) {
+     // adjust the pcm data
+     AudioGain audioGain;
+     audioGain.preamp = sc->mVolume;
+@@ -682,14 +1499,15 @@
+     if (gainRet == 0) {
+         TLOGE("tina_do_AudioGain fail");
+     }
++    }
+ #endif
+-    if (!sc->multi_player_disable_eq_flag && (sc->mNeedDirect != 1)) {
++    if (!sc->multi_player_disable_eq_flag && !skip_dsp) {
+         PostProcessSt* PostProcPar = sc->PostProcPar;
+         //-----------------------------------------------------------------
+         // set parameter for aduio post pocess and do audio post process
+         //-----------------------------------------------------------------
+         PostProcPar->channal = sc->nChannelNum;
+-        PostProcPar->samplerate = sc->nSampleRate;
++        PostProcPar->samplerate = (int)getAppSampleRate(sc);
+         PostProcPar->bps = sc->bytes_per_sample * 8;
+         PostProcPar->fadeinoutflag = sc->fadein_flag;
+         PostProcPar->VPS = sc->vps_flag;
+@@ -720,57 +1538,99 @@
+         num_frames = PostProcPar->OutputPcmLen;
+     }
+ #if AUDIO_SURROUND
+-
++    if (!skip_dsp) {
+     if (!sc->sur_flag) {
+         TLOGW("go to process_init nDataSize = %d, num_frames = %d", nDataSize, num_frames);
+-        sc->sur_st = process_init(sc->sur_st, sc->nSampleRate, sc->nChannelNum, num_frames);
++        sc->sur_st = process_init(sc->sur_st, (int)getAppSampleRate(sc), sc->nChannelNum, num_frames);
+         sc->sur_flag = 1;
+     }
+     surround_pro_in_out(sc->sur_st, (short*)pData, (short*)sc->outputPcmBuf, nDataSize);
+     pData = sc->outputPcmBuf;
++    }
+ #endif
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
+-    do {
+-        //TLOGD("snd_pcm_writei begin,nDataSize = %d",nDataSize);
+-#if AUDIO_WRITE_TIMEDIFF
+-        long long pcm_write_start = TPlayerGetNowMs();
+-#endif
+-        res = snd_pcm_writei(sc->alsa_handler, pData, num_frames);
+-#if AUDIO_WRITE_TIMEDIFF
+-        long long pcm_write_end = TPlayerGetNowMs();
+-	printf("[%s:%d], pcm write timediff:%lldms\n", __func__, __LINE__, (pcm_write_end-pcm_write_start));
+-#endif
+-
+-        //TLOGD("snd_pcm_writei finish,res = %ld",res);
+-        if (res == -EINTR)
+-        {
+-            /* nothing to do */
+-            res = 0;
+-        }
+-        else if (res == -ESTRPIPE)
+-        { /* suspend */
+-            TLOGD("MSGTR_AO_ALSA_PcmInSuspendModeTryingResume");
+-            while ((res = snd_pcm_resume(sc->alsa_handler)) == -EAGAIN)
+-            sleep(1);
+-        }
+-        if (res < 0)
+-        {
+-            TLOGE("MSGTR_AO_ALSA_WriteError,res = %ld",res);
+-            if ((res = snd_pcm_prepare(sc->alsa_handler)) < 0)
+-            {
+-                TLOGE("MSGTR_AO_ALSA_PcmPrepareError");
+-                return res;
++    pthread_mutex_lock(&sc->mutex);
++    if (sc->sound_status != STATUS_START || !sc->alsa_handler) {
++        pthread_mutex_unlock(&sc->mutex);
++        return input_bytes;
++    }
++    if (direct_passth) {
++        if (sc->passth == NULL)
++            sc->passth = sunxi_passthrough_create();
++        ret = sunxi_passthough_process(sc->passth, pData, &real_Size, &outBuffer, &out_Size);
++#if PT_HDMI_IEC_VERBOSE_LOG
++        printf("PT %s IEC pack nDataSize=%d real_Size=%zu out_Size=%zu ret=%d raw=%d\n",
++               sc->hdmi_raw_active ? "HDMI" : "SPDIF",
++               nDataSize, real_Size, out_Size, ret, sc->raw_type);
++#endif
++        if (ret != 0) {
++            pthread_mutex_unlock(&sc->mutex);
++            return 0;
++        }
++        if (outBuffer == NULL || out_Size == 0) {
++#if PT_HDMI_IEC_VERBOSE_LOG
++            if (sNoBurstLogCount < 16) {
++                printf("PT ALSA no IEC burst consume input=%d real_Size=%zu\n",
++                       input_bytes, real_Size);
++                sNoBurstLogCount++;
++            }
++#endif
++            if (sc->hdmi_raw_active)
++                writeHdmiIecStuffingIfStarved(sc);
++            pthread_mutex_unlock(&sc->mutex);
++            return input_bytes;
++        }
++        pData = outBuffer;
++        nDataSize = (int)out_Size;
++        num_frames = nDataSize / (int)(sc->bytes_per_sample * 2);
++        if (sc->hdmi_raw_active) {
++            snd_pcm_uframes_t chunk_frames = sc->period_size ? sc->period_size : 1536;
++            snd_pcm_uframes_t total_frames = (snd_pcm_uframes_t)num_frames;
++            snd_pcm_uframes_t done_frames = 0;
++            size_t frame_bytes = masterFrameBytes(sc);
++
++            if (frame_bytes == 0)
++                frame_bytes = 4;
++#if PT_HDMI_IEC_VERBOSE_LOG
++            printf("PT HDMI IEC write begin bytes=%d frames=%lu chunk=%lu raw=%d\n",
++                   nDataSize, (unsigned long)total_frames,
++                   (unsigned long)chunk_frames, sc->raw_type);
++#endif
++            while (done_frames < total_frames) {
++                snd_pcm_uframes_t frames = total_frames - done_frames;
++                if (frames > chunk_frames)
++                    frames = chunk_frames;
++                res = writePcmWithRecover(sc, sc->alsa_handler,
++                                          (char*)pData + done_frames * frame_bytes,
++                                          frames);
++#if PT_HDMI_IEC_VERBOSE_LOG
++                printf("PT HDMI IEC write chunk offset=%lu frames=%lu ret=%ld\n",
++                       (unsigned long)done_frames, (unsigned long)frames, (long)res);
++#endif
++                if (res != (snd_pcm_sframes_t)frames)
++                    break;
++                done_frames += frames;
+             }
++            ret = (done_frames == total_frames) ? input_bytes : 0;
++            pthread_mutex_unlock(&sc->mutex);
++            return ret;
+         }
+-    } while (res == 0);
++    }
++    res = writePcmWithRecover(sc, sc->alsa_handler, pData, (snd_pcm_uframes_t)num_frames);
++    if (sc->dual_output && !direct_passth &&
++        sc->spdif_thread_started && res == (snd_pcm_sframes_t)num_frames) {
++        size_t master_bytes = (size_t)num_frames * masterFrameBytes(sc);
++        if (spdifRingWrite(sc, pData, master_bytes) < 0)
++            TLOGW("spdif ring write failed");
++    }
+ 
+-    return res < 0 ? res : (res * sc->bytes_per_sample * sc->nChannelNum);
++    ret = (res == (snd_pcm_sframes_t)num_frames) ? input_bytes : 0;
++    pthread_mutex_unlock(&sc->mutex);
++    return ret;
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+     pthread_mutex_lock(&sc->mutex);
+     if (sc->sound_status == STATUS_RESET) {
+-        if (sc->mNeedDirect == 1)
+-            setHdmiRawFlag(sc->raw_type);
+         ret = openSoundDevice(sc, BLOCK_MODE);
+         if (ret != 0) {
+             TLOGD("open sound device fail");
+@@ -780,9 +1640,12 @@
+         }
+         sc->sound_status = STATUS_START;
+     }
+-
+     if (sc->mNeedDirect == 1) {
+-        ret = sunxi_passthough_process(sc->passth,pData,&real_Size,&outBuffer,&out_Size);
++        if (sc->passth == NULL)
++            sc->passth = sunxi_passthrough_create();
++        ret = sunxi_passthough_process(sc->passth, pData, &real_Size, &outBuffer, &out_Size);
++        printf("PT LIBAUDIOROUTE __Write nDataSize=%d real_Size=%zu out_Size=%zu ret=%d\n",
++               nDataSize, real_Size, out_Size, ret);
+         audio_port_process(sc->audio_port_config, outBuffer, out_Size);
+     } else {
+         audio_port_process(sc->audio_port_config, pData, nDataSize);
+@@ -811,28 +1674,47 @@
+     sc = (SoundCtrlContext*)s;
+     TP_CHECK(sc);
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
++    pthread_mutex_lock(&sc->mutex);
+     if (sc->alsa_handler)
+     {
++        snd_pcm_sframes_t delay_hdmi = 0;
++        snd_pcm_sframes_t delay_spdif = 0;
+         snd_pcm_sframes_t delay = 0;
+-        //notify:snd_pcm_delay means the cache has how much data(the cache has been filled with pcm data),
+-        //snd_pcm_avail_update means the free cache,
+-        if ((ret = snd_pcm_delay(sc->alsa_handler, &delay)) < 0){
+-		TLOGE("TinaSoundDeviceGetCachedTime(),ret = %d , delay = %ld",ret,delay);
+-		return 0;
+-        }
+-        //TLOGD("TinaSoundDeviceGetCachedTime(),snd_pcm_delay>>> delay = %d",delay);
+-        //delay = snd_pcm_avail_update(sc->alsa_handler);
+-        //TLOGD("TinaSoundDeviceGetCachedTime(), snd_pcm_avail_update >>> delay = %d\n",delay);
+-        if (delay < 0) {
+-			/* underrun - move the application pointer forward to catch up */
+-#if SND_LIB_VERSION >= 0x000901 /* snd_pcm_forward() exists since 0.9.0rc8 */
+-	    snd_pcm_forward(sc->alsa_handler, -delay);
+-#endif
+-	    delay = 0;
++        size_t frame_bytes = masterFrameBytes(sc);
++        size_t ring_frames = 0;
++
++        if ((ret = snd_pcm_delay(sc->alsa_handler, &delay_hdmi)) < 0) {
++            TLOGE("TinaSoundDeviceGetCachedTime(),ret = %d , delay = %ld", ret, (long)delay_hdmi);
++            pthread_mutex_unlock(&sc->mutex);
++            return 0;
+         }
+-		//TLOGD("TinaSoundDeviceGetCachedTime(),ret = %d , delay = %ld",ret,delay);
+-        ret = ((int)((float) delay * 1000000 / (float) sc->nSampleRate));
++        if (delay_hdmi < 0) {
++#if SND_LIB_VERSION >= 0x000901
++            snd_pcm_forward(sc->alsa_handler, -delay_hdmi);
++#endif
++            delay_hdmi = 0;
++        }
++
++        delay = delay_hdmi;
++        if (sc->dual_output && sc->alsa_handler_spdif) {
++            if (snd_pcm_delay(sc->alsa_handler_spdif, &delay_spdif) >= 0) {
++                if (delay_spdif < 0)
++                    delay_spdif = 0;
++                if (delay_spdif > delay)
++                    delay = delay_spdif;
++            }
++            if (frame_bytes > 0) {
++                pthread_mutex_lock(&sc->spdif_ring_mutex);
++                ring_frames = sc->spdif_ring_used / frame_bytes;
++                pthread_mutex_unlock(&sc->spdif_ring_mutex);
++                if ((snd_pcm_sframes_t)ring_frames > delay)
++                    delay = (snd_pcm_sframes_t)ring_frames;
++            }
++        }
++
++        ret = (int)((float)delay * 1000000 / (float)getAppSampleRate(sc));
+     }
++    pthread_mutex_unlock(&sc->mutex);
+     return ret;
+ #endif
+ #ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+@@ -971,6 +1853,40 @@
+     return 0;
+ }
+ 
++void TSoundDeviceReopenAllRoutes(void)
++{
++    int i;
++
++    TLOGD("%s", __func__);
++    pthread_mutex_lock(&g_sound_ctrl_list_mutex);
++    for (i = 0; i < MAX_SOUND_CTRL_INSTANCES; i++) {
++        SoundCtrlContext* sc = g_sound_ctrls[i];
++
++        if (!sc)
++            continue;
++        pthread_mutex_lock(&sc->mutex);
++#ifdef TPLAYER_AUDIO_API_ALSALIB
++        if (reopenSoundDeviceLocked(sc) < 0) {
++            TLOGE("%s: reopen failed for instance %p", __func__, sc);
++        }
++#endif
++#ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
++        if (sc->audio_port_config) {
++            if (audio_port_close_device(sc->audio_port_config) < 0) {
++                TLOGE("audio_port_close_device failed!");
++            }
++            if (sc->sound_status == STATUS_START || sc->sound_status == STATUS_PAUSE) {
++                if (openSoundDevice(sc, BLOCK_MODE) == 0) {
++                    sc->sound_status = STATUS_START;
++                }
++            }
++        }
++#endif
++        pthread_mutex_unlock(&sc->mutex);
++    }
++    pthread_mutex_unlock(&g_sound_ctrl_list_mutex);
++}
++
+ int TSoundDeviceControl(SoundCtrl* s, int cmd, void* para) {
+     SoundCtrlContext* sc;
+     sc = (SoundCtrlContext*)s;
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.h
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.h
+@@ -47,12 +47,30 @@
+     AudioPortConfig *           audio_port_config;
+ #endif
+ #ifdef TPLAYER_AUDIO_API_ALSALIB
++    char *                      master_pcm_buf;
++    unsigned int                src_sample_rate;
++    unsigned int                pcm_in_channels;
+     snd_pcm_uframes_t           chunk_size;
+     snd_pcm_format_t            alsa_format;
+     snd_pcm_hw_params_t         *alsa_hwparams;
+     snd_pcm_t                   *alsa_handler;
++    snd_pcm_t                   *alsa_handler_spdif;
++    int                         dual_output;
++    unsigned int                app_sample_rate;
++    unsigned int                app_channel_num;
++    char *                      spdif_ring_buf;
++    size_t                      spdif_ring_size;
++    size_t                      spdif_ring_rd;
++    size_t                      spdif_ring_wr;
++    size_t                      spdif_ring_used;
++    pthread_mutex_t             spdif_ring_mutex;
++    pthread_cond_t              spdif_ring_cond;
++    pthread_t                   spdif_thread;
++    int                         spdif_thread_stop;
++    int                         spdif_thread_started;
+     snd_pcm_access_t            alsa_access_type;
+     snd_pcm_stream_t            alsa_open_mode;
++    int                         hdmi_raw_active;
+ #endif
+     unsigned int                nSampleRate;
+     unsigned int                nChannelNum;
+@@ -79,14 +97,11 @@
+     char                        vps_change;         //variable speed change，这个才是标志接到变速命令的标记变量 ，一旦设置了变速命令，就置为1，实际上没怎么用到,初始化为0
+     char*                       outputPcmBuf;
+     int                         multi_player_disable_eq_flag;
+-
+-#ifdef TPLAYER_AUDIO_API_LIBAUDIOROUTE
+     sunxi_passthough_handle     passth;
+     enum AUIDO_RAW_DATA_TYPE    raw_type;
+     int                         mNeedDirect;
+     unsigned int                period_size;
+     unsigned int                period_count;
+-#endif
+ }SoundCtrlContext;
+ 
+ SoundCtrl* TSoundDeviceCreate(AudioFrameCallback callback,void* pUser);
+@@ -120,6 +135,9 @@
+ 
+ int TSoundDeviceControl(SoundCtrl* s, int cmd, void* para);
+ 
++/* Re-open ALSA "default" on all live players after audio_route.sh changes. */
++void TSoundDeviceReopenAllRoutes(void);
++
+ static SoundControlOpsT mSoundControlOps =
+ {
+     .destroy          =   TSoundDeviceDestroy,
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/spdif/SunxiPassthough.cpp
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/spdif/SunxiPassthough.cpp
+@@ -59,6 +59,7 @@
+             outputTempBufferSize = AC3_IEC61937_PACKET_SIZE * AC3Num;
+             break;
+         case AUDIO_RAW_DATA_DOLBY_DIGITAL_PLUS:
++        case AUDIO_RAW_DATA_EAC3_JOC:
+             outputTempBufferSize = EAC3_IEC61937_PACKET_SIZE * EAC3Num;
+             break;
+         case AUDIO_RAW_DATA_DTS:
+@@ -111,11 +112,13 @@
+ }
+ 
+ int SunxiPassthough::writeDataBurst( const void* buffer, size_t numBytes ) {
+-    if (mByteCursor <= outputTempBufferSize ) {
++    if (mByteCursor <= (size_t)outputTempBufferSize &&
++            numBytes <= ((size_t)outputTempBufferSize - mByteCursor)) {
+         memcpy(pOutputTempBuffer + mByteCursor, buffer, numBytes);
+         mByteCursor += numBytes;
+     } else {
+-        loge("SunxiPassthough: writeOutput bytes = %zu full !!", mByteCursor);
++        loge("SunxiPassthough: writeOutput overflow cursor=%zu bytes=%zu size=%d",
++             mByteCursor, numBytes, outputTempBufferSize);
+     }
+     logv("SunxiPassthough: writeOutput bytes = %zu", mByteCursor);
+ 
+--- a/kernel/linux-5.4/sound/soc/sunxi_v2/snd_sunxi_pcm_hdmi.c
++++ b/kernel/linux-5.4/sound/soc/sunxi_v2/snd_sunxi_pcm_hdmi.c
+@@ -78,6 +78,7 @@
+ 	unsigned char *raw_dma_area;
+ 	dma_addr_t raw_dma_addr;
+ 	dma_addr_t pcm_dma_addr;
++	size_t raw_dma_bytes;
+ };
+ 
+ static struct sunxi_pcm g_pcm = {
+@@ -280,6 +281,7 @@
+ 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+ 	struct device *dev = rtd->dev;
+ 	struct dma_chan *chan;
++	size_t raw_dma_bytes;
+ 	int ret;
+ 
+ 	SND_LOG_DEBUG(HLOG, "\n");
+@@ -327,18 +329,25 @@
+ 	if (!dev->coherent_dma_mask)
+ 		dev->coherent_dma_mask = 0xffffffff;
+ 
+-	g_pcm.raw_dma_area = dma_alloc_coherent(dev, (params_buffer_bytes(params) * 2),
++	raw_dma_bytes = params_buffer_bytes(params) * 2;
++	g_pcm.raw_dma_area = dma_alloc_coherent(dev, raw_dma_bytes,
+ 						&(g_pcm.raw_dma_addr), GFP_KERNEL);
+ 	if (g_pcm.raw_dma_area == NULL) {
+ 		SND_LOG_ERR(HLOG, "pcm rawdata mode get mem failed\n");
+ 		return -ENOMEM;
+ 	}
++	g_pcm.raw_dma_bytes = raw_dma_bytes;
+ 	g_pcm.pcm_dma_addr = substream->dma_buffer.addr;
+ 	substream->dma_buffer.addr = (dma_addr_t)(g_pcm.raw_dma_addr);
+ 
+ 	ret = dmaengine_slave_config(chan, &slave_config);
+ 	if (ret < 0) {
+ 		SND_LOG_ERR(HLOG, "dma slave config failed, err %d\n", ret);
++		dma_free_coherent(dev, g_pcm.raw_dma_bytes,
++				  g_pcm.raw_dma_area, g_pcm.raw_dma_addr);
++		g_pcm.raw_dma_area = NULL;
++		g_pcm.raw_dma_bytes = 0;
++		substream->dma_buffer.addr = g_pcm.pcm_dma_addr;
+ 		return ret;
+ 	}
+ 
+@@ -390,11 +399,12 @@
+ 
+ 	SND_LOG_DEBUG(HLOG, "\n");
+ 
+-	if (snd_pcm_lib_buffer_bytes(substream) && (g_pcm.hdmi_fmt > HDMI_FMT_PCM)) {
+-		dma_free_coherent(dev, (snd_pcm_lib_buffer_bytes(substream) * 2),
++	if (g_pcm.raw_dma_area && g_pcm.raw_dma_bytes && (g_pcm.hdmi_fmt > HDMI_FMT_PCM)) {
++		dma_free_coherent(dev, g_pcm.raw_dma_bytes,
+ 				  g_pcm.raw_dma_area, g_pcm.raw_dma_addr);
+ 		substream->dma_buffer.addr = g_pcm.pcm_dma_addr;
+ 		g_pcm.raw_dma_area = NULL;
++		g_pcm.raw_dma_bytes = 0;
+ 	}
+ 
+ 	snd_pcm_set_runtime_buffer(substream, NULL);
+@@ -517,12 +527,28 @@
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 
+ 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
++		if (hwoff > runtime->dma_bytes ||
++		    bytes > (runtime->dma_bytes - hwoff)) {
++			SND_LOG_ERR(HLOG, "pcm dma overflow hwoff=%lu bytes=%lu dma=%zu\n",
++				    hwoff, bytes, runtime->dma_bytes);
++			return -EINVAL;
++		}
+ 		hwbuf = runtime->dma_area + hwoff;
+ 		if (copy_from_user(hwbuf, buf, bytes))
+ 			return -EFAULT;
+ 
+ 		if (g_pcm.hdmi_fmt > HDMI_FMT_PCM) {
+-			char *hdmihw_area = g_pcm.raw_dma_area + 2 * hwoff;
++			char *hdmihw_area;
++
++			/* 61937->60958 writes 2x bytes; guard the raw DMA shadow buffer. */
++			if (!g_pcm.raw_dma_area ||
++			    hwoff > (g_pcm.raw_dma_bytes / 2) ||
++			    bytes > ((g_pcm.raw_dma_bytes - 2 * hwoff) / 2)) {
++				SND_LOG_ERR(HLOG, "raw dma overflow hwoff=%lu bytes=%lu raw=%zu\n",
++					    hwoff, bytes, g_pcm.raw_dma_bytes);
++				return -EINVAL;
++			}
++			hdmihw_area = g_pcm.raw_dma_area + 2 * hwoff;
+ 			snd_sunxi_transfer_format_61937_to_60958(
+ 				(int *)hdmihw_area, (short *)hwbuf,
+ 				bytes, runtime->rate, g_pcm.hdmi_fmt);

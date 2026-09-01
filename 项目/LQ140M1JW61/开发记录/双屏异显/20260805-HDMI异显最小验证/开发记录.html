@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260805-HDMI异显最小验证 · HDMI 异显最小验证 — 开发记录（历史 TEMP） · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">20260729-LQ140M1JW61-双显LCD-HDMI排查.bak · LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">01 — 板件新建</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">02 — panel 与 init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">03 — DTS 与双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/README.html"><span class="txt">20260729-LQ140M1JW61-板件新建与双显定稿 · LQ140M1JW61 板件新建与双显定稿 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/README.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/README.html"><span class="txt">开发记录 · LQ140M1JW61 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/README.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/README.html"><span class="txt">patches · 20260805 TEMP 补丁（历史对照，勿作产品默认）</span></a>
+<a class="item child current" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证 — 开发记录（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/README.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换（定稿）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">LV_DS 双屏异显中间件 — 技术架构</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/README.html"><span class="txt">双屏异显 · 双屏异显（架构级）</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">1401598-v1(25.2.26)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110-Datasheet_20121205</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110 规格书要点与 H133 驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-08-05</p>
+<h1>HDMI 异显最小验证 — 开发记录（历史 TEMP）</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-08-05（卡顿闭环 <strong>2026-08-06</strong>） |</p>
+<p>| 范围 | 架构通路验证 |</p>
+<p>| 验证板 | <code>p1_nor_JL_M101</code> |</p>
+<p>| 显示定稿（板级） | <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/">JL_M101 20260722 定稿</a> |</p>
+<p>| 架构参考 | <a href="../LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> |</p>
+<p>| 补丁 | <a href="./patches/">patches/</a> |</p>
+<p>| 结论 | <strong>TEMP 异显通路 + 流畅度均通过</strong>（历史对照）。产品切换见 <a href="../20260806-同异显切换/">20260806-同异显切换</a>（<strong>WB 常开</strong>，勿再 TEMP 关 WB） |</p>
+<p>---</p>
+<h2>1. 目标与结论</h2>
+<h3>1.1 产品意图（后续接口）</h3>
+<ul>
+<li>同显 / 异显由<strong>用户态显式接口</strong>切换，不自动随 play/stop 切。</li>
+<li>异显期望：HDMI 已插 → 视频只上 HDMI，LCD 无该视频层；未插 → 视频仍上 LCD。</li>
+<li>同显：WB 镜像 UI（及 DE0 上内容）。</li>
+</ul>
+<h3>1.2 本次范围（最小验证，TEMP）</h3>
+<p>不做完整 <code>set_mode</code> 状态机，只验证「关掉镜像后，视频能否直出 HDMI」且流畅。</p>
+<p>| 验收项 | 结果 |</p>
+<p>|---|---|</p>
+<p>| 未播片：LCD 有 UI，HDMI 不再镜像整屏 UI | <strong>通过</strong> |</p>
+<p>| 播片：视频只在 HDMI，LCD 无视频层 | <strong>通过</strong> |</p>
+<p>| HDMI 全屏（非左半屏） | <strong>通过</strong>（rect 跟 HDMI 物理分辨率） |</p>
+<p>| HDMI 播片流畅 | <strong>通过</strong>（2026-08-06；根因见 §6 fence 屏号） |</p>
+<p>---</p>
+<h2>2. 现网同显 vs 本次异显通路</h2>
+<h3>2.1 现网同显（改前）</h3>
+<pre><code>LVGL / desk → fb0 → DE0（LCD）
+视频层 → DE0
+              ↓
+         WB 抓 DE0 合成帧 →（dual_display_rot）→ DE1 → HDMI</code></pre>
+<p>另有兜底：<code>sunxi_fb_pan_display</code> 在 <strong>WB 未开</strong> 时调用 <code>disp_fb_clone_to_screen(fb0→screen1)</code>，仍会把 UI 镜像到 HDMI。</p>
+<p>视频侧写死：<code>tlayer_ctrl.c</code> <code>disp_screen = 1</code>（只贴 DE0），靠 WB「看见」视频。</p>
+<h3>2.2 本次 TEMP 异显（改后）</h3>
+<pre><code>LVGL / desk → fb0 → DE0（LCD）          ← 仅 UI
+视频解码 NV21 → videoOutPort（disp_screen=2）→ DE1 视频层 → HDMI
+HWC fence timeline / sync point → screen1（与送显一致）</code></pre>
+<ul>
+<li><strong>不经 WB</strong>，<strong>不经 fb_clone</strong>。</li>
+<li>WB 在现网 dual_display 路径上<strong>只能抓 DE0 合成帧</strong>，不能改成「只抓视频层」；要 HDMI 只有片，必须视频层直贴 DE1。</li>
+</ul>
+<p>---</p>
+<h2>3. TEMP 改动清单（源码仍带 TEMP 标记）</h2>
+<p>| 文件 | 改动 |</p>
+<p>|---|---|</p>
+<p>| <code>kernel/.../disp/dev_disp.c</code> | 启动 / HPD <strong>不</strong>再 <code>disp_dual_display_enable()</code>；保留 <code>chn_cfg_mode=1</code>（勿掉进 fb_clone 的 else） |</p>
+<p>| <code>kernel/.../disp/dev_fb.c</code> | <code>disp_fb_clone_to_screen()</code> 入口直接 <code>return</code>（关 WB 后 pan 兜底镜像） |</p>
+<p>| <code>platform/.../tlayer_ctrl.c</code> | <code>disp_screen = 2</code>；<code>LayerSetDisplayRect</code> HDMI 全屏 override；<strong><code>fenceScreenId</code> 跟 <code>disp_screen</code></strong>（create/destroy timeline、createSyncPoint） |</p>
+<h3>3.1 为何必须同时关 WB 与 fb_clone</h3>
+<ol>
+<li>只关 WB → HDMI 仍有 UI（<code>pan_display</code> → <code>disp_fb_clone_to_screen</code>）。</li>
+<li>只改 <code>disp_screen=2</code> 且仍开 WB → DE1 上视频层与 WB 层抢同一路，画面乱。</li>
+</ol>
+<h3>3.2 左半屏问题</h3>
+<p>上层（如 BluetoothPlayer）全屏仍用 <code>setting.ini</code> 的 <code>video_screen_*=800×1280</code>（LCD）。  </p>
+<p>HDMI 为 1080p（<code>screen1_output_mode=10</code>）。<code>disp_screen==3</code> 时才有 <code>disp_dual_scale_win</code>；<code>==2</code> 不会自动放大。</p>
+<p>处理：<code>LayerSetDisplayRect</code> 在 <code>disp_screen==2</code> 时强制 <code>0,0 + getScreenWidth×getScreenHeight</code>（实机多为 1920×1080）。</p>
+<h3>3.3 fence 必须跟送显屏（卡顿根因）</h3>
+<p>原代码 <code>createSyncTimeline(0)</code> / <code>createSyncPoint(0)</code> / <code>destroySyncTimeline(0)</code> 写死 LCD；异显 <code>HWC_SUBMIT_FENCE</code> 却跟 <code>disp_screen</code> 走到 screen1 → ACQUIRE/SUBMIT 脱节 → 卡顿。  </p>
+<p>修复：<code>fenceScreenId = layerFenceScreenId()</code>（仅 bit1 → screen1）。</p>
+<p>日志特征：</p>
+<pre><code>[DISP] TEMP skip auto-enable dual display ...
+[HDMI-ONLY] TEMP video disp_screen=2 fenceScreen=1 (no WB), ...
+[HDMI-ONLY] TEMP override rect ... -&gt; 0,0 1920x1080 (HDMI)</code></pre>
+<p>---</p>
+<h2>4. 关键结论（写进记录，避免再绕）</h2>
+<p>| 问题 | 结论 |</p>
+<p>|---|---|</p>
+<p>| WB 能否只抓视频帧？ | <strong>不能</strong>。现网 cptr 挂 mgr0，抓 DE0 <strong>合成</strong>结果 |</p>
+<p>| <code>disp_screen</code> 含义 | 位掩码：<code>1</code>=screen0，<code>2</code>=screen1，<code>3</code>=两路都贴 |</p>
+<p>| <code>disp_screen</code> 能否热切？ | 无现成 API；须在 LayerCreate/DispInit 前设好，或 deinit→改→init |</p>
+<p>| 软件能否关 WB？ | 内核有 <code>disp_dual_display_disable()</code>，<strong>用户态尚未导出 ioctl</strong>；本次用编译期跳过 enable |</p>
+<p>| 异显卡顿主因 | <strong>HWC fence 屏号写死 0</strong>，与 <code>disp_screen=2</code> 不一致（非 DE1 linebuf） |</p>
+<p>| 用户可控同显/异显 | 后续补接口 + 互斥切换；本次未做 |</p>
+<p>---</p>
+<h2>5. 补丁与编译</h2>
+<pre><code># 干净树（TEMP，勿作产品默认）
+bash H133-AI-Skills/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/apply-hdmi-diff-temp.sh
+./tools/build_p1_nor_JL_M101.sh full   # 例：首验板
+
+# 或已有工作树分编
+./tools/build_p1_nor_JL_M101.sh kernel   # 改 disp 后
+./tools/build_p1_nor_JL_M101.sh rootfs   # 改 libtmedia 后（若 m 报 Cannot find dts：先 cp board.dts 到 kernel dts）</code></pre>
+<p>| 补丁 | 内容 |</p>
+<p>|---|---|</p>
+<p>| <code>patches/01-kernel-skip-wb-and-fb-clone.patch</code> | 关自动 WB + 关 fb_clone |</p>
+<p>| <code>patches/02-tlayer-hdmi-only-fence-screen.patch</code> | <code>disp_screen=2</code> + HDMI rect + fence 跟屏 |</p>
+<p>| <code>patches/hdmi-diff-display-temp.patch</code> | 合并包（apply 脚本用这个） |</p>
+<p>| 产物 | 值 |</p>
+<p>|---|---|</p>
+<p>| 镜像 | <code>out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code> |</p>
+<p>| md5（含 fence 修复，2026-08-05 打包） | <code>8000df67425ade3d41bc459e35539098</code> |</p>
+<p>| 实机流畅确认 | <strong>2026-08-06</strong> |</p>
+<p>---</p>
+<h2>6. HDMI 视频卡顿 — 排查与闭环</h2>
+<h3>6.1 DE1 linebuf 假说 — <strong>已排除</strong></h3>
+<p>| A/B | 做法 | 结果 |</p>
+<p>|---|---|---|</p>
+<p>| 压宽 | <code>screen_win</code> 宽≤1024 居中 | <strong>卡顿无好转</strong> |</p>
+<p>linebuf 约束仍真实存在（黑边/花屏类 BUG 另案），但<strong>不是本次卡顿主因</strong>。</p>
+<h3>6.2 同显对照</h3>
+<p>| 模式 | 结果 |</p>
+<p>|---|---|</p>
+<p>| 同显 WB | <strong>流畅</strong>（fence 与视频都在 screen0） |</p>
+<p>| 异显 TEMP（fence 仍写死 0） | <strong>卡顿</strong> |</p>
+<p>| 异显 + fence 跟 screen1 | <strong>流畅</strong>（2026-08-06） |</p>
+<h3>6.3 次要噪声（非整段卡顿主因）</h3>
+<ul>
+<li><code>dma_buf fd=0</code>：建层/切歌瞬间（<code>LayerCreate</code> 无 buffer 就 <code>setEnable</code>）</li>
+<li>开局 KTV 建层再被 BT/<code>av_player_service</code> 接管</li>
+</ul>
+<h3>6.4 闭环结论</h3>
+<p><strong>根因</strong>：异显把视频挪到 screen1 后，HWC fence timeline/sync point 仍挂 screen0。  </p>
+<p><strong>修复</strong>：<code>tlayer_ctrl.c</code> 的 fence API 使用 <code>fenceScreenId</code>（异显=1）。  </p>
+<p><strong>不做</strong>：正式 SAME/DIFF 状态机、用户态开关 WB ioctl — 另做。</p>
+<p>---</p>
+<h2>7. 回滚 TEMP（恢复同显）</h2>
+<pre><code>cd &lt;SDK根&gt;
+git apply -R H133-AI-Skills/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/hdmi-diff-display-temp.patch
+# 或手工：
+# 1. dev_disp.c：恢复两处 disp_dual_display_enable()
+# 2. dev_fb.c：去掉 disp_fb_clone_to_screen 入口提前 return
+# 3. tlayer_ctrl.c：disp_screen=1；fence 改回 0；去掉 HDMI rect override</code></pre>
+<p>重编 kernel + libtmedia / rootfs 后打包。</p>
+<p>---</p>
+<h2>8. 变更文件速查</h2>
+<pre><code>kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c
+platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></pre>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>LV_DS 双屏异显中间件 — 技术架构 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">20260729-LQ140M1JW61-双显LCD-HDMI排查.bak · LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">00 — 总览与定稿</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">01 — 板件新建</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">02 — panel 与 init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">03 — DTS 与双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">04 — 实机调试与踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">05 — 编译与验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/README.html"><span class="txt">20260729-LQ140M1JW61-板件新建与双显定稿 · LQ140M1JW61 板件新建与双显定稿 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/README.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">20260731-LQ140M1JW61-GT9110H触摸适配 · LQ140M1JW61 GT9110H 触摸适配 — 开发记录</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/README.html"><span class="txt">开发记录 · LQ140M1JW61 — 文档索引</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/README.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/README.html"><span class="txt">patches · 20260805 TEMP 补丁（历史对照，勿作产品默认）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">20260805-HDMI异显最小验证 · HDMI 异显最小验证 — 开发记录（历史 TEMP）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/README.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换（定稿）</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">20260806-同异显切换 · 同显 / 异显切换 — 开发记录</span></a>
+<a class="item child current" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">LV_DS 双屏异显中间件 — 技术架构</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/README.html"><span class="txt">双屏异显 · 双屏异显（架构级）</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">1401598-v1(25.2.26)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110-Datasheet_20121205</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110 规格书要点与 H133 驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1)</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">s10-h133-v1_0625</span></a>
+</div>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log</p>
+<h1>LV_DS 双屏异显中间件 — 技术架构</h1>
+<p>本文定义 <strong>H133-02</strong> 及后续产品通用的 <strong>双屏异显 LVGL 中间件</strong>（代号 <strong><code>lv_ds</code></strong>，Dual-Screen）技术架构。应用以 LVGL 为主开发 UI，通过统一 C API 管理主屏 / 副屏内容，无需直接操作 <code>/dev/disp</code>、TPlayer 或 panel 驱动。</p>
+<p><strong>状态</strong>：架构设计稿（待实现）  </p>
+<p><strong>目标平台</strong>：sun8iw20 <strong>H133</strong>，本工程板级 <strong><code>p1_nor</code></strong>（MIPI + HDMI）</p>
+<p><strong>相关文档</strong>：</p>
+<ul>
+<li><a href="./README.md">双屏异显索引</a> — 同显/异显定稿与 TEMP 对照</li>
+<li><a href="./20260806-同异显切换/">20260806-同异显切换</a> — WB 常开 + <code>disp_mode</code>（当前产品路径）</li>
+<li>skills 侧：<code>h133-display</code> 板级档案 / HDMI 原理（按板查阅）</li>
+</ul>
+<p>---</p>
+<h2>1. 设计目标</h2>
+<p>| 目标 | 说明 |</p>
+<p>|------|------|</p>
+<p>| <strong>异显</strong> | 主屏、副屏内容独立；默认 <strong>不</strong> 将 fb0 镜像到副屏 |</p>
+<p>| <strong>LVGL 优先</strong> | 业务 UI 用 LVGL；副屏可为第二套 LVGL，或视频 / 图片 / 纯色 |</p>
+<p>| <strong>薄应用</strong> | 应用仅 <code>#include &quot;lv_ds.h&quot;</code>，调用 <code>lv_ds_init()</code>、<code>lv_ds_scr_*()</code> |</p>
+<p>| <strong>AI 友好</strong> | 固定目录、统一前缀 <code>lv_ds_</code>、板级 JSON、错误码枚举、可编译示例 |</p>
+<p>| <strong>可扩展</strong> | 点歌机、广告机、工控 HMI+大屏等共用同一中间件 |</p>
+<p><strong>典型产品场景</strong>：</p>
+<ul>
+<li><strong>点歌机</strong>：MIPI = 点歌主 UI；HDMI = KTV 视频 MV  </li>
+<li><strong>双触屏广告机</strong>：两屏各一套 LVGL UI  </li>
+<li><strong>工控</strong>：MIPI = 操作面板；HDMI = 监控大图 / 视频  </li>
+</ul>
+<p>---</p>
+<h2>2. H133 硬件约束（不可违反）</h2>
+<p>来源：<code>de_feat.c</code>、本工程 <code>board.dts</code>（详见 <a href="./H133-HDMI驱动原理.md">H133-HDMI驱动原理.md</a>）。</p>
+<p>| 逻辑屏 | 硬件 DISP | 允许输出 | 本工程默认 |</p>
+<p>|--------|-----------|----------|------------|</p>
+<p>| <strong>screen0</strong> | DISP0 | <strong>仅 LCD</strong>（MIPI/RGB/LVDS） | 10.1" MIPI 800×1280 |</p>
+<p>| <strong>screen1</strong> | DISP1 | <strong>HDMI / TV</strong> | HDMI 1080p60 |</p>
+<ul>
+<li>MIPI <strong>不能</strong> 配到 screen1。  </li>
+<li><code>chn_cfg_mode = 1</code>：主显 4 通道 + 副显 2 通道（双显推荐）。  </li>
+<li><code>disp_mode = 0</code>：screen0 为主显并绑定 <strong>fb0</strong>（勿用 <code>disp_mode=3</code>，见双显开发记录）。</li>
+</ul>
+<p>中间件将 <strong>逻辑屏 ID</strong> 与 <strong>硬件 screen</strong> 的映射写在板级 JSON，应用只使用 <code>LV_DS_SCR_PRIMARY</code> / <code>LV_DS_SCR_SECONDARY</code>。</p>
+<p>---</p>
+<h2>3. 分层架构</h2>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│  L5  Application（点歌 / 设置 / 广告 …）                     │
+│      只调用 include/lv_ds.h                                 │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────┐
+│  L4  lv_ds_api          对外稳定 C API                       │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────┐
+│  L3  lv_ds_mgr          屏管理、模式、生命周期、事件、互斥     │
+└───────────────┬─────────────────────────┬───────────────────┘
+                │                         │
+┌───────────────▼──────────┐   ┌──────────▼──────────────────┐
+│  L2a lv_ds_lvgl_port     │   │  L2b lv_ds_media_port        │
+│  每屏独立 lv_disp_drv   │   │  TPlayer / 静态图 / 纯色       │
+└───────────────┬──────────┘   └──────────┬──────────────────┘
+                │                         │
+┌───────────────▼─────────────────────────▼───────────────────┐
+│  L1  lv_ds_hal          /dev/disp、/dev/fb*、layer、HPD       │
+└───────────────────────────┬─────────────────────────────────┘
+                            │
+┌───────────────────────────▼─────────────────────────────────┐
+│  L0  lv_ds_board        板级描述（ds_board_*.json）           │
+└─────────────────────────────────────────────────────────────┘</code></pre>
+<h3>3.1 模块铁律（实现与 Code Review 必查）</h3>
+<ol>
+<li><strong>应用禁止</strong> 直接 <code>ioctl(/dev/disp)</code>、修改 panel 驱动、调用 <code>CreateVideoOutport</code> / <code>TPlayerCreate</code>（除非在 <code>lv_ds_media_port</code> 内部）。  </li>
+<li>每个物理输出在逻辑上仅一个 <strong><code>lv_ds_scr_id_t</code></strong>。  </li>
+<li>产品发布构建默认 <strong>关闭</strong> <code>disp_fb_clone_to_screen</code>（fb0 不向 HDMI 镜像）。  </li>
+<li>两个 LVGL 实例 <strong>禁止</strong> 共用同一块 draw buffer。  </li>
+<li><code>lv_disp_set_default()</code> 仅在 UI 工厂函数内或 <code>lv_ds_scr_load_ui()</code> 包装层切换。</li>
+</ol>
+<p>---</p>
+<h2>4. 建议代码目录（待创建）</h2>
+<pre><code>platform/lv_dual_scr/
+├── README.md                    # AI / 新人入口
+├── Kconfig / Makefile
+├── include/
+│   └── lv_ds.h                  # ★ 应用唯一对外头文件
+├── config/
+│   └── ds_board_p1_nor.json     # ★ 板级真相源
+├── src/
+│   ├── lv_ds_api.c
+│   ├── lv_ds_mgr.c
+│   ├── lv_ds_hal_disp.c
+│   ├── lv_ds_hal_fb.c
+│   ├── lv_ds_lvgl_port.c
+│   └── lv_ds_media_port.c
+├── port/
+│   └── lvgl8/
+│       └── lv_ds_lvgl8_glue.c   # 与 sunxifb / disp_layer 对接
+├── examples/
+│   ├── ex_dual_lvgl.c           # 两屏均为 LVGL
+│   └── ex_lvgl_plus_hdmi_video.c
+└── docs/
+    └── （本文件位于 docs/ 仓库级说明）</code></pre>
+<p>---</p>
+<h2>5. 核心类型定义</h2>
+<h3>5.1 逻辑屏 ID</h3>
+<pre><code>typedef enum {
+    LV_DS_SCR_PRIMARY   = 0,   /* 主屏：主 UI，本工程 = MIPI / screen0 */
+    LV_DS_SCR_SECONDARY = 1,   /* 副屏：副 UI 或视频，本工程 = HDMI / screen1 */
+    LV_DS_SCR_MAX
+} lv_ds_scr_id_t;</code></pre>
+<h3>5.2 屏上内容类型</h3>
+<pre><code>typedef enum {
+    LV_DS_CONTENT_NONE   = 0,  /* 关闭 / 黑屏 */
+    LV_DS_CONTENT_LVGL   = 1,  /* 该屏独立 LVGL 对象树 */
+    LV_DS_CONTENT_VIDEO  = 2,  /* CedarX / TPlayer，占用 disp 视频层 */
+    LV_DS_CONTENT_IMAGE  = 3,  /* 静态图一层 */
+    LV_DS_CONTENT_COLOR  = 4,  /* 纯色 / 待机画面 */
+} lv_ds_content_type_t;</code></pre>
+<p>同一逻辑屏同一时刻只允许一种 <strong>主内容类型</strong>（由 <code>lv_ds_mgr</code> 互斥）；例如副屏在 <code>VIDEO</code> 时不得再挂 <code>LVGL</code>，除非先 <code>video_stop</code> 再切换。</p>
+<h3>5.3 产品运行模式（预设）</h3>
+<pre><code>typedef enum {
+    LV_DS_MODE_DUAL_LVGL,        /* 两屏各一套 LVGL UI */
+    LV_DS_MODE_LVGL_PLUS_VIDEO,  /* 主 LVGL + 副视频（点歌机默认） */
+    LV_DS_MODE_LVGL_PLUS_IMAGE,  /* 主 LVGL + 副静态图 */
+    LV_DS_MODE_PRIMARY_ONLY,     /* 仅主屏，副屏关闭 */
+} lv_ds_mode_t;</code></pre>
+<h3>5.4 错误码</h3>
+<pre><code>typedef enum {
+    LV_DS_OK = 0,
+    LV_DS_ERR_NOT_INIT,
+    LV_DS_ERR_SCR_INVALID,
+    LV_DS_ERR_SCR_NOT_READY,     /* 如 HDMI 未 HPD */
+    LV_DS_ERR_CONTENT_BUSY,
+    LV_DS_ERR_LAYER_CONFLICT,
+    LV_DS_ERR_MEDIA_FAIL,
+    LV_DS_ERR_CONFIG,
+} lv_ds_err_t;</code></pre>
+<h3>5.5 事件</h3>
+<pre><code>typedef enum {
+    LV_DS_EVT_SECONDARY_CONNECTED,
+    LV_DS_EVT_SECONDARY_DISCONNECTED,
+    LV_DS_EVT_VIDEO_PREPARED,
+    LV_DS_EVT_VIDEO_COMPLETED,
+    LV_DS_EVT_VIDEO_ERROR,
+} lv_ds_evt_t;
+
+typedef void (*lv_ds_evt_cb_t)(lv_ds_evt_t evt, lv_ds_scr_id_t scr, void *user);</code></pre>
+<p>---</p>
+<h2>6. 板级配置（<code>ds_board_p1_nor.json</code>）</h2>
+<p>板级参数 <strong>只改 JSON</strong>，避免应用写死分辨率或 screen 号。</p>
+<pre><code>{
+  &quot;chip&quot;: &quot;sun8iw20&quot;,
+  &quot;board&quot;: &quot;p1_nor&quot;,
+  &quot;screens&quot;: [
+    {
+      &quot;id&quot;: &quot;PRIMARY&quot;,
+      &quot;hw_screen&quot;: 0,
+      &quot;output&quot;: &quot;lcd&quot;,
+      &quot;width&quot;: 800,
+      &quot;height&quot;: 1280,
+      &quot;fb_dev&quot;: &quot;/dev/fb0&quot;,
+      &quot;touch_dev&quot;: &quot;/dev/input/event0&quot;,
+      &quot;lvgl&quot;: true,
+      &quot;lvgl_backend&quot;: &quot;sunxifb&quot;
+    },
+    {
+      &quot;id&quot;: &quot;SECONDARY&quot;,
+      &quot;hw_screen&quot;: 1,
+      &quot;output&quot;: &quot;hdmi&quot;,
+      &quot;width&quot;: 1920,
+      &quot;height&quot;: 1080,
+      &quot;fb_dev&quot;: null,
+      &quot;lvgl&quot;: true,
+      &quot;lvgl_backend&quot;: &quot;disp_layer&quot;,
+      &quot;hpd_required&quot;: true
+    }
+  ],
+  &quot;disp&quot;: {
+    &quot;chn_cfg_mode&quot;: 1,
+    &quot;disp_mode&quot;: 0,
+    &quot;fb_clone_secondary&quot;: false
+  },
+  &quot;layer_pool&quot;: {
+    &quot;primary_lvgl&quot;:       { &quot;channel&quot;: 0, &quot;layer&quot;: 0 },
+    &quot;secondary_lvgl&quot;:     { &quot;channel&quot;: 0, &quot;layer&quot;: 0 },
+    &quot;secondary_video&quot;:    { &quot;channel&quot;: 1, &quot;layer&quot;: 0 }
+  }
+}</code></pre>
+<p>说明：</p>
+<ul>
+<li><strong>PRIMARY</strong>：与当前 <code>sunxifb</code> + <code>/dev/fb0</code> 一致；UI 可按 800×1280 设计，或与 DTS 一致用 1920×1080 由 DE 缩放（见 §8）。  </li>
+<li><strong>SECONDARY</strong>：本工程 <code>fb1_width/height = 0</code>，副屏 LVGL 走 <strong><code>disp_layer</code></strong>（参考 <code>lvgl-9/platform/disp/sunxifb_port_free_rtos_disp2.c</code> 的 <code>screen_id</code> 路径）。  </li>
+<li><strong><code>fb_clone_secondary&quot;: false</code></strong>：异显核心，对应内核侧关闭或跳过 <code>disp_fb_clone_to_screen</code>。</li>
+</ul>
+<p>---</p>
+<h2>7. 对外 API 规格（<code>lv_ds.h</code>）</h2>
+<h3>7.1 生命周期</h3>
+<p>| API | 说明 |</p>
+<p>|-----|------|</p>
+<p>| <code>int lv_ds_init(const char *board_json_path)</code> | 解析板级配置、打开 disp、注册策略（禁 clone） |</p>
+<p>| <code>void lv_ds_deinit(void)</code> | 释放资源 |</p>
+<p>| <code>int lv_ds_start(void)</code> | 按配置 enable 各 output、注册 LVGL display |</p>
+<p>| <code>void lv_ds_stop(void)</code> | 逆序关闭 |</p>
+<p>| <code>int lv_ds_set_mode(lv_ds_mode_t mode)</code> | 设置产品模式预设 |</p>
+<h3>7.2 屏信息与就绪</h3>
+<p>| API | 说明 |</p>
+<p>|-----|------|</p>
+<p>| <code>int lv_ds_scr_get_info(lv_ds_scr_id_t scr, lv_ds_scr_info_t *info)</code> | 宽高、hw_screen、当前 content、是否 connected |</p>
+<p>| <code>bool lv_ds_scr_is_ready(lv_ds_scr_id_t scr)</code> | 副屏 HDMI 需 HPD 就绪 |</p>
+<h3>7.3 内容与 LVGL</h3>
+<p>| API | 说明 |</p>
+<p>|-----|------|</p>
+<p>| <code>int lv_ds_scr_set_content(lv_ds_scr_id_t scr, lv_ds_content_type_t type)</code> | 切换内容类型 |</p>
+<p>| <code>lv_disp_t *lv_ds_scr_get_lv_disp(lv_ds_scr_id_t scr)</code> | 获取该屏 LVGL display（仅 LVGL 内容时有效） |</p>
+<p>| <code>typedef lv_obj_t *(*lv_ds_ui_factory_t)(lv_disp_t *disp)</code> | UI 工厂：在指定 disp 上建屏 |</p>
+<p>| <code>int lv_ds_scr_load_ui(lv_ds_scr_id_t scr, lv_ds_ui_factory_t factory)</code> | 加载 / 替换该屏 UI 树 |</p>
+<h3>7.4 视频（副屏典型）</h3>
+<p>| API | 说明 |</p>
+<p>|-----|------|</p>
+<p>| <code>int lv_ds_scr_video_play(lv_ds_scr_id_t scr, const char *url)</code> | 播放；内部固定 <strong>hw_screen=1</strong> |</p>
+<p>| <code>int lv_ds_scr_video_stop(lv_ds_scr_id_t scr)</code> | 停止并释放视频层 |</p>
+<p>| <code>int lv_ds_scr_video_set_rect(lv_ds_scr_id_t scr, const lv_ds_rect_t *r)</code> | <code>NULL</code> 表示全屏 |</p>
+<h3>7.5 事件与 tick</h3>
+<p>| API | 说明 |</p>
+<p>|-----|------|</p>
+<p>| <code>void lv_ds_set_event_callback(lv_ds_evt_cb_t cb, void *user)</code> | HDMI 插拔、播完等 |</p>
+<p>| <code>void lv_ds_tick(uint32_t ms)</code> | 可选：内部对多个 <code>lv_disp</code> 调 <code>lv_timer_handler</code> |</p>
+<p>---</p>
+<h2>8. LVGL 双屏绑定（LVGL 8）</h2>
+<p>本工程 GUI 基于 <strong>LVGL 8</strong>（<code>lv_projector</code> + <code>sunxifb</code>）。</p>
+<h3>8.1 主屏（PRIMARY）</h3>
+<ul>
+<li>路径：<code>/dev/fb0</code> → 现有 <code>sunxifb</code> flush。  </li>
+<li>注册一个 <code>lv_disp_drv_t</code> + 独立 <code>lv_disp_draw_buf_t</code>。  </li>
+<li>触摸 indev 只挂主屏（或策略路由到主屏）。</li>
+</ul>
+<h3>8.2 副屏（SECONDARY）</h3>
+<p>| 后端 | 条件 | 实现要点 |</p>
+<p>|------|------|----------|</p>
+<p>| <strong>sunxifb</strong> | DTS 启用 <code>fb1</code> | 第二套 fb 驱动，<code>FBDEV_PATH=/dev/fb1</code> |</p>
+<p>| <strong>disp_layer</strong>（推荐） | <code>fb1</code> 为 0 | ION 缓冲 + <code>DISP_LAYER_SET_CONFIG</code>，<code>ioctlParam[0]=hw_screen</code>；自定义 <code>flush_cb</code> |</p>
+<p>参考实现线索：</p>
+<ul>
+<li><code>platform/thirdparty/gui/lvgl-9/platform/disp/sunxifb_port_free_rtos_disp2.c</code>（<code>screen_id</code>、<code>DISP_LAYER_SET_CONFIG</code>）  </li>
+<li><code>platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code>（<code>CreateVideoOutport(0)</code> <strong>需改为可配置 screen</strong>）</li>
+</ul>
+<h3>8.3 fb0 分辨率策略</h3>
+<p>| 策略 | fb0 尺寸 | 优点 | 缺点 |</p>
+<p>|------|----------|------|------|</p>
+<p>| A | 800×1280 | MIPI 1:1，UI 清晰 | 与当前 DTS 1920×1080 不一致时需改 DTS |</p>
+<p>| B | 1920×1080 | 与现网 BSP 一致 | MIPI 竖屏由 DE 缩放，UI 需适配 |</p>
+<p>中间件在 <code>lv_ds_scr_get_info()</code> 返回 <strong>实际 drawable 尺寸</strong>，应用按返回值布局。</p>
+<p>---</p>
+<h2>9. 数据流与异显示意</h2>
+<h3>9.1 点歌机模式（<code>LV_DS_MODE_LVGL_PLUS_VIDEO</code>）</h3>
+<pre><code>  Application
+       │
+       ├─ lv_ds_scr_load_ui(PRIMARY, ui_home_factory)
+       │       └─► lv_disp_primary ──► fb0 ──► DE screen0 ──► MIPI 800×1280
+       │
+       └─ lv_ds_scr_video_play(SECONDARY, url)
+               └─► TPlayer / disp layer ──► DE screen1 ──► HDMI 1080p
+
+  （无 fb0 clone 到 HDMI）</code></pre>
+<h3>9.2 双 LVGL 模式（<code>LV_DS_MODE_DUAL_LVGL</code>）</h3>
+<pre><code>  lv_disp_primary    ──► MIPI
+  lv_disp_secondary  ──► HDMI（disp_layer 或 fb1）</code></pre>
+<h3>9.3 Mermaid 总览</h3>
+<pre><code>flowchart TB
+  subgraph App[&quot;Application&quot;]
+    A1[primary UI factory]
+    A2[secondary UI / 点播]
+  end
+
+  subgraph API[&quot;lv_ds_api&quot;]
+    API1[lv_ds_scr_*]
+  end
+
+  subgraph MGR[&quot;lv_ds_mgr&quot;]
+    M1[content 状态机]
+  end
+
+  subgraph Port[&quot;Ports&quot;]
+    P1[lv_ds_lvgl_port]
+    P2[lv_ds_media_port]
+  end
+
+  subgraph HAL[&quot;lv_ds_hal&quot;]
+    H1[disp / fb / layer]
+  end
+
+  subgraph HW[&quot;H133&quot;]
+    MIPI[screen0 MIPI]
+    HDMI[screen1 HDMI]
+  end
+
+  App --&gt; API --&gt; MGR
+  MGR --&gt; P1
+  MGR --&gt; P2
+  P1 --&gt; H1
+  P2 --&gt; H1
+  H1 --&gt; MIPI
+  H1 --&gt; HDMI</code></pre>
+<p>---</p>
+<h2>10. 与现有 BSP 的对接项</h2>
+<p>实现中间件时须处理（详见 <a href="./H133-MIPI-HDMI双显开发记录.md">H133-MIPI-HDMI双显开发记录.md</a>）：</p>
+<p>| 项 | 现状 | 中间件要求 |</p>
+<p>|----|------|------------|</p>
+<p>| <code>disp_fb_clone_to_screen</code> | HDMI HPD 后会 clone fb0 | <strong>产品态关闭</strong>（Kconfig 或 <code>lv_ds_init</code> 策略） |</p>
+<p>| TPlayer 默认 screen | <code>CreateVideoOutport(0)</code> | <code>lv_ds_media_port</code> 使用 <strong>hw_screen=1</strong> |</p>
+<p>| <code>default_lcd</code> / DCS 表 | 已恢复 | 不纳入 lv_ds，保持 BSP |</p>
+<p>| MIPI <code>boot_info.sync</code> | 与备份一致 | 不强制 reopen LCD |</p>
+<p>| 编译 | 改内核需 <code>build.sh kernel</code> + 整包烧录 | 文档化，不写在应用里 |</p>
+<p>---</p>
+<h2>11. 应用开发模板</h2>
+<pre><code>#include &quot;lv_ds.h&quot;
+
+static lv_obj_t *ui_home_create(lv_disp_t *disp)
+{
+    lv_disp_set_default(disp);
+    lv_obj_t *scr = lv_obj_create(NULL);
+    /* 点歌主界面 */
+    lv_scr_load(scr);
+    return scr;
+}
+
+static void on_ds_event(lv_ds_evt_t evt, lv_ds_scr_id_t scr, void *user)
+{
+    (void)user;
+    if (evt == LV_DS_EVT_SECONDARY_CONNECTED &amp;&amp; scr == LV_DS_SCR_SECONDARY) {
+        /* 可选：副屏待机 UI 或黑屏 */
+    }
+}
+
+void app_main(void)
+{
+    lv_ds_init(&quot;ds_board_p1_nor.json&quot;);
+    lv_ds_set_mode(LV_DS_MODE_LVGL_PLUS_VIDEO);
+    lv_ds_set_event_callback(on_ds_event, NULL);
+    lv_ds_start();
+
+    lv_ds_scr_load_ui(LV_DS_SCR_PRIMARY, ui_home_create);
+
+    for (;;) {
+        lv_ds_tick(5);
+        usleep(5000);
+    }
+}
+
+void app_play_mv(const char *path)
+{
+    lv_ds_scr_set_content(LV_DS_SCR_SECONDARY, LV_DS_CONTENT_VIDEO);
+    lv_ds_scr_video_play(LV_DS_SCR_SECONDARY, path);
+}</code></pre>
+<p><strong>约定</strong>：</p>
+<ul>
+<li>业务 <strong>不</strong> 在播片时把 <code>lv_disp_set_default</code> 切到副屏，主屏 UI 线程始终面向 PRIMARY。  </li>
+<li>切歌：<code>video_stop</code> → 再 <code>video_play</code>，不重启 <code>lv_ds_init</code>。</li>
+</ul>
+<p>---</p>
+<h2>12. 模块职责表</h2>
+<p>| 模块 | 负责 | 不负责 |</p>
+<p>|------|------|--------|</p>
+<p>| <code>lv_ds_hal_disp</code> | screen enable、layer 分配、HPD、禁止 fb clone | LVGL 控件 |</p>
+<p>| <code>lv_ds_hal_fb</code> | fb open/mmap、分辨率查询 | 页面逻辑 |</p>
+<p>| <code>lv_ds_lvgl_port</code> | 每屏 disp_drv、flush、draw_buf | 点播业务 |</p>
+<p>| <code>lv_ds_media_port</code> | TPlayer 封装、screen_id、zorder | UI 布局 |</p>
+<p>| <code>lv_ds_mgr</code> | content 互斥、模式、事件分发 | 硬件寄存器 |</p>
+<p>| <code>lv_ds_api</code> | 参数校验、错误码 | 直接画屏 |</p>
+<p>---</p>
+<h2>13. AI / 协作开发约定</h2>
+<ol>
+<li><strong>单头文件</strong>：应用只 <code>#include &quot;lv_ds.h&quot;</code>。  </li>
+<li><strong>板级只改 JSON</strong>：新板复制 <code>ds_board_xxx.json</code>，不改 API 签名。  </li>
+<li><strong>文件头注释模板</strong>：</li>
+</ol>
+<pre><code>/**
+ * @module lv_ds_api
+ * @layer   L4
+ * @calls   lv_ds_mgr
+ * @used_by application
+ */</code></pre>
+<ol>
+<li><strong>示例即规范</strong>：<code>examples/ex_*.c</code> 为 AI 生成业务代码的 golden reference。  </li>
+<li><strong>禁止在应用中出现</strong>：<code>CreateVideoOutport</code>、<code>disp_fb_clone</code>、<code>DISP_LAYER_SET_CONFIG</code>（除非在 <code>lv_ds_hal</code> 内）。</li>
+</ol>
+<p>---</p>
+<h2>14. 实施路线图（建议）</h2>
+<p>| 阶段 | 内容 | 验收 |</p>
+<p>|------|------|------|</p>
+<p>| <strong>P0</strong> | <code>lv_ds_hal</code> + 板级 JSON + 禁 fb clone | HDMI 不显示 fb0 镜像 |</p>
+<p>| <strong>P1</strong> | PRIMARY <code>sunxifb</code> + <code>lv_ds_scr_load_ui</code> | MIPI 点歌 UI 正常 |</p>
+<p>| <strong>P2</strong> | SECONDARY <code>disp_layer</code> + 副屏 LVGL | HDMI 显示独立 LVGL 页 |</p>
+<p>| <strong>P3</strong> | <code>lv_ds_media_port</code> screen1 视频 | MIPI UI + HDMI 全屏 MV 异显 |</p>
+<p>| <strong>P4</strong> | 事件 HPD、错误恢复、示例 <code>ex_lvgl_plus_hdmi_video</code> | 热插拔、切歌稳定 |</p>
+<p>---</p>
+<h2>15. 二期扩展（可选）</h2>
+<ul>
+<li><code>lv_ds_scr_screenshot()</code> — 调试  </li>
+<li><code>lv_ds_scr_set_rotation()</code> — MIPI 竖屏旋转  </li>
+<li>LVGL 9 移植：<code>port/lvgl9/</code>，API 不变  </li>
+<li>统一 <code>lv_ds_tick</code> 内多 display 刷新，避免应用漏调  </li>
+</ul>
+<p>---</p>
+<h2>16. 修订记录</h2>
+<p>| 日期 | 版本 | 说明 |</p>
+<p>|------|------|------|</p>
+<p>| 2026-05-21 | 0.1 | 初稿：LV_DS 双屏异显中间件架构，供后续 <code>platform/lv_dual_scr</code> 实现 |</p>
+<p>---</p>
+<p>*实现代码目标路径：<code>platform/lv_dual_scr/</code>。BSP 变更仍遵循 <a href="./工程编译方式.txt">工程编译方式.txt</a> 与 <a href="./H133-MIPI-HDMI双显开发记录.md">H133-MIPI-HDMI双显开发记录.md</a>。*</p>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证 · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">00 — 背景与路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">01 — Kernel Panel 驱动</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">02 — U-Boot Panel / 启动 Logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">03 — DTS 切换 LVDS</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">04 — App 层与 sunxifb 统一路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">05 — HDMI 异显 dual_display_rot</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">06 — 编译与实机验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">07 — DE0 硬件缩放 1280×800 → 1024×600</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.html"><span class="txt">20260708-JYY070-LVDS显示开发 · JYY070 LVDS 显示开发 — 文档索引</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">20260708-JYY070-LVGL显示不旋转 · JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板）</span></a>
+<a class="item child current" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">20260713-JYY070-8733BU-WiFi适配 · JYY070 RTL8733BU WiFi 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">20260714-JYY070-视频小窗全屏rect双板兼容 · JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">20260714-双板串编验证 · 双板串编验证脚本（个人用，非 SDK tools）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">20260717-JYY070-默认HDMI音频 · JYY070 默认声音输出切 HDMI — 补丁</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/README.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射（定稿）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/README.html"><span class="txt">GSL触摸坐标映射 · GSL 触摸坐标映射（架构级）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/README.html"><span class="txt">开发记录 · p1_nor_JYY070 开发记录索引</span></a>
+<a class="item cat" href="项目/JYY070/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">p1_nor_JYY070主板测试报告(2)(2)(1)</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">本板资料说明</span></a>
+</div>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-10</p>
+<h1>JYY070 GSL1680 触摸坐标内核映射 — 板级验证</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-10 |</p>
+<p>| 板型 | <code>p1_nor_JYY070</code> |</p>
+<p>| 关联板型 | <code>p1_nor</code>（GT911，不受影响） |</p>
+<p>| 需求 | GSL1680 物理 1024×600 上报与 UI/fb0 <strong>1280×800</strong> 1:1 对齐 |</p>
+<p>| <strong>架构与补丁</strong> | <a href="../../../GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>（2026-08-25 拆出） |</p>
+<p>| 历史合并补丁 | <a href="./jyy070-gsl1680-tp-report-map.patch">jyy070-gsl1680-tp-report-map.patch</a>（含已删除的 product DTS hunk，新树请用架构目录分片） |</p>
+<p>---</p>
+<h2>1. 背景</h2>
+<p>| 层 | 分辨率 | 说明 |</p>
+<p>|---|---|---|</p>
+<p>| GSL1680 固件/芯片 | 1024×600 | <code>ctp_screen_max_x/y</code>，<code>revert_x/y=1</code> |</p>
+<p>| fb0 / LVGL UI | 1280×800 | <code>board.dts</code> 中 <code>fb0_width/height</code> |</p>
+<p>| 改前 userspace | 1024×600 | <code>evdev</code> 1:1 上报，点 UI 按钮偏移 |</p>
+<p>GSL1680 驱动 bring-up 已完成（I2C、固件、四角 TP 坐标正常）。本记录仅解决 <strong>逻辑坐标与 UI 不一致</strong>，不重复驱动接入。</p>
+<h3>1.1 放弃的方案</h3>
+<p>| 方案 | 不采用原因 |</p>
+<p>|---|---|</p>
+<p>| <code>board_ui.h</code> + <code>gen_board_ui_from_dts.sh</code> | DTS 重复解析、编包脚本隐式依赖、改共享 <code>evdev.c</code> |</p>
+<p>| <code>EVDEV_CALIBRATE</code> 写死 MIN/MAX | 按板编 <code>liblvgl</code>；<code>getevent</code> 仍为 1024×600 |</p>
+<p>| 固件直接 patch 到 1280×800 | 维护成本高，Y 轴边界曾出过问题 |</p>
+<p>---</p>
+<h2>2. 方案</h2>
+<p>在 <strong><code>gslx680new/gslX680.c</code></strong> 的 <code>report_data()</code> 内，于 <code>exchange</code> / <code>revert</code> / TP 边界检查 <strong>之后</strong>，按 DTS 可选属性做线性缩放；<code>input_set_abs_params</code> 同步为 report 范围。</p>
+<h3>2.1 DTS 新增属性（可选）</h3>
+<p>| 属性 | JYY070 取值 | 说明 |</p>
+<p>|---|---|---|</p>
+<p>| <code>ctp_screen_max_x/y</code> | 1024 / 600 | 已有；芯片物理范围，<code>revert</code> 仍用它 |</p>
+<p>| <code>ctp_report_max_x/y</code> | 1280 / 800 | <strong>新增</strong>；上报 userspace 的目标范围 |</p>
+<p>| 未配置或为 0 | 等于 <code>ctp_screen_max_*</code> | 与改前行为一致，其它板零影响 |</p>
+<h3>2.2 坐标链路</h3>
+<pre><code>芯片 raw (1024×600)
+  → exchange / revert（按 ctp_screen_max）
+  → 边界检查（仍用 screen_max）
+  → tp_map_to_report（screen_max → report_max）
+  → input_report_abs → getevent / evdev / desk</code></pre>
+<h3>2.3 p1_nor 隔离</h3>
+<ul>
+<li><code>CONFIG_TOUCHSCREEN_GSLX680NEW</code> 仅 JYY070 开启；<code>p1_nor</code> 走 GT911，<strong>不编</strong> <code>gslX680.c</code></li>
+<li>未配 <code>ctp_report_max_*</code> 的板型驱动行为不变</li>
+</ul>
+<p>---</p>
+<h2>3. 变更文件</h2>
+<p>| 文件 | 说明 |</p>
+<p>|---|---|</p>
+<p>| <code>kernel/.../gslx680new/gslX680.c</code> | 读 DTS、<code>report_data</code> 缩放、<code>input_set_abs_params</code> |</p>
+<p>| <code>device/.../p1_nor_JYY070/.../board.dts</code> | chips + product 各加 <code>ctp_report_max_x/y</code> |</p>
+<p><strong>未改动：</strong> LVGL、<code>evdev.c</code>、<code>liblvgl</code> Makefile、GSL 固件 bin。</p>
+<p>---</p>
+<h2>4. 编译与镜像</h2>
+<pre><code>./tools/build_p1_nor_JYY070.sh full
+# 或仅内核：./tools/build_p1_nor_JYY070.sh kernel</code></pre>
+<p>| 项 | 值 |</p>
+<p>|---|---|</p>
+<p>| 镜像 | <code>out/h133_linux_p1_nor_JYY070_uart0_nor.img</code> |</p>
+<p>| MD5（2026-07-09 编） | <code>06b2b95ba7a5463cdcaa49b20ec47123</code> |</p>
+<p>| 编译日志 | <code>/tmp/build_p1_nor_JYY070_tpmap.log</code> |</p>
+<p>---</p>
+<h2>5. 板上验收</h2>
+<pre><code># 1. 映射日志
+dmesg | grep &quot;gslX680 report map&quot;
+# 期望：gslX680 report map: tp 1024x600 -&gt; 1280x800
+
+# 2. 四角坐标（应接近 1280×800，不再是 1024×600）
+tp_debug.sh stop
+getevent -l /dev/input/event3
+
+# 3. UI
+# desk 点四角/中心按钮，应与 Guider 1280×800 布局对齐</code></pre>
+<p>| 位置 | 期望（约） |</p>
+<p>|---|---|</p>
+<p>| 左上 | (0, 0) |</p>
+<p>| 右下 | (1280, 800) |</p>
+<p>---</p>
+<h2>6. 补丁应用</h2>
+<p><strong>前置：</strong> 板级已切 GSL1680（<code>ctp@40</code>、<code>ctp_name=gsl1680_fornew</code>、<code>ctp_screen_max 1024×600</code>）。若仍为 GT911 节点，须先完成 GSL1680 bring-up 再打补丁。</p>
+<p>干净树请用架构目录（驱动 + 本板 DTS 已拆分）：</p>
+<pre><code>bash H133-AI-Skills/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/apply-gsl-tp-report-map.sh</code></pre>
+<p>历史一包补丁（含 <code>device/product/...</code> hunk，新树可能无该路径）：</p>
+<pre><code>cd /path/to/H133-AIKTV
+patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260710-JYY070-GSL1680触摸坐标内核映射/jyy070-gsl1680-tp-report-map.patch</code></pre>
+<p>撤销历史包：</p>
+<pre><code>patch -R -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260710-JYY070-GSL1680触摸坐标内核映射/jyy070-gsl1680-tp-report-map.patch</code></pre>
+<p>---</p>
+<h2>7. 后续同 TP 新板</h2>
+<ol>
+<li>保持 <code>ctp_screen_max_*</code> 为芯片物理分辨率（1024×600）</li>
+<li><code>ctp_report_max_*</code> 设为 UI/fb0 逻辑分辨率（如 1280×800）</li>
+<li>无需改 LVGL；<code>p1_nor</code> 等未配属性的板不受影响</li>
+</ol>
+<p>---</p>
+<h2>8. 与 userspace <code>tp_rotate</code>（2026-07-17 定稿）</h2>
+<p>内核已做 <code>revert_x/y</code> + <code>report_max→1280×800</code> 后，<strong>不要</strong>再叠 evdev 软旋。</p>
+<p>| 配置 | 定稿 | 现象若设错 |</p>
+<p>|------|------|------------|</p>
+<p>| <code>/etc/setting.ini</code> → <code>tp_rotate</code> | <strong><code>0</code></strong> | <code>=2</code> 时左右上下全反（点左上 → UI 右下） |</p>
+<p>| <code>disp_rotate</code> | <code>0</code>（UI 不软旋） | 与触摸无关，但须与 UI 一致 |</p>
+<p>优先读 <code>/mnt/UDISK/setting.ini</code>，刷 rootfs 改 <code>/etc</code> 不一定生效。板级总览见 <a href="../../../../skills/h133-display/board-profile-p1_nor_JYY070.md">board-profile-p1_nor_JYY070.md</a>。</p>
+<h2>9. 相关</h2>
+<ul>
+<li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
+<li>板级档案：<code>H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JYY070.md</code></li>
+<li>GSL 链路参考：<code>H133-AI-Skills/驱动/TP驱动&amp;鼠标&amp;触摸/h133的gslx680触摸驱动.md</code></li>
+<li>GT911 1:1 参考：<code>H133-AI-Skills/驱动/TP驱动&amp;鼠标&amp;触摸/tuopu-10.1-h133-tp-lvgl拓步 10.1 寸 TP 开发与 LVGL 坐标映射.md</code></li>
+</ul>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

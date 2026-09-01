@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地） · H133 板件</title>
+<style>/* nav-v10 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; }
+nav.side a.item .txt { display:inline-block; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.current .txt,
+nav.side a.item.current:hover .txt { transform:scale(1.12); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"› "; opacity:.65; margin-right:2px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1.4rem 1.6rem 2.5rem; min-width:0; display:flex; flex-direction:column; align-items:center; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v10</span></a>
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<div class="sub">
+<a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">00 — 背景与路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">01 — Kernel Panel 驱动</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">02 — U-Boot Panel / 启动 Logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">03 — DTS 切换 LVDS</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">04 — App 层与 sunxifb 统一路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">05 — HDMI 异显 dual_display_rot</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">06 — 编译与实机验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">07 — DE0 硬件缩放 1280×800 → 1024×600</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.html"><span class="txt">20260708-JYY070-LVDS显示开发 · JYY070 LVDS 显示开发 — 文档索引</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">20260708-JYY070-LVGL显示不旋转 · JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">20260710-JYY070-GSL1680触摸坐标内核映射 · JYY070 GSL1680 触摸坐标内核映射 — 板级验证</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">20260713-JYY070-8733BU-WiFi适配 · JYY070 RTL8733BU WiFi 适配 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">20260713-JYY070-视频WB-mirror旋转 · JYY070 视频 WB mirror 旋转角 — 开发记录</span></a>
+<a class="item child current" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">20260714-JYY070-应用层适配硬编码 · JYY070 应用层适配硬编码 — 开发记录（树内落地）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">20260714-JYY070-视频小窗全屏rect双板兼容 · JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">20260714-双板串编验证 · 双板串编验证脚本（个人用，非 SDK tools）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">20260717-JYY070-默认HDMI音频 · JYY070 默认声音输出切 HDMI — 补丁</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/README.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射（定稿）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/README.html"><span class="txt">patches · 补丁说明</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">20260710-GSL-ctp_report_max内核映射 · GSL `ctp_report_max` 内核映射 — 开发记录</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/README.html"><span class="txt">GSL触摸坐标映射 · GSL 触摸坐标映射（架构级）</span></a>
+<a class="item child" href="项目/JYY070/开发记录/README.html"><span class="txt">开发记录 · p1_nor_JYY070 开发记录索引</span></a>
+<a class="item cat" href="项目/JYY070/外设.html"><span class="txt">外设</span></a>
+<a class="item cat" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
+<a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">p1_nor_JYY070主板测试报告(2)(2)(1)</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">本板资料说明</span></a>
+</div>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
+<main>
+<article>
+<p class="meta">kind: log · date: 2026-07-14</p>
+<h1>JYY070 应用层适配硬编码 — 开发记录（树内落地）</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-14 |</p>
+<p>| 板型 | <code>p1_nor_JYY070</code>（硬编码；<strong>不兼顾 p1_nor</strong>） |</p>
+<p>| 范围 | <strong>应用层</strong>：UI 不旋转 + 视频小窗/全屏 rect（同属一层适配，合并记录） |</p>
+<p>| 方案 | 改头文件默认旋转角、改 DE 屏坐标数字；<strong>不</strong>改 <code>sunxifb.mk</code> / 板型 <code>ifeq</code> |</p>
+<p>| 补丁 | <a href="./jyy070-app-layer-adapt-minimal.patch">jyy070-app-layer-adapt-minimal.patch</a> |</p>
+<p>| <strong>退回 p1_nor</strong> | 见 §6：<code>patch -R</code> 或手工改回 <code>DISP_ROTATE=3</code> + 竖屏 rect（应用层适配 p1_nor） |</p>
+<p>| 双板（不进树） | UI：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">LVGL 编译宏</a> · rect：<a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">rect双板兼容</a> |</p>
+<p>| 非本范围 | 视频 WB：<code>libtmedia/Makefile</code> 的 <code>VIDEO_WB_MIRROR_ROTATE</code>（树内仍按板型宏） |</p>
+<p>本目录合并原「LVGL 不旋转最小改动」与「视频小窗/全屏 rect 硬编码」。</p>
+<p>---</p>
+<h2>1. 背景</h2>
+<h3>1.1 UI 旋转</h3>
+<ul>
+<li>默认 <code>LV_PROJECTOR_DISP_ROTATE=3</code>（270° 软转）不适配 JYY070</li>
+<li><code>desk</code> 不读 argv / <code>setting.ini</code>，只能编译期默认或 <code>-D</code></li>
+<li><strong>最小做法</strong>：各 app <code>projector_config.h</code> / 兜底宏改默认 <strong>0</strong>（不在 mk 加板型分支）</li>
+</ul>
+<h3>1.2 视频小窗 / 全屏</h3>
+<p>| 层 | 分辨率 | 说明 |</p>
+<p>|---|---|---|</p>
+<p>| UI FB / Guider | 1280×800 | VSU 缩放到面板 |</p>
+<p>| DE0 / LVDS | <strong>1024×600</strong> | 视频 <code>frame</code> 坐标系 |</p>
+<p>| Guider <code>btn_30</code> | (347,151,599,316) | 热区 @1280×800 |</p>
+<p>现象：小窗仍用竖屏 <code>(330,360,320,570)</code>；全屏用 FB <code>1280×800</code> → 花屏。</p>
+<pre><code># mgr0: 1024x600
+# UI: fb[1280,800] frame[0,0,1024,600]</code></pre>
+<p>---</p>
+<h2>2. 改动清单</h2>
+<h3>2.1 UI 不旋转（默认宏 → 0）</h3>
+<p>| 文件 | 改动 |</p>
+<p>|------|------|</p>
+<p>| <code>desk/.../projector_config.h</code> | <code>LV_PROJECTOR_DISP_ROTATE</code> → <strong>0</strong> |</p>
+<p>| <code>sing_ktv/.../projector_config.h</code> | 同上 |</p>
+<p>| <code>liyuan_opera/.../projector_config.h</code> | 同上 |</p>
+<p>| <code>MixStation</code> / <code>LiveStreamPlayer</code> / <code>BluetoothPlayer</code> / <code>ai_mv</code> 的 <code>main.c</code> 兜底 | → <strong>0</strong> |</p>
+<p>| <code>sunxifb.mk</code> | <strong>无</strong> JYY070 → <code>DISP_ROTATE</code> 的 <code>ifeq</code> |</p>
+<pre><code>#ifndef LV_PROJECTOR_DISP_ROTATE
+#define LV_PROJECTOR_DISP_ROTATE  0
+#endif</code></pre>
+<h3>2.2 视频小窗 / 全屏 rect</h3>
+<p>不引入 <code>KTV_BOARD_*</code>，不改 Makefile。</p>
+<p>| 文件 | 改动 |</p>
+<p>|------|------|</p>
+<p>| <code>sing_ktv/.../ktv_player/core/ktv_player_ui.c</code> | 小窗；全屏硬编 <code>1024×600</code>；去掉 <code>sunxifb_get_sizes</code> |</p>
+<p>| <code>media_session/.../ktv_player_common.h</code> | <code>SCREEN</code> → <code>1024×600</code> |</p>
+<p>| <code>media_session/.../ktv_player_ui.c</code> | 小窗对齐；<code>right</code> 高度用 <code>SCREEN_HEIGHT</code> |</p>
+<p>| | 改前 | 改后 |</p>
+<p>|--|------|------|</p>
+<p>| 小窗 | (330,360,320×570) | <strong>(278,113,479×237)</strong> |</p>
+<p>| 全屏 | FB 1280×800 | <strong>(0,0,1024,600)</strong> |</p>
+<p>换算：btn_30 ×(1024/1280)、×(600/800)。</p>
+<pre><code>#define KTV_PLAYER_SMALL_RECT_X  (278)
+#define KTV_PLAYER_SMALL_RECT_Y  (113)
+#define KTV_PLAYER_SMALL_RECT_W  (479)
+#define KTV_PLAYER_SMALL_RECT_H  (237)
+
+/* 视频 layer 用 DE 屏坐标，切勿用 FB 1280×800 */
+return ktv_player_ui_apply_rect(0, 0, 1024, 600);</code></pre>
+<p>---</p>
+<h2>3. 编译与部署</h2>
+<pre><code>source build/envsetup.sh &amp;&amp; lunch h133-p1_nor_JYY070-tina
+m package/desk/compile package/sing_ktv/compile package/media_session/compile
+# 或 ./tools/build_p1_nor_JYY070.sh rootfs
+
+adb push .../sing_ktv /usr/bin/sing_ktv
+adb push .../media_sessiond /usr/bin/media_sessiond
+adb shell &#x27;killall sing_ktv media_sessiond desk 2&gt;/dev/null; media_sessiond &amp;; sing_ktv &amp;&#x27;
+# 勿 sing_ktv 3 / lv_projector 3</code></pre>
+<p>---</p>
+<h2>4. 验收</h2>
+<p>| 检查 | 期望 |</p>
+<p>|------|------|</p>
+<p>| UI 方向 | <code>sunxifb_rot=0</code> |</p>
+<p>| 首页小窗 | log <code>x=278, y=113, w=479, h=237</code>，落中部播放区 |</p>
+<p>| 全屏 | <code>frame[0, 0, 1024, 600]</code>，无花屏 |</p>
+<pre><code>grep &quot;set rect&quot; /tmp/sk.log
+cat /sys/class/disp/disp/attr/sys | grep frame</code></pre>
+<p>---</p>
+<h2>5. 补丁</h2>
+<p>打上（p1_nor 应用层 → JYY070 硬编码）：</p>
+<pre><code>cd /path/to/H133-AIKTV
+patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260714-JYY070-应用层适配硬编码/jyy070-app-layer-adapt-minimal.patch</code></pre>
+<p>---</p>
+<h2>6. 退回改动：恢复为 3 / 适配 p1_nor</h2>
+<p>本补丁把 UI 默认旋转换成 <strong>0</strong>、视频 rect 写成 JYY DE 屏坐标。编 <strong><code>p1_nor</code></strong>（竖屏逻辑、<strong><code>LV_PROJECTOR_DISP_ROTATE=3</code></strong>）前必须整包退回。</p>
+<p>目标（退回后）：</p>
+<p>| 项 | p1_nor 期望 |</p>
+<p>|----|-------------|</p>
+<p>| UI 旋转宏默认 | <strong><code>LV_PROJECTOR_DISP_ROTATE = 3</code></strong>（270°） |</p>
+<p>| 日志 | <code>sunxifb_rot=3</code> |</p>
+<p>| 小窗 / SCREEN | 竖屏原值（见 §6.2） |</p>
+<p>| lunch | <code>h133-p1_nor-tina</code>（非 JYY070） |</p>
+<h3>6.1 推荐：反打本最小补丁</h3>
+<pre><code>cd /path/to/H133-AIKTV
+patch -R -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260714-JYY070-应用层适配硬编码/jyy070-app-layer-adapt-minimal.patch
+
+source build/envsetup.sh &amp;&amp; lunch h133-p1_nor-tina
+m package/desk/compile package/sing_ktv/compile package/media_session/compile
+# 推 desk / sing_ktv / media_sessiond 后重启</code></pre>
+<p><code>patch -R</code> 会把补丁里所有文件一并还原，包括：各 app 的 <code>DISP_ROTATE</code> <strong>0→3</strong>，以及小窗/全屏 rect。</p>
+<h3>6.2 手工对照（改乱 / 无法 patch -R）</h3>
+<p><strong>① UI 旋转：全部改回默认 <code>3</code></strong></p>
+<p>| 文件 | 改回 |</p>
+<p>|------|------|</p>
+<p>| <code>desk/.../projector_config.h</code> | <code>#define LV_PROJECTOR_DISP_ROTATE  3</code> |</p>
+<p>| <code>sing_ktv/.../projector_config.h</code> | 同上 |</p>
+<p>| <code>liyuan_opera/.../projector_config.h</code> | 同上 |</p>
+<p>| <code>MixStation</code> / <code>LiveStreamPlayer</code> / <code>BluetoothPlayer</code> / <code>ai_mv</code> 的 <code>main.c</code> 兜底宏 | 同上 |</p>
+<pre><code>#ifndef LV_PROJECTOR_DISP_ROTATE
+#define LV_PROJECTOR_DISP_ROTATE  3
+#endif</code></pre>
+<p><strong>② 视频 rect — sing_ktv <code>ktv_player_ui.c</code></strong></p>
+<pre><code>#include &quot;lv_drivers/display/sunxifb.h&quot;
+
+#define KTV_PLAYER_SMALL_RECT_X               (330)
+#define KTV_PLAYER_SMALL_RECT_Y               (360)
+#define KTV_PLAYER_SMALL_RECT_W               (320)
+#define KTV_PLAYER_SMALL_RECT_H               (570)
+
+/* set_right_rect 高度 */
+return ktv_player_ui_apply_rect(115,
+                                KTV_PLAYER_SMALL_RECT_Y,
+                                570,
+                                1280 - KTV_PLAYER_SMALL_RECT_Y);
+
+/* set_full_rect：用 FB，不要写死 1024×600 */
+int ktv_player_ui_set_full_rect(void)
+{
+    uint32_t w = 0, h = 0;
+    sunxifb_get_sizes(&amp;w, &amp;h);
+    if (w == 0 || h == 0)
+        return ktv_player_ui_apply_rect(0, 0,
+                                        KTV_PLAYER_SCREEN_WIDTH,
+                                        KTV_PLAYER_SCREEN_HEIGHT);
+    return ktv_player_ui_apply_rect(0, 0, (int)w, (int)h);
+}</code></pre>
+<p><strong>③ 视频 rect — media_session</strong></p>
+<pre><code>/* ktv_player_common.h */
+#define KTV_PLAYER_SCREEN_WIDTH                (800)
+#define KTV_PLAYER_SCREEN_HEIGHT               (1280)
+
+/* ktv_player_ui.c 小窗 */
+#define KTV_PLAYER_SMALL_RECT_X               (330)
+#define KTV_PLAYER_SMALL_RECT_Y               (330)
+#define KTV_PLAYER_SMALL_RECT_W               (320)
+#define KTV_PLAYER_SMALL_RECT_H               (600)
+
+/* set_right_rect 高度 */
+return ktv_player_ui_apply_rect(115,
+                                KTV_PLAYER_SMALL_RECT_Y,
+                                570,
+                                1280 - KTV_PLAYER_SMALL_RECT_Y);</code></pre>
+<h3>6.3 退回后验收（p1_nor）</h3>
+<p>| 检查 | 期望 |</p>
+<p>|------|------|</p>
+<p>| 宏默认 | <code>LV_PROJECTOR_DISP_ROTATE == 3</code> |</p>
+<p>| 日志 | <code>sunxifb_rot=3</code> |</p>
+<p>| 小窗 | ≈ (330,360,320×570) / daemon (330,330,320×600) |</p>
+<p>| 全屏 | <code>sunxifb_get_sizes</code> / SCREEN 800×1280 |</p>
+<p><strong>说明：</strong></p>
+<ul>
+<li>视频 WB：p1_nor 树内由 <code>libtmedia/Makefile</code> 传 <code>VIDEO_WB_MIRROR_ROTATE=90</code>，<strong>不在本补丁内</strong>，退回应用层后 lunch p1_nor 重编即可。</li>
+<li>若要同树双板共存：先完成本节退回（默认回到 3 + 竖屏 rect），再打 UI / rect <strong>双板</strong>补丁，而不是长期停在 JYY 硬编码。</li>
+</ul>
+<p>---</p>
+<h2>7. 限制</h2>
+<ul>
+<li><strong>同树编 p1_nor 会错</strong>，须先按 §6 退回（恢复为 3 / 竖屏 rect）或改用双板补丁。</li>
+<li><code>set_right_rect</code> 的 x/w（115,570）未按屏重算，仅改高度基准。</li>
+<li>视频 WB 旋转不在本补丁内。</li>
+</ul>
+<p>---</p>
+<h2>8. 相关</h2>
+<ul>
+<li>UI 编译宏双板：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
+<li>rect 编译宏双板：<a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">20260714-…rect双板兼容</a></li>
+<li>LVDS DE 缩放：<a href="../20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放1280x800</a></li>
+<li>视频 WB：<a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">20260713-…WB-mirror</a></li>
+</ul>
+</article>
+<footer>一块板一个项目 · 2026-09-01 03:27 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>
