@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>首页 · H133 板件</title>
-<style>/* nav-v8 */ 
+<style>/* nav-v9 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -57,7 +57,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v8</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v9</span></a>
 <a class="item home current" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -82,38 +82,70 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>状态</h2>
 <p>立项 → 设计 → 实现 → 验证 → 交付</p>
 </article>
-<footer>一块板一个项目 · 2026-09-01 03:03 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 03:11 UTC</footer>
 </main>
 <script>
 (function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
   function bind() {
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       a.addEventListener("click", onNav);
     });
   }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
   function onNav(e) {
     var href = this.getAttribute("href");
     if (!href || /^(https?:|mailto:|#)/.test(href)) return;
     e.preventDefault();
+    mark(this);
     go(this.href, true);
   }
   function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
     fetch(url).then(function (r) { return r.text(); }).then(function (html) {
-      var doc = new DOMParser().parseFromString(html, "text/html");
-      var nav = doc.querySelector("nav.side");
-      var article = doc.querySelector("article");
-      var footer = doc.querySelector("footer");
-      if (!nav || !article) { location.href = url; return; }
-      document.querySelector("nav.side").replaceWith(nav);
-      document.querySelector("article").replaceWith(article);
-      if (footer) document.querySelector("footer").replaceWith(footer);
-      document.title = doc.title;
-      if (push) history.pushState({ u: url }, "", url);
-      bind();
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
   }
   window.addEventListener("popstate", function () { go(location.href, false); });
   bind();
+  prefetch();
 })();
 </script>
 </body>
