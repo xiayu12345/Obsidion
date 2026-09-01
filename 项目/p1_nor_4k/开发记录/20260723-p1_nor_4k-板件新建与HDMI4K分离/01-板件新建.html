@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>01 — 板件新建（从 p1_nor_8733 克隆） · H133 板件</title>
-<style>/* nav-v14 */ 
+<style>/* nav-v15 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -48,7 +48,9 @@ article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
 article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
-.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
 .docimg { max-width:100%; height:auto; border-radius:8px; }
 pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
@@ -67,7 +69,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v15</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -120,7 +122,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>uboot-board.dts</code> / <code>sys_*.fex</code> / <code>env.cfg</code> | 若为软链 → 从 <code>p1_nor</code> 拷成实文件 |</p>
 <p>| <code>board.dts</code> | <code>ln -sfn linux-5.4/board.dts board.dts</code> |</p>
 <p>| <code>bootlogo.bmp</code> | 可从 8733 复制；可不进补丁 |</p>
-<p>随后用 <a href="./patches/01-hdmi4k-dts-delta.patch">patches/01-hdmi4k-dts-delta.patch</a> 改 HDMI 4K（详见 <a href="./02-HDMI-4K-DTS与setting.md">02</a>）。</p>
+<p>随后用 <a href="./patches/01-hdmi4k-dts-delta.patch) 改 HDMI 4K（详见 [02](./02-HDMI-4K-DTS与setting.md">patches/01-hdmi4k-dts-delta.patch</a>）。</p>
 <h3>B. OpenWrt target</h3>
 <p>源：<code>openwrt/target/h133/h133-p1_nor_8733/</code>  </p>
 <p>目标：<code>openwrt/target/h133/h133-p1_nor_4k/</code></p>
@@ -166,7 +168,7 @@ cp -a $OW/h133-p1_nor_8733 $OW/h133-p1_nor_4k
 <li><input type="checkbox" disabled /> OpenWrt：<code>rtl8733bu-kmod=y</code></li>
 </ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:02 UTC</footer>
 </main>
 <script>
 (function () {
@@ -234,9 +236,19 @@ cp -a $OW/h133-p1_nor_8733 $OW/h133-p1_nor_4k
     mark(this);
     go(this.href, true);
   }
+  var VER = "v15";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
   function go(url, push) {
     if (cache[url]) { apply(cache[url], url, push); return; }
-    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
       cache[url] = parse(html);
       apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
@@ -245,7 +257,7 @@ cp -a $OW/h133-p1_nor_8733 $OW/h133-p1_nor_4k
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       var url = a.href;
       if (!url || cache[url]) return;
-      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
         cache[url] = parse(html);
       }).catch(function () {});
     });

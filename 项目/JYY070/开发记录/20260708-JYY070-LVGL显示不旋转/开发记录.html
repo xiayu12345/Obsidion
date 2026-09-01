@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板） · H133 板件</title>
-<style>/* nav-v14 */ 
+<style>/* nav-v15 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -48,7 +48,9 @@ article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
 article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
-.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
 .docimg { max-width:100%; height:auto; border-radius:8px; }
 pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
@@ -67,7 +69,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v15</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -233,7 +235,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
 <li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
 </ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:02 UTC</footer>
 </main>
 <script>
 (function () {
@@ -301,9 +303,19 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     mark(this);
     go(this.href, true);
   }
+  var VER = "v15";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
   function go(url, push) {
     if (cache[url]) { apply(cache[url], url, push); return; }
-    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
       cache[url] = parse(html);
       apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
@@ -312,7 +324,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       var url = a.href;
       if (!url || cache[url]) return;
-      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
         cache[url] = parse(html);
       }).catch(function () {});
     });

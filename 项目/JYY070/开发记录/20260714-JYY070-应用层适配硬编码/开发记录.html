@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 应用层适配硬编码 — 开发记录（树内落地） · H133 板件</title>
-<style>/* nav-v14 */ 
+<style>/* nav-v15 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -48,7 +48,9 @@ article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
 article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
-.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
 .docimg { max-width:100%; height:auto; border-radius:8px; }
 pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
@@ -67,7 +69,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v15</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -132,7 +134,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 方案 | 改头文件默认旋转角、改 DE 屏坐标数字；<strong>不</strong>改 <code>sunxifb.mk</code> / 板型 <code>ifeq</code> |</p>
 <p>| 补丁 | <a href="./jyy070-app-layer-adapt-minimal.patch">jyy070-app-layer-adapt-minimal.patch</a> |</p>
 <p>| <strong>退回 p1_nor</strong> | 见 §6：<code>patch -R</code> 或手工改回 <code>DISP_ROTATE=3</code> + 竖屏 rect（应用层适配 p1_nor） |</p>
-<p>| 双板（不进树） | UI：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">LVGL 编译宏</a> · rect：<a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">rect双板兼容</a> |</p>
+<p>| 双板（不进树） | UI：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md) · rect：[rect双板兼容](../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">LVGL 编译宏</a> |</p>
 <p>| 非本范围 | 视频 WB：<code>libtmedia/Makefile</code> 的 <code>VIDEO_WB_MIRROR_ROTATE</code>（树内仍按板型宏） |</p>
 <p>本目录合并原「LVGL 不旋转最小改动」与「视频小窗/全屏 rect 硬编码」。</p>
 <p>---</p>
@@ -306,7 +308,7 @@ return ktv_player_ui_apply_rect(115,
 <li>视频 WB：<a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">20260713-…WB-mirror</a></li>
 </ul>
 </article>
-<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:02 UTC</footer>
 </main>
 <script>
 (function () {
@@ -374,9 +376,19 @@ return ktv_player_ui_apply_rect(115,
     mark(this);
     go(this.href, true);
   }
+  var VER = "v15";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
   function go(url, push) {
     if (cache[url]) { apply(cache[url], url, push); return; }
-    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
       cache[url] = parse(html);
       apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
@@ -385,7 +397,7 @@ return ktv_player_ui_apply_rect(115,
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       var url = a.href;
       if (!url || cache[url]) return;
-      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
         cache[url] = parse(html);
       }).catch(function () {});
     });

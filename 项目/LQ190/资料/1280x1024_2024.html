@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>1280x1024_2024 · H133 板件</title>
-<style>/* nav-v14 */ 
+<style>/* nav-v15 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -48,7 +48,9 @@ article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
 article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
-.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
 .docimg { max-width:100%; height:auto; border-radius:8px; }
 pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
@@ -67,7 +69,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v15</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -109,8 +111,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a></nav>
 <main>
 <article class="wide">
-<p class="meta">kind: docs</p>
-<h1>1280x1024_2024</h1><pre class="file"><code>//只提供RK3588参考文件
+
+<h1>1280x1024_2024</h1><p class="dlbar"><a class="dl" href="项目/LQ190/资料/1280x1024_2024.txt" download="1280x1024_2024.txt">下载 1280x1024_2024.txt</a><a class="dl alt" href="项目/LQ190/资料/1280x1024_2024.txt" target="_blank" rel="noopener">新窗口打开</a></p><pre class="file"><code>//只提供RK3588参考文件
 //如需其他主控的文件请自行适配
 //不要使用BURST模式
 //请使用MIPI连续时钟模式
@@ -182,7 +184,7 @@ disp_timings0: display - timings {
 };
 </code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:02 UTC</footer>
 </main>
 <script>
 (function () {
@@ -250,9 +252,19 @@ disp_timings0: display - timings {
     mark(this);
     go(this.href, true);
   }
+  var VER = "v15";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
   function go(url, push) {
     if (cache[url]) { apply(cache[url], url, push); return; }
-    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
       cache[url] = parse(html);
       apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
@@ -261,7 +273,7 @@ disp_timings0: display - timings {
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       var url = a.href;
       if (!url || cache[url]) return;
-      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
         cache[url] = parse(html);
       }).catch(function () {});
     });

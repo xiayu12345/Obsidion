@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
-<title>H133-HDMI音频透传-与官方补丁差异及问题反馈 · H133 板件</title>
-<style>/* nav-v14 */ 
+<title>透传差异 · H133 板件</title>
+<style>/* nav-v15 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -48,7 +48,9 @@ article.wide { max-width:1100px; }
 footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; }
 article.wide + footer, main:has(article.wide) footer { max-width:1100px; }
 article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
-.docview { width:100%; height:calc(100vh - 8rem); border:1px solid var(--line); border-radius:8px; background:#fff; }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+a.dl.alt { background:transparent; color:var(--acc) !important; border:1px solid var(--acc); }
 .docimg { max-width:100%; height:auto; border-radius:8px; }
 pre.file { max-height:calc(100vh - 10rem); }
 a { color:var(--acc); }
@@ -67,7 +69,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v14</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v15</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -107,8 +109,8 @@ input[type=checkbox] { margin-right:.4rem; }
 </div></nav>
 <main>
 <article class="wide">
-<p class="meta">kind: docs</p>
-<h1>H133-HDMI音频透传-与官方补丁差异及问题反馈</h1><pre class="file"><code>H133 HDMI 音频透传问题（对照官方透传）
+
+<h1>透传差异</h1><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.txt" download="H133-HDMI音频透传-与官方补丁差异及问题反馈.txt">下载 H133-HDMI音频透传-与官方补丁差异及问题反馈.txt</a><a class="dl alt" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.txt" target="_blank" rel="noopener">新窗口打开</a></p><pre class="file"><code>H133 HDMI 音频透传问题（对照官方透传）
 
 cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNeedDirect=1，adecoderPassthough 不解 PCM，SunxiPassthough 打 IEC61937。AC3 用 48k，EAC3 用 192k，2ch S16。这块两边差不多。
 
@@ -238,7 +240,7 @@ cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNe
   `开发记录/H133-HDMI透传卡顿与raw-DMA修复.patch`
 </code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-01 09:50 UTC</footer>
+<footer>一块板一个项目 · 2026-09-01 10:02 UTC</footer>
 </main>
 <script>
 (function () {
@@ -306,9 +308,19 @@ cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNe
     mark(this);
     go(this.href, true);
   }
+  var VER = "v15";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
   function go(url, push) {
     if (cache[url]) { apply(cache[url], url, push); return; }
-    fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
       cache[url] = parse(html);
       apply(cache[url], url, push);
     }).catch(function () { location.href = url; });
@@ -317,7 +329,7 @@ cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNe
     document.querySelectorAll("nav.side a[href]").forEach(function (a) {
       var url = a.href;
       if (!url || cache[url]) return;
-      fetch(url).then(function (r) { return r.text(); }).then(function (html) {
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
         cache[url] = parse(html);
       }).catch(function () {});
     });
