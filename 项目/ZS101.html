@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>ZS101 · 全志</title>
-<style>/* nav-v33 */ 
+<style>/* nav-v34 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v33</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v34</span></a>
 <div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -454,7 +454,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p><h3><a href="项目/ZS101/修复.html">修复</a></h3><ul><li>暂无</li></ul></p>
 <p><h3><a href="项目/ZS101/资料.html">资料</a></h3><h4>触摸</h4><ul><li><a href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html">触摸规格</a></li><li><a href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html">GT928 配置</a></li></ul><h4>显示屏</h4><ul><li><a href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html">NI4042J4H8II-B</a></li><li><a href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html">新代码02群创10.1+ILI9881C-0D_2P_20190920</a></li></ul><h4>原理图</h4><ul><li><a href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html">位号图</a></li><li><a href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html">主板原理图</a></li></ul><h4>测试报告</h4><ul><li><a href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html">测试报告</a></li></ul></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:57 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 09:06 UTC</footer>
 </main>
 <script>
 (function () {
@@ -469,11 +469,7 @@ input[type=checkbox] { margin-right:.4rem; }
     };
   }
   function apply(p, url, push) {
-    if (!p || !p.nav || !p.article) { location.href = url; return; }
-    var y = 0;
-    var oldNav = document.querySelector("nav.side");
-    if (oldNav) y = oldNav.scrollTop;
-    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    if (!p || !p.article) { location.href = url; return; }
     document.querySelector("article").replaceWith(p.article.cloneNode(true));
     if (p.footer) {
       var f = document.querySelector("footer");
@@ -481,14 +477,7 @@ input[type=checkbox] { margin-right:.4rem; }
     }
     document.title = p.title;
     if (push) history.pushState({ u: url }, "", url);
-    bind();
-    restoreKeep();
-    function pin() {
-      var nav = document.querySelector("nav.side");
-      if (nav) nav.scrollTop = y;
-    }
-    pin();
-    requestAnimationFrame(pin);
+    markUrl(url);
     prefetch();
   }
   function bind() {
@@ -520,6 +509,7 @@ input[type=checkbox] { margin-right:.4rem; }
       if (!open) collapseInside(sub);
       storeKeep();
       if (open && !this.classList.contains("current")) {
+        mark(this);
         go(this.href, true);
       }
       return;
@@ -532,6 +522,13 @@ input[type=checkbox] { margin-right:.4rem; }
     });
     a.classList.add("current");
   }
+  function markUrl(url) {
+    var abs;
+    try { abs = new URL(url, location.href).href; } catch (e) { abs = url; }
+    document.querySelectorAll("nav.side a.item").forEach(function (a) {
+      a.classList.toggle("current", a.href === abs);
+    });
+  }
   function onNav(e) {
     var href = this.getAttribute("href");
     if (!href || /^(https?:|mailto:|#)/.test(href)) return;
@@ -540,8 +537,9 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v33";
+  var VER = "v34";
   var OPEN_KEY = "nav-keep-v32";
+  if (history.scrollRestoration) history.scrollRestoration = "manual";
   function loadKeep() {
     try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }
   }

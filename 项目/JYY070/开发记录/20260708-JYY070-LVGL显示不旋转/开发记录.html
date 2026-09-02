@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板） · 全志</title>
-<style>/* nav-v33 */ 
+<style>/* nav-v34 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v33</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v34</span></a>
 <div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -548,7 +548,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
 <li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
 </ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch" download="jyy070-lvgl-no-rotate.patch">下载 jyy070-lvgl-no-rotate.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:57 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 09:06 UTC</footer>
 </main>
 <script>
 (function () {
@@ -563,11 +563,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     };
   }
   function apply(p, url, push) {
-    if (!p || !p.nav || !p.article) { location.href = url; return; }
-    var y = 0;
-    var oldNav = document.querySelector("nav.side");
-    if (oldNav) y = oldNav.scrollTop;
-    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    if (!p || !p.article) { location.href = url; return; }
     document.querySelector("article").replaceWith(p.article.cloneNode(true));
     if (p.footer) {
       var f = document.querySelector("footer");
@@ -575,14 +571,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     }
     document.title = p.title;
     if (push) history.pushState({ u: url }, "", url);
-    bind();
-    restoreKeep();
-    function pin() {
-      var nav = document.querySelector("nav.side");
-      if (nav) nav.scrollTop = y;
-    }
-    pin();
-    requestAnimationFrame(pin);
+    markUrl(url);
     prefetch();
   }
   function bind() {
@@ -614,6 +603,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
       if (!open) collapseInside(sub);
       storeKeep();
       if (open && !this.classList.contains("current")) {
+        mark(this);
         go(this.href, true);
       }
       return;
@@ -626,6 +616,13 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     });
     a.classList.add("current");
   }
+  function markUrl(url) {
+    var abs;
+    try { abs = new URL(url, location.href).href; } catch (e) { abs = url; }
+    document.querySelectorAll("nav.side a.item").forEach(function (a) {
+      a.classList.toggle("current", a.href === abs);
+    });
+  }
   function onNav(e) {
     var href = this.getAttribute("href");
     if (!href || /^(https?:|mailto:|#)/.test(href)) return;
@@ -634,8 +631,9 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     mark(this);
     go(this.href, true);
   }
-  var VER = "v33";
+  var VER = "v34";
   var OPEN_KEY = "nav-keep-v32";
+  if (history.scrollRestoration) history.scrollRestoration = "manual";
   function loadKeep() {
     try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }
   }

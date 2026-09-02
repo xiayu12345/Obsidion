@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LV_DS 双屏异显中间件 — 技术架构 · 全志</title>
-<style>/* nav-v33 */ 
+<style>/* nav-v34 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v33</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v34</span></a>
 <div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -846,7 +846,7 @@ void app_play_mv(const char *path)
 <p>---</p>
 <p>*实现代码目标路径：<code>platform/lv_dual_scr/</code>。BSP 变更仍遵循 <a href="项目/LQ140M1JW61/开发记录/双屏异显/工程编译方式.txt) 与 [H133-MIPI-HDMI双显开发记录.md](./H133-MIPI-HDMI双显开发记录.md">工程编译方式.txt</a>。*</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:57 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 09:06 UTC</footer>
 </main>
 <script>
 (function () {
@@ -861,11 +861,7 @@ void app_play_mv(const char *path)
     };
   }
   function apply(p, url, push) {
-    if (!p || !p.nav || !p.article) { location.href = url; return; }
-    var y = 0;
-    var oldNav = document.querySelector("nav.side");
-    if (oldNav) y = oldNav.scrollTop;
-    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    if (!p || !p.article) { location.href = url; return; }
     document.querySelector("article").replaceWith(p.article.cloneNode(true));
     if (p.footer) {
       var f = document.querySelector("footer");
@@ -873,14 +869,7 @@ void app_play_mv(const char *path)
     }
     document.title = p.title;
     if (push) history.pushState({ u: url }, "", url);
-    bind();
-    restoreKeep();
-    function pin() {
-      var nav = document.querySelector("nav.side");
-      if (nav) nav.scrollTop = y;
-    }
-    pin();
-    requestAnimationFrame(pin);
+    markUrl(url);
     prefetch();
   }
   function bind() {
@@ -912,6 +901,7 @@ void app_play_mv(const char *path)
       if (!open) collapseInside(sub);
       storeKeep();
       if (open && !this.classList.contains("current")) {
+        mark(this);
         go(this.href, true);
       }
       return;
@@ -924,6 +914,13 @@ void app_play_mv(const char *path)
     });
     a.classList.add("current");
   }
+  function markUrl(url) {
+    var abs;
+    try { abs = new URL(url, location.href).href; } catch (e) { abs = url; }
+    document.querySelectorAll("nav.side a.item").forEach(function (a) {
+      a.classList.toggle("current", a.href === abs);
+    });
+  }
   function onNav(e) {
     var href = this.getAttribute("href");
     if (!href || /^(https?:|mailto:|#)/.test(href)) return;
@@ -932,8 +929,9 @@ void app_play_mv(const char *path)
     mark(this);
     go(this.href, true);
   }
-  var VER = "v33";
+  var VER = "v34";
   var OPEN_KEY = "nav-keep-v32";
+  if (history.scrollRestoration) history.scrollRestoration = "manual";
   function loadKeep() {
     try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }
   }
