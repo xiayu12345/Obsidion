@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>如何创建新的 MIPI 板件 · 全志</title>
-<style>/* nav-v31 */ 
+<style>/* nav-v32 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,36 +84,354 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
-<div class="group open">
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v32</span></a>
+<div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<div class="sub folded" data-nav="sub:项目/JL_M101.html">
+<div class="group" data-nav="项目/JL_M101/记录.html">
+<a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">MIPI 适配</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">MIPI 定稿 · 总览</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">MIPI 定稿 · 新建板件</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">MIPI 定稿 · Panel init</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">MIPI 定稿 · DTS 背光</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">MIPI 定稿 · 实机踩坑</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">MIPI 定稿 · 编译验收</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">GSL3670 触摸</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/JL_M101/修复.html">
+<a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">HDMI 黑边</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/JL_M101/资料.html">
+<a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:touch:项目/JL_M101/资料.html">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+</div></div>
+<div class="group" data-nav="docs:panel:项目/JL_M101/资料.html">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">屏 init</span></a>
+<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">屏 D101</span></a>
+<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">屏规格书</span></a>
+</div></div>
+<div class="group" data-nav="docs:sch:项目/JL_M101/资料.html">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<div class="sub folded" data-nav="sub:项目/JYY070.html">
+<div class="group" data-nav="项目/JYY070/记录.html">
+<a class="item cat" href="项目/JYY070/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.html"><span class="txt">LVDS显示开发 · 路径统一</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.html"><span class="txt">LVDS显示开发 · 内核 panel</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.html"><span class="txt">LVDS显示开发 · U-Boot logo</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.html"><span class="txt">LVDS显示开发 · 切 LVDS</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.html"><span class="txt">LVDS显示开发 · 应用层路径</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.html"><span class="txt">HDMI 异显</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.html"><span class="txt">LVDS显示开发 · 编译验收</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.html"><span class="txt">LVDS显示开发 · DE 缩放</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.html"><span class="txt">LVGL显示不旋转</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260710-JYY070-GSL1680触摸坐标内核映射/开发记录.html"><span class="txt">GSL1680 触摸</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/开发记录.html"><span class="txt">WiFi 8733</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.html"><span class="txt">视频 WB 旋转</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.html"><span class="txt">应用层硬编码</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.html"><span class="txt">视频小窗</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260714-双板串编验证/开发记录.html"><span class="txt">双板串编</span></a>
+<a class="item child" href="项目/JYY070/开发记录/20260717-JYY070-默认HDMI音频/README.html"><span class="txt">默认 HDMI 音频</span></a>
+<a class="item child" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/开发记录.html"><span class="txt">GSL 坐标</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/JYY070/修复.html">
+<a class="item cat" href="项目/JYY070/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/JYY070/资料.html">
+<a class="item cat" href="项目/JYY070/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:panel:项目/JYY070/资料.html">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/14寸lvds屏-lp140wh4-tln1.html"><span class="txt">14寸 LVDS 屏</span></a>
+<a class="item child" href="项目/JYY070/资料/da_1728355135267..html"><span class="txt">da_1728355135267.</span></a>
+</div></div>
+<div class="group" data-nav="docs:sch:项目/JYY070/资料.html">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/TP-H10-H133-V1_20260408.html"><span class="txt">主板原理图</span></a>
+<a class="item child" href="项目/JYY070/资料/修改电路.html"><span class="txt">改电路</span></a>
+<a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">说明</span></a>
+</div></div>
+<div class="group" data-nav="docs:amp:项目/JYY070/资料.html">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">功放</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/一体板功放mcu 与 android 交互协议v2.13_20250329.html"><span class="txt">功放协议</span></a>
+</div></div>
+<div class="group" data-nav="docs:storage:项目/JYY070/资料.html">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">存储</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/BY25FQ256ES_v1.6_QA-DT-033.html"><span class="txt">Flash 规格</span></a>
+</div></div>
+<div class="group" data-nav="docs:report:项目/JYY070/资料.html">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">测试报告</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">测试报告</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub folded" data-nav="sub:项目/LQ140M1JW61.html">
+<div class="group" data-nav="项目/LQ140M1JW61/记录.html">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">双显LCD-HDMI排查.bak</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">双显定稿 · 总览</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">双显定稿 · 新建板件</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">双显定稿 · Panel init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">双显定稿 · DTS 双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">双显定稿 · 实机踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">双显定稿 · 编译验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">GT9110 触摸</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">HDMI 异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">同异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.html"><span class="txt">libuapi 对齐</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">双屏异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.html"><span class="txt">使用与构建</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/LQ140M1JW61/修复.html">
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/LQ140M1JW61/资料.html">
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:touch:项目/LQ140M1JW61/资料.html">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">GT9110 配置</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110 规格</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110-规格书要点与驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110 编程</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/TB72C_M2规格书20200407(1).html"><span class="txt">TB72C 规格</span></a>
+</div></div>
+<div class="group" data-nav="docs:panel:项目/LQ140M1JW61/资料.html">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">LQ140 屏规</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/3603856530MIPI转EDP QE01MIPI001-V01驱动板规格书.html"><span class="txt">MIPI转eDP</span></a>
+</div></div>
+<div class="group" data-nav="docs:sch:项目/LQ140M1JW61/资料.html">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<div class="sub folded" data-nav="sub:项目/LQ190.html">
+<div class="group" data-nav="项目/LQ190/记录.html">
+<a class="item cat" href="项目/LQ190/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ190/开发记录/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.html"><span class="txt">资料梳理</span></a>
+<a class="item child" href="项目/LQ190/开发记录/20260810-LQ190-背光BL-EN拉高实机验证/README.html"><span class="txt">背光使能</span></a>
+<a class="item child" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.html"><span class="txt">GM8775C 显示</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/LQ190/修复.html">
+<a class="item cat" href="项目/LQ190/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/LQ190/资料.html">
+<a class="item cat" href="项目/LQ190/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:panel:项目/LQ190/资料.html">
+<a class="item cat subcat" href="项目/LQ190/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ190/资料/1280x1024_2024.html"><span class="txt">1280x1024_2024</span></a>
+<a class="item child" href="项目/LQ190/资料/1280x1024_20260811144404.html"><span class="txt">1280x1024_20260811144404</span></a>
+<a class="item child" href="项目/LQ190/资料/GM8775C_SBOARD_1V3.html"><span class="txt">转接板</span></a>
+<a class="item child" href="项目/LQ190/资料/GM8775C数据手册V1.0_20190731.html"><span class="txt">GM8775C 手册</span></a>
+<a class="item child" href="项目/LQ190/资料/LQ190E1LX65_LD-27X08A_20151127_202407011157(1).html"><span class="txt">E1LX65_LD-27X08A_20151127_202407011157</span></a>
+<a class="item child" href="项目/LQ190/资料/MIPI TO D LVDS V1.2 SCH.html"><span class="txt">MIPI转LVDS</span></a>
+</div></div>
+<div class="group" data-nav="docs:sch:项目/LQ190/资料.html">
+<a class="item cat subcat" href="项目/LQ190/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ190/资料/TP-H10_H133 V2.0 2026.6.12.html"><span class="txt">主板原理图</span></a>
+</div></div>
+<div class="group" data-nav="docs:amp:项目/LQ190/资料.html">
+<a class="item cat subcat" href="项目/LQ190/资料.html"><span class="txt">功放</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ190/资料/HB-SPJ-PTN1101D 1.0 Sch.html"><span class="txt">功放原理图</span></a>
+<a class="item child" href="项目/LQ190/资料/接线框图.html"><span class="txt">功放接线</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<div class="sub folded" data-nav="sub:项目/ZS101.html">
+<div class="group" data-nav="项目/ZS101/记录.html">
+<a class="item cat" href="项目/ZS101/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/ZS101/开发记录/20260817-纽曼ZS101-资料梳理与待确认/README.html"><span class="txt">资料梳理</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮/开发记录.html"><span class="txt">MIPI 点亮</span></a>
+<a class="item child" href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配/开发记录.html"><span class="txt">GT928 触摸</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/ZS101/修复.html">
+<a class="item cat" href="项目/ZS101/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/ZS101/资料.html">
+<a class="item cat" href="项目/ZS101/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:touch:项目/ZS101/资料.html">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html"><span class="txt">触摸规格</span></a>
+<a class="item child" href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html"><span class="txt">GT928 配置</span></a>
+</div></div>
+<div class="group" data-nav="docs:panel:项目/ZS101/资料.html">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html"><span class="txt">NI4042J4H8II-B</span></a>
+<a class="item child" href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html"><span class="txt">新代码02群创10.1+ILI9881C-0D_2P_20190920</span></a>
+</div></div>
+<div class="group" data-nav="docs:sch:项目/ZS101/资料.html">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html"><span class="txt">位号图</span></a>
+<a class="item child" href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html"><span class="txt">主板原理图</span></a>
+</div></div>
+<div class="group" data-nav="docs:report:项目/ZS101/资料.html">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">测试报告</span></a>
+<div class="kids">
+<a class="item child" href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html"><span class="txt">测试报告</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<div class="sub folded" data-nav="sub:项目/p1_emmc_LQ140M1JW61.html">
+<div class="group" data-nav="项目/p1_emmc_LQ140M1JW61/记录.html">
+<a class="item cat" href="项目/p1_emmc_LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/p1_emmc_LQ140M1JW61/开发记录/20260807-p1_emmc_LQ140M1JW61-eMMC板型/README.html"><span class="txt">eMMC 板型</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/p1_emmc_LQ140M1JW61/修复.html">
+<a class="item cat" href="项目/p1_emmc_LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/p1_emmc_LQ140M1JW61/资料.html">
+<a class="item cat" href="项目/p1_emmc_LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:panel:项目/p1_emmc_LQ140M1JW61/资料.html">
+<a class="item cat subcat" href="项目/p1_emmc_LQ140M1JW61/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/p1_emmc_LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">LQ140 屏规</span></a>
+<a class="item child" href="项目/p1_emmc_LQ140M1JW61/资料/3603856530MIPI转EDP QE01MIPI001-V01驱动板规格书.html"><span class="txt">MIPI转eDP</span></a>
+</div></div>
+<div class="group" data-nav="docs:storage:项目/p1_emmc_LQ140M1JW61/资料.html">
+<a class="item cat subcat" href="项目/p1_emmc_LQ140M1JW61/资料.html"><span class="txt">存储</span></a>
+<div class="kids">
+<a class="item child" href="项目/p1_emmc_LQ140M1JW61/资料/C499919_EMMC_KLMAG1JETD-B041_规格书_WJ318573.html"><span class="txt">eMMC 规格</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sub folded" data-nav="sub:项目/p1_nor_4k.html">
+<div class="group" data-nav="项目/p1_nor_4k/记录.html">
+<a class="item cat" href="项目/p1_nor_4k/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/00-总览.html"><span class="txt">HDMI 4K 分离 · 总览</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.html"><span class="txt">HDMI 4K 分离 · 新建板件</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/02-HDMI-4K-DTS与setting.html"><span class="txt">HDMI-4K-DTS与setting</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/03-编译与验收.html"><span class="txt">HDMI 4K 分离 · 编译验收</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.html"><span class="txt">HDMI 1080p</span></a>
+<a class="item child" href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解/开发记录.html"><span class="txt">CMA 硬解</span></a>
+</div>
+</div>
+<div class="group" data-nav="项目/p1_nor_4k/修复.html">
+<a class="item cat" href="项目/p1_nor_4k/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group" data-nav="项目/p1_nor_4k/资料.html">
+<a class="item cat" href="项目/p1_nor_4k/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group" data-nav="docs:dolby:项目/p1_nor_4k/资料.html">
+<a class="item cat subcat" href="项目/p1_nor_4k/资料.html"><span class="txt">杜比</span></a>
+<div class="kids">
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI透传卡顿与raw-DMA修复.html"><span class="txt">透传卡顿修复</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.html"><span class="txt">透传差异</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/H133-HDMI音频透传架构.html"><span class="txt">透传架构</span></a>
+<a class="item child" href="项目/p1_nor_4k/资料/杜比透传-开发笔记.html"><span class="txt">杜比透传</span></a>
+</div></div>
+</div>
+</div>
+</div>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<div class="sub folded" data-nav="sub:H133/外设/GPADC.html">
+<a class="item child" href="专题/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">三键 · 怎么改</span></a>
+<a class="item child" href="专题/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">三键</span></a>
+<a class="item child" href="专题/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">三键 · 怎么测</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">按键</span></a>
+</div>
 <a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sub folded" data-nav="sub:H133/外设/NOR.html">
+<a class="item child" href="专题/NOR安全存储SN/libkey/操作方法.html"><span class="txt">libkey · 操作方法</span></a>
+<a class="item child" href="专题/NOR安全存储SN/sst_test/操作方法.html"><span class="txt">sst_test · 操作方法</span></a>
+<a class="item child" href="专题/NOR安全存储SN/开发记录.html"><span class="txt">开发记录</span></a>
+</div>
 <div class="sec">专题</div>
 <a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<div class="sub folded" data-nav="sub:H133/专题/G2D旋转.html">
+<a class="item child" href="专题/G2D旋转/开发记录.html"><span class="txt">开发记录</span></a>
+</div>
 <a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<div class="sub folded" data-nav="sub:H133/专题/原厂翻页.html">
+<a class="item child" href="专题/原厂翻页/开发记录.html"><span class="txt">开发记录</span></a>
+</div>
 <a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<div class="sub folded" data-nav="sub:H133/专题/切页撕裂.html">
+<a class="item child" href="专题/切页撕裂/开发记录.html"><span class="txt">开发记录</span></a>
+</div>
 <a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
-<div class="sub">
+<div class="sub" data-nav="sub:H133/专题/板件新建指南.html">
 <a class="item child" href="专题/板件新建指南/20260728-如何创建新LVDS板件/README.html"><span class="txt">新建 LVDS 板</span></a>
 <a class="item child current" href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.html"><span class="txt">新建 MIPI 板</span></a>
 </div>
 <a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+<div class="sub folded" data-nav="sub:H133/专题/5寸屏幕.html">
+<a class="item child" href="专题/资料/5寸屏幕/ST7121P_Datasheet_V1.0(3)(1).html"><span class="txt">ST7121P 规格</span></a>
+<a class="item child" href="专题/资料/5寸屏幕/ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.html"><span class="txt">ST7121P init</span></a>
+<a class="item child" href="专题/资料/5寸屏幕/WXY050M022LA1201-SW2.html"><span class="txt">WXY050 屏规</span></a>
+<a class="item child" href="专题/资料/5寸屏幕/e81ba693bfa54a40f410624b956df620.html"><span class="txt">e81ba693bfa54a40f410624b956df620</span></a>
+</div>
 <div class="sec">应用</div>
 <a class="item board" href="H133/应用/三路旋转.html"><span class="txt">三路旋转</span></a>
+<div class="sub folded" data-nav="sub:H133/应用/三路旋转.html">
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">怎么改</span></a>
+<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">记录</span></a>
+</div>
 </div></div>
-<div class="group">
+<div class="group" data-nav="family:F102">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
 <div class="kids family-kids"></div>
 </div></nav>
@@ -326,7 +644,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
 <p>---</p>
 <p>*2026-07-28：据 JL_M101 / 8733 / 4k 板件新建经验整理。*</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:41 UTC</footer>
 </main>
 <script>
 (function () {
@@ -351,6 +669,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
     document.title = p.title;
     if (push) history.pushState({ u: url }, "", url);
     bind();
+    restoreKeep();
     prefetch();
   }
   function bind() {
@@ -367,14 +686,21 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
   function onCat(e) {
     e.preventDefault();
     var g = this.closest(".group");
-    if (g) g.classList.toggle("open");
+    if (!g) return;
+    var open = !g.classList.contains("open");
+    g.classList.toggle("open", open);
+    if (!open) collapseInside(g);
+    storeKeep();
   }
   function onBoard(e) {
     var sub = this.nextElementSibling;
     if (sub && sub.classList.contains("sub")) {
       e.preventDefault();
-      sub.classList.toggle("folded");
-      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+      var open = sub.classList.contains("folded");
+      sub.classList.toggle("folded", !open);
+      if (!open) collapseInside(sub);
+      storeKeep();
+      if (open && !this.classList.contains("current")) {
         go(this.href, true);
       }
       return;
@@ -391,10 +717,45 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
     var href = this.getAttribute("href");
     if (!href || /^(https?:|mailto:|#)/.test(href)) return;
     e.preventDefault();
+    storeKeep();
     mark(this);
     go(this.href, true);
   }
-  var VER = "v31";
+  var VER = "v32";
+  var OPEN_KEY = "nav-keep-v32";
+  function loadKeep() {
+    try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }
+  }
+  function storeKeep() {
+    var st = {};
+    document.querySelectorAll("nav.side [data-nav]").forEach(function (el) {
+      var id = el.getAttribute("data-nav");
+      if (el.classList.contains("group")) st[id] = el.classList.contains("open");
+      else if (el.classList.contains("sub")) st[id] = !el.classList.contains("folded");
+    });
+    sessionStorage.setItem(OPEN_KEY, JSON.stringify(st));
+  }
+  function collapseInside(el) {
+    el.querySelectorAll(".group").forEach(function (g) { g.classList.remove("open"); });
+    el.querySelectorAll(".sub").forEach(function (s) { s.classList.add("folded"); });
+  }
+  function restoreKeep() {
+    var st = loadKeep();
+    document.querySelectorAll("nav.side [data-nav]").forEach(function (el) {
+      var id = el.getAttribute("data-nav");
+      if (!(id in st)) return;
+      if (el.classList.contains("group")) el.classList.toggle("open", !!st[id]);
+      else if (el.classList.contains("sub")) el.classList.toggle("folded", !st[id]);
+    });
+    document.querySelectorAll("nav.side a.item.current").forEach(function (a) {
+      var n = a.parentElement;
+      while (n && !(n.tagName === "NAV" && n.classList.contains("side"))) {
+        if (n.classList.contains("group")) n.classList.add("open");
+        if (n.classList.contains("sub")) n.classList.remove("folded");
+        n = n.parentElement;
+      }
+    });
+  }
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
@@ -422,6 +783,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
   }
   window.addEventListener("popstate", function () { go(location.href, false); });
   bind();
+  restoreKeep();
   prefetch();
 })();
 </script>
