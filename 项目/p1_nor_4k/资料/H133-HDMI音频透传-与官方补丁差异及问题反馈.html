@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>透传差异 · H133 板件</title>
-<style>/* nav-v17 */ 
+<style>/* nav-v18 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -70,7 +70,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v17</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v18</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -111,7 +111,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <main>
 <article class="wide">
 
-<h1>透传差异</h1><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.txt" download="H133-HDMI音频透传-与官方补丁差异及问题反馈.txt">下载 H133-HDMI音频透传-与官方补丁差异及问题反馈.txt</a></p><pre class="file"><code>H133 HDMI 音频透传问题（对照官方透传）
+<h1>透传差异</h1><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.txt" download="H133-HDMI音频透传-与官方补丁差异及问题反馈.txt">下载 H133-HDMI音频透传-与官方补丁差异及问题反馈.txt</a><a class="dl" href="项目/p1_nor_4k/资料/H133-HDMI音频透传-与官方补丁差异及问题反馈.txt">整页打开</a></p><pre class="file"><code>H133 HDMI 音频透传问题（对照官方透传）
 
 cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNeedDirect=1，adecoderPassthough 不解 PCM，SunxiPassthough 打 IEC61937。AC3 用 48k，EAC3 用 192k，2ch S16。这块两边差不多。
 
@@ -241,7 +241,7 @@ cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNe
   `开发记录/H133-HDMI透传卡顿与raw-DMA修复.patch`
 </code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-01 10:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 03:33 UTC</footer>
 </main>
 <script>
 (function () {
@@ -309,7 +309,7 @@ cedarx 那一层我们按补丁合进去了：EAC3 能从 AC3 里拆出来，nNe
     mark(this);
     go(this.href, true);
   }
-  var VER = "v17";
+  var VER = "v18";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
