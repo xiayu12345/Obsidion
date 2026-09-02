@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>功放MCU 与 Android 交互协议 v2.13 · 全志</title>
-<style>/* nav-v32 */ 
+<style>/* nav-v33 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v32</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v33</span></a>
 <div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -966,7 +966,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| --- | --- | --- | --- | --- | --- | --- | --- |</p>
 <p>| 0xAF | 0x55 | 0x05 | 0x01 | 0x01 | 0x0E | 0x01 | 0x?? |</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:41 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:57 UTC</footer>
 </main>
 <script>
 (function () {
@@ -982,6 +982,9 @@ input[type=checkbox] { margin-right:.4rem; }
   }
   function apply(p, url, push) {
     if (!p || !p.nav || !p.article) { location.href = url; return; }
+    var y = 0;
+    var oldNav = document.querySelector("nav.side");
+    if (oldNav) y = oldNav.scrollTop;
     document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
     document.querySelector("article").replaceWith(p.article.cloneNode(true));
     if (p.footer) {
@@ -992,6 +995,12 @@ input[type=checkbox] { margin-right:.4rem; }
     if (push) history.pushState({ u: url }, "", url);
     bind();
     restoreKeep();
+    function pin() {
+      var nav = document.querySelector("nav.side");
+      if (nav) nav.scrollTop = y;
+    }
+    pin();
+    requestAnimationFrame(pin);
     prefetch();
   }
   function bind() {
@@ -1043,7 +1052,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v32";
+  var VER = "v33";
   var OPEN_KEY = "nav-keep-v32";
   function loadKeep() {
     try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }

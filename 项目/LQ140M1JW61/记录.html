@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LQ140M1JW61 · 记录 · 全志</title>
-<style>/* nav-v32 */ 
+<style>/* nav-v33 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v32</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v33</span></a>
 <div class="group open" data-nav="family:H133">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -440,7 +440,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>LQ140M1JW61 · 记录</h1><p><a href="项目/LQ140M1JW61.html">回板件概览</a></p><ul><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html">双显LCD-HDMI排查.bak</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html">双显定稿 · 总览</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html">双显定稿 · 新建板件</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html">双显定稿 · Panel init</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html">双显定稿 · DTS 双显</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html">双显定稿 · 实机踩坑</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html">双显定稿 · 编译验收</a></li><li><a href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html">GT9110 触摸</a></li><li><a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html">HDMI 异显</a></li><li><a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html">同异显</a></li><li><a href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.html">libuapi 对齐</a></li><li><a href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html">双屏异显</a></li><li><a href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.html">使用与构建</a></li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:41 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:57 UTC</footer>
 </main>
 <script>
 (function () {
@@ -456,6 +456,9 @@ input[type=checkbox] { margin-right:.4rem; }
   }
   function apply(p, url, push) {
     if (!p || !p.nav || !p.article) { location.href = url; return; }
+    var y = 0;
+    var oldNav = document.querySelector("nav.side");
+    if (oldNav) y = oldNav.scrollTop;
     document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
     document.querySelector("article").replaceWith(p.article.cloneNode(true));
     if (p.footer) {
@@ -466,6 +469,12 @@ input[type=checkbox] { margin-right:.4rem; }
     if (push) history.pushState({ u: url }, "", url);
     bind();
     restoreKeep();
+    function pin() {
+      var nav = document.querySelector("nav.side");
+      if (nav) nav.scrollTop = y;
+    }
+    pin();
+    requestAnimationFrame(pin);
     prefetch();
   }
   function bind() {
@@ -517,7 +526,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v32";
+  var VER = "v33";
   var OPEN_KEY = "nav-keep-v32";
   function loadKeep() {
     try { return JSON.parse(sessionStorage.getItem(OPEN_KEY) || "{}"); } catch (e) { return {}; }
