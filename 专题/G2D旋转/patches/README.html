@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
-<title>GPADC 按键识别 — 开发记录 · 全志</title>
-<style>/* nav-v28 */ 
+<title>G2D 旋转补丁（含翻页） · 全志</title>
+<style>/* nav-v29 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v28</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -99,12 +99,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
-<div class="sub">
-<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">按键</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">三键 · 怎么改</span></a>
-<a class="item child current" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">三键</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">三键 · 怎么测</span></a>
-</div>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
 </div></div>
 <div class="group">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
@@ -112,125 +113,22 @@ input[type=checkbox] { margin-right:.4rem; }
 </div></nav>
 <main>
 <article class="">
-<p class="meta">kind: log · date: 2026-08-31</p>
-<h1>GPADC 按键识别 — 开发记录</h1>
-<p>| 项 | 内容 |</p>
-<p>|---|---|</p>
-<p>| 日期 | 2026-08-31 |</p>
-<p>| 范围 | 京龙 <code>p1_nor_JL_M101</code> 内核 DTS |</p>
-<p>| 改配置 | <a href="./如何修改.md">如何修改.md</a> |</p>
-<p>| 状态 | 两块板 ADC 不同，<strong>两套电压都保留</strong>；当前 DTS/镜像用板乙（经 RA22）；LVGL 未接 |</p>
-<p>---</p>
-<h2>1. 硬件约定</h2>
-<p>原理图 USB/HDMI 页 <strong>KEY ADC</strong>，SoC 球 <strong>C11 = GPADC0</strong>：</p>
-<pre><code>AVCC 1.8V -- RA20 51k -- GPADC0 -- RA22 6.8k -- J9536 座子信号脚
-                 |
-               CA1 1nF -- GND</code></pre>
-<p><code>keyN_vol</code> 必须写 <strong>芯片脚 mV</strong>（<code>cat /sys/class/gpadc/data</code>），不是座子外侧万用表值。两块板电阻档位相同，ADC 不同，<strong>不能共用一张电压表</strong>。</p>
-<p><code>Vchip = 1.8 × (6.8k + R) / (51k + 6.8k + R)</code>（RA22 串在座子外侧时）</p>
-<p>电阻 → 功能（两块板一样）：</p>
-<p>| 电阻 | 功能 | <code>keyN_val</code> | hex |</p>
-<p>|------|------|------------|-----|</p>
-<p>| 0Ω | 播放/暂停 | 164 | <code>a4</code> |</p>
-<p>| 3.3k | 上一曲 | 165 | <code>a5</code> |</p>
-<p>| 5.1k | 下一曲 | 163 | <code>a3</code> |</p>
-<p>| 6.8k | 音量减 | 114 | <code>72</code> |</p>
-<p>| 15k | 音量加 | 115 | <code>73</code> |</p>
-<h3>板甲（RA22 未串进采样，电压偏低）</h3>
-<p><code>cat /sys/class/gpadc/data</code>：3 / 106 / 161 / 208 / 404 mV。hexdump 五档已通过。</p>
-<p>| 电阻 | ADC mV | <code>keyN_vol</code> |</p>
-<p>|------|--------|------------|</p>
-<p>| 0Ω | 3 | 3 |</p>
-<p>| 3.3k | 106 | 106 |</p>
-<p>| 5.1k | 161 | 161 |</p>
-<p>| 6.8k | 208 | 208 |</p>
-<p>| 15k | 404 | 404 |</p>
-<h3>板乙（经 RA22，与原理图一致；当前 DTS）</h3>
-<p><code>cat /sys/class/gpadc/data</code>：207 / 291 / 335 / 373 / 533 mV。hexdump 五档已通过。</p>
-<p>| 电阻 | ADC mV | <code>keyN_vol</code> |</p>
-<p>|------|--------|------------|</p>
-<p>| 0Ω | 207 | 207 |</p>
-<p>| 3.3k | 291 | 291 |</p>
-<p>| 5.1k | 335 | 335 |</p>
-<p>| 6.8k | 373 | 373 |</p>
-<p>| 15k | 533 | 533 |</p>
-<p><code>J9538</code> 是 MIC，不是 KEY。换板必须重新 <code>cat /sys/class/gpadc/data</code>，不要拿另一块的 mV 硬套。</p>
-<p>---</p>
-<h2>2. 驱动行为</h2>
-<p>驱动：<code>kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.c</code></p>
-<ul>
-<li><code>keyN_vol</code> 单位 <strong>mV</strong>，须从小到大</li>
-<li>电压 <strong>&lt; 1.7V</strong> 视为按下</li>
-<li>窗口取相邻 <code>key_vol</code> 中点</li>
-<li><code>EV_REP</code>：长按 <code>value=1</code> → <code>2</code> → 松开 <code>0</code></li>
-</ul>
-<p>---</p>
-<h2>3. 已改文件</h2>
-<p><code>device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts</code></p>
-<p>当前镜像打的是 <strong>板乙</strong> 表：</p>
-<p>| 项 | 值 |</p>
-<p>|----|-----|</p>
-<p>| <code>key_cnt</code> | 5 |</p>
-<p>| <code>key0_vol/val</code> | 207 / 164 |</p>
-<p>| <code>key1_vol/val</code> | 291 / 165 |</p>
-<p>| <code>key2_vol/val</code> | 335 / 163 |</p>
-<p>| <code>key3_vol/val</code> | 373 / 114 |</p>
-<p>| <code>key4_vol/val</code> | 533 / 115 |</p>
-<p>| <code>lowdata</code> / <code>higdata</code> | 1700000 / 1550000 |</p>
-<p>板甲若要刷同一软件，把 <code>keyN_vol</code> 改成 3 / 106 / 161 / 208 / 404 再编 kernel。</p>
-<p>编包：<code>./tools/build_p1_nor_JL_M101.sh kernel</code> 再 <code>./build.sh pack</code>。禁止在 WSL 本地 <code>make</code> 出 <code>.o</code>。</p>
-<p>---</p>
-<h2>4. 读取电压（改表前必做）</h2>
-<p>驱动已有 sysfs，单位 <strong>mV</strong>，就是 <code>keyN_vol</code> 该写的数。不要循环刷，按住一颗再读一次。</p>
-<pre><code>echo 0 &gt; /sys/class/gpadc/data
-cat /sys/class/gpadc/data</code></pre>
-<p>先选通道 0（GPADC0，写一次即可）。<strong>按住第一颗不松</strong>，再 <code>cat</code>；松手换下一颗按住，再 <code>cat</code>。空闲（没按）应接近 <strong>1800</strong>。读出来仍是 1800，说明没按住或座子不是 <code>J9536</code>。</p>
-<p>dmesg 会同时打 <code>vol_data:</code>，和 <code>cat</code> 同一数字。镜像无 <code>evtest</code>。</p>
-<p>五颗都记下来，<strong>从小到大</strong> 写入 <code>key0_vol</code>…<code>key4_vol</code>。换板必须重测，板甲/板乙两套数见第 1 节。</p>
-<p>座子是 <strong><code>J9536</code></strong>，不要用旁边的 <code>J9538</code>（MIC-IN1）。</p>
-<p>---</p>
-<h2>5. 测试键码</h2>
-<p>界面不会动（LVGL <code>evdev</code> 跳过 <code>sunxi-gpadc</code>）。只核 <code>/dev/input</code>。一次只按一颗。</p>
-<h3>5.1 查节点</h3>
-<pre><code>grep -A 8 &#x27;sunxi-gpadc0&#x27; /proc/bus/input/devices</code></pre>
-<p><code>H: Handlers=</code> 里的 <code>eventN</code>（常见 <code>event1</code>，号会变）。<code>KEY=</code> 里应有 114/115/163/164/165。</p>
-<h3>5.2 hexdump</h3>
-<pre><code>hexdump -C /dev/input/event1</code></pre>
-<p>没有 <code>hexdump</code> 用：<code>od -Ax -tx1 /dev/input/event1</code>。测完一颗 Ctrl+C。</p>
-<p>32-bit 一包 16 字节，看后 8 字节：<code>type(2) code(2) value(4)</code>。</p>
-<p>| 出现的字节 | 含义 |</p>
-<p>|------------|------|</p>
-<p>| <code>01 00</code> | <code>EV_KEY</code> |</p>
-<p>| <code>a4 00</code> | 164 播放/暂停（0Ω） |</p>
-<p>| <code>a5 00</code> | 165 上一曲（3.3k） |</p>
-<p>| <code>a3 00</code> | 163 下一曲（5.1k） |</p>
-<p>| <code>72 00</code> | 114 音量减（6.8k） |</p>
-<p>| <code>73 00</code> | 115 音量加（15k） |</p>
-<p>| value <code>01</code> | 按下 |</p>
-<p>| value <code>02</code> | 连发（长按，驱动开了 <code>EV_REP</code>） |</p>
-<p>| value <code>00</code> | 松开 |</p>
-<p>下一行全 <code>00</code> 是 <code>EV_SYN</code>，<strong>不是松开</strong>。长按：<code>value=1</code> → 一串 <code>value=2</code> → 松开 <code>value=0</code>。</p>
-<h3>5.3 期望（电阻相同，两块板 hex 相同）</h3>
-<p>| 电阻 | hex | 键码 |</p>
-<p>|------|-----|------|</p>
-<p>| 0Ω | <code>a4</code> | 164 |</p>
-<p>| 3.3k | <code>a5</code> | 165 |</p>
-<p>| 5.1k | <code>a3</code> | 163 |</p>
-<p>| 6.8k | <code>72</code> | 114 |</p>
-<p>| 15k | <code>73</code> | 115 |</p>
-<p>须刷含对应板 <code>keyN_vol</code> 的 dtb 后再验。</p>
-<p>---</p>
-<h2>6. 未做</h2>
-<p>LVGL <code>evdev</code> 仍跳过 <code>sunxi-gpadc</code>，界面不会动。</p>
-<p>---</p>
-<h2>7. 踩坑</h2>
-<ul>
-<li>两块板电阻档位相同，ADC 差一截：板甲 3/106/161/208/404，板乙 207/291/335/373/533，表不能混用</li>
-<li><code>key0_vol</code> 在经 RA22 的板上不能写 0：座子短路芯片约 0.21V</li>
-<li>板乙上 5.1k 与 6.8k 只差约 38mV，接触不稳会串下一曲/音量减</li>
-</ul>
+<p class="meta">kind: log</p>
+<h1>G2D 旋转补丁（含翻页）</h1>
+<p>基线：<code>xia_yixian</code>（<code>e553f3a49</code>）。<strong>按顺序三笔代码补丁</strong>，不要跟「原厂翻页」那份混。</p>
+<p>| 文件 | 对应提交 | 内容 |</p>
+<p>|------|----------|------|</p>
+<p>| <code>0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch</code> | <code>01f2f8f9d</code> | 翻页 + 开 G2D + <code>sunxig2d</code> / 116/236 / <code>libawion</code>；blit 走 <code>smem_start</code> |</p>
+<p>| <code>0002-fix-IOMMU-G2D-dmabuf-fd.patch</code> | <code>37bf0adfb</code> | <strong>弯路</strong>：两边 dmabuf fd。不要停在这一笔 |</p>
+<p>| <code>0003-example-other-board-defconfig.patch</code> | 无 | 其它 lunch 开开关的示例，路径含 <code>&lt;BOARD&gt;</code>，<strong>勿 git apply</strong> |</p>
+<p>| <code>0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch</code> | <code>65aee7183</code> | 撤回 fd，改回原厂 <code>use_phy_addr=1</code> + <code>smem_start</code> IOVA |</p>
+<pre><code>git am 0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch \
+      0002-fix-IOMMU-G2D-dmabuf-fd.patch \
+      0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch</code></pre>
+<p>只合 <code>0002</code>，或先合 <code>../../原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch</code> 再合 <code>0002</code>/<code>0004</code> → <code>sunxig2d</code> / Makefile 对不上。</p>
+<p><code>0001</code> 会改 p1_nor / 8733 / JYY070 的 defconfig <strong>和</strong> ota/qa。ota 仍是 <code>CACHE=y</code>。p2 不要开。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
 </main>
 <script>
 (function () {
@@ -298,7 +196,7 @@ cat /sys/class/gpadc/data</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v28";
+  var VER = "v29";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

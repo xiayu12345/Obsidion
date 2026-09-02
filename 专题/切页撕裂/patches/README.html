@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>切页撕裂没有独立补丁 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: log</p>
+<h1>切页撕裂没有独立补丁</h1>
+<p>| 你要 | 补丁 |</p>
+<p>|------|------|</p>
+<p>| 只要翻页 | <a href="../../原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch">../../原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch</a> |</p>
+<p>| 翻页 + G2D | <a href="../../G2D旋转/patches/">../../G2D旋转/patches/</a> 的 <code>0001</code> 再 <code>0002</code> |</p>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>如何创建新的 MIPI 板件 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<div class="sub">
+<a class="item child" href="专题/板件新建指南/20260728-如何创建新LVDS板件/README.html"><span class="txt">新建 LVDS 板</span></a>
+<a class="item child current" href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.html"><span class="txt">新建 MIPI 板</span></a>
+</div>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: log · date: 2026-07-28</p>
+<h1>如何创建新的 MIPI 板件</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-28 |</p>
+<p>| 类型 | <strong>通用操作指南</strong>（非某一块屏的调试流水） |</p>
+<p>| 推荐基线 | <strong><code>p1_nor_8733</code></strong>（MIPI 竖屏 UI + RTL8733BU） |</p>
+<p>| 范本定稿 | <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/README.md">JL_M101 板件新建与 MIPI 显示定稿</a> |</p>
+<p>| 范本板 | <code>p1_nor_JL_M101</code>（JD9365DA，800×1280，4-lane） |</p>
+<p>下文用占位符：</p>
+<p>| 占位 | 含义 | 范例 |</p>
+<p>|---|---|---|</p>
+<p>| <code>&lt;BOARD&gt;</code> | 板级目录名 | <code>p1_nor_FOO</code> |</p>
+<p>| <code>&lt;PANEL&gt;</code> | <code>lcd_driver_name</code> / 驱动名 | <code>foo_jd9365da</code> |</p>
+<p>| <code>&lt;KCFG&gt;</code> | Kconfig 宏后缀 | <code>FOO_JD9365DA</code> |</p>
+<p>---</p>
+<h2>0. 一句话结论</h2>
+<p>从 <strong><code>p1_nor_8733</code> 整树克隆</strong> → 拆 <code>linux-5.4</code> 软链 → <strong>独立 panel + 本板 DTS</strong>（<code>lcd_if=4</code>）→ OpenWrt target / 编译脚本挂钩 → 调屏期关 U-Boot 开屏 → 实机出图后再开 logo / 触摸。</p>
+<p><strong>禁止</strong>把新屏硬塞进共享 <code>p1_nor</code>，也禁止改 <code>default_panel.c</code>。</p>
+<p>---</p>
+<h2>1. 开工前准备</h2>
+<p>| 资料 | 用途 |</p>
+<p>|---|---|</p>
+<p>| 模组规格书 | 分辨率、lane 数、VCC、RESET/背光脚 |</p>
+<p>| 厂商 init txt / 参考驱动 | 灌码表、Reset 时序、porch |</p>
+<p>| 主板/转接板原理图 | RESET/PWM/MIPI 走线、分压档、脚冲突 |</p>
+<p>| UI 方向约定 | 竖屏 MIPI 通常对齐 8733：<code>disp_rotate=3</code>，<code>dual_display_rot=3</code>，<code>VIDEO_WB=90</code>（改法见 <a href="../../显示旋转/README.md">显示旋转</a>） |</p>
+<p>对照范本硬件要点：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.md">JL_M101 00-总览</a></p>
+<h3>选基线</h3>
+<p>| 基线 | 何时选 |</p>
+<p>|---|---|</p>
+<p>| <strong><code>p1_nor_8733</code></strong> | 默认：同 MIPI 竖屏 UI + <strong>8733BU</strong> |</p>
+<p>| <code>p1_nor</code> | 仅当你明确要 AIC8800，且接受 UI/视频与 8733 同框架 |</p>
+<p>| <code>p1_nor_JYY070</code> | <strong>不要</strong>当 MIPI 基线（LVDS 横屏、<code>disp_rotate=0</code>） |</p>
+<p>---</p>
+<h2>2. 克隆板级（device + OpenWrt + 脚本）</h2>
+<p>范本步骤详解：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">JL_M101 01-板件新建</a></p>
+<h3>2.1 推荐命令（SDK 根目录）</h3>
+<pre><code>BASE=device/config/chips/h133/configs
+OW=openwrt/target/h133
+BOARD=p1_nor_FOO          # ← 改成你的板名
+SRC=p1_nor_8733
+
+cp -a $BASE/$SRC $BASE/$BOARD
+
+# 拆 linux-5.4 软链（8733 常指向 p1_nor）
+rm -rf $BASE/$BOARD/linux-5.4
+cp -a $BASE/p1_nor/linux-5.4 $BASE/$BOARD/linux-5.4
+ln -sfn linux-5.4/board.dts $BASE/$BOARD/board.dts
+
+# uboot-board.dts / env / fex 若仍是软链，一并拆成实文件再改
+# （参考 p1_nor_4k / JL_M101 做法）
+
+cp -a $OW/h133-$SRC $OW/h133-$BOARD
+# 全文替换板名：h133-p1_nor_8733 → h133-$BOARD，p1_nor_8733 → $BOARD
+# 注意：勿误伤字符串 RTL8733BU
+
+cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
+# 改脚本内 BOARD / LUNCH / DEFCONFIG 路径</code></pre>
+<h3>2.2 必须落地的公共挂钩（最小）</h3>
+<p>| 文件 | 做什么 |</p>
+<p>|---|---|</p>
+<p>| <code>kernel/.../lcd/Kconfig</code> | <code>CONFIG_LCD_SUPPORT_&lt;KCFG&gt;</code> |</p>
+<p>| <code>kernel/.../disp/Makefile</code> | 编入 <code>&lt;PANEL&gt;.o</code> |</p>
+<p>| <code>kernel/.../lcd/panels.c</code> + <code>panels.h</code> | <code>#ifdef</code> 注册 |</p>
+<p>| U-Boot 侧同上 | 同名 panel / Kconfig |</p>
+<p>| <strong>本板</strong> <code>config-5.4</code> | <code>CONFIG_LCD_SUPPORT_&lt;KCFG&gt;=y</code> |</p>
+<p>| <strong>兄弟板</strong> <code>config-5.4</code> | <code># CONFIG_LCD_SUPPORT_&lt;KCFG&gt; is not set</code> |</p>
+<p>| 兄弟板 OpenWrt <code>defconfig</code> | <code># CONFIG_TARGET_h133_&lt;BOARD&gt; is not set</code> |</p>
+<p>| <code>openwrt/.openwrt_targets</code>（若工程有） | 增加 lunch 名 |</p>
+<p>| <code>libtmedia/Makefile</code> | 本 target → <code>VIDEO_WB_MIRROR_ROTATE</code>（竖屏 MIPI 通常 <strong>90</strong>） |</p>
+<p>运行时选屏<strong>只靠</strong>本板 DTS <code>lcd_driver_name = &quot;&lt;PANEL&gt;&quot;</code>。</p>
+<h3>2.3 OpenWrt / 工厂 ini</h3>
+<p>| 项 | 竖屏 MIPI 典型（跟 8733） |</p>
+<p>|---|---|</p>
+<p>| <code>setting.ini</code> <code>disp_rotate</code> | <strong>3</strong> |</p>
+<p>| <code>tp_rotate</code> | 按触摸方案（先跟基线，触摸另开记录） |</p>
+<p>| WiFi | 继承 8733：<code>rtl8733bu-kmod</code>，<strong>不开 AIC8800</strong> |</p>
+<p>| hostname | 可选改成带板名 |</p>
+<p>---</p>
+<h2>3. 写独立 MIPI panel 驱动</h2>
+<p>范本：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.md">JL_M101 02-panel与init</a></p>
+<h3>3.1 文件</h3>
+<p>| 侧 | 路径 |</p>
+<p>|---|---|</p>
+<p>| 内核 | <code>kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/&lt;PANEL&gt;.c</code> + <code>.h</code> |</p>
+<p>| U-Boot | <code>brandy/.../disp/lcd/&lt;PANEL&gt;.c</code>（init / Reset / open_flow <strong>与内核一致</strong>） |</p>
+<p>导出 <code>struct __lcd_panel</code>，名字与 DTS <strong>完全一致</strong>。</p>
+<h3>3.2 Init 转换要点</h3>
+<ul>
+<li>厂商表 → <code>dsi_gen_wr</code> / delay / end 标记（按工程现有约定）  </li>
+<li><strong>Reset 时序跟规格书</strong>（常见：H→L→H 再延时再发码）  </li>
+<li><code>panel_reset</code> → <code>lcd_gpio_0</code>（DTS 里的 RESET 脚）  </li>
+<li>open_flow 典型：<code>power_on → panel_init → tcon_enable → bl_open</code></li>
+</ul>
+<h3>3.3 禁止项（JL_M101 踩过）</h3>
+<p>| 禁止 | 原因 |</p>
+<p>|---|---|</p>
+<p>| 在 <code>panel_init</code> 里 <code>dsi_dcs_read</code> 探针 | 屏不回读时 DPHY 卡死，后续写挂死 |</p>
+<p>| 改 <code>default_panel.c</code> 塞新 init | 污染其它板 |</p>
+<p>| 调屏期依赖 U-Boot smooth | 内核可能跳过 <code>cfg_open_flow</code>，新 init 不跑 |</p>
+<p>调屏期：<strong>U-Boot <code>disp_init_enable = &lt;0&gt;</code></strong>，让 Linux 自己灌码。</p>
+<p>---</p>
+<h2>4. 本板 DTS（内核 + U-Boot 同步）</h2>
+<p>范本：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.md">JL_M101 03-DTS与背光PWM</a></p>
+<h3>4.1 lcd0 骨架（按屏改数字）</h3>
+<pre><code>&amp;lcd0 {
+	lcd_used            = &lt;1&gt;;
+	lcd_driver_name     = &quot;&lt;PANEL&gt;&quot;;
+	lcd_if              = &lt;4&gt;;          /* DSI */
+	lcd_x               = &lt;W&gt;;          /* 如 800 */
+	lcd_y               = &lt;H&gt;;          /* 如 1280 */
+	lcd_dclk_freq       = &lt;NN&gt;;
+
+	/* porch：按厂商 HSA/HBP/HFP、VSA/VBP/VFP 换算成 Allwinner hspw/hbp/ht、vspw/vbp/vt */
+	lcd_hspw = &lt;…&gt;; lcd_hbp = &lt;…&gt;; lcd_ht = &lt;…&gt;;
+	lcd_vspw = &lt;…&gt;; lcd_vbp = &lt;…&gt;; lcd_vt = &lt;…&gt;;
+
+	lcd_dsi_if          = &lt;0&gt;;          /* video；勿一上来就 burst 当救命稻草 */
+	lcd_dsi_lane        = &lt;4&gt;;          /* 或 2，跟模组 */
+	lcd_dsi_format      = &lt;0&gt;;
+
+	lcd_gpio_0          = &lt;&amp;pio Px N GPIO_ACTIVE_HIGH&gt;; /* RESET */
+	/* 背光：原理图是 PWM 就配 lcd_pwm_*；是 GPIO enable 才用 lcd_bl_en —— 不要混 */
+
+	pinctrl-0 = &lt;&amp;dsi4lane_pins_a&gt;;     /* lane 数要对 */
+	pinctrl-1 = &lt;&amp;dsi4lane_pins_b&gt;;
+};</code></pre>
+<p>Porch 换算备忘（JL 范本）：</p>
+<p>| Vendor | Allwinner |</p>
+<p>|---|---|</p>
+<p>| HSA, HBP, HFP | <code>hspw=HSA</code>，<code>hbp=HSA+HBP</code>，<code>ht=X+hbp+HFP</code> |</p>
+<p>| VSA, VBP, VFP | <code>vspw=VSA</code>，<code>vbp=VSA+VBP</code>，<code>vt=Y+vbp+VFP</code> |</p>
+<h3>4.2 脚冲突（必查）</h3>
+<p>基线 DTS 里 <code>usbc0</code> 等节点可能占用 <strong>RESET / 背光脚</strong>。本板必须释放，并在注释写清原因。</p>
+<h3>4.3 背光</h3>
+<ul>
+<li>原理图写 <strong>PWM → 恒流芯片 EN</strong>：配 <code>lcd_pwm_used/ch/freq/pol</code>，并绑对应 <code>pwmN</code> pinctrl  </li>
+<li>频率跟芯片资料（JL 转接板 PT4117 是 <strong>50kHz</strong>，不是随便 500Hz）  </li>
+<li><strong>禁止</strong>把 PWM 脚再配成 <code>lcd_bl_en</code> GPIO</li>
+</ul>
+<h3>4.4 disp / fb</h3>
+<p>MIPI 竖屏跟 8733 时通常：</p>
+<ul>
+<li><code>fb0_width/height</code> = 物理 <code>lcd_x/lcd_y</code>（如 800×1280）  </li>
+<li>应用靠 <code>disp_rotate=3</code> 转成逻辑横屏 UI  </li>
+</ul>
+<p>HDMI 异显：<code>dual_display_rot</code> 与 UI 策略对齐（竖屏 MIPI 常见与 rot 一致，见 8733/JL）。</p>
+<p>---</p>
+<h2>5. 编译与验收</h2>
+<pre><code>./tools/build_&lt;BOARD&gt;.sh kernel   # panel / DTS / bootloader
+./tools/build_&lt;BOARD&gt;.sh full     # + rootfs + pack
+# 产物：out/h133_linux_&lt;BOARD&gt;_uart0_nor.img</code></pre>
+<p>| 改动 | 编什么 |</p>
+<p>|---|---|</p>
+<p>| panel <code>.c</code> / 内核 DTS / config | <code>kernel</code> + pack |</p>
+<p>| U-Boot panel / uboot-board | bootloader + pack（必要时清旧 <code>.o</code>） |</p>
+<p>| <code>setting.ini</code> / 应用 | <code>rootfs</code> |</p>
+<p><strong>禁止</strong>在 WSL/x86 源码旁本地 <code>gcc -c</code> 试编（会污染交叉 <code>.o</code>）。</p>
+<h3>验收清单</h3>
+<ul>
+<li><input type="checkbox" disabled /> <code>dmesg</code> 见本 <code>&lt;PANEL&gt;: panel_init</code>，attached ok  </li>
+<li><input type="checkbox" disabled /> <strong>无</strong>依赖 U-Boot smooth 跳过灌码（调屏期）  </li>
+<li><input type="checkbox" disabled /> LCD 出图；分辨率 = <code>lcd_x×lcd_y</code>  </li>
+<li><input type="checkbox" disabled /> 背光正常（PWM 或 bl_en）  </li>
+<li><input type="checkbox" disabled /> desk 方向符合 <code>disp_rotate</code>  </li>
+<li><input type="checkbox" disabled /> WiFi 仍为基线方案  </li>
+<li><input type="checkbox" disabled /> 兄弟板 DTS <strong>未被</strong>本改动改坏（隔绝自检）</li>
+</ul>
+<p>隔绝自检示例：</p>
+<pre><code>rg -n &#x27;&lt;PANEL&gt;|pwm.*本板脚&#x27; \
+  device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts \
+  device/config/chips/h133/configs/p1_nor_8733/linux-5.4/board.dts \
+  device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+# 期望：无业务匹配（仅允许 config not-set）</code></pre>
+<p>---</p>
+<h2>6. 无图排查顺序（先硬件后软件）</h2>
+<p>完整踩坑时间线见：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.md">JL_M101 04-实机调试</a></p>
+<p>| 优先级 | 查什么 |</p>
+<p>|---|---|</p>
+<p>| 1 | 屏 VCC / RESET <strong>静态电压是否够 VIH</strong>（分压档错误最常见） |</p>
+<p>| 2 | RESET 是否有 <strong>H→L→H 脉冲</strong>（勿外部恒压灌 RESET） |</p>
+<p>| 3 | 背光电源与 PWM/EN 是否真打开 |</p>
+<p>| 4 | U-Boot 是否仍 <code>disp_init_enable=1</code> 导致 smooth 跳过内核 init |</p>
+<p>| 5 | 是否加了 DSI 读探针把 DPHY 卡死 |</p>
+<p>| 6 | USB/其它节点是否抢走 RESET/PWM 脚 |</p>
+<p>| 7 | MIPI CK/DN 是否有 HS（示波器） |</p>
+<p>已多次证明「只改 0x11/0x29 GEN↔DCS」或「盲切 burst」<strong>往往不是根因</strong>。</p>
+<p>---</p>
+<h2>7. 出图后收尾</h2>
+<ol>
+<li>写 <code>H133-AI-Skills/skills/h133-display/board-profile-&lt;BOARD&gt;.md</code>  </li>
+<li>在 <code>H133-AI-Skills/开发记录/&lt;板型简写&gt;/</code> 建本板定稿目录（可复制 JL_M101 文档结构）  </li>
+<li>需要时再开：触摸、U-Boot logo、gamma/dclk 微调  </li>
+<li>干净树可整理 <code>patches/</code> + <code>apply-*.sh</code>（参考 JL_M101 final）</li>
+</ol>
+<p>---</p>
+<h2>8. 与现有记录的关系</h2>
+<p>| 文档 | 角色 |</p>
+<p>|---|---|</p>
+<p>| <strong>本文</strong> | 新开任意 MIPI 板的检查清单 |</p>
+<p>| <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/">JL_M101 定稿</a> | 800×1280 JD9365DA <strong>参数与补丁</strong> |</p>
+<p>| <a href="../板件开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配/">JL_M101 phase1</a> | 早期调试流水（干净树优先用定稿 final） |</p>
+<p>| <a href="../板件开发记录/p1_nor_4k/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.md">p1_nor_4k 板件新建</a> | 同套克隆手法（HDMI 板，无 LCD panel） |</p>
+<p>---</p>
+<p>*2026-07-28：据 JL_M101 / 8733 / 4k 板件新建经验整理。*</p>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

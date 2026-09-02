@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>如何改 GPADC 电阻按键配置 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<div class="sub">
+<a class="item child current" href="专题/GPADC电阻按键/20260831-三键识别/如何修改.html"><span class="txt">三键 · 怎么改</span></a>
+<a class="item child" href="专题/GPADC电阻按键/20260831-三键识别/开发记录.html"><span class="txt">三键</span></a>
+<a class="item child" href="专题/GPADC电阻按键/20260831-三键识别/测试方法.html"><span class="txt">三键 · 怎么测</span></a>
+<a class="item child" href="项目/JL_M101/外设-GPADC.html"><span class="txt">按键</span></a>
+</div>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: peripheral · date: 2026-08-31</p>
+<h1>如何改 GPADC 电阻按键配置</h1>
+<p>只改 <strong>本板 <code>board.dts</code> 的 <code>&amp;gpadc</code></strong>，不要改 <code>sunxi_gpadc.c</code>。新电压、新键码、增减键都在这张表里完成。</p>
+<p>对照：<a href="./开发记录.md)（电压定稿）、[测试方法.md](./测试方法.md">开发记录.md</a>（读电压、hexdump）</p>
+<p>其它仍用全志默认表的板件，可合补丁（电阻网络须相同）：<a href="./gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a></p>
+<pre><code>cd device/config/chips/h133/configs/&lt;BOARD&gt;
+patch -p1 &lt; H133-AI-Skills/开发记录/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</code></pre>
+<p><code>p1_nor_JL_M101</code> 当前 DTS 是板乙电压。补丁也是板乙。板甲用 3/106/161/208/404，见 <a href="./开发记录.md">开发记录.md</a>，不要拿板乙补丁打到板甲上。电压不同的板先 <code>cat /sys/class/gpadc/data</code> 实测。</p>
+<p>---</p>
+<h2>0. 改哪个文件</h2>
+<p><strong>文件：</strong> <code>device/config/chips/h133/configs/&lt;BOARD&gt;/linux-5.4/board.dts</code></p>
+<p>京龙当前是 <code>p1_nor_JL_M101</code>。<code>device/product/configs/&lt;BOARD&gt;/.../board.dts</code> 若指向同一文件，改一处即可。</p>
+<p>搜 <code>&amp;gpadc {</code>。不要改全志默认的其它板件 dts，除非那块板 KEY 电压也变了。</p>
+<p>改完只编 <strong>kernel</strong>（dtb 打进 boot.img），不必重编 rootfs：</p>
+<pre><code>./tools/build_p1_nor_JL_M101.sh kernel
+./build.sh pack</code></pre>
+<p>禁止在 WSL 本地 <code>make</code> 出 <code>.o</code>。</p>
+<p>---</p>
+<h2>1. 节点里每项是什么</h2>
+<p>京龙当前表（复制改）：</p>
+<pre><code>&amp;gpadc {
+	channel_num = &lt;1&gt;;
+	channel_select = &lt;1&gt;;           /* bit0 = GPADC0，不要改通道除非硬件改了脚 */
+	channel_data_select = &lt;1&gt;;
+	channel_compare_select = &lt;1&gt;;
+	channel_cld_select = &lt;1&gt;;       /* 开低压中断：按下 */
+	channel_chd_select = &lt;1&gt;;       /* 开高压中断：松开 */
+	channel0_compare_lowdata = &lt;1700000&gt;; /* µV，低于此 = 按下 */
+	channel0_compare_higdata = &lt;1550000&gt;; /* µV，高于此 = 松开 */
+	key_cnt = &lt;4&gt;;                  /* 下面 key0..key3 的个数，最多 13 */
+	key0_vol = &lt;0&gt;;                 /* mV，须从小到大 */
+	key0_val = &lt;164&gt;;               /* linux 键码 KEY_PLAYPAUSE */
+	key1_vol = &lt;653&gt;;
+	key1_val = &lt;165&gt;;               /* KEY_PREVIOUSSONG */
+	key2_vol = &lt;1160&gt;;
+	key2_val = &lt;163&gt;;               /* KEY_NEXTSONG */
+	key3_vol = &lt;1460&gt;;
+	key3_val = &lt;240&gt;;               /* KEY_UNKNOWN 占位 */
+	status = &quot;okay&quot;;
+};</code></pre>
+<p>| 项 | 单位 | 作用 |</p>
+<p>|----|------|------|</p>
+<p>| <code>keyN_vol</code> | <strong>mV</strong> | 这颗键按下时 GPADC0 上的电压（万用表量 KEY 对 GND） |</p>
+<p>| <code>keyN_val</code> | 键码 | 上报给 <code>/dev/input</code> 的 linux code |</p>
+<p>| <code>key_cnt</code> | 个数 | 必须等于写了的 <code>key0</code>…<code>key{n-1}</code> 对数 |</p>
+<p>| <code>channel0_compare_lowdata</code> | <strong>µV</strong> | 低于此才走「按下」；空闲约 1.8V 时用 <code>1700000</code> |</p>
+<p>| <code>channel0_compare_higdata</code> | <strong>µV</strong> | 高于此才走「松开」；必须 <strong>大于最高有效键电压、小于空闲</strong> |</p>
+<p><code>keyN_vol</code> 是毫伏，<code>compare_*data</code> 是微伏，不要混。<code>1.16V</code> → vol 写 <code>1160</code>，higdata 写 <code>1550000</code>。</p>
+<p>---</p>
+<h2>2. 驱动怎么用这张表（改之前先算窗口）</h2>
+<p><code>key_vol[]</code> 必须 <strong>严格递增</strong>，且都 <strong>&lt; 1800</strong>。驱动会再塞一个哨兵 <code>1800</code>：</p>
+<pre><code>窗口 i 的上沿 = key_vol[i] 与 key_vol[i+1] 的中点</code></pre>
+<p>京龙当前：</p>
+<pre><code>电压:     0     653     1160     1460     1800
+中点:        326      906      1310      1630
+
+  0～326   → key0 播放/暂停
+326～906   → key1 上一曲
+906～1310  → key2 下一曲
+1310～1630 → key3 占位（1.46V）
+&gt;1630      → 当没按（空闲）</code></pre>
+<p>另外还有硬门槛：采样电压 <strong>≥ 1700mV</strong> 直接当没按。所以：</p>
+<ul>
+<li>有效键电压必须 <strong>明显低于 1.7V</strong>（建议 ≤ 1.60V）</li>
+<li>两颗键电压差建议 <strong>≥ 150mV</strong>，否则窗口太窄会抖</li>
+</ul>
+<p>加键、改电压后，把中点手算一遍，确认不会和隔壁键、空闲重叠。</p>
+<p>---</p>
+<h2>3. 常见改法</h2>
+<h3>3.1 只改某颗键的功能（电压不变）</h3>
+<p>改对应 <code>keyN_val</code>。常用键码（<code>linux/input-event-codes.h</code>）：</p>
+<p>| 功能 | <code>keyN_val</code> | 宏 |</p>
+<p>|------|------------|-----|</p>
+<p>| 播放/暂停 | 164 | <code>KEY_PLAYPAUSE</code> |</p>
+<p>| 上一曲 | 165 | <code>KEY_PREVIOUSSONG</code> |</p>
+<p>| 下一曲 | 163 | <code>KEY_NEXTSONG</code> |</p>
+<p>| 音量减 | 114 | <code>KEY_VOLUMEDOWN</code> |</p>
+<p>| 音量加 | 115 | <code>KEY_VOLUMEUP</code> |</p>
+<p>| 确认 | 28 | <code>KEY_ENTER</code> |</p>
+<p>| 菜单 | 139 | <code>KEY_MENU</code> |</p>
+<p>| 忽略/占位 | 240 | <code>KEY_UNKNOWN</code> |</p>
+<p>dts 里写数字，不要写宏名。</p>
+<h3>3.2 实测电压和表不一致</h3>
+<ol>
+<li>按下时量 <strong>GPADC0 管脚对 GND</strong>（不是面板 3.3V 侧）</li>
+<li>把 mV 写入对应 <code>keyN_vol</code>，保持从小到大</li>
+<li>重算中点；必要时插一档 <code>KEY_UNKNOWN</code> 把窗口隔开</li>
+<li>检查 <code>higdata</code> 仍高于最高有效键</li>
+</ol>
+<p>例：上一曲实测 0.70V → <code>key1_vol = &lt;700&gt;;</code></p>
+<h3>3.3 增加一颗有效键</h3>
+<ol>
+<li>新电压必须 &lt; 1.7V，并和已有档拉开</li>
+<li><code>key_cnt</code> +1</li>
+<li>按电压插入 <code>keyN_vol</code> / <code>keyN_val</code>（编号按电压从低到高，不要乱序）</li>
+<li>若新键比原来最高有效键还高：把 <code>higdata</code> 抬到「新键电压 与 空闲 1.8V」之间</li>
+</ol>
+<p>例：要正式接音量减 1.46V，把现在的占位改成：</p>
+<pre><code>key_cnt = &lt;4&gt;;
+key3_vol = &lt;1460&gt;;
+key3_val = &lt;114&gt;;   /* KEY_VOLUMEDOWN */
+/* higdata 仍须 &gt; 1460mV，例如 1550000 已满足 */</code></pre>
+<p>音量加 1.95V：<strong>不能</strong>写成 <code>1950</code>。须先在 GPADC0 上量到稳定 <strong>&lt; 1.65V</strong> 再进表，否则和空闲一样是 ~1.8V。</p>
+<h3>3.4 减少键</h3>
+<p><code>key_cnt</code> 改成实际对数，删掉后面的 <code>keyN_*</code>。若删的是中间档，后面的编号要前移，电压仍从小到大。</p>
+<p>删了最高档之后，检查下一档窗口会不会吞掉板上还在的物理键（京龙 1.46V 就是因此留了占位）。</p>
+<h3>3.5 改按下/松开阈值</h3>
+<p>空闲仍是 1.8V 时：</p>
+<ul>
+<li><code>lowdata</code> 保持 <code>1700000</code>（1.7V）一般不用动</li>
+<li><code>higdata</code>：大于「最高有效键 + 余量」，小于 1.7V</li>
+</ul>
+<p>| 最高有效键 | higdata 建议 |</p>
+<p>|------------|----------------|</p>
+<p>| ≤ 0.88V（全志默认） | <code>1200000</code> 可用 |</p>
+<p>| 1.16V（下一曲） | <code>1400000</code>～<code>1550000</code> |</p>
+<p>| 1.46V（音量减） | <code>1550000</code>～<code>1600000</code> |</p>
+<p><code>higdata</code> 低于某颗键的电压 → 这颗键会按下立刻松开。</p>
+<p>---</p>
+<h2>4. 编译与确认 dtb</h2>
+<pre><code>./tools/build_p1_nor_JL_M101.sh kernel
+./build.sh pack</code></pre>
+<p>镜像：<code>out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code></p>
+<p>反编译核对：</p>
+<pre><code>dtc -I dtb -O dts out/h133/kernel/build/arch/arm/boot/dts/board.dtb \
+  | awk &#x27;/gpadc@/,/^[[:space:]]*\};/&#x27;</code></pre>
+<p>十进制对照：<code>key0_val = &lt;0xa4&gt;</code> → 164；<code>key1_vol = &lt;0x28d&gt;</code> → 653。</p>
+<p>---</p>
+<h2>5. 板上怎么验</h2>
+<p>完整步骤（选通道、读电压、查 event、hexdump、长按、失败判定）见 <a href="./测试方法.md">测试方法.md</a>。改 <code>keyN_val</code> 后 hex 里的 code 会变，例如改成 114 则按下是 <code>72 00</code> 不是 <code>a4 00</code>。</p>
+<p>---</p>
+<h2>6. 排错</h2>
+<p>| 现象 | 先查 |</p>
+<p>|------|------|</p>
+<p>| 完全没 <code>sunxi-gpadc0</code> | <code>&amp;gpadc</code> 的 <code>status</code>；<code>channel_select</code> |</p>
+<p>| 短地对地不是 164 | <code>key0_vol/val</code> 是否被覆盖；dtb 是否打进这张镜像 |</p>
+<p>| 按下立刻松开 | <code>higdata</code> 是否低于该键电压 |</p>
+<p>| A 键出成 B 键 | <code>key_vol</code> 没按从小到大排；中点窗口重叠；少了占位档 |</p>
+<p>| 最高那颗永远没事件 | 电压 ≥ 1.7V，或被钳成 1.8V（1.95V 就是这个） |</p>
+<p>| 长按刷很多包 | 正常，<code>value=2</code> 是 <code>EV_REP</code>，不是配错 |</p>
+<p>LVGL 此时仍不读 gpadc，<strong>界面不动不算配置失败</strong>。</p>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

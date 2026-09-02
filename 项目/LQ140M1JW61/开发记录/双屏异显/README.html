@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>双屏异显（架构级） · 全志</title>
-<style>/* nav-v28 */ 
+<style>/* nav-v29 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v28</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -107,7 +107,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">GT9110 触摸</span></a>
 <a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">HDMI 异显</span></a>
 <a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">同异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.html"><span class="txt">libuapi 对齐</span></a>
 <a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">双屏异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.html"><span class="txt">使用与构建</span></a>
 </div>
 </div>
 <div class="group">
@@ -145,6 +147,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
 </div></div>
 <div class="group">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
@@ -154,22 +163,22 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: log</p>
 <h1>双屏异显（架构级）</h1>
-<p>MIPI（screen0）+ HDMI（screen1）的<strong>同显 / 异显</strong>能力，跨板型共用；板级只做验证与 DTS/旋转参数差异。</p>
+<p>MIPI（screen0）+ HDMI（screen1）的<strong>同显 / 异显</strong>，跨板共用。补丁已合进树。</p>
+<p><strong>先看：<a href="./使用与构建.md">使用与构建.md</a></strong>（怎么切、C API、编包注意）。</p>
 <p>| 文档 | 说明 |</p>
 <p>|---|---|</p>
+<p>| <a href="./使用与构建.md">使用与构建.md</a> | <strong>合并后用法 + 构建注意</strong> |</p>
 <p>| <a href="./LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> | 中间件架构设计稿（待完整落地） |</p>
-<p>| <a href="./20260806-同异显切换/">20260806-同异显切换/</a> | <strong>定稿</strong>：WB 常开 + <code>SET_HDMI_OUT</code>；<code>disp_mode</code> |</p>
-<p>| <a href="./20260805-HDMI异显最小验证/">20260805-HDMI异显最小验证/</a> | 历史 TEMP 通路/fence 验证（<strong>勿作产品默认</strong>） |</p>
+<p>| <a href="./20260806-同异显切换/">20260806-同异显切换/</a> | 定稿过程：WB 常开 + <code>SET_HDMI_OUT</code> |</p>
+<p>| <a href="./20260828-libuapi内核头对齐/">20260828-libuapi内核头对齐/</a> | 合进内核后须换工具链 <code>sunxi_display2.h</code> |</p>
+<p>| <a href="./20260805-HDMI异显最小验证/">20260805-HDMI异显最小验证/</a> | 历史 TEMP（<strong>勿作产品默认</strong>） |</p>
 <h2>产品一句话</h2>
 <p>同显：WB 镜像 UI+视频到 HDMI。  </p>
 <p>异显：关掉 HDMI 上的 WB 层，视频直贴 DE1；LCD 只留 UI。</p>
-<pre><code># 干净树（架构补丁，非某板专属）
-bash H133-AI-Skills/开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh
-# 再按目标板型编镜像，例如：
-./tools/build_p1_nor_JL_M101.sh full</code></pre>
-<p>板端：<code>disp_mode same|diff|get</code></p>
+<p>干净树才需要补丁：</p>
+<pre><code>bash H133-AI-Skills/开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh</code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
 </main>
 <script>
 (function () {
@@ -237,7 +246,7 @@ bash H133-AI-Skills/开发记录/双屏异显/20260806-同异显切换/patches/a
     mark(this);
     go(this.href, true);
   }
-  var VER = "v28";
+  var VER = "v29";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

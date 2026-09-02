@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LV_DS 双屏异显中间件 — 技术架构 · 全志</title>
-<style>/* nav-v28 */ 
+<style>/* nav-v29 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v28</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -107,7 +107,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">GT9110 触摸</span></a>
 <a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">HDMI 异显</span></a>
 <a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">同异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.html"><span class="txt">libuapi 对齐</span></a>
 <a class="item child current" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">双屏异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.html"><span class="txt">使用与构建</span></a>
 </div>
 </div>
 <div class="group">
@@ -145,6 +147,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
 </div></div>
 <div class="group">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
@@ -159,8 +168,10 @@ input[type=checkbox] { margin-right:.4rem; }
 <p><strong>目标平台</strong>：sun8iw20 <strong>H133</strong>，本工程板级 <strong><code>p1_nor</code></strong>（MIPI + HDMI）</p>
 <p><strong>相关文档</strong>：</p>
 <ul>
-<li><a href="./README.md">双屏异显索引</a> — 同显/异显定稿与 TEMP 对照</li>
-<li><a href="./20260806-同异显切换/">20260806-同异显切换</a> — WB 常开 + <code>disp_mode</code>（当前产品路径）</li>
+<li><a href="./使用与构建.md">使用与构建.md</a> — 合并后用法与编包</li>
+<li><a href="./README.md">双屏异显索引</a></li>
+<li><a href="./20260806-同异显切换/">20260806-同异显切换</a> — WB 常开 + <code>disp_mode</code> / <code>disp_dual.h</code>（当前产品路径）</li>
+<li><a href="./20260828-libuapi内核头对齐/">20260828-libuapi内核头对齐</a> — 合进内核后须换工具链 <code>sunxi_display2.h</code></li>
 <li>skills 侧：<code>h133-display</code> 板级档案 / HDMI 原理（按板查阅）</li>
 </ul>
 <p>---</p>
@@ -559,7 +570,7 @@ void app_play_mv(const char *path)
 <p>---</p>
 <p>*实现代码目标路径：<code>platform/lv_dual_scr/</code>。BSP 变更仍遵循 <a href="./工程编译方式.txt) 与 [H133-MIPI-HDMI双显开发记录.md](./H133-MIPI-HDMI双显开发记录.md">工程编译方式.txt</a>。*</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
 </main>
 <script>
 (function () {
@@ -627,7 +638,7 @@ void app_play_mv(const char *path)
     mark(this);
     go(this.href, true);
   }
-  var VER = "v28";
+  var VER = "v29";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

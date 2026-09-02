@@ -6,8 +6,8 @@
 <meta http-equiv="Pragma" content="no-cache"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
-<title>GPADC 电阻按键 · 全志</title>
-<style>/* nav-v28 */ 
+<title>ST7121P init · 全志</title>
+<style>/* nav-v29 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,59 +84,13 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v28</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
-<div class="sub">
-<div class="group">
-<a class="item cat" href="项目/JL_M101/记录.html"><span class="txt">记录</span></a>
-<div class="kids">
-<a class="item child" href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html"><span class="txt">MIPI 适配</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html"><span class="txt">MIPI 定稿 · 总览</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html"><span class="txt">MIPI 定稿 · 新建板件</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html"><span class="txt">MIPI 定稿 · Panel init</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html"><span class="txt">MIPI 定稿 · DTS 背光</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html"><span class="txt">MIPI 定稿 · 实机踩坑</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html"><span class="txt">MIPI 定稿 · 编译验收</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html"><span class="txt">GSL3670 触摸</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html"><span class="txt">三路旋转 · 怎么改</span></a>
-<a class="item child" href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html"><span class="txt">三路旋转</span></a>
-</div>
-</div>
-<div class="group">
-<a class="item cat" href="项目/JL_M101/修复.html"><span class="txt">修复</span></a>
-<div class="kids">
-<a class="item child" href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html"><span class="txt">HDMI 黑边</span></a>
-</div>
-</div>
-<div class="group">
-<a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
-<div class="kids">
-<div class="group">
-<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">触摸</span></a>
-<div class="kids">
-<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
-<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
-</div></div>
-<div class="group">
-<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">显示屏</span></a>
-<div class="kids">
-<a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">屏 init</span></a>
-<a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">屏 D101</span></a>
-<a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">屏规格书</span></a>
-</div></div>
-<div class="group">
-<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">原理图</span></a>
-<div class="kids">
-<a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
-</div></div>
-</div>
-</div>
-</div>
 <a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
 <a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
 <a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
@@ -145,26 +99,105 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+<div class="sub">
+<a class="item child" href="专题/资料/5寸屏幕/ST7121P_Datasheet_V1.0(3)(1).html"><span class="txt">ST7121P 规格</span></a>
+<a class="item child current" href="专题/资料/5寸屏幕/ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.html"><span class="txt">ST7121P init</span></a>
+<a class="item child" href="专题/资料/5寸屏幕/WXY050M022LA1201-SW2.html"><span class="txt">WXY050 屏规</span></a>
+<a class="item child" href="专题/资料/5寸屏幕/e81ba693bfa54a40f410624b956df620.html"><span class="txt">e81ba693bfa54a40f410624b956df620</span></a>
+</div>
 </div></div>
 <div class="group">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
 <div class="kids family-kids"></div>
 </div></nav>
 <main>
-<article class="">
-<p class="meta">kind: log</p>
-<h1>GPADC 电阻按键</h1>
-<p>京龙板 KEY 走 H133 <strong>GPADC0</strong> 电阻分压，内核 <code>sunxi-gpadc</code> 出 evdev。跨板可复用通道/阈值算法；电压表按板件 DTS。</p>
-<p>| 文档 | 说明 |</p>
-<p>|---|---|</p>
-<p>| <a href="./20260831-三键识别/">20260831-三键识别/</a> | <strong>0Ω / 3.3k / 5.1k / 6.8k / 15k</strong> 五档；两块板电压不同，见开发记录 |</p>
-<p>| └ <a href="./20260831-三键识别/开发记录.md">开发记录.md</a> | 两套电压、读 ADC、hexdump 测键码；当前 DTS 为板乙 |</p>
-<p>| └ <a href="./20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a> | 相对全志默认 <code>&amp;gpadc</code>，电压按 <strong>板乙</strong> |</p>
-<p>| └ <a href="./20260831-三键识别/如何修改.md">如何修改.md</a> | 改 dts 电压表 / 键码 / 阈值 |</p>
-<h2>产品一句话</h2>
-<p>J9536 外侧接电阻；芯片脚电压由 RA20 51k + RA22 6.8k 决定。功能五档：播放/暂停、上一曲、下一曲、音量减、音量加。换板先 <code>cat /sys/class/gpadc/data</code>，不要混用另一块板的 mV。</p>
+<article class="wide">
+
+<h1>ST7121P init</h1><p class="dlbar"><a class="dl" href="专题/资料/5寸屏幕/ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.txt" download="ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.txt">下载 ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.txt</a><a class="dl" href="专题/资料/5寸屏幕/ST7121P_MDT5.0(MLAG050WQ11 G)_initial code_gamma2.2_260819 - 副本.txt">整页打开</a></p><pre class="file"><code>
+SSD_SEND(0x11,0x10);
+SSD_SEND(0x11,0x28);
+//------------- KEY -----------------
+SSD_SEND(0x11,0x60,0x71,0x21,0xa2);
+SSD_SEND(0x11,0x60,0x71,0x21,0xa3);
+SSD_SEND(0x11,0x60,0x71,0x21,0xa4);
+//-----------------------------------
+SSD_SEND(0x11,0x78,0x21);
+SSD_SEND(0x11,0x79,0xEF);
+//SSD_SEND(0x11,0x36,0x03);
+//-------------------------LCD voltage setting---------------------------------------//
+SSD_SEND(0x11,0xB7,0x00,0x00,0x69,0x7D,0x44,0x1A);     //VOP=5.3V
+
+SSD_SEND(0x11,0xB0,0x22,0x75,0x11,0x93,0x25,0x43,0x43); //VGH=17V/VGL=-12V
+
+SSD_SEND(0x11,0xBF,0xDE,0xDE); //VCOM
+
+SSD_SEND(0x11,0xA5,0xF0,0x03);
+
+//-----------------------------------------GIP SETTING------------------------------------------------
+//------------------  1     2   3    4    5    6    7    8    9    10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   25   26   27   28   29   30   31   32   33   34   35   36   37   38   39   40   41   42   43   44   45   46   47   48   49   50   51   52   53   54   55   56   57   58   59   60
+//-------------------------------------------------------LongV ---------------------------------------
+
+SSD_SEND(0x11,0xD7,0x10,0x22,0x1C,0x2A,0x80,0x80);
+//---------version 20240628------------------------//
+SSD_SEND(0x11,0x90,0x71,0x23,0x5A,0x20,0x24,0x03,0x28);
+
+SSD_SEND(0x11,0xA3,0x80,0x01,0x88,0xB0,0x45,0x00,0x00,0x00,0x00,0x00,0x46,0x00,0x00,0x1E,0x5C,0x1E,0x80,0x00,0xCF,0x05,0x00,0x00,0x00,0x00,0x00,0x46,0x00,0x00,0x1E,0x5C,0x1E,0x80,0x00,0x6F,0x58,0x00,0x00,0x00,0xFF);
+
+SSD_SEND(0x11,0xA6,0x55,0x00,0x24,0xA5,0x2D,0x00,0x00,0x08,0x66,0x66,0x91,0xFF,0x00,0x24,0xA5,0x2E,0x00,0x00,0x07,0x66,0x66,0x91,0xFF,0x00,0x24,0xA5,0x31,0x00,0x00,0x06,0x66,0x66,0x91,0xFF,0x00,0x2C,0xA5,0x32,0x00,0x00,0x05,0x66,0x66,0xFF,0xFF,0x00,0x08,0x80,0x08,0x80,0x06,0x00,0x00,0x00,0x00);
+
+SSD_SEND(0x11,0xA7,0x11,0x11,0xC0,0x64,0x40,0x0F,0x1E,0x40,0x00,0x48,0x07,0x66,0x66,0x91,0xFF,0x08,0x80,0x64,0x40,0x2D,0x3C,0x40,0x00,0x06,0x05,0x66,0x66,0x91,0xFF,0x08,0x80,0x64,0x40,0x4B,0x5A,0x40,0x00,0x04,0x03,0x66,0x66,0x91,0xFF,0x08,0x80,0x64,0x40,0x69,0x78,0x00,0x00,0x22,0x01,0x66,0x66,0x91,0xFF,0x08,0x80,0x88);
+
+SSD_SEND(0x11,0xAC,0x08,0x0A,0x0C,0x0E,0x17,0x15,0x13,0x11,0x18,0x19,0x10,0x0D,0x0F,0x16,0x14,0x1C,0x18,0x00,0x04,0x07,0x03,0x19,0x09,0x0B,0x0D,0x0F,0x16,0x14,0x12,0x10,0x18,0x19,0x11,0x0C,0x0E,0x17,0x15,0x1C,0x18,0x02,0x06,0x05,0x01,0x19);
+
+SSD_SEND(0x11,0xAD,0x0C,0x40,0x06,0x00,0x07,0x4B,0x4B,0xFF,0xFF,0xF0,0x40,0x0E,0x01,0x07,0x42,0x42,0xFF,0xFF,0x01,0x00,0x00,0xFF,0xFF,0xFF,0xFF);
+
+SSD_SEND(0x11,0xAE,0xFF,0x83,0x3F,0xFF,0x83,0x3F,0x00);
+
+SSD_SEND(0x11,0xB2,0x15,0x19,0x05,0x23,0x49,0xAF,0x03,0x2E,0x5C,0xD2,0xFF,0x10,0x60,0xFD,0x20,0xC0,0x00);
+
+SSD_SEND(0x11,0xE8,0x20,0x67,0x04,0x8C,0x8C,0x3E,0x04,0xDC,0xDC,0x3E,0x06,0xFA,0x26,0x3E);
+
+SSD_SEND(0x11,0x75,0x03,0x04);
+
+SSD_SEND(0x11,0xE7,0x4B,0x00,0x00,0xBC,0x4B,0x8C,0x20,0x1A,0xF0,0x7D,0x14,0x7D,0x14,0x7D,0x14,0x7D,0x14,0xFF,0x00,0x32,0x30,0x73,0x00,0x00,0xC8,0x6A,0xFF,0x5A,0x64,0x38,0x88,0x15,0xB1,0x01,0x01,0x64,0x01,0x01,0x7C,0xFF,0x1A,0x01);
+
+SSD_SEND(0x11,0xE1,0x0C,0x0C);
+
+SSD_SEND(0x11,0xEA,0x15,0x00,0x55);
+
+SSD_SEND(0x11,0xA9,0x00,0x00,0xF3,0xFF,0x00,0x00,0x00,0x00,0x00,0x00);
+
+//VOP5.3V--------------------------------------gamma setting------------------------------------------------
+
+
+
+
+
+SSD_SEND(0x11,0xC8,0x00,0x00,0x0A,0x14,0x24,0x00,0x3D,0x03,0x7E,0x07,0x10,0xDE,0x0A,0x53,0x05,0x11,0xA3,0x03,0xE8,0x01,0x22,0x27,0x0E,0x6F,0x08,0x32,0xDD,0x0A,0x43,0x0C,0xF3,0x95,0x01,0xCB,0xEB,0x03,0xFF);
+SSD_SEND(0x11,0xC9,0x00,0x00,0x0A,0x14,0x24,0x00,0x3D,0x03,0x7E,0x07,0x10,0xDE,0x0A,0x53,0x05,0x11,0xA3,0x03,0xE8,0x01,0x22,0x27,0x0E,0x6F,0x08,0x32,0xDD,0x0A,0x43,0x0C,0xF3,0x95,0x01,0xCB,0xEB,0x03,0xFF);
+
+
+// SSD_SEND(0x11,0xB5,0x85
+//------------- Lock KEY -----------------
+//SSD_SEND(0x11,0x60,0x71,0x21,0x00
+//-----------------------------------
+
+SSD_SEND(0x11,0x11);
+Delay(120);
+SSD_SEND(0x11,0x29);
+SSD_SEND(0x11,0x35,0x00);
+Delay(20);
+
+</code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
 </main>
 <script>
 (function () {
@@ -232,7 +265,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v28";
+  var VER = "v29";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

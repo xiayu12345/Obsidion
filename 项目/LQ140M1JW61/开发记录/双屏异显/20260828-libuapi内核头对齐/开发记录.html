@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>异显合并后 libuapi 与内核头对齐 — 开发记录 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<div class="sub">
+<div class="group open">
+<a class="item cat" href="项目/LQ140M1JW61/记录.html"><span class="txt">记录</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/开发记录.html"><span class="txt">双显LCD-HDMI排查.bak</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/00-总览与定稿.html"><span class="txt">双显定稿 · 总览</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/01-板件新建.html"><span class="txt">双显定稿 · 新建板件</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/02-panel与init.html"><span class="txt">双显定稿 · Panel init</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/03-DTS与双显.html"><span class="txt">双显定稿 · DTS 双显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/04-实机调试与踩坑.html"><span class="txt">双显定稿 · 实机踩坑</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/05-编译与验收.html"><span class="txt">双显定稿 · 编译验收</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.html"><span class="txt">GT9110 触摸</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.html"><span class="txt">HDMI 异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/开发记录.html"><span class="txt">同异显</span></a>
+<a class="item child current" href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.html"><span class="txt">libuapi 对齐</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.html"><span class="txt">双屏异显</span></a>
+<a class="item child" href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.html"><span class="txt">使用与构建</span></a>
+</div>
+</div>
+<div class="group">
+<a class="item cat" href="项目/LQ140M1JW61/修复.html"><span class="txt">修复</span></a>
+</div>
+<div class="group">
+<a class="item cat" href="项目/LQ140M1JW61/资料.html"><span class="txt">资料</span></a>
+<div class="kids">
+<div class="group">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/1401598-v1(25.2.26).html"><span class="txt">GT9110 配置</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.html"><span class="txt">GT9110 规格</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110-规格书要点与驱动对照.html"><span class="txt">GT9110-规格书要点与驱动对照</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/GT9110H&amp;GT6108H编程指南_V1.0_20211025094118(1).html"><span class="txt">GT9110 编程</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/TB72C_M2规格书20200407(1).html"><span class="txt">TB72C 规格</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/2_LQ140M1JW61_LD-D5120Z02E_20210413_202407013680(1)(1).html"><span class="txt">LQ140 屏规</span></a>
+<a class="item child" href="项目/LQ140M1JW61/资料/3603856530MIPI转EDP QE01MIPI001-V01驱动板规格书.html"><span class="txt">MIPI转eDP</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/LQ140M1JW61/资料.html"><span class="txt">原理图</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ140M1JW61/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
+</div></div>
+</div>
+</div>
+</div>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: log · date: 2026-08-28</p>
+<h1>异显合并后 libuapi 与内核头对齐 — 开发记录</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-08-28 |</p>
+<p>| 范围 | <strong>架构级</strong>（glibc-830 工具链头全板共用，不是 ZS 独有） |</p>
+<p>| 验证板 | <code>p1_nor_ZS101</code> |</p>
+<p>| 状态 | <strong>已定稿</strong>（按官方 include；换工具链头） |</p>
+<p>| 前置 | <a href="../20260806-同异显切换/">20260806-同异显切换</a> |</p>
+<p>---</p>
+<h2>1. 现象</h2>
+<p>异显 ioctl / <code>disp_fb_info2</code> 合进内核后，<code>media_sessiond</code> 调 <code>DISP_LAYER_SET_CONFIG2</code>：</p>
+<pre><code>[DISP] dual display already enabled
+[DISP] disp_get_layer (0,0,&lt;很大的数&gt;) fail</code></pre>
+<p>脏 <code>layer_id</code>（如 7715360）当下标 → <code>disp_mgr_set_layer_config2</code> Oops。数字每次开机都变，是栈垃圾。<code>GET_CONFIG2</code> 多半只警告；崩在 SET。</p>
+<p><code>dual display already enabled</code> 只说明 WB 已起来（<code>boot_sync</code> 幂等），<strong>不是崩因</strong>。</p>
+<p>---</p>
+<h2>2. 根因</h2>
+<p>内核 <code>kernel/linux-5.4/include/video/sunxi_display2.h</code> 相对工具链旧头变长：</p>
+<ul>
+<li><code>disp_fb_info2</code> 中间插入 <code>tfbd_en</code> / <code>tfbc_info</code></li>
+<li>增加 <code>DISP_DUAL_DISPLAY_*</code>（<code>0x407</code> 起）</li>
+</ul>
+<p>官方 <strong>libuapi</strong>：</p>
+<pre><code>#include &lt;video/sunxi_display2.h&gt;</code></pre>
+<p>Makefile 只有 <code>-I$(LINUX_DIR)/user_headers/include/video</code>。</p>
+<p>官方 <code>headers_install</code> <strong>不导出</strong> <code>sunxi_display2.h</code>。<code>&lt;video/sunxi_display2.h&gt;</code> 实际吃：</p>
+<pre><code>prebuilt/rootfsbuilt/arm/toolchain-sunxi-glibc-gcc-830/toolchain/include/video/sunxi_display2.h</code></pre>
+<p>所以：<strong>只重编内核，用户态结构体不会自动跟上。</strong></p>
+<p>官方对照（不要混）：</p>
+<p>| 包 | 写法 | 实际吃哪份 |</p>
+<p>|---|---|---|</p>
+<p>| libuapi | <code>#include &lt;video/sunxi_display2.h&gt;</code> | <strong>工具链</strong> |</p>
+<p>| tinycedar | <code>#include &quot;sunxi_display2.h&quot;</code> + <code>-I .../include/video</code> | <strong>内核源码</strong> |</p>
+<p>---</p>
+<h2>3. 约束（已确认）</h2>
+<ul>
+<li><strong>不要改内核头结构</strong>去迁就旧用户态</li>
+<li><strong>不要</strong>给 libuapi 做 <code>kern_inc</code> 手拷</li>
+<li><strong>不要</strong> <code>-I</code> 整棵 <code>kernel/.../include</code>（抢 <code>&lt;linux/fb.h&gt;</code>，编挂）</li>
+<li><strong>不要</strong>改 <code>headers_install</code> / <code>mkkernel.sh</code> 拷进 <code>user_headers</code></li>
+<li><strong>不要</strong>把 libuapi 改成 tinycedar 那套引号 + <code>-I include/video</code></li>
+</ul>
+<p>---</p>
+<h2>4. 定稿做法</h2>
+<ol>
+<li>libuapi 源码 / Makefile <strong>保持官方</strong>（<code>disp_framework.h</code> 用尖括号；Makefile 不加 <code>LICHEE_KERN_DIR/include/video</code>）。</li>
+<li>工具链头换成内核同一份：</li>
+</ol>
+<p>   源：<code>kernel/linux-5.4/include/video/sunxi_display2.h</code>  </p>
+<p>   目标：</p>
+<ul>
+<li><code>prebuilt/rootfsbuilt/arm/toolchain-sunxi-glibc-gcc-830/toolchain/include/video/sunxi_display2.h</code></li>
+<li><code>prebuilt/rootfsbuilt/arm/toolchain-sunxi-musl-gcc-830/toolchain/include/video/sunxi_display2.h</code>（预防切 musl）</li>
+</ul>
+<p>   旧头可留 <code>*.bak.pre-kernel-align</code>。</p>
+<ol>
+<li>清包再编用户态再 pack（ZS <strong>不要</strong> <code>m</code>，会编 SPL）：</li>
+</ol>
+<pre><code>rm -rf out/h133/p1_nor_ZS101/openwrt/build_dir/target/libuapi
+./build.sh openwrt_rootfs
+./build.sh pack</code></pre>
+<p>编译行应只有 <code>-I .../user_headers/include/video</code>，不应出现 <code>kernel/linux-5.4/include/video</code>。</p>
+<p><strong>以后改内核这份头：同步覆盖工具链头，并重编 libuapi。</strong></p>
+<p>禁止在 WSL/x86 对 <code>libuapi</code> 源码树本地 <code>make</code> / <code>gcc -c</code>（会留下 x86 <code>.o</code>）。</p>
+<p>---</p>
+<h2>5. 试过、不要再用</h2>
+<p>| 做法 | 为什么不行 |</p>
+<p>|---|---|</p>
+<p>| 只重编内核 | 用户态仍是短结构 |</p>
+<p>| <code>-I</code> 整棵内核 include | 抢 <code>linux/fb.h</code> |</p>
+<p>| <code>kern_inc</code> 手拷 | libuapi 特例 |</p>
+<p>| 拷进 <code>user_headers</code> | 官方不导出；且 <code>-I .../include/video</code> 对不上 <code>&lt;video/xxx.h&gt;</code> |</p>
+<p>| libuapi 改成 tinycedar 写法 | 不是官方 libuapi |</p>
+<p>| 削内核 <code>disp_fb_info2</code> | 禁止 |</p>
+<p>---</p>
+<h2>6. 用户态接口（不必走命令）</h2>
+<p><code>disp_mode</code> 只是 CLI。链 <code>-luapi</code>，<code>#include &lt;disp_dual.h&gt;</code>：</p>
+<pre><code>sunxi_disp_mode_get(&amp;mode);
+sunxi_disp_mode_set(SUNXI_DISP_MODE_DIFF);  /* 异显，写 /etc/disp_mirror_mode */
+sunxi_disp_mode_set(SUNXI_DISP_MODE_SAME);
+sunxi_disp_hdmi_connected();
+sunxi_disp_video_screen_mask();             /* 1=LCD，2=HDMI */</code></pre>
+<p>底层 <code>sunxi_dual_display_set_hdmi_output()</code> 只切 HDMI 上 WB 层，产品路径走 <code>sunxi_disp_mode_set</code>。播中切返回 <code>-EBUSY</code>；切完要再起播才按新屏建层。桌面/设置页目前未接。</p>
+<p>---</p>
+<h2>7. 机上怎么测</h2>
+<p>插 HDMI，<strong>停播</strong>后再切。不要在蓝牙 K 歌里测（电视不再镜像 UI 是异显设计）。</p>
+<pre><code>disp_mode get     # hdmi=1 wb=1；same 时 hdmi_out=1 video_screen=1；diff 时 hdmi_out=0 video_screen=2
+disp_mode same    # HDMI=LCD 的 WB；视频 LCD
+disp_mode diff    # 关 HDMI WB；视频到 HDMI</code></pre>
+<p>再进<strong>点歌</strong>播一首。偏好 <code>/etc/disp_mirror_mode</code>。没插 HDMI 时 <code>video_screen</code> 一直是 1。</p>
+<p>---</p>
+<h2>8. 串口常一起出现、但不是这次根因</h2>
+<ul>
+<li>cedarc 扫 <code>libaw_mp3dec.so</code> 等：音频库当视频插件，可忽略。</li>
+<li><code>dma_buf_get failed, fd=0</code>：<code>TRANS_DISPBUF_FD</code> 下 <code>fb.fd=0</code>（起层还没 ion fd）。内核只对 <code>fd&lt;0</code> 跳过 map。画面可能黑，进程不会因此退出。</li>
+<li>蓝牙 K 歌退回桌面：<code>mcu select android ok</code>，与 DMA / 头文件无关。</li>
+</ul>
+<p>---</p>
+<h2>9. 变更文件</h2>
+<pre><code>prebuilt/.../toolchain-sunxi-glibc-gcc-830/toolchain/include/video/sunxi_display2.h
+prebuilt/.../toolchain-sunxi-musl-gcc-830/toolchain/include/video/sunxi_display2.h
+platform/allwinner/display/libuapi/src/disp_framework.h   # 保持 #include &lt;video/sunxi_display2.h&gt;
+openwrt/package/allwinner/display/libuapi/Makefile        # 保持官方 -I user_headers，无内核 include/video</code></pre>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

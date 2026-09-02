@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>LVGL G2D 旋转（原厂 `smem_start` IOVA）— 开发记录 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<div class="sub">
+<a class="item child current" href="专题/G2D旋转/开发记录.html"><span class="txt">开发记录</span></a>
+</div>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: log</p>
+<h1>LVGL G2D 旋转（原厂 <code>smem_start</code> IOVA）— 开发记录</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-09-02 |</p>
+<p>| 范围 | UI 旋转交给 G2D；第一笔同时带上原厂翻页 |</p>
+<p>| 基线 | <code>xia_yixian</code>（<code>e553f3a49</code>） |</p>
+<p>| 远端 | <code>http://120.236.79.20:43000/xiayu/AI-KTV.git</code> 分支 <code>xia_g2d_rotate</code> |</p>
+<p>| 提交 | <code>01f2f8f9d</code>（翻页 + 开 G2D + 结构体 116/236，blit 走 <code>smem_start</code>）→ <code>37bf0adfb</code>（误改两边 dmabuf fd）→ <code>65aee7183</code> / <code>0004</code> 改回原厂 IOVA |</p>
+<p>| 验证板 | 本地 <code>p1_nor_ZS101</code>（这条远端分支 <strong>没有</strong> ZS101 lunch） |</p>
+<p>| 补丁 | <a href="./patches/">patches/</a> |</p>
+<p>| 原理 | <a href="../../H133-G2D-smem_start.md">H133-G2D-smem_start.md</a> |</p>
+<p>切页撕裂见 <a href="../切页撕裂/)。只要翻页、G2D 保持关，见 [原厂翻页](../原厂翻页/">切页撕裂</a>。</p>
+<p>---</p>
+<h2>1. 要解决什么</h2>
+<p>旋转走 <strong>G2D</strong>，不要软旋当主路径。对齐 H133-dz 原厂 LVGL：</p>
+<pre><code>use_phy_addr = 1
+laddr        = finfo.smem_start   /* 可以为 0，这是 IOVA 起点 */</code></pre>
+<p>不要 <code>FBIOGET_DMABUF</code> / <code>FBIO_GET_IONFD</code>。</p>
+<p>---</p>
+<h2>2. 原厂控制流</h2>
+<pre><code>LVGL 画 ion rotatefbp
+flush_cache
+G2D_CMD_BITBLT_H  flag_h=旋转角（90→G2D_ROT_270）
+  src = rotatefbp_phy
+  dst = smem_start，clip.y = fbindex * yres
+  两边 use_phy_addr=1
+失败 → CPU
+FBIOPAN</code></pre>
+<p>H133 G2D 走 RCQ：<code>flag_h &amp; 0xff00</code>（含 <code>G2D_ROT_0=0x400</code>）进 <strong>rotate 硬件</strong>。页拷的 <code>G2D_ROT_0</code> 也走 rotate。</p>
+<p>内核 <code>g2d_blit_h</code> 在 <code>use_phy_addr=1</code> 时 <strong>不</strong> <code>g2d_dma_map</code>，<code>laddr=0</code> 合法。  </p>
+<p><code>use_phy_addr=0</code> 才按 fd map；原厂 LVGL <strong>不用</strong>这条。</p>
+<p>---</p>
+<h2>3. 三笔分别干什么</h2>
+<p>第一笔 <code>01f2f8f9d</code> / 补丁 <code>0001</code>：</p>
+<ul>
+<li>去掉 <code>split_fb</code>，DIRECT_MODE + <code>FBIOPAN</code></li>
+<li>开 <code>G2D</code> / <code>G2D_ROTATE</code>；<code>CACHE</code> 在 <strong>defconfig</strong> 保持关</li>
+<li><code>libawion</code> 依赖；<code>g2d_image_enh=116</code>，<code>g2d_blt_h=236</code></li>
+<li>blit 走 <code>smem_start</code>（这条才是原厂）</li>
+</ul>
+<p>第二笔 <code>37bf0adfb</code> / 补丁 <code>0002</code>（<strong>弯路，不要当定稿</strong>）：</p>
+<ul>
+<li>当时把 <code>smem_start=0</code> 当成 phy blit 会 <code>dma_buf_id(-1)</code></li>
+<li>fb：<code>FBIOGET_DMABUF</code>，旋缓冲：<code>SunxiMemGetBufferFd</code></li>
+<li>blit 两边 <code>use_phy_addr=0</code></li>
+<li>用户态 <code>close(fb_dma_fd)</code> 会放掉驱动还在 mmap 的那块 ION，应用重启 Kernel Oops</li>
+</ul>
+<p>第三笔 / 补丁 <code>0004</code>（<strong>产品路径</strong>）：</p>
+<ul>
+<li>撤回 fd，改回 <code>use_phy_addr=1</code> + <code>smem_start</code></li>
+<li>不再把 IOVA 0 当失败</li>
+<li>ioctl 失败才 CPU 旋</li>
+</ul>
+<p><code>disp_drv.rotated</code> 必须 <code>NONE</code>（logical_size 已换宽高）。不要设 90/270。</p>
+<p>产品多出来的 <code>lv_logical_override</code>：逻辑分辨率 ≠ 物理页时 G2D 可能裁切/失败再退 CPU。保留。</p>
+<p>---</p>
+<h2>4. 合入</h2>
+<pre><code># 基线必须是 xia_yixian（e553f3a49）
+git am 0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch \
+      0002-fix-IOMMU-G2D-dmabuf-fd.patch \
+      0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch</code></pre>
+<p>只合 <code>0002</code>、或「原厂翻页独立补丁 + 0002」都会对不上。停在 <code>0002</code> 会 Oops。</p>
+<p>| 你要 | 合什么 |</p>
+<p>|---|---|</p>
+<p>| 只要翻页 | <a href="../原厂翻页/">原厂翻页</a> 那一份 |</p>
+<p>| 翻页 + G2D | 本目录 <code>0001</code> + <code>0002</code> + <code>0004</code> |</p>
+<p>其它板开开关对照 <code>0003-example-other-board-defconfig.patch</code>（路径含 <code>&lt;BOARD&gt;</code>，<strong>勿盲 apply</strong>）。</p>
+<p>---</p>
+<h2>4.1 换板 / 远端有哪些 lunch</h2>
+<p>G2D IOVA blit 是 IOMMU 板上的公共通路，<strong>不是</strong>某块屏的专有补丁。换板 <strong>不用改 blit</strong>。</p>
+<p><code>xia_yixian</code> / <code>xia_g2d_rotate</code> <strong>只有</strong>：</p>
+<ul>
+<li><code>h133-p1_nor</code> / <code>_8733</code> / <code>_JYY070</code>（第一笔已开 G2D + DIRECT_MODE，含 defconfig <strong>和</strong> ota/qa）</li>
+<li><code>h133-p2</code>（<strong>保持关</strong> G2D / DIRECT_MODE）</li>
+</ul>
+<p><strong>没有</strong> ZS101 / JL_M101 / LQ*。ZS101 实测是在 <strong>本仓库本地</strong> lunch 上把同样三个开关打开后编的镜像，不是远端这几笔带进去的。</p>
+<p>要该板走 G2D 旋，其 <code>defconfig</code>：</p>
+<pre><code>CONFIG_LVGL8_USE_SUNXIFB_G2D=y
+CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
+CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+# CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set</code></pre>
+<p><strong>注意：</strong> 远端第一笔给 p1_nor / 8733 / JYY070 的 <strong><code>defconfig_ota</code> 仍是 <code>CACHE=y</code></strong>，同时又开了 G2D。编 ota 镜像若要与产品「CACHE 关」一致，需自己把 ota 的 CACHE 关掉。<code>defconfig_qa</code> 的 CACHE 已是关的。</p>
+<p>---</p>
+<h2>5. 不要再用</h2>
+<p>| 做法 | 原因 |</p>
+<p>|---|---|</p>
+<p>| <code>FBIOGET_DMABUF</code> / <code>use_phy_addr=0</code> | 原厂不用；<code>close</code> 会放掉 mmap 的 ION，重启 Oops |</p>
+<p>| 把 <code>smem_start=0</code> 当没分配 | H133 上这是合法 IOVA |</p>
+<p>| src phy + dst fd | rotate 两边都按 fd map |</p>
+<p>| <code>disp_drv.rotated</code> 设 90/270 | 与已换宽高叠两次 |</p>
+<p>| 开 CACHE | 用户明确关（ota 现状见上） |</p>
+<p>| 强制软旋当主路径 | 主路径是 G2D |</p>
+<p>| 给内核导出 ioctl 加 <code>get_dma_buf</code> | 原厂没有；不导 fd 就不需要 |</p>
+<p>| WSL 对 <code>lv_drivers</code> 本地 <code>gcc -c</code> | x86 <code>.o</code> 污染交叉编译 |</p>
+<p>---</p>
+<h2>6. 实测（本地 ZS101 镜像）</h2>
+<pre><code>sunxifb-g2d-20250528-v3: g2d_image_enh=116 g2d_blt_h=236 (kernel expect 116/236)
+Turn on 2d hardware acceleration fill/blit/blend/scale.</code></pre>
+<p>无 <code>fb G2D dmabuf fd=</code>、无 <code>dma_buf_id(-1)</code>、无 BITBLT failed。旋转成功不打字。</p>
+<p>---</p>
+<h2>7. 回归（<code>0004</code> 合完）</h2>
+<ul>
+<li><code>LV_DISP_ROT_90</code> → <code>G2D_ROT_270</code></li>
+<li>G2D 时 <code>rotated=NONE</code></li>
+<li>结构体 116/236；启动 <strong>没有</strong> <code>G2D rotate fd</code></li>
+<li>CACHE 关（看你编的是 defconfig 还是 ota）</li>
+<li>HDMI WB 仍走 <code>dual_display_rot</code>，不要用这次用户态 G2D 改 HDMI</li>
+</ul>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>

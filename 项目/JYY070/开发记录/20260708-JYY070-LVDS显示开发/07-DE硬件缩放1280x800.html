@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>07 — DE0 硬件缩放 1280×800 → 1024×600 · 全志</title>
-<style>/* nav-v28 */ 
+<style>/* nav-v29 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v28</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -159,6 +159,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
 <div class="sec">外设</div>
 <a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
 </div></div>
 <div class="group">
 <a class="item cat family" href="#"><span class="txt">F102</span></a>
@@ -223,7 +230,7 @@ cat /sys/class/disp/disp/attr/sys
 <h2>7. 回退</h2>
 <p>两处 DTS 改回 <code>fb0_width=1024</code>, <code>fb0_height=600</code>，重新 <code>kernel</code> + <code>pack</code>。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:29 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
 </main>
 <script>
 (function () {
@@ -291,7 +298,7 @@ cat /sys/class/disp/disp/attr/sys
     mark(this);
     go(this.href, true);
   }
-  var VER = "v28";
+  var VER = "v29";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

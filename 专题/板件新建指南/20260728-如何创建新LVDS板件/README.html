@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<base href="/Obsidion/">
+<title>如何创建新的 LVDS 板件 · 全志</title>
+<style>/* nav-v29 */ 
+:root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
+}
+* { box-sizing: border-box; }
+body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
+  display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
+nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
+nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
+nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
+nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
+  border-radius:6px; text-decoration:none; font-size:13px; font-weight:500; color:var(--fg);
+  background:transparent; box-sizing:border-box; line-height:1; overflow:hidden; }
+nav.side a.item .txt { display:block; min-width:0; overflow:hidden; text-overflow:ellipsis;
+  white-space:nowrap; transform-origin:left center; }
+nav.side a.item:hover { background:rgba(127,127,127,.12); }
+nav.side a.item.home { font-weight:600; }
+nav.side a.item.board { font-weight:650; }
+nav.side a.item.current,
+nav.side a.item.current:hover { background:#6f8b9c; color:#fff; }
+nav.side a.item.board.current .txt,
+nav.side a.item.home.current .txt { transform:scale(1.08); }
+nav.side .sec { color:var(--muted); font-size:.68rem; letter-spacing:.08em; text-transform:uppercase; padding:.8rem .55rem .2rem; }
+nav.side .sub { margin:0 0 .4rem 10px; padding:2px 0 2px 6px; border-left:2px solid var(--line); }
+nav.side .sub.folded { display:none; }
+nav.side .group > .kids { display:none; }
+nav.side .group.open > .kids { display:block; }
+nav.side a.item.cat { padding-left:10px; color:var(--muted); }
+nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
+nav.side .group.open > a.item.cat::before { content:"▾ "; }
+nav.side a.item.family { font-size:16px; font-weight:700; height:34px; color:var(--fg); }
+nav.side .family-kids > a.item.board,
+nav.side .family-kids > a.item.home { padding-left:28px; }
+nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
+nav.side .family-kids > .sub { margin-left:20px; }
+nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
+nav.side a.item.cat.current, nav.side a.item.child.current,
+nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
+main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
+article { background:var(--card); padding:1.4rem 1.6rem; border-radius:12px; border:1px solid var(--line); max-width:860px; width:100%; margin:0 auto; }
+article.wide { max-width:none; margin:0; padding:0.8rem 1.2rem 2rem; background:transparent; border:none; border-radius:0; }
+footer { color:var(--muted); font-size:.85rem; margin-top:1rem; max-width:860px; width:100%; margin-left:auto; margin-right:auto; }
+main:has(article.wide) footer { max-width:none; }
+article h1 { display:inline-block; transform-origin:left center; transform:scale(1.12); }
+a.dl { display:inline-block; margin:.2rem .5rem .8rem 0; padding:.35rem .85rem; border-radius:6px;
+  background:var(--acc); color:#fff !important; text-decoration:none; font-size:14px; font-weight:600; }
+iframe.docview { display:block; width:100%; height:calc(100vh - 8rem); border:0; background:#fff; }
+.docimg { max-width:100%; height:auto; }
+pre.file { height:auto; min-height:0; max-height:none; overflow:visible; white-space:pre-wrap; word-break:break-all;
+  margin:0; border-radius:0; padding:1rem 0; background:transparent; color:var(--fg); }
+a { color:var(--acc); }
+table { width:100%; border-collapse:collapse; margin:1rem 0; }
+th,td { text-align:left; padding:.5rem .6rem; border-bottom:1px solid var(--line); }
+code { font-family: ui-monospace, monospace; font-size:.9em; background:var(--line); padding:.1em .35em; border-radius:4px; }
+pre { background:#111; color:#eee; padding:1rem; overflow:auto; border-radius:8px; }
+pre code { background:none; color:inherit; padding:0; }
+.meta { color:var(--muted); font-size:.9rem; margin:.4rem 0 1rem; }
+ul { padding-left: 1.2rem; }
+input[type=checkbox] { margin-right:.4rem; }
+@media (max-width: 800px) {
+  body { grid-template-columns: 1fr; }
+  nav.side { position:static; height:auto; max-height:42vh; border-right:none; border-bottom:1px solid var(--line); }
+}
+</style>
+</head>
+<body>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v29</span></a>
+<div class="group open">
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
+<div class="kids family-kids">
+<a class="item home" href="index.html"><span class="txt">首页</span></a>
+<div class="sec">板件</div>
+<a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
+<a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
+<a class="item board" href="项目/LQ140M1JW61.html"><span class="txt">LQ140M1JW61</span></a>
+<a class="item board" href="项目/LQ190.html"><span class="txt">LQ190</span></a>
+<a class="item board" href="项目/ZS101.html"><span class="txt">ZS101</span></a>
+<a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
+<a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
+<div class="sec">外设</div>
+<a class="item board" href="H133/外设/GPADC.html"><span class="txt">GPADC</span></a>
+<a class="item board" href="H133/外设/NOR.html"><span class="txt">NOR SN</span></a>
+<div class="sec">专题</div>
+<a class="item board" href="H133/专题/G2D旋转.html"><span class="txt">G2D旋转</span></a>
+<a class="item board" href="H133/专题/原厂翻页.html"><span class="txt">原厂翻页</span></a>
+<a class="item board" href="H133/专题/切页撕裂.html"><span class="txt">切页撕裂</span></a>
+<a class="item board" href="H133/专题/板件新建指南.html"><span class="txt">新建板件</span></a>
+<div class="sub">
+<a class="item child current" href="专题/板件新建指南/20260728-如何创建新LVDS板件/README.html"><span class="txt">新建 LVDS 板</span></a>
+<a class="item child" href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.html"><span class="txt">新建 MIPI 板</span></a>
+</div>
+<a class="item board" href="H133/专题/5寸屏幕.html"><span class="txt">5寸屏幕</span></a>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
+<main>
+<article class="">
+<p class="meta">kind: log · date: 2026-07-28</p>
+<h1>如何创建新的 LVDS 板件</h1>
+<p>| 项 | 内容 |</p>
+<p>|---|---|</p>
+<p>| 日期 | 2026-07-28 |</p>
+<p>| 类型 | <strong>通用操作指南</strong>（非某一块屏的调试流水） |</p>
+<p>| 推荐基线 | <strong><code>p1_nor_8733</code></strong>（WiFi/包选型）再切 LVDS；显示框架对齐 <code>p1_nor</code> 异显路径 |</p>
+<p>| 范本定稿 | <a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/README.md">JYY070 LVDS 显示开发</a> |</p>
+<p>| 范本板 | <code>p1_nor_JYY070</code>（1024×600 LVDS；UI fb0=1280×800 + DE 缩放） |</p>
+<p>| 板级档案 | <a href="../../../skills/h133-display/board-profile-p1_nor_JYY070.md">board-profile-p1_nor_JYY070.md</a> |</p>
+<p>下文占位符：</p>
+<p>| 占位 | 含义 | 范例 |</p>
+<p>|---|---|---|</p>
+<p>| <code>&lt;BOARD&gt;</code> | 板级目录名 | <code>p1_nor_BAR</code> |</p>
+<p>| <code>&lt;PANEL&gt;</code> | <code>lcd_driver_name</code> | <code>bar_lvds</code> |</p>
+<p>| <code>&lt;KCFG&gt;</code> | Kconfig 后缀 | <code>BAR_LVDS</code> |</p>
+<p>| <code>Wp×Hp</code> | 物理屏分辨率 | 1024×600 |</p>
+<p>| <code>Wf×Hf</code> | fb0 / UI 画布 | 可与物理相同，或更大（走 DE 缩放） |</p>
+<p>---</p>
+<h2>0. 一句话结论</h2>
+<p>克隆独立板级 → <strong>独立 LVDS panel</strong>（<code>lcd_if=3</code>）→ DTS 切 LVDS 时序与 fb0 → <strong>应用层继续走 <code>rotatefbp + split_fb</code></strong>（横屏通常 <code>disp_rotate=0</code>）→ 若 UI 设计分辨率 ≠ 物理屏，用 <strong>DE0 VSU 缩放</strong>，不要再写 <code>fix_lcd</code> 旁路。</p>
+<p><strong>禁止</strong>改共享 <code>p1_nor</code> DTS 迁就本屏；<strong>禁止</strong>复活已废弃的 <code>fix_lcd_page</code> 路径。</p>
+<p>---</p>
+<h2>1. MIPI 板 vs LVDS 板（先选对路）</h2>
+<p>| 项 | MIPI 新板 | <strong>LVDS 新板（本文）</strong> |</p>
+<p>|---|---|---|</p>
+<p>| <code>lcd_if</code> | <strong>4</strong>（DSI） | <strong>3</strong>（LVDS） |</p>
+<p>| 驱动重点 | 厂商 <strong>init 灌码</strong> + Reset/DSI | <strong>时序 / LVDS 模式 / 上电</strong> |</p>
+<p>| UI 旋转典型 | 竖屏 <code>disp_rotate=3</code> | 横屏 <strong><code>disp_rotate=0</code></strong> |</p>
+<p>| 视频 WB | 常 <strong>90</strong> | 常 <strong>0</strong> |</p>
+<p>| <code>dual_display_rot</code> | 常与竖屏策略一致 | 常 <strong>0</strong> |</p>
+<p>| 特有风险 | DSI 读探针、RESET 分压、smooth | fb/UI 尺寸不一致、异显绿屏方向 |</p>
+<p>MIPI 流程见：<a href="../20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a></p>
+<p>---</p>
+<h2>2. 开工前准备</h2>
+<p>| 资料 | 用途 |</p>
+<p>|---|---|</p>
+<p>| 模组规格书 | <code>Wp×Hp</code>、LVDS single/dual、6/8bit、NS/JEIDA、porch、dclk |</p>
+<p>| 原理图 | LVDS 差分、背光 EN/PWM、电源时序 |</p>
+<p>| UI 约定 | 是否必须 1280×800 画布（JYY070 是）；还是 fb=物理分辨率即可 |</p>
+<p>| 触摸 | 报点坐标系要对齐 <strong>fb0</strong>（有缩放时用 <code>ctp_report_max</code>，见 <a href="../../GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>） |</p>
+<h3>选基线</h3>
+<p>| 基线 | 用途 |</p>
+<p>|---|---|</p>
+<p>| <strong><code>p1_nor_8733</code></strong> | 克隆板树 / OpenWrt / <strong>8733BU</strong>（推荐） |</p>
+<p>| <code>p1_nor_JYY070</code> | <strong>对照</strong>：LVDS DTS、<code>jyy070_lvds</code>、DE 缩放、<code>setting.ini</code> |</p>
+<p>| <code>p1_nor</code> | 异显 / sunxifb 框架对照（勿直接在其 DTS 上改业务） |</p>
+<p>---</p>
+<h2>3. 克隆板级（与 MIPI 相同套路）</h2>
+<p>克隆命令骨架与 <a href="../20260728-如何创建新MIPI板件/README.md) / [JL_M101 01](../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">MIPI 指南 §2</a> 相同，把 <code>BOARD</code> 换成你的 LVDS 板名即可。</p>
+<p>要点再强调：</p>
+<ol>
+<li><code>cp -a p1_nor_8733 → &lt;BOARD&gt;</code>  </li>
+<li><strong>拆</strong> <code>linux-5.4</code>（及 uboot/fex 若软链）为实目录  </li>
+<li><code>cp -a h133-p1_nor_8733 → h133-&lt;BOARD&gt;</code>，改 defconfig / vendorsetup / lunch  </li>
+<li><code>tools/build_&lt;BOARD&gt;.sh</code>  </li>
+<li>panel Kconfig / panels.c / 兄弟板 <code>not set</code> / <code>libtmedia</code> 挂钩  </li>
+</ol>
+<h3>LVDS 板工厂 ini / 视频宏（横屏典型）</h3>
+<p>| 项 | JYY070 定稿 | 新板默认建议 |</p>
+<p>|---|---|---|</p>
+<p>| <code>disp_rotate</code> | <strong>0</strong> | 横屏 LVDS → <strong>0</strong> |</p>
+<p>| <code>tp_rotate</code> | <strong>0</strong>（内核已做映射时勿再软旋 180） | 跟触摸方案，单独验证 |</p>
+<p>| <code>VIDEO_WB_MIRROR_ROTATE</code> | <strong>0</strong> | 横屏 → <strong>0</strong> |</p>
+<p>| <code>dual_display_rot</code> | <strong>0</strong> | 与 HDMI 异显方向一起验 |</p>
+<p>三路旋转<strong>独立</strong>（UI / 触摸 / 视频），勿混用一个宏。详见 JYY070 board-profile。</p>
+<p>---</p>
+<h2>4. 写独立 LVDS panel 驱动</h2>
+<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md)、[02-uboot-panel](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.md">01-kernel-panel</a></p>
+<p>| 侧 | 路径 |</p>
+<p>|---|---|</p>
+<p>| 内核 | <code>kernel/.../lcd/&lt;PANEL&gt;.c</code> + <code>.h</code> |</p>
+<p>| U-Boot | <code>brandy/.../lcd/&lt;PANEL&gt;.c</code>（logo 需要则同步） |</p>
+<p>相对 MIPI：</p>
+<ul>
+<li>通常<strong>没有</strong>大段 DSI init 表；重点是 <code>LCD_cfg_panel_info</code> 填时序、<code>open_flow</code> 上电/背光顺序  </li>
+<li>名字必须等于 DTS <code>lcd_driver_name</code>  </li>
+<li>本板 <code>config-5.4</code>：<code>CONFIG_LCD_SUPPORT_&lt;KCFG&gt;=y</code>；可关掉无关 MIPI panel（按需）</li>
+</ul>
+<p>---</p>
+<h2>5. DTS：MIPI → LVDS</h2>
+<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS切换LVDS</a></p>
+<h3>5.1 lcd0 骨架</h3>
+<pre><code>&amp;lcd0 {
+	lcd_used            = &lt;1&gt;;
+	lcd_driver_name     = &quot;&lt;PANEL&gt;&quot;;
+	lcd_if              = &lt;3&gt;;          /* LVDS（注释：0 hv / 3 lvds / 4 dsi） */
+	lcd_x               = &lt;Wp&gt;;
+	lcd_y               = &lt;Hp&gt;;
+	lcd_dclk_freq       = &lt;NN&gt;;
+
+	lcd_hspw = &lt;…&gt;; lcd_hbp = &lt;…&gt;; lcd_ht = &lt;…&gt;;
+	lcd_vspw = &lt;…&gt;; lcd_vbp = &lt;…&gt;; lcd_vt = &lt;…&gt;;
+
+	lcd_lvds_if         = &lt;0&gt;;          /* 0:single  1:dual */
+	lcd_lvds_colordepth = &lt;0&gt;;          /* 0:8bit  1:6bit —— 跟屏 */
+	lcd_lvds_mode       = &lt;0&gt;;          /* 0:NS  1:JEIDA —— 跟屏 */
+
+	/* 背光 / 电源 GPIO：按原理图；PWM 则配 lcd_pwm_* */
+	/* pinctrl：LVDS 脚组，不要再绑 dsi4lane */
+};</code></pre>
+<p>内核与 <strong>uboot-board.dts</strong> 的 lcd0 / disp <strong>同步</strong>（logo 策略可单独关 <code>disp_init_enable</code>）。</p>
+<h3>5.2 disp / fb0：两条路线</h3>
+<p><strong>路线 A — fb = 物理分辨率（先点亮）</strong></p>
+<pre><code>fb0_width  = &lt;Wp&gt;;
+fb0_height = &lt;Hp&gt;;</code></pre>
+<p>验收：<code>/dev/fb0</code> = <code>Wp×Hp</code>，有 fbcon/企鹅即可。适合新屏 bring-up 第一步。</p>
+<p><strong>路线 B — UI 画布更大，DE 硬件缩放（JYY070 定稿）</strong></p>
+<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放</a></p>
+<pre><code>/* lcd0 仍写物理 Wp×Hp */
+fb0_width  = &lt;Wf&gt;;   /* 如 1280 */
+fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
+<p>数据流：</p>
+<pre><code>LVGL / desk（Wf×Hf）→ fb0（Wf×Hf）→ DE0 VSU → LVDS 物理 Wp×Hp</code></pre>
+<ul>
+<li><strong>不要</strong>依赖注释里的 <code>fb0_scaler_mode_enable</code>（内核无对应实现）  </li>
+<li>crop ≠ frame 时 DE 自动缩放  </li>
+<li>触摸 <code>ctp_report_max</code> 应对齐 <strong>Wf×Hf</strong>（JYY070：1280×800；机制见 <a href="../../GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>）</li>
+</ul>
+<h3>5.3 HDMI 异显</h3>
+<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.md">05-dual_display_rot</a></p>
+<p>横屏 LVDS：<code>dual_display_rot = &lt;0&gt;</code>。内核写死 G2D 旋转会导致 HDMI 全绿/方向错——必须可配，且本板显式写 0。三路改法：<a href="../../显示旋转/README.md">显示旋转</a>。</p>
+<p>---</p>
+<h2>6. 应用层：统一 sunxifb 路径</h2>
+<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/00-背景与路径统一.md)、[04-app层](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.md">00-背景与路径统一</a></p>
+<p>| 要求 | 说明 |</p>
+<p>|---|---|</p>
+<p>| 框架 | <strong><code>rotatefbp + split_fb</code></strong>，与 <code>p1_nor</code> 同构 |</p>
+<p>| <code>disp_rotate=0</code> | LCD 页走 <strong>直拷贝</strong>（<code>SUNXIFB_ROT_0</code>），不是 fix_lcd |</p>
+<p>| <code>disp_rotate=3</code> | 仅当该 LVDS 板仍要竖屏软转时才用（少见） |</p>
+<p>| 废弃 | <code>fix_lcd_page</code> / 旧 bringup <code>04-app-sunxifb</code> 旁路补丁 <strong>勿混打</strong> |</p>
+<p>改 sunxifb 后必须重编对应 app 包（如 <code>lv_projector</code> / desk），只烧内核不够。</p>
+<p>---</p>
+<h2>7. 编译与验收</h2>
+<pre><code>./tools/build_&lt;BOARD&gt;.sh kernel
+./tools/build_&lt;BOARD&gt;.sh full
+# 产物：out/h133_linux_&lt;BOARD&gt;_uart0_nor.img</code></pre>
+<p>| 阶段 | 期望 |</p>
+<p>|---|---|</p>
+<p>| panel + DTS 路线 A | fb0=<code>Wp×Hp</code>，屏亮、分辨率对 |</p>
+<p>| DE 缩放路线 B | <code>fbset</code> 为 <code>Wf×Hf</code>；<code>sys</code> 里 crop=画布、frame=物理 |</p>
+<p>| desk | log：<code>fb WfxHf -&gt; LVGL …</code>，<code>sunxifb_rot=0</code>（横屏） |</p>
+<p>| HDMI 异显 | 方向正确，无全绿 |</p>
+<p>| WiFi | 仍 8733BU（若基线如此） |</p>
+<p>| 隔绝 | 未改 <code>p1_nor</code> / <code>8733</code> / <code>JL_M101</code> 业务 DTS |</p>
+<p>隔绝自检：</p>
+<pre><code>rg -n &#x27;&lt;PANEL&gt;&#x27; device/config/chips/h133/configs/p1_nor{,_8733,_JL_M101}/linux-5.4/board.dts
+# 期望：无匹配</code></pre>
+<p>更多串口验收项见：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/06-编译与实机验证.md">06-编译与实机验证</a></p>
+<p>---</p>
+<h2>8. 常见坑</h2>
+<p>| 现象 | 优先查 |</p>
+<p>|---|---|</p>
+<p>| 屏不亮 / 花屏 | <code>lcd_lvds_mode</code> NS/JEIDA、6/8bit、lane single/dual、时序 |</p>
+<p>| 企鹅闪 / desk 无图 | 是否误走 fix_lcd；<code>disp_rotate</code> 与 sunxifb 分支是否匹配 |</p>
+<p>| HDMI 绿/歪 | <code>dual_display_rot</code> |</p>
+<p>| 改了 sunxifb 无效 | 未重编 lv_projector/desk |</p>
+<p>| 触摸整体反了 | <code>tp_rotate</code> 与内核 <code>ctp_revert_*</code> <strong>叠乘</strong> |</p>
+<p>| 视频小窗方向错 | <code>VIDEO_WB_MIRROR_ROTATE</code>（不读 ini） |</p>
+<p>| UI 糊 / 比例怪 | fb 与 <code>lcd_x/y</code> 是否故意缩放；勿只改一个 |</p>
+<p>---</p>
+<h2>9. 推荐实施顺序</h2>
+<pre><code>1. 克隆板级 + 公共挂钩 + build 脚本
+2. 独立 &lt;PANEL&gt;.c（内核；U-Boot 可后补）
+3. DTS 切 LVDS，fb0=物理分辨率 → 确认硬件出图
+4. setting.ini disp_rotate=0；确认 sunxifb 统一路径
+5. （可选）fb0 提到 UI 画布 + DE 缩放
+6. dual_display_rot / 视频 WB / 触摸坐标系
+7. board-profile + 本板开发记录目录 + 补丁归档</code></pre>
+<p>---</p>
+<h2>10. 与现有记录的关系</h2>
+<p>| 文档 | 角色 |</p>
+<p>|---|---|</p>
+<p>| <strong>本文</strong> | 新开任意 LVDS 板的检查清单 |</p>
+<p>| <a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/">JYY070 LVDS 显示开发</a> | 1024×600 + DE 缩放 + 异显 <strong>定稿步骤与补丁</strong> |</p>
+<p>| <a href="../板件开发记录/JYY070/README.md">JYY070 板级索引</a> | WiFi / 触摸 / 音频等后续项 |</p>
+<p>| <a href="../20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a> | 对照：克隆套路相同，显示接口不同 |</p>
+<p>---</p>
+<p>*2026-07-28：据 JYY070 LVDS 定稿 + 板件隔绝实践整理。*</p>
+</article>
+<footer>一块板一个项目 · 2026-09-02 07:54 UTC</footer>
+</main>
+<script>
+(function () {
+  var cache = {};
+  function parse(html) {
+    var doc = new DOMParser().parseFromString(html, "text/html");
+    return {
+      nav: doc.querySelector("nav.side"),
+      article: doc.querySelector("article"),
+      footer: doc.querySelector("footer"),
+      title: doc.title
+    };
+  }
+  function apply(p, url, push) {
+    if (!p || !p.nav || !p.article) { location.href = url; return; }
+    document.querySelector("nav.side").replaceWith(p.nav.cloneNode(true));
+    document.querySelector("article").replaceWith(p.article.cloneNode(true));
+    if (p.footer) {
+      var f = document.querySelector("footer");
+      if (f) f.replaceWith(p.footer.cloneNode(true));
+    }
+    document.title = p.title;
+    if (push) history.pushState({ u: url }, "", url);
+    bind();
+    prefetch();
+  }
+  function bind() {
+    document.querySelectorAll("nav.side a.item.cat").forEach(function (a) {
+      a.addEventListener("click", onCat);
+    });
+    document.querySelectorAll("nav.side a.item.board").forEach(function (a) {
+      a.addEventListener("click", onBoard);
+    });
+    document.querySelectorAll("nav.side a.item.home, nav.side a.item.child, nav.side a.brand").forEach(function (a) {
+      a.addEventListener("click", onNav);
+    });
+  }
+  function onCat(e) {
+    e.preventDefault();
+    var g = this.closest(".group");
+    if (g) g.classList.toggle("open");
+  }
+  function onBoard(e) {
+    var sub = this.nextElementSibling;
+    if (sub && sub.classList.contains("sub")) {
+      e.preventDefault();
+      sub.classList.toggle("folded");
+      if (!sub.classList.contains("folded") && !this.classList.contains("current")) {
+        go(this.href, true);
+      }
+      return;
+    }
+    onNav.call(this, e);
+  }
+  function mark(a) {
+    document.querySelectorAll("nav.side a.item.current").forEach(function (el) {
+      el.classList.remove("current");
+    });
+    a.classList.add("current");
+  }
+  function onNav(e) {
+    var href = this.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    mark(this);
+    go(this.href, true);
+  }
+  var VER = "v29";
+  function fetchPage(url) {
+    try {
+      var u = new URL(url, location.href);
+      u.searchParams.set("v", VER);
+      return fetch(u.href, { cache: "reload" });
+    } catch (e) {
+      return fetch(url);
+    }
+  }
+  function go(url, push) {
+    if (cache[url]) { apply(cache[url], url, push); return; }
+    fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+      cache[url] = parse(html);
+      apply(cache[url], url, push);
+    }).catch(function () { location.href = url; });
+  }
+  function prefetch() {
+    document.querySelectorAll("nav.side a[href]").forEach(function (a) {
+      var url = a.href;
+      if (!url || cache[url]) return;
+      fetchPage(url).then(function (r) { return r.text(); }).then(function (html) {
+        cache[url] = parse(html);
+      }).catch(function () {});
+    });
+  }
+  window.addEventListener("popstate", function () { go(location.href, false); });
+  bind();
+  prefetch();
+})();
+</script>
+</body>
+</html>
