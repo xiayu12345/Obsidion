@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>ZS101 · 资料 · 全志</title>
-<style>/* nav-v25 */ 
+<style>/* nav-v26 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -16,7 +16,14 @@
 body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
   display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
 nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
-  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
 nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
 nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
 nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
@@ -80,7 +87,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v25</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v26</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -155,7 +162,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>ZS101 · 资料</h1><p><a href="项目/ZS101.html">回板件概览</a></p><h3>触摸</h3><ul><li><a href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html">触摸规格</a></li><li><a href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html">GT928 配置</a></li></ul><h3>显示屏</h3><ul><li><a href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html">NI4042J4H8II-B</a></li><li><a href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html">新代码02群创10.1+ILI9881C-0D_2P_20190920</a></li></ul><h3>原理图</h3><ul><li><a href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html">位号图</a></li><li><a href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html">主板原理图</a></li></ul><h3>测试报告</h3><ul><li><a href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html">测试报告</a></li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:03 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:09 UTC</footer>
 </main>
 <script>
 (function () {
@@ -223,7 +230,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v25";
+  var VER = "v26";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

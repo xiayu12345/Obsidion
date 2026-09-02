@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 · 资料 · 全志</title>
-<style>/* nav-v25 */ 
+<style>/* nav-v26 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -16,7 +16,14 @@
 body { margin:0; font: 16px/1.6 system-ui, "Noto Sans SC", sans-serif; background:var(--bg); color:var(--fg);
   display:grid; grid-template-columns: var(--navw) 1fr; min-height:100vh; }
 nav.side { position:sticky; top:0; height:100vh; overflow:auto; background:var(--card);
-  border-right:1px solid var(--line); padding:1rem .75rem 2rem; }
+  border-right:1px solid var(--line); padding:1rem .75rem 2rem;
+  scrollbar-width: thin; scrollbar-color: rgba(140,140,140,.55) transparent; }
+nav.side::-webkit-scrollbar { width:6px; }
+nav.side::-webkit-scrollbar-track { background:transparent; }
+nav.side::-webkit-scrollbar-thumb { background:rgba(140,140,140,.45); border-radius:99px; }
+nav.side::-webkit-scrollbar-thumb:hover { background:rgba(140,140,140,.7); }
+nav.side::-webkit-scrollbar-button { display:none; width:0; height:0; }
+nav.side::-webkit-scrollbar-corner { background:transparent; }
 nav.side .brand { display:block; font-weight:700; color:var(--fg); text-decoration:none; padding:.4rem .55rem .75rem; font-size:1.05rem; }
 nav.side .brand .ver { font-size:11px; font-weight:600; margin-left:6px; padding:1px 6px; border-radius:999px; background:#c45c26; color:#fff; vertical-align:middle; }
 nav.side a.item { display:flex; align-items:center; height:30px; width:100%; padding:0 10px;
@@ -80,7 +87,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v25</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v26</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -174,7 +181,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>JYY070 · 资料</h1><p><a href="项目/JYY070.html">回板件概览</a></p><h3>显示屏</h3><ul><li><a href="项目/JYY070/资料/14寸lvds屏-lp140wh4-tln1.html">14寸 LVDS 屏</a></li><li><a href="项目/JYY070/资料/da_1728355135267..html">da_1728355135267.</a></li></ul><h3>原理图</h3><ul><li><a href="项目/JYY070/资料/TP-H10-H133-V1_20260408.html">主板原理图</a></li><li><a href="项目/JYY070/资料/修改电路.html">改电路</a></li><li><a href="项目/JYY070/资料/本板资料说明.html">说明</a></li></ul><h3>功放</h3><ul><li><a href="项目/JYY070/资料/一体板功放mcu 与 android 交互协议v2.13_20250329.html">功放协议</a></li></ul><h3>存储</h3><ul><li><a href="项目/JYY070/资料/BY25FQ256ES_v1.6_QA-DT-033.html">Flash 规格</a></li></ul><h3>测试报告</h3><ul><li><a href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html">测试报告</a></li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-02 07:03 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 07:09 UTC</footer>
 </main>
 <script>
 (function () {
@@ -242,7 +249,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v25";
+  var VER = "v26";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
