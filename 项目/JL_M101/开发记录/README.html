@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JL-M101 JD9365DA MIPI — 文档索引 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -166,18 +166,18 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 板型 | <code>p1_nor_JL_M101</code>（从 <code>p1_nor_8733</code> 克隆） |</p>
 <p>| 屏 | JL-M101B196-P21WX-M402632，10.1" <strong>800×1280 MIPI</strong>，IC <strong>JD9365DA-H3</strong> |</p>
 <p>| 状态 | <strong>2026-07-22 实机已完整出图（定稿）</strong> |</p>
-<p>| 板级档案 | <a href="../../../skills/h133-display/board-profile-p1_nor_JL_M101.md">board-profile-p1_nor_JL_M101.md</a> |</p>
+<p>| 板级档案 | <a href="skills/h133-display/board-profile-p1_nor_JL_M101.md">board-profile-p1_nor_JL_M101.md</a> |</p>
 <p>---</p>
 <h2>阅读顺序（推荐）</h2>
 <p>| 优先级 | 文档 | 内容 |</p>
 <p>|---|---|---|</p>
-<p>| <strong>主</strong> | <a href="./20260722-JL_M101-板件新建与MIPI显示定稿/README.md">20260722-板件新建与MIPI显示定稿/</a> | <strong>板件新建 + 显示开发定稿 + final 补丁</strong> |</p>
-<p>| <strong>主</strong> | <a href="./20260727-JL_M101-GSL3670触摸适配/README.md">20260727-GSL3670触摸适配/</a> | <strong>板载 GSL3670 TP 定稿</strong>（<code>0xb0</code> OK；<strong>2026-08-03</strong> <code>report_max=1280×800</code> 对齐 LVGL） |</p>
-<p>| 外 | <a href="../../../杜比播放/开发记录/README.md">杜比播放/开发记录</a> | <strong>HDMI 杜比透传</strong>（首验本板，<strong>2026-08-22</strong>） |</p>
-<p>| 辅 | <a href="./20260720-JL_M101-JD9365DA-MIPI适配/开发记录.md">20260720-MIPI适配/开发记录.md</a> | phase1 调试流水 |</p>
-<p>| 辅 | <a href="./20260720-JL_M101-JD9365DA-MIPI适配/patches/">20260720-…/patches/</a> | phase1 早期补丁（干净树优先用 <strong>final</strong>） |</p>
-<p>同显 / 异显（<strong>架构级，非本板专属</strong>）见：<a href="../../双屏异显/README.md">双屏异显/</a>（首验板为本板）。  </p>
-<p>GSL <code>ctp_report_max</code>（<strong>架构级</strong>）见：<a href="../../GSL触摸坐标映射/README.md">GSL触摸坐标映射/</a>（本板恒等 1280×800，勿映回 fb）。</p>
+<p>| <strong>主</strong> | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/README.md">20260722-板件新建与MIPI显示定稿/</a> | <strong>板件新建 + 显示开发定稿 + final 补丁</strong> |</p>
+<p>| <strong>主</strong> | <a href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/README.md">20260727-GSL3670触摸适配/</a> | <strong>板载 GSL3670 TP 定稿</strong>（<code>0xb0</code> OK；<strong>2026-08-03</strong> <code>report_max=1280×800</code> 对齐 LVGL） |</p>
+<p>| 外 | <a href="杜比播放/开发记录/README.md">杜比播放/开发记录</a> | <strong>HDMI 杜比透传</strong>（首验本板，<strong>2026-08-22</strong>） |</p>
+<p>| 辅 | <a href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.md">20260720-MIPI适配/开发记录.md</a> | phase1 调试流水 |</p>
+<p>| 辅 | <a href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/patches">20260720-…/patches/</a> | phase1 早期补丁（干净树优先用 <strong>final</strong>） |</p>
+<p>同显 / 异显（<strong>架构级，非本板专属</strong>）见：<a href="项目/双屏异显/README.md">双屏异显/</a>（首验板为本板）。  </p>
+<p>GSL <code>ctp_report_max</code>（<strong>架构级</strong>）见：<a href="项目/GSL触摸坐标映射/README.md">GSL触摸坐标映射/</a>（本板恒等 1280×800，勿映回 fb）。</p>
 <p>定稿目录内顺序：<code>00 总览</code> → <code>01 板件新建</code> → <code>02 panel/init</code> → <code>03 DTS/PWM</code> → <code>04 踩坑</code> → <code>05 编译验收</code>。</p>
 <p><strong>干净树一键落地（推荐）：</strong></p>
 <pre><code>bash H133-AI-Skills/开发记录/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/patches/apply-jl-m101-display-final.sh
@@ -199,7 +199,7 @@ rm -rf out/h133/kernel/build/drivers/base/firmware_loader/builtin/gsl_firmware
 ./tools/build_p1_nor_JL_M101.sh full
 # 产物：out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -267,7 +267,7 @@ rm -rf out/h133/kernel/build/drivers/base/firmware_loader/builtin/gsl_firmware
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

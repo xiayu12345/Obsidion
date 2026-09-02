@@ -1,0 +1,816 @@
+diff --git a/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md
+new file mode 100644
+index 000000000..398311131
+--- /dev/null
++++ b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md
+@@ -0,0 +1,62 @@
++# H133 p1_nor_LQ140M1JW61 板级档案（Sharp LQ140 14" 1080p）
++
++> **定稿（2026-07-29）**：LCD + HDMI 双显正常，软件直出（rot=0）。  
++> 详细笔记：[20260729-LQ140M1JW61-板件新建与双显定稿](../../开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿/README.md)
++
++## 工程标识
++
++| 项 | 值 |
++|----|-----|
++| 板级 | **p1_nor_LQ140M1JW61** |
++| 屏 | Sharp **LQ140M1JW61** 1920×1080 eDP，经 QE01MIPI001-V01，`lq140_mipi2edp` |
++| UI / fb0 | **1920×1080**，`disp_rotate=0` |
++| 副屏 | HDMI 1080p，`dual_display_rot=0` |
++| WiFi | 继承克隆板（实机日志为 RTL8733BU） |
++| lunch | `h133-p1_nor_LQ140M1JW61-tina` |
++| 镜像 | `out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img` |
++| 板级配置 | `device/config/chips/h133/configs/p1_nor_LQ140M1JW61/` |
++| OpenWrt target | `openwrt/target/h133/h133-p1_nor_LQ140M1JW61/` |
++| 编译 | `./tools/build_p1_nor_LQ140M1JW61.sh [full\|kernel\|rootfs]` |
++
++## 板件隔绝
++
++| 允许 | 禁止 |
++|------|------|
++| 只改本板 `configs/` 与 `h133-p1_nor_LQ140M1JW61/` | 改共享 `p1_nor` DTS 迁就本屏 |
++| 独立 `lq140_mipi2edp.c` | 改 `default_panel.c`；无对照地改 `dev_disp.c` |
++| 兄弟板 LQ140 `not set` | 把本屏时序塞进其它板 |
++
++## 显示定稿
++
++| 项 | 值 |
++|----|-----|
++| `lcd_driver_name` | `lq140_mipi2edp` |
++| 时序 | `dclk=139`，`hbp/ht/hspw=112/2080/32`，`vbp/vt/vspw=27/1110/5` |
++| DSI | `lcd_if=4`，4-lane，video；init **仅 dsi_clk_enable** |
++| RESET / PWM | PB11 / PB12=PWM0@50kHz |
++| U-Boot | `disp_init_enable=0` |
++| 双显 | `chn_cfg_mode=1`，`dual_display_rot=0`，`fb0=1920×1080` |
++
++## 旋转与坐标
++
++| 链路 | 定稿 |
++|------|------|
++| UI `disp_rotate` / `sunxifb_rot` | **0** |
++| `tp_rotate` | **0** |
++| `VIDEO_WB_MIRROR_ROTATE` | **0** |
++| `dual_display_rot` | **0** |
++
++## 与其它板
++
++| 板 | 屏 | UI 软旋 | 视频 WB |
++|----|----|---------|---------|
++| JL_M101 / 8733 | 竖屏 MIPI | 3 | 90 |
++| JYY070 | LVDS | 0 | 0 |
++| **本板** | **横屏 1080p MIPI→eDP** | **0** | **0** |
++
++## 编译
++
++```bash
++./tools/build_p1_nor_LQ140M1JW61.sh kernel
++./tools/build_p1_nor_LQ140M1JW61.sh full
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md"
+new file mode 100644
+index 000000000..29fd5e169
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md"
+@@ -0,0 +1,61 @@
++# 00 — 总览与定稿
++
++| 项 | 内容 |
++|---|---|
++| 板型 | `p1_nor_LQ140M1JW61` |
++| 定稿日 | 2026-07-29 |
++| 状态 | **LCD + HDMI 双显正常，软件均不旋转（直出）** |
++
++---
++
++## 1. 一句话结论
++
++独立板级接入 Sharp LQ140M1JW61（MIPI→eDP），`fb0=1920×1080`，`dual_display_rot=0`，`setting.ini` `disp_rotate=0`。  
++调试中 HDMI 全绿/偏绿横纹的主因是 **板级 DTS/env 配置未自洽或未真正进镜像**；对 `dev_disp.c` 的试验改动已回退，**回退后仍正常**，故定稿**不保留** dual-display 驱动补丁。
++
++---
++
++## 2. 与其它板对照
++
++| 项 | `p1_nor` / 8733 / JL_M101 | **本板 LQ140** | `p1_nor_JYY070` |
++|---|---|---|---|
++| 物理屏 | 竖屏 MIPI 800×1280 | **横屏 1920×1080 MIPI→eDP** | LVDS 1024×600 |
++| UI `disp_rotate` | 3 | **0** | 0 |
++| `VIDEO_WB` | 90 | **0** | 0 |
++| `dual_display_rot` | 视板而定 | **0** | 视板而定 |
++| panel | default / jd9365da | **`lq140_mipi2edp`** | jyy070_lvds |
++
++---
++
++## 3. 定稿关键量
++
++| 项 | 取值 |
++|---|---|
++| `lcd_driver_name` | `lq140_mipi2edp` |
++| `lcd_x/y` | 1920 / 1080 |
++| `lcd_dclk_freq` | **139**（EDID typ ~138.53MHz） |
++| porch | HSA32 HBP80 HFP48 / VSA5 VBP22 VFP3 → `hbp=112 ht=2080 hspw=32`，`vbp=27 vt=1110 vspw=5` |
++| `fb0` | 1920×1080 |
++| `chn_cfg_mode` | 1 |
++| `dual_display_rot` | **0** |
++| U-Boot `disp_init_enable` | **0**（避免 smooth 跳过内核路径；可后续再开 logo） |
++| `setting.ini` | `disp_rotate=0`，`tp_rotate=0` |
++| `cma`（env） | 源树当前 `8M`；**以启动 cmdline 为准核对** |
++
++---
++
++## 4. 板件隔绝
++
++| 允许 | 禁止 |
++|---|---|
++| 只改 `configs/p1_nor_LQ140M1JW61/**`、`h133-p1_nor_LQ140M1JW61/**` | 改共享 `p1_nor` DTS 迁就本屏 |
++| 独立 panel `lq140_mipi2edp.c` | 改 `default_panel.c` / 无故动 `dev_disp.c` |
++| 兄弟板 config 写 LQ140 `not set` | 把本屏时序塞进其它板 |
++
++---
++
++## 5. 已知待办（不挡双显定稿）
++
++- `setting.ini` 中 `video_screen_*` / `sun_video_screen_*` 仍可能残留 **800×1280**（克隆遗留）；横屏 1080p 播 MV 前应改为 **1920×1080**。
++- panel init 为 **占位**（仅 `dsi_clk_enable`）；若桥片后续要求厂商 DCS 表，再填，**勿擅自加 DSI 读命令**。
++- 触摸：本专题未定稿（日志中 GT911 探失败属克隆残留，需按实机 TP 另开专题）。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md"
+new file mode 100644
+index 000000000..f00243af4
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md"
+@@ -0,0 +1,63 @@
++# 01 — 板件新建
++
++## 1. 目标
++
++新建独立板型 **`p1_nor_LQ140M1JW61`**：设备树、OpenWrt target、编译脚本与公共挂钩齐全，可 `lunch` / 出镜像。
++
++推荐基线：横屏 + 双显经验可参考 **`p1_nor_JYY070` / `p1_nor_4k` 的旋转=0 思路**；MIPI 脚与 panel 框架可参考现有 MIPI 板。实际树为独立目录（整树已落地）。
++
++通用流程见：[板件新建指南/如何创建新MIPI板件](../../板件新建指南/20260728-如何创建新MIPI板件/README.md)。
++
++---
++
++## 2. 落地清单
++
++| 路径 | 说明 |
++|---|---|
++| `device/config/chips/h133/configs/p1_nor_LQ140M1JW61/` | 板级：`linux-5.4/board.dts`、`uboot-board.dts`、`env.cfg`、`config-5.4`… |
++| `openwrt/target/h133/h133-p1_nor_LQ140M1JW61/` | OpenWrt target + `setting.ini` |
++| `tools/build_p1_nor_LQ140M1JW61.sh` | `full\|kernel\|rootfs` |
++| `openwrt/.openwrt_targets` | 增加 `h133-p1_nor_LQ140M1JW61-tina` |
++
++本板 `config-5.4`：
++
++```text
++CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP=y
++```
++
++---
++
++## 3. 公共挂钩（最小）
++
++| 文件 | 做什么 |
++|---|---|
++| kernel/u-boot `lcd/Kconfig` | `LCD_SUPPORT_LQ140_MIPI2EDP` |
++| kernel/u-boot `disp/Makefile` | `lq140_mipi2edp.o` |
++| kernel/u-boot `panels.c/.h` | `#ifdef` 注册 |
++| `sun8iw20p1_auto_nor_defconfig` | `CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP=y`（U-Boot 侧） |
++| **兄弟板** `config-5.4` | `# CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set` |
++| 兄弟板 OpenWrt `defconfig` | `# CONFIG_TARGET_h133_p1_nor_LQ140M1JW61 is not set` |
++| `libtmedia/Makefile` | 本 target → `VIDEO_WB_MIRROR_ROTATE=0` |
++
++运行时选屏只靠本板 DTS：`lcd_driver_name = "lq140_mipi2edp"`。
++
++---
++
++## 4. OpenWrt / 工厂 ini（显示相关）
++
++| 项 | 本板定稿 |
++|---|---|
++| `disp_rotate` | **0** |
++| `tp_rotate` | **0** |
++| `VIDEO_WB_MIRROR_ROTATE` | **0** |
++| 视频全屏坐标 | 应对齐 **1920×1080**（见 00 待办：若仍为 800×1280 须改） |
++
++---
++
++## 5. 编译入口
++
++```bash
++./tools/build_p1_nor_LQ140M1JW61.sh kernel
++./tools/build_p1_nor_LQ140M1JW61.sh full
++# 产物：out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/02-panel\344\270\216init.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/02-panel\344\270\216init.md"
+new file mode 100644
+index 000000000..c4008af7c
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/02-panel\344\270\216init.md"
+@@ -0,0 +1,49 @@
++# 02 — panel 与 init
++
++## 1. 文件
++
++| 侧 | 路径 |
++|---|---|
++| 内核 | `kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c/.h` |
++| U-Boot | `brandy/.../disp/lcd/lq140_mipi2edp.c/.h` |
++| 注册名 | `lq140_mipi2edp` ↔ DTS `lcd_driver_name` |
++
++Kconfig 帮助文案：`Sharp LQ140M1JW61 1920x1080 eDP through QE01MIPI001-V01 (SoC MIPI)`。
++
++---
++
++## 2. open_flow（定稿）
++
++```text
++power_on → panel_init → tcon_enable → bl_open
++```
++
++要点：
++
++- **RST=PB11**，**LCD-PWM=PB12/PWM0**；本板 **不控 BL-EN（PG15）**。
++- `panel_init`：**不发 DCS**；打日志后 `sunxi_lcd_dsi_clk_enable` + 短延时。
++- 日志可见：`lq140_mipi2edp: panel_init dsi_clk_enable (no DCS)`。
++
++```c
++/* 占位 init；有厂商表后再填，勿加 DSI 读命令。 */
++pr_info("lq140_mipi2edp: panel_init dsi_clk_enable (no DCS)\n");
++sunxi_lcd_dsi_clk_enable(sel);
++```
++
++桥片若后续提供完整 init 表：只增写命令，**禁止**加 DSI 读回（易卡死/超时）。
++
++---
++
++## 3. 与 JD9365 类 panel 的差异
++
++| 项 | JD9365（JL_M101） | **LQ140 桥片** |
++|---|---|---|
++| 灌码 | 必须 DCS init | **通常无需 DCS** |
++| 时钟 | tcon + DSI | **必须显式 `dsi_clk_enable` 再推 Video** |
++| 分辨率 | 800×1280 | **1920×1080** |
++
++---
++
++## 4. 编入方式
++
++与工程其它 panel 一致：`CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP` **default y** 可同时编进内核；运行时靠本板 DTS 选名。兄弟板 `config-5.4` 写 `not set` 即可缩小无关板镜像体积（按板策略）。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/03-DTS\344\270\216\345\217\214\346\230\276.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/03-DTS\344\270\216\345\217\214\346\230\276.md"
+new file mode 100644
+index 000000000..ce575b0a6
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/03-DTS\344\270\216\345\217\214\346\230\276.md"
+@@ -0,0 +1,62 @@
++# 03 — DTS 与双显
++
++## 1. lcd0（内核 `board.dts`）
++
++| 项 | 值 |
++|---|---|
++| `lcd_used` | 1 |
++| `lcd_driver_name` | `lq140_mipi2edp` |
++| `lcd_if` | 4（DSI） |
++| `lcd_x/y` | 1920 / 1080 |
++| `lcd_dclk_freq` | **139** |
++| `lcd_hbp/ht/hspw` | 112 / 2080 / 32 |
++| `lcd_vbp/vt/vspw` | 27 / 1110 / 5 |
++| `lcd_dsi_lane` | 4 |
++| `lcd_dsi_if` | 0（video） |
++| PWM | `lcd_pwm_ch=0`，50kHz |
++
++U-Boot `uboot-board.dts` 侧 lcd0 与上述对齐；**`disp_init_enable=0`**（调屏期关 U-Boot 开屏，避免 smooth）。
++
++---
++
++## 2. disp / 双显
++
++| 项 | 值 | 说明 |
++|---|---|---|
++| `screen0_output_type` | 1（LCD） | 主屏 |
++| `screen1` / HDMI | type/mode 按板（HDMI 1080p） | 副屏 |
++| `fb0_width/height` | **1920 / 1080** | 与面板同尺寸 |
++| `chn_cfg_mode` | **1** | 双显通道配置 |
++| `dual_display_rot` | **0** | HDMI 抓帧不旋转 |
++
++注释约定：横屏 1080p，HDMI 与 UI `disp_rotate=0` 对齐。
++
++---
++
++## 3. 旋转链路（全部为 0）
++
++| 链路 | 定稿 |
++|---|---|
++| UI `disp_rotate` / desk `sunxifb_rot` | **0** |
++| `tp_rotate` | **0** |
++| `dual_display_rot` | **0** |
++| `VIDEO_WB_MIRROR_ROTATE` | **0** |
++
++验收日志应类似：
++
++```text
++[DISP] dual display ... (dual_display_rot=0)
++[desk] fb 1920x1080 -> LVGL 1920x1080, sunxifb_rot=0 tp_rotate=0
++```
++
++→ **LCD 软件直出，不是旋转后再显示。**
++
++---
++
++## 4. env / CMA
++
++| 文件 | 项 |
++|---|---|
++| `env.cfg` / `bsp/env.cfg` | `cma=…` 写入 cmdline |
++
++调试中曾试 `16M`；源树当前可见 `8M`。**必须以启动日志 `cma: Reserved …` / cmdline 为准**，避免源文件与镜像不一致。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md"
+new file mode 100644
+index 000000000..2c982ba16
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md"
+@@ -0,0 +1,56 @@
++# 04 — 实机调试与踩坑
++
++## 1. 现象时间线
++
++| 阶段 | 现象 | 处理/观察 |
++|---|---|---|
++| A | HDMI 全绿、无有效图 | 查双显是否 enable、dclk/CMA/镜像是否生效 |
++| B | 有图但偏绿横纹；LCD/HDMI 不一致 | 查 `dual_display_rot`、配置是否进包 |
++| C | 改 `chn_cfg` 等「看起来没变化」 | **源改了、日志仍是旧值** → 打包/刷写/分区不一致 |
++| D | `dual_display_rot=3` | LCD 正常，HDMI 旋转 |
++| E | `dual_display_rot=0` + 配置自洽 | **双显均正常、不旋转** |
++| F | 回退 `dev_disp.c` 试验改动后重编 | **仍正常** → 排除驱动试验为根因 |
++
++---
++
++## 2. 根因结论
++
++| 判断 | 依据 |
++|---|---|
++| **主因：板级配置未配齐 / 未一致生效** | 日志与源参数对不上；其它板同驱动镜像正常；换屏不该单独「改坏」公共 dual-display 逻辑 |
++| **非主因：`dev_disp.c` memcpy/G2D 试验** | 已 `git checkout` 回退，双显仍好 |
++| LCD 非软旋后再出 | `sunxifb_rot=0`、`dual_display_rot=0` |
++
++---
++
++## 3. 错误方向（已走弯路）
++
++1. 过早改 `dev_disp.c`（YUV NV21/NV12、`rot=0` 强制 memcpy 等）→ 现象反复，且一度拖累 LCD。
++2. 以为「只是换屏，DTS 无关」→ 实则本板时序/双显参数必须独立自洽。
++3. 改完不看 cmdline/`[DISP]` 日志是否更新 → 假阴性「改了没效果」。
++
++---
++
++## 4. 正确排查顺序（固化）
++
++1. 串口确认：`cma`、`chn_cfg`、`dual_display_rot`、`lcd_dclk` 实值。  
++2. 确认烧的是本板镜像（`p1_nor_LQ140M1JW61`），非其它板套刷。  
++3. 再动 panel / DTS；**最后**才考虑公共 `dev_disp.c`，且必须做回退对照。
++
++---
++
++## 5. `dual_display_rot` 对照
++
++| 值 | 结果（本板调试） |
++|---|---|
++| 3 | LCD OK；HDMI 旋转 |
++| 0 | 目标：双路不旋转；配置自洽时稳定 |
++
++`0`/`3` 都走 apply_rot，但几何与 G2D 路径不同；**不能只说「结构一样」忽略参数。**
++
++---
++
++## 6. 定稿不包含
++
++- **任何** `kernel/.../dev_disp.c` 长期改动（已回退）。
++- 其它板 `p1_nor_4k` / `JL_M101` 触摸或 1080p 对齐等无关 diff（不进本专题补丁）。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+new file mode 100644
+index 000000000..b1485722f
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+@@ -0,0 +1,53 @@
++# 05 — 编译与验收
++
++## 1. 编译
++
++```bash
++# SDK 根
++./tools/build_p1_nor_LQ140M1JW61.sh kernel   # panel / DTS / uboot
++./tools/build_p1_nor_LQ140M1JW61.sh full     # + rootfs + pack
++
++# 产物
++ls -la out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img
++```
++
++干净树落地补丁后再编：
++
++```bash
++bash H133-AI-Skills/开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿/patches/apply-lq140-display-final.sh
++./tools/build_p1_nor_LQ140M1JW61.sh full
++```
++
++---
++
++## 2. 验收清单
++
++- [ ] U-Boot 出现 `lq140_mipi2edp: panel_init dsi_clk_enable (no DCS)`（若开了 uboot 显示路径）
++- [ ] 内核 `[DISP] dual display enabled: 1920x1080 … (dual_display_rot=0)`
++- [ ] `[desk] fb 1920x1080 -> LVGL 1920x1080, sunxifb_rot=0 tp_rotate=0`
++- [ ] LCD：完整 UI，无全绿/横纹/异常旋转
++- [ ] HDMI：同步有图，无旋转、无偏绿横纹
++- [ ] cmdline 中 `cma=` 与预期一致（对照 `env.cfg`）
++- [ ] `git diff` 无意外残留的 `dev_disp.c` 改动
++
++---
++
++## 3. 回归（其它板）
++
++切板后必须重新 `lunch` / 用对应 `build_*.sh`，勿混烧。
++
++| 板 | 回归点 |
++|---|---|
++| JYY070 / JL_M101 / 4k | 本专题补丁仅增加 LQ140 `not set` 与 libtmedia 条件，不应改变其显示默认 |
++
++---
++
++## 4. 补丁维护
++
++改完本板显示相关文件后：
++
++```bash
++bash …/patches/gen-lq140-display-final-patch.sh
++```
++
++再提交/归档 `patches/*.patch`。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/README.md"
+new file mode 100644
+index 000000000..c15425cef
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/README.md"
+@@ -0,0 +1,62 @@
++# LQ140M1JW61 板件新建与双显定稿 — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-07-29（LCD+HDMI 双显实机正常） |
++| 板型 | **`p1_nor_LQ140M1JW61`** |
++| 屏 | Sharp **LQ140M1JW61** 1920×1080 eDP，经 **QE01MIPI001-V01**（SoC MIPI 4-lane） |
++| panel | `lq140_mipi2edp` |
++| 副屏 | HDMI 1080p（`dual_display_rot=0`，直出） |
++| 板级档案 | [board-profile-p1_nor_LQ140M1JW61.md](../../../skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md) |
++| 镜像 | `out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img` |
++| 辅 | [../20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/](../20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/)（早期短记，以本文为准） |
++
++---
++
++## 阅读顺序
++
++| 步骤 | 文档 | 内容 |
++|---|---|---|
++| 0 | [00-总览与定稿.md](./00-总览与定稿.md) | 结论、对照表、与其它板隔离 |
++| 1 | [01-板件新建.md](./01-板件新建.md) | 板级 / OpenWrt / 编译脚本 / 公共挂钩 |
++| 2 | [02-panel与init.md](./02-panel与init.md) | `lq140_mipi2edp`、无 DCS、仅 `dsi_clk_enable` |
++| 3 | [03-DTS与双显.md](./03-DTS与双显.md) | lcd0 时序、fb0、`dual_display_rot`、旋转=0 |
++| 4 | [04-实机调试与踩坑.md](./04-实机调试与踩坑.md) | 全绿/偏绿横纹、配置生效、`dev_disp` 回退对照 |
++| 5 | [05-编译与验收.md](./05-编译与验收.md) | 编译、验收清单、回归 |
++
++**建议：** 复盘 → 先 **00/04**；干净树落地 → **补丁**；只查 panel/DTS → **02/03**。
++
++---
++
++## 补丁（相对干净基线）
++
++路径：[patches/](./patches/)
++
++| 文件 | 内容 |
++|---|---|
++| `01-kernel-uboot-panel.patch` | 内核+U-Boot `lq140_mipi2edp` + Kconfig/panels/Makefile 注册；U-Boot defconfig |
++| `02-board-tree.patch` | `p1_nor_LQ140M1JW61` + OpenWrt target + `build_*.sh` |
++| `03-shared-hooks.patch` | 兄弟板 `not set`、`.openwrt_targets`、`libtmedia` WB=0 |
++| `04-docs.patch` | 本定稿文档 + board-profile + 开发记录索引 |
++| `lq140-display-final.patch` | 以上合并（**干净树一键落地**） |
++| `apply-lq140-display-final.sh` | 应用 |
++| `gen-lq140-display-final-patch.sh` | 从当前树重生成 |
++
++```bash
++# 干净 SDK 根目录
++bash H133-AI-Skills/开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿/patches/apply-lq140-display-final.sh
++
++# 分段
++bash …/patches/apply-lq140-display-final.sh 01
++
++# 重生成（已有出图树）
++bash …/patches/gen-lq140-display-final-patch.sh
++```
++
++`bootlogo.bmp`、编译中间物（`*.su`）不进补丁；apply 时若缺 bootlogo 会从参照板复制。
++
++> 若树里**已经**有 LQ140 板，再 apply 会报 already exists，属正常。
++
++---
++
++*2026-07-29：双显定稿；`dev_disp.c` 无保留改动；文档与 final 补丁齐备。*
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/apply-lq140-display-final.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/apply-lq140-display-final.sh"
+new file mode 100755
+index 000000000..326975216
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/apply-lq140-display-final.sh"
+@@ -0,0 +1,83 @@
++#!/bin/bash
++# LQ140M1JW61 显示定稿补丁应用
++# 在 H133 SDK 根目录执行，或设置 H133_SDK_ROOT
++#
++# Usage:
++#   bash apply-lq140-display-final.sh          # 打合并补丁
++#   bash apply-lq140-display-final.sh --check  # dry-run
++#   bash apply-lq140-display-final.sh 01       # 只打 panel
++#   bash apply-lq140-display-final.sh 02|03|04
++set -e
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../.." && pwd)}"
++
++if [ ! -f "$ROOT/build/envsetup.sh" ]; then
++	echo "error: 请在 SDK 根目录执行，或设置 H133_SDK_ROOT" >&2
++	echo "  当前 ROOT=$ROOT" >&2
++	exit 1
++fi
++
++cd "$ROOT"
++
++pick_patch() {
++	case "${1:-all}" in
++	01) echo "$SCRIPT_DIR/01-kernel-uboot-panel.patch" ;;
++	02) echo "$SCRIPT_DIR/02-board-tree.patch" ;;
++	03) echo "$SCRIPT_DIR/03-shared-hooks.patch" ;;
++	04) echo "$SCRIPT_DIR/04-docs.patch" ;;
++	all|"") echo "$SCRIPT_DIR/lq140-display-final.patch" ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++}
++
++MODE=apply
++ARG=all
++for a in "$@"; do
++	case "$a" in
++	--check) MODE=check ;;
++	all|01|02|03|04) ARG=$a ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++done
++
++PATCH="$(pick_patch "$ARG")"
++if [ ! -f "$PATCH" ]; then
++	echo "error: missing $PATCH — 先跑 gen-lq140-display-final-patch.sh" >&2
++	exit 1
++fi
++
++ensure_bootlogo() {
++	local dst="device/config/chips/h133/configs/p1_nor_LQ140M1JW61/bootlogo.bmp"
++	local src8733="device/config/chips/h133/configs/p1_nor_8733/bootlogo.bmp"
++	local srcjyy="device/config/chips/h133/configs/p1_nor_JYY070/bootlogo.bmp"
++	if [ -d "device/config/chips/h133/configs/p1_nor_LQ140M1JW61" ] && [ ! -f "$dst" ]; then
++		if [ -f "$src8733" ]; then
++			cp -a "$src8733" "$dst"
++			echo "==> copied bootlogo.bmp from p1_nor_8733"
++		elif [ -f "$srcjyy" ]; then
++			cp -a "$srcjyy" "$dst"
++			echo "==> copied bootlogo.bmp from p1_nor_JYY070"
++		fi
++	fi
++}
++
++if [ "$MODE" = check ]; then
++	echo "==> dry-run: $PATCH"
++	git apply --check "$PATCH"
++	echo "==> OK (check)"
++	exit 0
++fi
++
++echo "==> apply: $PATCH"
++git apply "$PATCH"
++ensure_bootlogo
++echo "==> done"
++echo "    编译: ./tools/build_p1_nor_LQ140M1JW61.sh full"
++echo "    文档: H133-AI-Skills/开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿/README.md"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/gen-lq140-display-final-patch.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/gen-lq140-display-final-patch.sh"
+new file mode 100755
+index 000000000..6edc44107
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/20260729-LQ140M1JW61-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216\345\217\214\346\230\276\345\256\232\347\250\277/patches/gen-lq140-display-final-patch.sh"
+@@ -0,0 +1,140 @@
++#!/bin/bash
++# 重新生成 LQ140M1JW61 显示定稿补丁（当前已出图树）
++# 在 SDK 根执行，或设置 H133_SDK_ROOT
++# 注意：只收录本专题相关文件，不含 p1_nor_4k/JL_M101 无关 DTS、不含 dev_disp.c
++set -euo pipefail
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++# patches → 定稿目录 → LQ140M1JW61 → 开发记录 → H133-AI-Skills → SDK（5 级）
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../.." && pwd)}"
++OUT_DIR="$SCRIPT_DIR"
++
++cd "$ROOT"
++if [ ! -f build/envsetup.sh ]; then
++	echo "error: not SDK root: $ROOT" >&2
++	exit 1
++fi
++
++stage_list() {
++	local f
++	while IFS= read -r f; do
++		[ -z "$f" ] && continue
++		[ -e "$f" ] || { echo "warn: missing $f" >&2; continue; }
++		git add -f -- "$f"
++	done
++}
++
++# --- stage code ---
++stage_list <<'EOF'
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
++brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig
++openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++openwrt/.openwrt_targets
++openwrt/target/h133/h133-p1_nor/defconfig
++openwrt/target/h133/h133-p1_nor_8733/defconfig
++openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++openwrt/target/h133/h133-p1_nor_JL_M101/defconfig
++openwrt/target/h133/h133-p1_nor_4k/defconfig
++device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
++device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
++device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
++device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4
++tools/build_p1_nor_LQ140M1JW61.sh
++EOF
++
++# 板级整树（踢掉 bootlogo / 编译垃圾）
++git add -f -- device/config/chips/h133/configs/p1_nor_LQ140M1JW61/
++git add -f -- openwrt/target/h133/h133-p1_nor_LQ140M1JW61/
++git restore --staged device/config/chips/h133/configs/p1_nor_LQ140M1JW61/bootlogo.bmp 2>/dev/null || true
++git restore --staged brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.su 2>/dev/null || true
++# 勿把无关板 DTS 改动带进本专题
++git restore --staged \
++	device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts \
++	device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts \
++	openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini \
++	2>/dev/null || true
++
++# 文档（H133-AI-Skills 常被 gitignore，必须 -f）
++DOC_DIR="H133-AI-Skills/开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿"
++git add -f -- \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md" \
++	"H133-AI-Skills/开发记录/README.md" \
++	"H133-AI-Skills/开发记录/LQ140M1JW61/README.md" \
++	"$DOC_DIR/README.md" \
++	"$DOC_DIR/00-总览与定稿.md" \
++	"$DOC_DIR/01-板件新建.md" \
++	"$DOC_DIR/02-panel与init.md" \
++	"$DOC_DIR/03-DTS与双显.md" \
++	"$DOC_DIR/04-实机调试与踩坑.md" \
++	"$DOC_DIR/05-编译与验收.md" \
++	"$DOC_DIR/patches/apply-lq140-display-final.sh" \
++	"$DOC_DIR/patches/gen-lq140-display-final-patch.sh"
++
++git diff --cached -- \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile \
++	brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig \
++	> "$OUT_DIR/01-kernel-uboot-panel.patch"
++
++git diff --cached -- \
++	device/config/chips/h133/configs/p1_nor_LQ140M1JW61/ \
++	openwrt/target/h133/h133-p1_nor_LQ140M1JW61/ \
++	tools/build_p1_nor_LQ140M1JW61.sh \
++	> "$OUT_DIR/02-board-tree.patch"
++
++git diff --cached -- \
++	openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile \
++	openwrt/.openwrt_targets \
++	openwrt/target/h133/h133-p1_nor/defconfig \
++	openwrt/target/h133/h133-p1_nor_8733/defconfig \
++	openwrt/target/h133/h133-p1_nor_JYY070/defconfig \
++	openwrt/target/h133/h133-p1_nor_JL_M101/defconfig \
++	openwrt/target/h133/h133-p1_nor_4k/defconfig \
++	device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4 \
++	> "$OUT_DIR/03-shared-hooks.patch"
++
++git diff --cached -- \
++	H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md \
++	H133-AI-Skills/开发记录/README.md \
++	H133-AI-Skills/开发记录/LQ140M1JW61/ \
++	> "$OUT_DIR/04-docs.patch"
++
++cat "$OUT_DIR/01-kernel-uboot-panel.patch" \
++	"$OUT_DIR/02-board-tree.patch" \
++	"$OUT_DIR/03-shared-hooks.patch" \
++	"$OUT_DIR/04-docs.patch" \
++	> "$OUT_DIR/lq140-display-final.patch"
++
++git reset HEAD >/dev/null 2>&1 || true
++
++echo "==> $OUT_DIR/01-kernel-uboot-panel.patch ($(grep -c '^diff --git' "$OUT_DIR/01-kernel-uboot-panel.patch" || true) diffs)"
++echo "==> $OUT_DIR/02-board-tree.patch ($(grep -c '^diff --git' "$OUT_DIR/02-board-tree.patch" || true) diffs)"
++echo "==> $OUT_DIR/03-shared-hooks.patch ($(grep -c '^diff --git' "$OUT_DIR/03-shared-hooks.patch" || true) diffs)"
++echo "==> $OUT_DIR/04-docs.patch ($(grep -c '^diff --git' "$OUT_DIR/04-docs.patch" || true) diffs)"
++echo "==> $OUT_DIR/lq140-display-final.patch ($(grep -c '^diff --git' "$OUT_DIR/lq140-display-final.patch" || true) diffs, $(wc -l < "$OUT_DIR/lq140-display-final.patch") lines)"
++echo "    note: bootlogo.bmp / *.su / 无关板 DTS 不在补丁内"
++echo "    note: 不含 dev_disp.c（定稿不保留驱动试验改动）"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/README.md"
+new file mode 100644
+index 000000000..514740147
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/LQ140M1JW61/README.md"
+@@ -0,0 +1,37 @@
++# LQ140M1JW61 — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 板型 | `p1_nor_LQ140M1JW61` |
++| 屏 | Sharp LQ140M1JW61 1920×1080 eDP，经 QE01MIPI001-V01（SoC MIPI） |
++| panel | `lq140_mipi2edp` |
++| 状态 | **2026-07-29 LCD + HDMI 双显定稿（直出，rot=0）** |
++| 板级档案 | [board-profile-p1_nor_LQ140M1JW61.md](../../skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md) |
++
++---
++
++## 阅读顺序
++
++| 优先级 | 文档 | 内容 |
++|---|---|---|
++| **主** | [20260729-板件新建与双显定稿/](./20260729-LQ140M1JW61-板件新建与双显定稿/README.md) | **板件新建 + 双显定稿 + final 补丁** |
++| 辅 | [20260729-双显排查.bak/](./20260729-LQ140M1JW61-双显LCD-HDMI排查.bak/) | 早期短记（以定稿为准） |
++
++定稿内顺序：`00 总览` → `01 板件新建` → `02 panel` → `03 DTS/双显` → `04 踩坑` → `05 编译验收`。
++
++**干净树一键落地：**
++
++```bash
++bash H133-AI-Skills/开发记录/LQ140M1JW61/20260729-LQ140M1JW61-板件新建与双显定稿/patches/apply-lq140-display-final.sh
++./tools/build_p1_nor_LQ140M1JW61.sh full
++```
++
++---
++
++## 编译
++
++```bash
++./tools/build_p1_nor_LQ140M1JW61.sh kernel
++./tools/build_p1_nor_LQ140M1JW61.sh full
++# 产物：out/h133_linux_p1_nor_LQ140M1JW61_uart0_nor.img
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+new file mode 100644
+index 000000000..8d4ff1504
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+@@ -0,0 +1,16 @@
++# 开发记录（按板型分目录）
++
++| 目录 | 板型 |
++|------|------|
++| [JYY070/](./JYY070/README.md) | `p1_nor_JYY070`（7" LVDS 横屏） |
++| [JL_M101/](./JL_M101/README.md) | `p1_nor_JL_M101`（京龙 10.1" MIPI） |
++| [LQ140M1JW61/](./LQ140M1JW61/README.md) | `p1_nor_LQ140M1JW61`（Sharp 14" 1080p MIPI→eDP） |
++| [p1_nor_4k/](./p1_nor_4k/README.md) | `p1_nor_4k`（纯 HDMI **1080p** + RTL8733BU；初版曾 4K） |
++
++## 通用指南（跨板）
++
++| 目录 | 内容 |
++|------|------|
++| [板件新建指南/](./板件新建指南/README.md) | 如何创建新 **MIPI** / **LVDS** 板件（检查清单；范本链到 JL_M101、JYY070） |
++
++新板调试流水请放进对应板型目录；跨板流程类文档放 `板件新建指南/`，勿再平铺在本层。

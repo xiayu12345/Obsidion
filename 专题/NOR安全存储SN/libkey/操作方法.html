@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>libkey 操作方法 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -122,7 +122,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: peripheral</p>
 <h1>libkey 操作方法</h1>
-<p>业务/工厂程序调 <code>libsst.so</code>（包名 <code>libkey</code>，链 <strong><code>-lsst</code></strong>）。固件须已合 <a href="../patches/">../patches/</a> 的 0001+0002（SST）。不必编 <code>libkey-demo</code>。PhoenixSuit 选 <strong>分区擦除升级</strong>，禁止全盘。</p>
+<p>业务/工厂程序调 <code>libsst.so</code>（包名 <code>libkey</code>，链 <strong><code>-lsst</code></strong>）。固件须已合 <a href="专题/NOR安全存储SN/patches">../patches/</a> 的 0001+0002（SST）。不必编 <code>libkey-demo</code>。PhoenixSuit 选 <strong>分区擦除升级</strong>，禁止全盘。</p>
 <p>NOR 没有 private，接口只走 SST。<code>private bare key not supported</code> 正常。</p>
 <h2>Makefile</h2>
 <pre><code>DEPENDS += +libkey
@@ -166,7 +166,7 @@ ktv_sn_read(sn, sizeof(sn), &amp;len);</code></pre>
 </ul>
 <p>写顺序：先 private（本板跳过）再 SST。读顺序：先 SST，没有再 private。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -234,7 +234,7 @@ ktv_sn_read(sn, sizeof(sn), &amp;len);</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

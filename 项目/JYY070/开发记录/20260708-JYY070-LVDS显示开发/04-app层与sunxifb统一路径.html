@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>04 — App 层与 sunxifb 统一路径 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -177,9 +177,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: log · date: 2026-07-08</p>
 <h1>04 — App 层与 sunxifb 统一路径</h1>
-<p><strong>上一步：</strong> <a href="./03-DTS切换LVDS.md">03-DTS切换LVDS.md</a>  </p>
-<p><strong>下一步：</strong> <a href="./05-HDMI异显dual_display_rot.md">05-HDMI异显dual_display_rot.md</a></p>
-<p><strong>背景：</strong> <a href="./00-背景与路径统一.md">00-背景与路径统一.md</a> §2～3</p>
+<p><strong>上一步：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS切换LVDS.md</a>  </p>
+<p><strong>下一步：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.md">05-HDMI异显dual_display_rot.md</a></p>
+<p><strong>背景：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/00-背景与路径统一.md">00-背景与路径统一.md</a> §2～3</p>
 <p>---</p>
 <h2>1. 本步目标</h2>
 <ol>
@@ -231,9 +231,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>debug 开（<code>-DLV_SUNXIFB_DEBUG=1</code>）可选看到：</p>
 <pre><code>Turn on software rotate path (rot=0).
 Split fb: dirty sync HDMI page0 1024x600, MIPI page1 copy</code></pre>
-<p>完整编译与串口 checklist 见 <a href="./06-编译与实机验证.md">06-编译与实机验证.md</a>。</p>
+<p>完整编译与串口 checklist 见 <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/06-编译与实机验证.md">06-编译与实机验证.md</a>。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch" download="06-dts-hw-scale.patch">下载 06-dts-hw-scale.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh" download="apply-jyy070-lvds-display.sh">下载 apply-jyy070-lvds-display.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh" download="gen-jyy070-lvds-display-patch.sh">下载 gen-jyy070-lvds-display-patch.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch" download="jyy070-lvds-display-phase1-5.patch">下载 jyy070-lvds-display-phase1-5.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -301,7 +301,7 @@ Split fb: dirty sync HDMI page0 1024x600, MIPI page1 copy</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

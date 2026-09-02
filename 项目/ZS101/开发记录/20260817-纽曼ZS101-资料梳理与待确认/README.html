@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>20260817 — 纽曼 ZS101NI4042 资料梳理 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -163,7 +163,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-08-17 |</p>
 <p>| 板型 | <strong><code>p1_nor_ZS101</code>（NOR，已确认）</strong> |</p>
 <p>| 基线 | <strong><code>p1_nor_JL_M101</code>（已确认）</strong> |</p>
-<p>| 状态 | <strong>板件已克隆</strong>（2026-08-17）；<strong>点亮见 <a href="../20260825-ZS101-ILI9881C-MIPI显示点亮/">20260825</a></strong> |</p>
+<p>| 状态 | <strong>板件已克隆</strong>（2026-08-17）；<strong>点亮见 <a href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮">20260825</a></strong> |</p>
 <p>| 资料目录 | <code>H133-AI-Skills/硬件资料/纽曼/</code> |</p>
 <p>---</p>
 <h2>1. 一句话结论</h2>
@@ -205,7 +205,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <h3>2.4 主板</h3>
 <p><code>硬件资料/纽曼/纽曼h133主板：ZX30-D618-H133.rar</code>（RAR5，当前环境未解开）。  </p>
 <p>RESET/PWM 克隆期先继承京龙 s10：<strong>PB11=RST、PB12=PWM0@50kHz</strong>；原理图解开后复核。</p>
-<p>触摸：当时无 TP 资料。定稿见 <a href="../20260827-ZS101-GT928触摸适配/">20260827 GT928</a>。</p>
+<p>触摸：当时无 TP 资料。定稿见 <a href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配">20260827 GT928</a>。</p>
 <p>---</p>
 <h2>3. 旋转（规格书，非抄京龙习惯）</h2>
 <p>规格书把 <strong>800 标成 Horizontal Display、1280 标成 Vertical Display Area</strong>，模组图短边 143 / 长边 228.6。  </p>
@@ -217,7 +217,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| UI <code>disp_rotate</code> | <strong>3</strong>（270°） | LVGL 逻辑 <strong>1280×800</strong> |</p>
 <p>| HDMI <code>dual_display_rot</code> | <strong>3</strong> | WB 抓竖屏 DE0 → 横屏 HDMI；属性缺省已是 3 |</p>
 <p>| 视频 <code>VIDEO_WB_MIRROR_ROTATE</code> | <strong>90</strong> | 与 8733 / JL_M101 竖屏 MIPI 一致 |</p>
-<p>| <code>tp_rotate</code> | <strong>0</strong> | 触摸定稿见 <a href="../20260827-ZS101-GT928触摸适配/">20260827 GT928</a>（<code>revert_y=1</code>，仍 <code>tp_rotate=0</code>） |</p>
+<p>| <code>tp_rotate</code> | <strong>0</strong> | 触摸定稿见 <a href="项目/ZS101/开发记录/20260827-ZS101-GT928触摸适配">20260827 GT928</a>（<code>revert_y=1</code>，仍 <code>tp_rotate=0</code>） |</p>
 <p>HDMI 本身是横屏输出（基线 <code>screen1</code> 1080p），要旋的是 <strong>从竖屏主显镜像过去的那帧</strong>，不是把 HDMI 时序改成 800×1280。</p>
 <p>---</p>
 <h2>4. 与基线对照</h2>
@@ -233,7 +233,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>5. 克隆已落地（2026-08-17）</h2>
 <p>从 <code>p1_nor_JL_M101</code> 克隆 <code>p1_nor_ZS101</code>：独立 <code>zs101_ili9881c</code>、本板 DTS 时序/<code>dclk=73</code>、<code>disp_rotate=3</code>、<code>dual_display_rot=3</code>、WB=90、调屏期 U-Boot <code>disp_init_enable=0</code>。CTP 先 disabled。</p>
 <p>编译：<code>./tools/build_p1_nor_ZS101.sh kernel</code>（或 <code>full</code>）。</p>
-<p><strong>禁止</strong>：改兄弟板 DTS、改 <code>default_panel.c</code> / 现有 <code>ili9881c.c</code>、改 <code>generated/</code>。点亮见 <a href="../20260825-ZS101-ILI9881C-MIPI显示点亮/">20260825</a>。</p>
+<p><strong>禁止</strong>：改兄弟板 DTS、改 <code>default_panel.c</code> / 现有 <code>ili9881c.c</code>、改 <code>generated/</code>。点亮见 <a href="项目/ZS101/开发记录/20260825-ZS101-ILI9881C-MIPI显示点亮">20260825</a>。</p>
 <p>---</p>
 <h2>6. 已确认 / 仍待</h2>
 <p>| # | 问题 | 状态 |</p>
@@ -244,7 +244,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 4 | RESET / 背光脚 | 克隆先跟京龙 PB11/PB12；主板 rar 未解 |</p>
 <p>| 5 | 触摸 | 无资料，本阶段不做（CTP disabled） |</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -312,7 +312,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

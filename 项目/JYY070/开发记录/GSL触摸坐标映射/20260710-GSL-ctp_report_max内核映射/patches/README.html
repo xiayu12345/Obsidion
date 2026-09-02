@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>补丁说明 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -179,15 +179,15 @@ input[type=checkbox] { margin-right:.4rem; }
 <h1>补丁说明</h1>
 <p>| 文件 | 说明 |</p>
 <p>|------|------|</p>
-<p>| <a href="./01-kernel-gslx680-report-map.patch">01-kernel-gslx680-report-map.patch</a> | 公共驱动 <code>gslX680.c</code> |</p>
-<p>| <a href="./02-board-jyy070-dts.patch">02-board-jyy070-dts.patch</a> | JYY070 <code>board.dts</code> 示例 |</p>
-<p>| <a href="./gsl-tp-report-map.patch">gsl-tp-report-map.patch</a> | 以上合并 |</p>
-<p>| <a href="./apply-gsl-tp-report-map.sh">apply-gsl-tp-report-map.sh</a> | 一键 apply |</p>
+<p>| <a href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/01-kernel-gslx680-report-map.patch">01-kernel-gslx680-report-map.patch</a> | 公共驱动 <code>gslX680.c</code> |</p>
+<p>| <a href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/02-board-jyy070-dts.patch">02-board-jyy070-dts.patch</a> | JYY070 <code>board.dts</code> 示例 |</p>
+<p>| <a href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/gsl-tp-report-map.patch">gsl-tp-report-map.patch</a> | 以上合并 |</p>
+<p>| <a href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/apply-gsl-tp-report-map.sh">apply-gsl-tp-report-map.sh</a> | 一键 apply |</p>
 <pre><code>bash H133-AI-Skills/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/apply-gsl-tp-report-map.sh
 # dry-run:
-bash …/apply-gsl-tp-report-map.sh --check</code></pre>
+bash …/apply-gsl-tp-report-map.sh --check</code></pre><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/01-kernel-gslx680-report-map.patch" download="01-kernel-gslx680-report-map.patch">下载 01-kernel-gslx680-report-map.patch</a><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/01-kernel-gslx680-report-map.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/02-board-jyy070-dts.patch" download="02-board-jyy070-dts.patch">下载 02-board-jyy070-dts.patch</a><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/02-board-jyy070-dts.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/apply-gsl-tp-report-map.sh" download="apply-gsl-tp-report-map.sh">下载 apply-gsl-tp-report-map.sh</a><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/apply-gsl-tp-report-map.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/gsl-tp-report-map.patch" download="gsl-tp-report-map.patch">下载 gsl-tp-report-map.patch</a><a class="dl" href="项目/JYY070/开发记录/GSL触摸坐标映射/20260710-GSL-ctp_report_max内核映射/patches/gsl-tp-report-map.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -255,7 +255,7 @@ bash …/apply-gsl-tp-report-map.sh --check</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

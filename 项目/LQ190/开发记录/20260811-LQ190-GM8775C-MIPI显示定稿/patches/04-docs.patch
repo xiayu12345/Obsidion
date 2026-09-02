@@ -1,0 +1,654 @@
+diff --git a/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md
+new file mode 100644
+index 000000000..1b3832f36
+--- /dev/null
++++ b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md
+@@ -0,0 +1,42 @@
++# H133 p1_nor_LQ190 板级档案
++
++> **2026-08-12 定稿**：LQ190E1LX65 + GM8775C；主机 MIPI `dsi_gen_wr` 灌 RegList（**`0x13=0x63`**）；实机已出清晰系统 UI。  
++> 详录：[开发记录/板件开发记录/LQ190/20260811-LQ190-GM8775C-MIPI显示定稿/](../../开发记录/板件开发记录/LQ190/20260811-LQ190-GM8775C-MIPI显示定稿/README.md)
++
++## 工程标识
++
++| 项 | 值 |
++|----|-----|
++| 板级 | **p1_nor_LQ190** |
++| 屏 | Sharp **LQ190E1LX65** 1280×1024 双 LVDS + **GM8775C** MIPI→LVDS；驱动名 `lq190_mipi2edp` |
++| UI | `disp_rotate=0`，`tp_rotate=0`；`fb0`=1280×1024（无 DE 放大） |
++| 触摸 | **无**；`ctp@5d` disabled（CTP-RST=PG2 作桥片 RST） |
++| WiFi | RTL8733BU（继承基线） |
++| lunch | `h133-p1_nor_LQ190-tina` |
++| 镜像 | `out/h133_linux_p1_nor_LQ190_uart0_nor.img` |
++| 板级配置 | `device/config/chips/h133/configs/p1_nor_LQ190/` |
++| OpenWrt target | `openwrt/target/h133/h133-p1_nor_LQ190/` |
++| 编译 | `./tools/build_p1_nor_LQ190.sh [full\|kernel\|rootfs]` |
++
++## 板件隔绝
++
++| 允许 | 禁止 |
++|------|------|
++| 只改本板 `configs/` 与 `h133-p1_nor_LQ190/` | 改共享 `p1_nor` DTS 迁就本屏 |
++| 独立 `lq190_mipi2edp.c` | 改 `default_panel.c` |
++| 兄弟板 LQ190 `not set` | 把本屏时序塞进其它板 |
++
++## 显示定稿
++
++| 项 | 值 |
++|----|-----|
++| `lcd_driver_name` | `lq190_mipi2edp` |
++| 分辨率 | **1280×1024** |
++| `lcd_dclk_freq` | **108**（1688×1066×60） |
++| porch | HFP194 / HSPW20 / HBP194 → `hbp=214` `ht=1688`；VFP19 / VSPW4 / VBP19 → `vbp=23` `vt=1066` |
++| 桥片灌表 | 主机 MIPI：`0x27=0xAA` 解锁 → `dsi_gen_wr`；**`0x13=0x63`**（勿用 `0x53`，会发糊）；**`0x2A=0x01` 关 BIST**；LINE 交换保留（`14/18=34`） |
++| 参考 txt | `硬件资料/鸿博芯业/1280x1024_20260811144404.txt`（与驱动同表） |
++| 桥片 RST | **`lcd_gpio_0`=PG2**（CTP-RST） |
++| `VIDEO_WB_MIRROR_ROTATE` / `dual_display_rot` | **0** |
++| U-Boot | `disp_init_enable=1` |
++| 背光 | **PB12=PWM0**；**PG15=`lcd_bl_en` ACTIVE_HIGH**（实机 3.3V） |
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260807-\351\270\277\345\215\232LQ190E1LX65-\350\265\204\346\226\231\346\242\263\347\220\206\344\270\216\345\276\205\347\241\256\350\256\244/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260807-\351\270\277\345\215\232LQ190E1LX65-\350\265\204\346\226\231\346\242\263\347\220\206\344\270\216\345\276\205\347\241\256\350\256\244/README.md"
+new file mode 100644
+index 000000000..7dc67dbbf
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260807-\351\270\277\345\215\232LQ190E1LX65-\350\265\204\346\226\231\346\242\263\347\220\206\344\270\216\345\276\205\347\241\256\350\256\244/README.md"
+@@ -0,0 +1,117 @@
++# 20260807 — 鸿博 LQ190E1LX65 资料梳理与待确认
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-08-07 |
++| 板型 | **`p1_nor_LQ190`（NOR，已确认不改 eMMC）** |
++| 状态 | **历史资料梳理**；显示已在 [20260811 定稿](../20260811-LQ190-GM8775C-MIPI显示定稿/README.md) 闭环 |
++| 资料目录 | `H133-AI-Skills/硬件资料/鸿博芯业/` |
++
++---
++
++## 1. 一句话结论
++
++鸿博资料对应的是 **Sharp LQ190E1LX65（1280×1024 双 LVDS）+ GM8875C/GM8775C（MIPI→LVDS）**。  
++本文为早期资料梳理；**出图已在 [20260811 定稿](../20260811-LQ190-GM8775C-MIPI显示定稿/README.md) 闭环**（主机 MIPI 灌表、`0x13=0x63`、RST=PG2、关 BIST）。
++
++---
++
++## 2. 硬件资料摘要
++
++### 2.1 屏：LQ190E1LX65
++
++| 项 | 值 | 来源 |
++|---|---|---|
++| 型号 | Sharp **LQ190E1LX65** | 规格书 PDF（LD-27X08A） |
++| 尺寸 | 19.0" | 规格书 / Panelook |
++| 分辨率 | **1280×1024（SXGA），5:4 横屏** | 同上 |
++| 接口 | **LVDS 双通道 8-bit，30 pin** | 同上；实物丝印 RA*/RB* 双通道 |
++| 屏供电 | 5.0V（Typ.） | Panelook |
++| 刷新 | 60Hz（Typ.） | 同上 |
++| 背光 | WLED + 驱动；板端 6P：**GND / GND / ADJ / EN / 12V / 12V** | 实物标注图 |
++
++规格书 PDF（扫描件，难抽文本）：
++
++`硬件资料/鸿博芯业/LQ190E1LX65_LD-27X08A_20151127_202407011157(1).pdf`
++
++同类 Sharp SXGA（LQ190E1LX78）典型时序可作**初值参考**（非本屏定稿）：
++
++| 项 | 参考值 |
++|---|---|
++| Pixel clock | ~108 MHz（VESA SXGA 60Hz） |
++| HT / 有效 | 1688 / 1280（双 LVDS 时单通道常记 844） |
++| VT / 有效 | 1066 / 1024 |
++
++### 2.2 桥片：GM8875C（资料亦写 GM8775C）
++
++| 项 | 内容 |
++|---|---|
++| 功能 | **MIPI-DSI 入 → LVDS 出**（Demo 可到 1920×1200） |
++| 配置方式 | ① I2C 写寄存器 ② MIPI 短包 `DATA ID=0x23`（先写 `0x27=0xAA`）③ 板上 EEPROM 自举（I2C Master + EEPROM 0xA0） |
++| I2C 地址 | 脚选：拉高 **0x5A**，拉低 **0x58**（7-bit 口径以手册/原理图为准） |
++| 参考驱动 | `…/官方参考开发资料/gm8775.c`（Rockchip 侧 I2C probe 灌表） |
++| 转接板规格 | `…/MIPI转LVDS转接板规格书.pdf`；原理图 `Sch/MIPI TO LVDS1920X1200-SCH_V3.0.pdf` |
++
++### 2.3 RegList（桥片刷参表）是什么
++
++路径：
++
++`硬件资料/鸿博芯业/GM8875C 资料/官方参考开发资料/GM8775C_A1.1__IIC20190819/GM8775C_RegList20260729_210421.txt`
++
++- 上位机按分辨率/porch 等生成的 **`寄存器地址,数值`** 列表（共 34 行）。
++- 上电后写入 GM8875，桥片才按该表做 MIPI→LVDS。
++- **注意**：该文件与官方示例 **1080p 灌表几乎相同**（`0x01~0x06` 一致），**不像已按 1280×1024 重导**；在确认「就是给本屏定稿」之前，**不要当 SXGA 最终表盲目灌入**。
++
++---
++
++## 3. 与现有工程对照
++
++| 项 | 现有 `p1_nor_LQ190` | 资料应有 |
++|---|---|---|
++| 基线 | 自 `p1_nor_LQ140M1JW61` 克隆 | 可保留板级/WiFi/NOR 骨架 |
++| 链路 | MIPI→**eDP**（`lq190_mipi2edp` 占位） | MIPI→**GM8875→LVDS** |
++| `lcd_x/y` | 1920×1080 | **1280×1024** |
++| `lcd_dclk_freq` | 139（LQ140） | 待定（初值可试 ~108） |
++| panel init | 仅 `dsi_clk_enable`（无 DCS） | 视硬件：EEPROM 自举 / 主机灌 RegList |
++| 存储 | NOR | **已确认：NOR** |
++| 当前 lunch | 环境曾停在 `p1_emmc_LQ140M1JW61` | 确认后切 `p1_nor_LQ190` 再编 |
++
++板级档案（脚手架说明，未按本专题更新）：
++
++`H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md`
++
++---
++
++## 4. 拟改范围（确认后才执行）
++
++1. **本板 DTS**（kernel + uboot）：分辨率/时序/`fb0`；仍 `lcd_if=4`（MIPI 进桥）。
++2. **panel**：在现有 `lq190_mipi2edp` 上补灌参或改名 `mipi2lvds`（**改名需另确认**）；调屏期 U-Boot `disp_init_enable=0`。
++3. **文档**：同步 `board-profile`、本目录定稿页。
++4. **切板编译**：`./tools/build_p1_nor_LQ190.sh full` → `out/h133_linux_p1_nor_LQ190_uart0_nor.img`。
++
++**禁止**：改兄弟板、共享 `p1_nor`、`generated/`、私自加对外 API。
++
++---
++
++## 5. 待用户确认清单
++
++| # | 问题 | 状态 |
++|---|---|---|
++| 1 | 存储：NOR / eMMC | **已确认：NOR（`p1_nor_LQ190`）** |
++| 2 | RegList：现成文件先用，还是按 1280×1024 重导 | **已闭环**：工具 MIPI 导出 + 主机 `dsi_gen_wr`（见 [20260811 定稿](../20260811-LQ190-GM8775C-MIPI显示定稿/README.md)） |
++| 3 | GM8875：EEPROM 自举，还是主机灌（MIPI / I2C）；I2C 总线与地址 | **已闭环**：主机 MIPI 灌；转接板 IIC Slave **0x58**（上位机）；解锁 MIPI **`0x27=0xAA`** |
++| 4 | 背光 EN/ADJ、桥片 EN/RST：是否跟 LQ140（PB11 RST、PB12 PWM0） | **已闭环**：BL-EN=PG15；PWM0=PB12；桥片 RST=**PG2（CTP-RST）**，非 PB11 |
++| 5 | UI：`fb0` 直接 1280×1024，还是像 LQ140 做 DE 缩放；`disp_rotate` 是否仍为 0 | **已闭环**：`fb0`=1280×1024 直出，`disp_rotate=0` |
++
++确认话术示例：
++
++`确认执行：RegList先用，EEPROM自举，背光跟LQ140，fb0=1280x1024，disp_rotate=0`
++
++---
++
++## 6. 编译（确认并改完后再跑）
++
++```bash
++./tools/build_p1_nor_LQ190.sh kernel   # 或 full
++# 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260810-LQ190-\350\203\214\345\205\211BL-EN\346\213\211\351\253\230\345\256\236\346\234\272\351\252\214\350\257\201/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260810-LQ190-\350\203\214\345\205\211BL-EN\346\213\211\351\253\230\345\256\236\346\234\272\351\252\214\350\257\201/README.md"
+new file mode 100644
+index 000000000..1bfdeb073
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260810-LQ190-\350\203\214\345\205\211BL-EN\346\213\211\351\253\230\345\256\236\346\234\272\351\252\214\350\257\201/README.md"
+@@ -0,0 +1,47 @@
++# 20260810 — LQ190 背光 BL-EN 拉高实机验证
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-08-10 |
++| 板型 | `p1_nor_LQ190`（NOR） |
++| 状态 | **已闭环**：烧录后 `LCD-BL-EN` 实机测得 **3.3V** |
++
++---
++
++## 1. 结论
++
++TP-H10 原理图 **J9534 pin4 `LCD-BL-EN` = PG15**。原先 DTS 故意不配 `lcd_bl_en`（注释「本板不控」），开屏时 EN 不拉。  
++本板 `&lcd0` 补上 `lcd_bl_en = PG15 ACTIVE_HIGH` 后，开背光时 EN 被拉到 **3.3V**（实机确认）。
++
++---
++
++## 2. 改动（仅本板）
++
++| 文件 | 改动 |
++|---|---|
++| `device/.../p1_nor_LQ190/linux-5.4/board.dts` | `&lcd0` 增加 `lcd_bl_en = <&pio PG 15 GPIO_ACTIVE_HIGH>` |
++| `device/.../p1_nor_LQ190/uboot-board.dts` | 同上 |
++
++PWM 仍为：**PB12 = LCD-PWM → PWM0**（未改）。  
++**未动** LQ140 / eMMC 等兄弟板。
++
++---
++
++## 3. 镜像与验证
++
++```bash
++./tools/build_p1_nor_LQ190.sh full
++# 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img
++```
++
++| 项 | 结果 |
++|---|---|
++| 烧录介质 | NOR |
++| 测点 | J9534 / TP132（`LCD-BL-EN`） |
++| 结果 | 开屏后 **3.3V** |
++
++---
++
++## 4. 仍待确认（与背光/桥片相关）
++
++本专题只验 BL-EN。出图/灌表/RST 见 [20260811 定稿](../20260811-LQ190-GM8775C-MIPI显示定稿/README.md)。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md"
+new file mode 100644
+index 000000000..bda2bf123
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md"
+@@ -0,0 +1,133 @@
++# 20260811 — LQ190 + GM8775C MIPI 显示定稿
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-08-11（出图）；**2026-08-12 灌表修订（消糊）** |
++| 板型 | **`p1_nor_LQ190`（NOR）** |
++| 状态 | **实机显示已正常、清晰**（主机 MIPI 灌表 + DSI 出图） |
++| 板级档案 | [board-profile-p1_nor_LQ190.md](../../../../skills/h133-display/board-profile-p1_nor_LQ190.md) |
++
++---
++
++## 1. 一句话结论
++
++Sharp **LQ190E1LX65**（1280×1024 双 LVDS）经转接板 **GM8775C** 接 H133 MIPI；主机用 **`dsi_gen_wr`** 灌表（**`0x27=0xAA` 解锁**，**`0x13=0x63`**，**LINE 交换保留**，**`0x2A=0x01` 关 BIST**）；桥片 RST 走 **PG2（CTP-RST）**，本板 **不开触摸**。
++
++---
++
++## 2. 硬件要点
++
++| 项 | 定稿 |
++|---|---|
++| 屏 | LQ190E1LX65，1280×1024，双 LVDS 8bit VESA |
++| 桥片 | GM8775C / 资料亦写 GM8875C；转接板 **IIC_TYPE=Slave**，地址 **0x58** |
++| 主机→桥 | MIPI FPC 4-lane；**CTP-SDA/SCK→桥 IIC**；**CTP-RST→桥 RST** |
++| 转接板 LCD_RST | 原理图电阻 **NC**，主控 **PB11 打不到桥片** |
++| 背光 | PB12=PWM0；PG15=`lcd_bl_en`（已验 3.3V） |
++| 触摸 | **无**；`ctp@5d` 必须 `disabled`（否则 GT911 失败会拉 PG2 冲掉桥片表） |
++
++工具资料：`硬件资料/鸿博芯业/转接板资料/`、`1280x1024_*.txt`（与驱动 `gm8775_reglist[]` 对齐）。
++
++---
++
++## 3. 软件定稿
++
++| 项 | 值 |
++|---|---|
++| panel | `lq190_mipi2edp`（kernel + uboot 同表） |
++| 灌表 | `dsi_clk_enable` → `dsi_gen_wr` 扫表（对齐 JL_M101 写法；**禁止 DSI 读**） |
++| 解锁 | MIPI：**`0x27=0xAA`**（IIC 工具里是 `0x00=0xAA`，勿混用） |
++| **关键寄存器** | **`0x13=0x63`**（**禁止**用 `0x53`：实机会发糊） |
++| BIST | **`0x2A=0x01`**（`0x5D`/`0x3D` 等为测试图打开态） |
++| LINE 交换 | LINK0/1 均保留实机可用映射（**`0x14/18=0x34`** 等；勿改回工具偶发直通） |
++| 时序 DTS | 1280×1024，`dclk=108`；HFP194/HSW20/HBP194 → `hbp=214` `ht=1688`；VFP19/VSW4/VBP19 → `vbp=23` `vt=1066` |
++| UI | `disp_rotate=0`；`fb0`=1280×1024 直出；Guider 页仍 1280×800 |
++| `disp_init_enable` | **1** |
++| 桥片 RST | **`lcd_gpio_0`=PG2** |
++
++关键路径：
++
++- `kernel/.../lcd/lq190_mipi2edp.c`
++- `brandy/.../lcd/lq190_mipi2edp.c`
++- `device/config/chips/h133/configs/p1_nor_LQ190/{linux-5.4/board.dts,uboot-board.dts}`
++
++参考灌表（与驱动一致）：
++
++- `H133-AI-Skills/硬件资料/鸿博芯业/1280x1024_20260811144404.txt`
++- `H133-AI-Skills/硬件资料/鸿博芯业/1280x1024_2024.txt`
++
++---
++
++## 4. 踩坑（根因级）
++
++| 现象 | 根因 | 处理 |
++|---|---|---|
++| 软件 open 成功但无图 | 桥片 RST 接 **CTP-RST=PG2**，旧代码拉 PB11 无效；内核 CTP 探失败又 **Process reset** 清表；smooth 不再 `panel_init` | `lcd_gpio_0=PG2`；`ctp` disabled |
++| MIPI 灌了仍像没配 | IIC 解锁 `0x00=0xAA` 不能当 MIPI 首条；MIPI 必须 **`0x27=0xAA`** | 按工具 MIPI 导出 |
++| 开机全是黑白棋盘 | 上位机 BIST 未关（`0x2A` 非 `0x01`），内部测试图盖住视频 | 表末 **`0x2A=0x01`**；灌前关工具测试模式 |
++| **UI/字发糊、边缘发虚** | 灌表 **`0x13=0x53`** 不对（20260811 初稿） | **改为 `0x13=0x63`**（2026-08-12 实机确认消糊） |
++| 调屏时 CH341 灌不上 | 主机 DSI/RST 抢桥片 | 临时 BL-only / `lcd_used` 关显；灌完再恢复出图路径 |
++
++说明：JL_M101 的 `dsi_gen_wr` 写法可参考，但 **JD9365 是真 MIPI 屏**，GM8775 是桥片，RST/解锁/BIST/`0x13` 约束不同。
++
++---
++
++## 5. 验收
++
++- [x] U-Boot 有 `panel_init dsi_gen_wr (0x13=0x63, swap keep, BIST off)`，`LCD open finish`
++- [x] 背光亮，系统 UI 正常（非彩条/棋盘格）
++- [x] **画面清晰，无整体发糊**（`0x13=0x63`）
++- [x] 无 GTP/`0x5d` 复位风暴
++- [ ] `setting.ini` 视频窗坐标仍残留竖屏 800×1280 克隆值（不影响本次出图；后续可按 1280×1024 改）
++- [ ] UI 仍为 Guider 1280×800 资源嵌在 1280×1024；低 PPI 下点阵观感与桥片发糊不同，勿混为一谈
++
++---
++
++## 6. 编译
++
++```bash
++./tools/build_p1_nor_LQ190.sh kernel   # 或 full
++# 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img
++```
++
++| 镜像说明 | md5（以当次 `md5sum` 为准） |
++|---|---|
++| 2026-08-11 初稿出图（`0x13=0x53`，可糊） | `ba6b9a14144a46cf9544711873f6b601` |
++| **2026-08-12 定稿清晰（`0x13=0x63`）** | **`2ab2ac2697d27072dba4fa7e064427f9`** |
++
++---
++
++## 7. 补丁（定稿，相对无 LQ190 干净基线）
++
++路径：[patches/](./patches/)
++
++| 文件 | 内容 |
++|---|---|
++| `01-kernel-uboot-panel.patch` | 内核+U-Boot `lq190_mipi2edp`（MIPI 灌表）+ 注册 + defconfig |
++| `02-board-tree.patch` | `p1_nor_LQ190` + OpenWrt target + `build_p1_nor_LQ190.sh`（含 1280×1024 / RST=PG2 / CTP off） |
++| `03-shared-hooks.patch` | 兄弟板 `LQ190` not-set |
++| `04-docs.patch` | 本定稿文档 + board-profile + LQ190 索引 |
++| `lq190-display-final.patch` | 以上合并（**干净树一键落地用这个**） |
++| `apply-lq190-display-final.sh` | 应用 |
++| `gen-lq190-display-final-patch.sh` | 从当前树重生成 |
++
++```bash
++# 干净 SDK 根目录
++bash H133-AI-Skills/开发记录/板件开发记录/LQ190/20260811-LQ190-GM8775C-MIPI显示定稿/patches/apply-lq190-display-final.sh
++
++# 分段 / dry-run
++bash …/patches/apply-lq190-display-final.sh 01
++bash …/patches/apply-lq190-display-final.sh --check
++
++# 重生成（已有出图树时；须含 0x13=0x63）
++bash …/patches/gen-lq190-display-final-patch.sh
++```
++
++`bootlogo.bmp` 不进补丁；apply 时若缺失会从 `p1_nor_LQ140M1JW61` 复制。
++
++> 若树里**已经**有 LQ190 板（当前出图树），`--check` / 再 apply 会报 already exists，属正常。
++
++---
++
++*2026-08-11：实机出图；文档与 final 补丁同步。*  
++*2026-08-12：确认 `0x13=0x63` 消糊；灌表 txt / 文档 / board-profile 修订为当前定稿；驱动内旧表备份已删除。*
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-lq190-display-final.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-lq190-display-final.sh"
+new file mode 100755
+index 000000000..890ecb3e4
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-lq190-display-final.sh"
+@@ -0,0 +1,84 @@
++#!/bin/bash
++# LQ190 + GM8775C MIPI 显示定稿补丁应用
++# 在 H133 SDK 根目录执行，或设置 H133_SDK_ROOT
++#
++# Usage:
++#   bash apply-lq190-display-final.sh          # 打合并补丁
++#   bash apply-lq190-display-final.sh --check  # dry-run
++#   bash apply-lq190-display-final.sh 01       # 只打 panel
++#   bash apply-lq190-display-final.sh 02|03|04
++set -e
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++
++if [ -n "${H133_SDK_ROOT:-}" ]; then
++	ROOT="$H133_SDK_ROOT"
++else
++	ROOT="$SCRIPT_DIR"
++	while [ "$ROOT" != "/" ] && [ ! -f "$ROOT/build/envsetup.sh" ]; do
++		ROOT="$(dirname "$ROOT")"
++	done
++fi
++if [ ! -f "$ROOT/build/envsetup.sh" ]; then
++	echo "error: 请在 SDK 根目录执行，或设置 H133_SDK_ROOT" >&2
++	echo "  当前 ROOT=$ROOT" >&2
++	exit 1
++fi
++
++cd "$ROOT"
++
++pick_patch() {
++	case "${1:-all}" in
++	01) echo "$SCRIPT_DIR/01-kernel-uboot-panel.patch" ;;
++	02) echo "$SCRIPT_DIR/02-board-tree.patch" ;;
++	03) echo "$SCRIPT_DIR/03-shared-hooks.patch" ;;
++	04) echo "$SCRIPT_DIR/04-docs.patch" ;;
++	all|"") echo "$SCRIPT_DIR/lq190-display-final.patch" ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++}
++
++MODE=apply
++ARG=all
++for a in "$@"; do
++	case "$a" in
++	--check) MODE=check ;;
++	all|01|02|03|04) ARG=$a ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++done
++
++PATCH="$(pick_patch "$ARG")"
++if [ ! -f "$PATCH" ]; then
++	echo "error: missing $PATCH — 先跑 gen-lq190-display-final-patch.sh" >&2
++	exit 1
++fi
++
++ensure_bootlogo() {
++	local dst="device/config/chips/h133/configs/p1_nor_LQ190/bootlogo.bmp"
++	local src="device/config/chips/h133/configs/p1_nor_LQ140M1JW61/bootlogo.bmp"
++	if [ -d "device/config/chips/h133/configs/p1_nor_LQ190" ] && [ ! -f "$dst" ] && [ -f "$src" ]; then
++		cp -a "$src" "$dst"
++		echo "==> copied bootlogo.bmp from p1_nor_LQ140M1JW61"
++	fi
++}
++
++if [ "$MODE" = check ]; then
++	echo "==> dry-run: $PATCH"
++	git apply --check "$PATCH"
++	echo "==> OK (check)"
++	exit 0
++fi
++
++echo "==> apply: $PATCH"
++git apply "$PATCH"
++ensure_bootlogo
++echo "==> done"
++echo "    编译: ./tools/build_p1_nor_LQ190.sh full"
++echo "    文档: H133-AI-Skills/开发记录/板件开发记录/LQ190/20260811-LQ190-GM8775C-MIPI显示定稿/README.md"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-lq190-display-final-patch.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-lq190-display-final-patch.sh"
+new file mode 100755
+index 000000000..aca39c99f
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/20260811-LQ190-GM8775C-MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-lq190-display-final-patch.sh"
+@@ -0,0 +1,143 @@
++#!/bin/bash
++# 重新生成 LQ190 + GM8775C MIPI 显示定稿补丁（当前已出图树）
++# 在 SDK 根执行，或设置 H133_SDK_ROOT
++#
++# 基线：引入 p1_nor_LQ190 之前的提交（50f4e3d80^），补丁含板件新建 + 出图定稿。
++set -euo pipefail
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++OUT_DIR="$SCRIPT_DIR"
++# 向上找 build/envsetup.sh；也可 export H133_SDK_ROOT
++if [ -n "${H133_SDK_ROOT:-}" ]; then
++	ROOT="$H133_SDK_ROOT"
++else
++	ROOT="$SCRIPT_DIR"
++	while [ "$ROOT" != "/" ] && [ ! -f "$ROOT/build/envsetup.sh" ]; do
++		ROOT="$(dirname "$ROOT")"
++	done
++fi
++if [ ! -f "$ROOT/build/envsetup.sh" ]; then
++	echo "error: 找不到 SDK 根（需含 build/envsetup.sh），请设置 H133_SDK_ROOT" >&2
++	exit 1
++fi
++# 首次纳入 LQ190 板树的提交；其父为无 LQ190 干净基线
++LQ190_INTRO="${LQ190_INTRO_COMMIT:-50f4e3d80}"
++BASE="$(git -C "$ROOT" rev-parse "${LQ190_INTRO}^")"
++
++cd "$ROOT"
++
++echo "==> BASE (pre-LQ190)=$BASE"
++echo "==> OUT=$OUT_DIR"
++
++# --- 01 panel：kernel + uboot 驱动/注册/defconfig ---
++# 注意：工作区 sun8iw20p1_auto_nor_defconfig 若误删 JL/LQ140/LQ190，改用 HEAD（已入库）相对 BASE
++git diff "$BASE" -- \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq190_mipi2edp.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq190_mipi2edp.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq190_mipi2edp.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq190_mipi2edp.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile \
++	brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig \
++	brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig \
++	> "$OUT_DIR/01-kernel-uboot-panel.patch"
++
++git diff "$BASE" HEAD -- \
++	brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig \
++	>> "$OUT_DIR/01-kernel-uboot-panel.patch"
++
++# --- 02 板级整树（踢掉 bootlogo / 编译残留 .su）---
++git add -f -- device/config/chips/h133/configs/p1_nor_LQ190/
++git add -f -- openwrt/target/h133/h133-p1_nor_LQ190/
++git add -f -- tools/build_p1_nor_LQ190.sh
++git restore --staged device/config/chips/h133/configs/p1_nor_LQ190/bootlogo.bmp 2>/dev/null || true
++git restore --staged \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq190_mipi2edp.su \
++	2>/dev/null || true
++
++git diff --cached "$BASE" -- \
++	device/config/chips/h133/configs/p1_nor_LQ190/ \
++	openwrt/target/h133/h133-p1_nor_LQ190/ \
++	tools/build_p1_nor_LQ190.sh \
++	> "$OUT_DIR/02-board-tree.patch"
++
++git reset HEAD >/dev/null 2>&1 || true
++
++# --- 03 兄弟板隔离（仅含 LQ190 not-set 的干净增量；跳过整板新建的 emmc 等）---
++git diff "$BASE" -- \
++	openwrt/target/h133/h133-p1_nor/defconfig \
++	openwrt/target/h133/h133-p1_nor_8733/defconfig \
++	openwrt/target/h133/h133-p1_nor_JYY070/defconfig \
++	openwrt/target/h133/h133-p1_nor_LQ140M1JW61/defconfig \
++	device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_8733/linux-5.4/config-5.4 \
++	> "$OUT_DIR/03-shared-hooks.patch"
++
++# --- 04 文档（H133-AI-Skills 可能被 ignore，必须 -N / add -f）---
++DOC_ROOT="H133-AI-Skills/开发记录/板件开发记录/LQ190"
++DOC_FINAL="$DOC_ROOT/20260811-LQ190-GM8775C-MIPI显示定稿"
++git add -f -- \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md" \
++	"$DOC_ROOT/README.md" \
++	"$DOC_ROOT/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.md" \
++	"$DOC_ROOT/20260810-LQ190-背光BL-EN拉高实机验证/README.md" \
++	"$DOC_FINAL/README.md" \
++	"$DOC_FINAL/patches/apply-lq190-display-final.sh" \
++	"$DOC_FINAL/patches/gen-lq190-display-final-patch.sh" \
++	"H133-AI-Skills/开发记录/板件开发记录/README.md" \
++	2>/dev/null || true
++
++git diff --cached "$BASE" -- \
++	H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md \
++	H133-AI-Skills/开发记录/板件开发记录/LQ190/ \
++	H133-AI-Skills/开发记录/板件开发记录/README.md \
++	> "$OUT_DIR/04-docs.patch" || true
++
++# 04 里不要塞入巨大 .patch 本体（避免自引用膨胀）；若 staged 到了则重做一次排除
++git reset HEAD >/dev/null 2>&1 || true
++git add -f -- \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md" \
++	"$DOC_ROOT/README.md" \
++	"$DOC_ROOT/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.md" \
++	"$DOC_ROOT/20260810-LQ190-背光BL-EN拉高实机验证/README.md" \
++	"$DOC_FINAL/README.md" \
++	"$DOC_FINAL/patches/apply-lq190-display-final.sh" \
++	"$DOC_FINAL/patches/gen-lq190-display-final-patch.sh" \
++	"H133-AI-Skills/开发记录/板件开发记录/README.md"
++
++git diff --cached "$BASE" -- \
++	H133-AI-Skills/skills/h133-display/board-profile-p1_nor_LQ190.md \
++	"$DOC_ROOT/README.md" \
++	"$DOC_ROOT/20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.md" \
++	"$DOC_ROOT/20260810-LQ190-背光BL-EN拉高实机验证/README.md" \
++	"$DOC_FINAL/README.md" \
++	"$DOC_FINAL/patches/apply-lq190-display-final.sh" \
++	"$DOC_FINAL/patches/gen-lq190-display-final-patch.sh" \
++	H133-AI-Skills/开发记录/板件开发记录/README.md \
++	> "$OUT_DIR/04-docs.patch"
++
++git reset HEAD >/dev/null 2>&1 || true
++
++cat "$OUT_DIR/01-kernel-uboot-panel.patch" \
++	"$OUT_DIR/02-board-tree.patch" \
++	"$OUT_DIR/03-shared-hooks.patch" \
++	"$OUT_DIR/04-docs.patch" \
++	> "$OUT_DIR/lq190-display-final.patch"
++
++echo "==> $OUT_DIR/01-kernel-uboot-panel.patch ($(grep -c '^diff --git' "$OUT_DIR/01-kernel-uboot-panel.patch" || true) diffs)"
++echo "==> $OUT_DIR/02-board-tree.patch ($(grep -c '^diff --git' "$OUT_DIR/02-board-tree.patch" || true) diffs)"
++echo "==> $OUT_DIR/03-shared-hooks.patch ($(grep -c '^diff --git' "$OUT_DIR/03-shared-hooks.patch" || true) diffs)"
++echo "==> $OUT_DIR/04-docs.patch ($(grep -c '^diff --git' "$OUT_DIR/04-docs.patch" || true) diffs)"
++echo "==> $OUT_DIR/lq190-display-final.patch ($(grep -c '^diff --git' "$OUT_DIR/lq190-display-final.patch" || true) diffs, $(wc -l < "$OUT_DIR/lq190-display-final.patch") lines)"
++echo "    note: bootlogo.bmp 不在补丁内，apply 时从 p1_nor_LQ140M1JW61 复制"
++echo "    note: 基线为 ${LQ190_INTRO}^；含 MIPI 灌表定稿（0x27 解锁 / 0x13=0x63 / 交换保留 / BIST off / RST=PG2）"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/README.md"
+new file mode 100644
+index 000000000..26200d195
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/LQ190/README.md"
+@@ -0,0 +1,26 @@
++# LQ190 — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 板型 | `p1_nor_LQ190`（**NOR**） |
++| 基线 | 自 `p1_nor_LQ140M1JW61` 整树克隆（横屏、rot=0、RTL8733BU） |
++| 目标屏 | Sharp **LQ190E1LX65** 1280×1024 LVDS + 鸿博 **GM8775C** MIPI→LVDS |
++| panel | `lq190_mipi2edp`（名称历史占位 eDP；链路为 MIPI→LVDS） |
++| 状态 | **2026-08-12 显示已定稿（实机清晰；灌表 `0x13=0x63`）** |
++| 板级档案 | [board-profile-p1_nor_LQ190.md](../../../skills/h133-display/board-profile-p1_nor_LQ190.md) |
++
++## 专题记录
++
++| 目录 | 说明 |
++|------|------|
++| [20260811-LQ190-GM8775C-MIPI显示定稿/](./20260811-LQ190-GM8775C-MIPI显示定稿/README.md) | **出图定稿（08-12：`0x13=0x63` 消糊）** + [patches/](./20260811-LQ190-GM8775C-MIPI显示定稿/patches/) |
++| [20260810-背光BL-EN拉高实机验证/](./20260810-LQ190-背光BL-EN拉高实机验证/README.md) | J9534 `LCD-BL-EN`=PG15；实机 3.3V |
++| [20260807-鸿博LQ190E1LX65-资料梳理与待确认/](./20260807-鸿博LQ190E1LX65-资料梳理与待确认/README.md) | 早期资料梳理（历史） |
++
++## 编译
++
++```bash
++./tools/build_p1_nor_LQ190.sh kernel
++./tools/build_p1_nor_LQ190.sh full
++# 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+new file mode 100644
+index 000000000..2165f5e40
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+@@ -0,0 +1,14 @@
++# 板件开发记录
++
++各板型独立目录，互不混放。
++
++| 目录 | 板型 |
++|------|------|
++| [JYY070/](./JYY070/README.md) | `p1_nor_JYY070`（7" LVDS 横屏） |
++| [JL_M101/](./JL_M101/README.md) | `p1_nor_JL_M101`（京龙 10.1" MIPI） |
++| [LQ140M1JW61/](./LQ140M1JW61/README.md) | `p1_nor_LQ140M1JW61`（Sharp 14" 1080p MIPI→eDP） |
++| [p1_emmc_LQ140M1JW61/](./p1_emmc_LQ140M1JW61/README.md) | `p1_emmc_LQ140M1JW61`（LQ140 屏 + 纯 eMMC） |
++| [LQ190/](./LQ190/README.md) | `p1_nor_LQ190`（LQ190E1LX65 + GM8775C MIPI→LVDS；**2026-08-12 显示定稿，`0x13=0x63`**） |
++| [p1_nor_4k/](./p1_nor_4k/README.md) | `p1_nor_4k`（纯 HDMI **1080p** + RTL8733BU） |
++
++跨板内容见上层：[../双屏异显/](../双屏异显/README.md)、[../板件新建指南/](../板件新建指南/README.md)、[../系统BUG修复/](../系统BUG修复/README.md)。

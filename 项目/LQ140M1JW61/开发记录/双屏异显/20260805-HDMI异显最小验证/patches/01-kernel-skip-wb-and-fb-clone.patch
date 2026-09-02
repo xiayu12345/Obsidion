@@ -1,0 +1,45 @@
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+index b9ab5770a..34293502b 100644
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+@@ -2451,7 +2451,8 @@ s32 disp_set_hdmi_detect(bool hpd)
+ 		disp_device_set_config(&g_disp_drv.disp_init, 1);
+ 		if (g_disp_drv.disp_init.chn_cfg_mode >= 1) {
+ 			msleep(600);
+-			disp_dual_display_enable();
++			/* TEMP 最小验证：关 WB，视频直出 HDMI；勿改走 else 的 fb_clone */
++			/* disp_dual_display_enable(); */
+ 		} else if (!disp_dual_display_is_enabled()) {
+ 			msleep(300);
+ 			disp_fb_clone_to_screen(0, 1);
+@@ -2616,13 +2617,14 @@ static void start_work(struct work_struct *work)
+ 		}
+ 	}
+ 
++	/* TEMP 最小验证：不自动启 WB（视频只贴 HDMI 时腾出 DE1） */
+ 	/* Auto-enable dual display when screen1 is active with dual-channel config */
+ 	if (g_disp_drv.disp_init.chn_cfg_mode >= 1
+ 	    && bsp_disp_get_output_type(1) != DISP_OUTPUT_TYPE_NONE) {
+-		pr_info("[DISP] auto-enable dual display (chn_cfg=%d, screen1_output=%d)\n",
++		pr_info("[DISP] TEMP skip auto-enable dual display (chn_cfg=%d, screen1_output=%d)\n",
+ 			g_disp_drv.disp_init.chn_cfg_mode,
+ 			bsp_disp_get_output_type(1));
+-		disp_dual_display_enable();
++		/* disp_dual_display_enable(); */
+ 	}
+ }
+ 
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c
+index 9b45c30a6..0ac0bc621 100644
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c
+@@ -622,6 +622,9 @@ void disp_fb_clone_to_screen(int src_fb_id, int dst_screen)
+ 	u32 sw, sh, fb_w, fb_h;
+ 	int x, y, dw, dh;
+ 
++	/* TEMP 最小验证：关 WB 后 pan 会走这里把 UI 镜像到 HDMI；一并关掉 */
++	return;
++
+ 	if (disp_dual_display_is_enabled())
+ 		return;
+ 

@@ -1,0 +1,439 @@
+diff --git a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig
+index 16a453379..324ec0df7 100644
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_auto_nor_defconfig
+@@ -209,3 +209,4 @@ CONFIG_BOOT_GUI=y
+ # CONFIG_BOOT_GUI_DOUBLE_BUF is not set
+ # CONFIG_BOOT_GUI_TEST is not set
+ CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y
++CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP=y
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
+index 0bb2c86b5..669cceb84 100755
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
+@@ -59,6 +59,7 @@ disp-$(CONFIG_LCD_SUPPORT_ZS080NI4003E7H3H_A) += lcd/zs080ni4003e7h3h_a.o
+ disp-$(CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280) += lcd/K101_IM2BYL02_L_800X1280.o
+ disp-$(CONFIG_LCD_SUPPORT_JYY070_LVDS) += lcd/jyy070_lvds.o
+ disp-$(CONFIG_LCD_SUPPORT_JL_M101_JD9365DA) += lcd/jl_m101_jd9365da.o
++disp-$(CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP) += lcd/lq140_mipi2edp.o
+ disp-$(CONFIG_LCD_SUPPORT_JD9366AB_3) += lcd/jd9366ab_3.o
+ disp-$(CONFIG_LCD_SUPPORT_TFT08006) += lcd/tft08006.o
+ 
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
+index a65fe530c..268c3979b 100755
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
+@@ -229,6 +229,12 @@ config LCD_SUPPORT_JL_M101_JD9365DA
+ 	---help---
+ 		JL-M101B196-P21WX-M402632 800x1280 MIPI (JD9365DA-H3).
+ 
++config LCD_SUPPORT_LQ140_MIPI2EDP
++	bool "LCD support LQ140M1JW61 via MIPI-to-eDP bridge"
++	default y
++	---help---
++		Sharp LQ140M1JW61 1920x1080 eDP through QE01MIPI001-V01 (SoC MIPI).
++
+ config LCD_SUPPORT_K101_IM2BYL02_L_800X1280
+ 	bool "LCD support K101_IM2BYL02_L_800X1280 panel"
+ 	default n
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.c b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
+new file mode 100644
+index 000000000..a0b55d82a
+--- /dev/null
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
+@@ -0,0 +1,138 @@
++/*
++ * Sharp LQ140M1JW61；RST=PB11，LCD-PWM=PB12/PWM0；BL-EN 本板不控。
++ * U-Boot 开屏供 logo；占位 init，跳过 DSI。
++ */
++#include "lq140_mipi2edp.h"
++#include "lcd_source.h"
++
++static void LCD_power_on(u32 sel);
++static void LCD_power_off(u32 sel);
++static void LCD_bl_open(u32 sel);
++static void LCD_bl_close(u32 sel);
++static void LCD_panel_init(u32 sel);
++static void LCD_panel_exit(u32 sel);
++
++#define panel_reset(sel, val) sunxi_lcd_gpio_set_value(sel, 0, val)
++
++static void LCD_cfg_panel_info(panel_extend_para *info)
++{
++	u32 i = 0, j = 0;
++	u32 items;
++	u8 lcd_gamma_tbl[][2] = {
++		{0, 0}, {15, 15}, {30, 30}, {45, 45}, {60, 60}, {75, 75},
++		{90, 90}, {105, 105}, {120, 120}, {135, 135}, {150, 150},
++		{165, 165}, {180, 180}, {195, 195}, {210, 210}, {225, 225},
++		{240, 240}, {255, 255},
++	};
++	u32 lcd_cmap_tbl[2][3][4] = {
++		{
++			{LCD_CMAP_G0, LCD_CMAP_B1, LCD_CMAP_G2, LCD_CMAP_B3},
++			{LCD_CMAP_B0, LCD_CMAP_R1, LCD_CMAP_B2, LCD_CMAP_R3},
++			{LCD_CMAP_R0, LCD_CMAP_G1, LCD_CMAP_R2, LCD_CMAP_G3},
++		},
++		{
++			{LCD_CMAP_B3, LCD_CMAP_G2, LCD_CMAP_B1, LCD_CMAP_G0},
++			{LCD_CMAP_R3, LCD_CMAP_B2, LCD_CMAP_R1, LCD_CMAP_B0},
++			{LCD_CMAP_G3, LCD_CMAP_R2, LCD_CMAP_G1, LCD_CMAP_R0},
++		},
++	};
++
++	items = sizeof(lcd_gamma_tbl) / 2;
++	for (i = 0; i < items - 1; i++) {
++		u32 num = lcd_gamma_tbl[i + 1][0] - lcd_gamma_tbl[i][0];
++
++		for (j = 0; j < num; j++) {
++			u32 value = lcd_gamma_tbl[i][1] +
++				((lcd_gamma_tbl[i + 1][1] - lcd_gamma_tbl[i][1]) * j) / num;
++			info->lcd_gamma_tbl[lcd_gamma_tbl[i][0] + j] =
++				(value << 16) + (value << 8) + value;
++		}
++	}
++	info->lcd_gamma_tbl[255] =
++		(lcd_gamma_tbl[items - 1][1] << 16) +
++		(lcd_gamma_tbl[items - 1][1] << 8) +
++		lcd_gamma_tbl[items - 1][1];
++	memcpy(info->lcd_cmap_tbl, lcd_cmap_tbl, sizeof(lcd_cmap_tbl));
++}
++
++static s32 LCD_open_flow(u32 sel)
++{
++	LCD_OPEN_FUNC(sel, LCD_power_on, 10);
++	LCD_OPEN_FUNC(sel, LCD_panel_init, 10);
++	LCD_OPEN_FUNC(sel, sunxi_lcd_tcon_enable, 50);
++	LCD_OPEN_FUNC(sel, LCD_bl_open, 0);
++	return 0;
++}
++
++static s32 LCD_close_flow(u32 sel)
++{
++	LCD_CLOSE_FUNC(sel, LCD_bl_close, 0);
++	LCD_CLOSE_FUNC(sel, sunxi_lcd_tcon_disable, 0);
++	LCD_CLOSE_FUNC(sel, LCD_panel_exit, 200);
++	LCD_CLOSE_FUNC(sel, LCD_power_off, 500);
++	return 0;
++}
++
++static void LCD_power_on(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 1);
++	sunxi_lcd_delay_ms(50);
++	panel_reset(sel, 1);
++	sunxi_lcd_delay_ms(5);
++	panel_reset(sel, 0);
++	sunxi_lcd_delay_ms(10);
++	panel_reset(sel, 1);
++	sunxi_lcd_delay_ms(120);
++}
++
++static void LCD_power_off(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 0);
++	sunxi_lcd_delay_ms(20);
++	panel_reset(sel, 0);
++	sunxi_lcd_delay_ms(5);
++}
++
++static void LCD_bl_open(u32 sel)
++{
++	sunxi_lcd_pwm_enable(sel);
++	sunxi_lcd_backlight_enable(sel);
++}
++
++static void LCD_bl_close(u32 sel)
++{
++	sunxi_lcd_backlight_disable(sel);
++	sunxi_lcd_pwm_disable(sel);
++}
++
++static void LCD_panel_init(u32 sel)
++{
++	/* 与内核一致：起 DSI 时钟；转接板无厂商 DCS 表 */
++	tick_printf("lq140_mipi2edp: panel_init dsi_clk_enable (no DCS)\n");
++	sunxi_lcd_dsi_clk_enable(sel);
++	sunxi_lcd_delay_ms(20);
++}
++
++static void LCD_panel_exit(u32 sel)
++{
++	(void)sel;
++}
++
++static s32 LCD_user_defined_func(u32 sel, u32 para1, u32 para2, u32 para3)
++{
++	(void)sel;
++	(void)para1;
++	(void)para2;
++	(void)para3;
++	return 0;
++}
++
++__lcd_panel_t lq140_mipi2edp_panel = {
++	.name = "lq140_mipi2edp",
++	.func = {
++		.cfg_panel_info = LCD_cfg_panel_info,
++		.cfg_open_flow = LCD_open_flow,
++		.cfg_close_flow = LCD_close_flow,
++		.lcd_user_defined_func = LCD_user_defined_func,
++	},
++};
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.h b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
+new file mode 100644
+index 000000000..e3c4b0b47
+--- /dev/null
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
+@@ -0,0 +1,9 @@
++/* Sharp LQ140M1JW61 1920x1080 eDP via QE01MIPI001-V01 MIPI→eDP bridge */
++#ifndef __LQ140_MIPI2EDP_H__
++#define __LQ140_MIPI2EDP_H__
++
++#include "panels.h"
++
++extern __lcd_panel_t lq140_mipi2edp_panel;
++
++#endif
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
+index cbbec3de9..759339c7c 100755
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
+@@ -163,6 +163,10 @@ __lcd_panel_t* panel_array[] = {
+ 	&jl_m101_jd9365da_panel,
+ #endif
+ 
++#ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
++	&lq140_mipi2edp_panel,
++#endif
++
+ #ifdef CONFIG_LCD_SUPPORT_JD9366AB_3
+ 	&jd9366ab_3_panel,
+ #endif
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
+index ed434c9d2..877630f7e 100755
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
+@@ -260,6 +260,10 @@ extern __lcd_panel_t jyy070_lvds_panel;
+ extern __lcd_panel_t jl_m101_jd9365da_panel;
+ #endif
+ 
++#ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
++extern __lcd_panel_t lq140_mipi2edp_panel;
++#endif
++
+ #ifdef CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280
+ extern __lcd_panel_t K101_IM2BYL02_L_800X1280_mipi_panel;
+ #endif
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
+index f5aa67bc4..022ddec5c 100755
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
+@@ -66,6 +66,7 @@ disp-$(CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280) += lcd/K080_IM2HYL802R_800X1
+ disp-$(CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280) += lcd/K101_IM2BYL02_L_800X1280.o
+ disp-$(CONFIG_LCD_SUPPORT_JYY070_LVDS) += lcd/jyy070_lvds.o
+ disp-$(CONFIG_LCD_SUPPORT_JL_M101_JD9365DA) += lcd/jl_m101_jd9365da.o
++disp-$(CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP) += lcd/lq140_mipi2edp.o
+ 
+ disp-$(CONFIG_EINK_PANEL_USED) += de/disp_eink_manager.o \
+ 		de/eink_buffer_manager.o de/eink_pipeline_manager.o \
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
+index 5c9895c2e..cad9c1f87 100755
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
+@@ -223,3 +223,9 @@ config LCD_SUPPORT_JL_M101_JD9365DA
+ 	---help---
+ 		If you want to support Jinglong JL-M101 800x1280 MIPI (JD9365DA-H3), select it.
+ 
++config LCD_SUPPORT_LQ140_MIPI2EDP
++	bool "LCD support LQ140M1JW61 via MIPI-to-eDP bridge"
++	default y
++	---help---
++		Sharp LQ140M1JW61 1920x1080 eDP through QE01MIPI001-V01 (SoC MIPI).
++
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
+new file mode 100644
+index 000000000..b0b55f030
+--- /dev/null
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.c
+@@ -0,0 +1,138 @@
++/*
++ * Sharp LQ140M1JW61；RST=PB11，LCD-PWM=PB12/PWM0；BL-EN 本板不控。
++ * 占位 init；有厂商表后再填，勿加 DSI 读命令。
++ */
++#include "lq140_mipi2edp.h"
++#include "lcd_source.h"
++
++static void LCD_power_on(u32 sel);
++static void LCD_power_off(u32 sel);
++static void LCD_bl_open(u32 sel);
++static void LCD_bl_close(u32 sel);
++static void LCD_panel_init(u32 sel);
++static void LCD_panel_exit(u32 sel);
++
++#define panel_reset(sel, val) sunxi_lcd_gpio_set_value(sel, 0, val)
++
++static void LCD_cfg_panel_info(struct panel_extend_para *info)
++{
++	u32 i = 0, j = 0;
++	u32 items;
++	u8 lcd_gamma_tbl[][2] = {
++		{0, 0}, {15, 15}, {30, 30}, {45, 45}, {60, 60}, {75, 75},
++		{90, 90}, {105, 105}, {120, 120}, {135, 135}, {150, 150},
++		{165, 165}, {180, 180}, {195, 195}, {210, 210}, {225, 225},
++		{240, 240}, {255, 255},
++	};
++	u32 lcd_cmap_tbl[2][3][4] = {
++		{
++			{LCD_CMAP_G0, LCD_CMAP_B1, LCD_CMAP_G2, LCD_CMAP_B3},
++			{LCD_CMAP_B0, LCD_CMAP_R1, LCD_CMAP_B2, LCD_CMAP_R3},
++			{LCD_CMAP_R0, LCD_CMAP_G1, LCD_CMAP_R2, LCD_CMAP_G3},
++		},
++		{
++			{LCD_CMAP_B3, LCD_CMAP_G2, LCD_CMAP_B1, LCD_CMAP_G0},
++			{LCD_CMAP_R3, LCD_CMAP_B2, LCD_CMAP_R1, LCD_CMAP_B0},
++			{LCD_CMAP_G3, LCD_CMAP_R2, LCD_CMAP_G1, LCD_CMAP_R0},
++		},
++	};
++
++	items = sizeof(lcd_gamma_tbl) / 2;
++	for (i = 0; i < items - 1; i++) {
++		u32 num = lcd_gamma_tbl[i + 1][0] - lcd_gamma_tbl[i][0];
++
++		for (j = 0; j < num; j++) {
++			u32 value = lcd_gamma_tbl[i][1] +
++				((lcd_gamma_tbl[i + 1][1] - lcd_gamma_tbl[i][1]) * j) / num;
++			info->lcd_gamma_tbl[lcd_gamma_tbl[i][0] + j] =
++				(value << 16) + (value << 8) + value;
++		}
++	}
++	info->lcd_gamma_tbl[255] =
++		(lcd_gamma_tbl[items - 1][1] << 16) +
++		(lcd_gamma_tbl[items - 1][1] << 8) +
++		lcd_gamma_tbl[items - 1][1];
++	memcpy(info->lcd_cmap_tbl, lcd_cmap_tbl, sizeof(lcd_cmap_tbl));
++}
++
++static s32 LCD_open_flow(u32 sel)
++{
++	LCD_OPEN_FUNC(sel, LCD_power_on, 10);
++	LCD_OPEN_FUNC(sel, LCD_panel_init, 10);
++	LCD_OPEN_FUNC(sel, sunxi_lcd_tcon_enable, 50);
++	LCD_OPEN_FUNC(sel, LCD_bl_open, 0);
++	return 0;
++}
++
++static s32 LCD_close_flow(u32 sel)
++{
++	LCD_CLOSE_FUNC(sel, LCD_bl_close, 0);
++	LCD_CLOSE_FUNC(sel, sunxi_lcd_tcon_disable, 0);
++	LCD_CLOSE_FUNC(sel, LCD_panel_exit, 200);
++	LCD_CLOSE_FUNC(sel, LCD_power_off, 500);
++	return 0;
++}
++
++static void LCD_power_on(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 1);
++	sunxi_lcd_delay_ms(50);
++	panel_reset(sel, 1);
++	sunxi_lcd_delay_ms(5);
++	panel_reset(sel, 0);
++	sunxi_lcd_delay_ms(10);
++	panel_reset(sel, 1);
++	sunxi_lcd_delay_ms(120);
++}
++
++static void LCD_power_off(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 0);
++	sunxi_lcd_delay_ms(20);
++	panel_reset(sel, 0);
++	sunxi_lcd_delay_ms(5);
++}
++
++static void LCD_bl_open(u32 sel)
++{
++	sunxi_lcd_pwm_enable(sel);
++	sunxi_lcd_backlight_enable(sel);
++}
++
++static void LCD_bl_close(u32 sel)
++{
++	sunxi_lcd_backlight_disable(sel);
++	sunxi_lcd_pwm_disable(sel);
++}
++
++static void LCD_panel_init(u32 sel)
++{
++	/* QE01 MIPI→eDP：通常无需 DCS，但必须起 DSI 时钟，再 tcon 推 Video */
++	pr_info("lq140_mipi2edp: panel_init dsi_clk_enable (no DCS)\n");
++	sunxi_lcd_dsi_clk_enable(sel);
++	sunxi_lcd_delay_ms(20);
++}
++
++static void LCD_panel_exit(u32 sel)
++{
++	(void)sel;
++}
++
++static s32 LCD_user_defined_func(u32 sel, u32 para1, u32 para2, u32 para3)
++{
++	(void)sel;
++	(void)para1;
++	(void)para2;
++	(void)para3;
++	return 0;
++}
++
++struct __lcd_panel lq140_mipi2edp_panel = {
++	.name = "lq140_mipi2edp",
++	.func = {
++		.cfg_panel_info = LCD_cfg_panel_info,
++		.cfg_open_flow = LCD_open_flow,
++		.cfg_close_flow = LCD_close_flow,
++		.lcd_user_defined_func = LCD_user_defined_func,
++	},
++};
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.h b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
+new file mode 100644
+index 000000000..1913ca75b
+--- /dev/null
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/lq140_mipi2edp.h
+@@ -0,0 +1,9 @@
++/* Sharp LQ140M1JW61 1920x1080 eDP via QE01MIPI001-V01 MIPI→eDP bridge */
++#ifndef __LQ140_MIPI2EDP_H__
++#define __LQ140_MIPI2EDP_H__
++
++#include "panels.h"
++
++extern struct __lcd_panel lq140_mipi2edp_panel;
++
++#endif
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
+index 4b225741f..1ee20827a 100755
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
+@@ -132,6 +132,9 @@ struct __lcd_panel *panel_array[] = {
+ #endif
+ #ifdef CONFIG_LCD_SUPPORT_JL_M101_JD9365DA
+ 	&jl_m101_jd9365da_panel,
++#endif
++#ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
++	&lq140_mipi2edp_panel,
+ #endif
+ 	NULL,
+ };
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
+index 90154442e..9731eeee2 100755
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
+@@ -173,5 +173,8 @@ extern struct __lcd_panel jyy070_lvds_panel;
+ #ifdef CONFIG_LCD_SUPPORT_JL_M101_JD9365DA
+ extern struct __lcd_panel jl_m101_jd9365da_panel;
+ #endif
++#ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
++extern struct __lcd_panel lq140_mipi2edp_panel;
++#endif
+ 
+ #endif

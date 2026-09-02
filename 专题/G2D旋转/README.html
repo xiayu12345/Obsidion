@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LVGL G2D 旋转（原厂 `smem_start` IOVA） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -125,13 +125,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 远端 | <code>http://120.236.79.20:43000/xiayu/AI-KTV.git</code> 分支 <code>xia_g2d_rotate</code> |</p>
 <p>| 提交 | <code>01f2f8f9d</code> → <code>37bf0adfb</code>（fd 弯路）→ <code>65aee7183</code> 改回 IOVA |</p>
 <p>| 验证板 | 本地 lunch <code>p1_nor_ZS101</code>（<strong>远端分支没有这块板</strong>） |</p>
-<p>| 补丁 | <a href="./patches/">patches/</a> |</p>
-<p>| 正文 | <a href="./开发记录.md">开发记录.md</a> |</p>
-<p>| 原理 | <a href="../../H133-G2D-smem_start.md">H133-G2D-smem_start.md</a> |</p>
+<p>| 补丁 | <a href="专题/G2D旋转/patches">patches/</a> |</p>
+<p>| 正文 | <a href="专题/G2D旋转/开发记录.md">开发记录.md</a> |</p>
+<p>| 原理 | <a href="H133-G2D-smem_start.md">H133-G2D-smem_start.md</a> |</p>
 <p>| SDK 摘录 | <a href="../../../docs/H133-LVGL-G2D旋转翻页.md"><code>docs/H133-LVGL-G2D旋转翻页.md</code></a> |</p>
 <h2>一句话</h2>
 <p>旋转走 G2D；本板 <code>smem_start=0</code> 是合法 <strong>IOVA</strong>，跟原厂一样 <code>use_phy_addr=1</code>。不要导 dmabuf fd。</p>
-<p>切页根因见 <a href="../切页撕裂/)。<strong>只要翻页、不要 G2D</strong> 见 [原厂翻页](../原厂翻页/">切页撕裂</a>。</p>
+<p>切页根因见 <a href="专题/切页撕裂/)。<strong>只要翻页、不要 G2D</strong> 见 [原厂翻页](../原厂翻页">切页撕裂</a>。</p>
 <h2>合入（产品定稿）</h2>
 <p>在 <code>xia_yixian</code> 上按顺序 <code>git am</code>：</p>
 <pre><code>cd H133-AI-Skills/开发记录/G2D旋转/patches
@@ -141,11 +141,11 @@ git am 0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch \
 <p>已有远端：</p>
 <pre><code>git fetch http://120.236.79.20:43000/xiayu/AI-KTV.git xia_g2d_rotate
 git cherry-pick 01f2f8f9d 37bf0adfb 65aee7183</code></pre>
-<p><strong>禁止</strong>先合 <a href="../原厂翻页/">原厂翻页</a> 的独立 <code>0001</code> 再合这里的 <code>0002</code>/<code>0004</code>。  </p>
+<p><strong>禁止</strong>先合 <a href="专题/原厂翻页">原厂翻页</a> 的独立 <code>0001</code> 再合这里的 <code>0002</code>/<code>0004</code>。  </p>
 <p><strong>禁止</strong>停在 <code>0002</code>（fd 导出 + <code>close</code> 会打崩 mmap 的 ION）。</p>
-<p><code>0003</code> 是其它 lunch 开开关的<strong>示例</strong>（路径含 <code>&lt;BOARD&gt;</code>），<strong>不要</strong> <code>git apply</code>。p2 保持关。</p>
+<p><code>0003</code> 是其它 lunch 开开关的<strong>示例</strong>（路径含 <code>&lt;BOARD&gt;</code>），<strong>不要</strong> <code>git apply</code>。p2 保持关。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="专题/G2D旋转/patches/0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch" download="0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch">下载 0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch</a><a class="dl" href="专题/G2D旋转/patches/0001-feat-LVGL-G2D-DIRECT-MODE-FBIOPAN.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/G2D旋转/patches/0002-fix-IOMMU-G2D-dmabuf-fd.patch" download="0002-fix-IOMMU-G2D-dmabuf-fd.patch">下载 0002-fix-IOMMU-G2D-dmabuf-fd.patch</a><a class="dl" href="专题/G2D旋转/patches/0002-fix-IOMMU-G2D-dmabuf-fd.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/G2D旋转/patches/0003-example-other-board-defconfig.patch" download="0003-example-other-board-defconfig.patch">下载 0003-example-other-board-defconfig.patch</a><a class="dl" href="专题/G2D旋转/patches/0003-example-other-board-defconfig.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/G2D旋转/patches/0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch" download="0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch">下载 0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch</a><a class="dl" href="专题/G2D旋转/patches/0004-fix-G2D-smem_start-IOVA-not-dmabuf-fd.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -213,7 +213,7 @@ git cherry-pick 01f2f8f9d 37bf0adfb 65aee7183</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

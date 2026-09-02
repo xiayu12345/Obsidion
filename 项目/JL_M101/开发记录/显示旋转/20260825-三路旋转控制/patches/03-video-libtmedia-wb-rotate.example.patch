@@ -1,0 +1,12 @@
+# 示例：新板点名 VIDEO_WB_MIRROR_ROTATE（竖屏加进 =90；横屏加进 =0）
+# 路径：openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+# 只追加本 target，不要改 tlayer_ctrl.c 按板名分支。
+# 改完 touch tlayer_ctrl.c 后编 rootfs。勿 git apply 本文件。
+
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_ZS101),y)
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_ZS101)$(CONFIG_TARGET_h133_<BOARD>),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif

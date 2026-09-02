@@ -1,0 +1,29 @@
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+index fc2432c41..d3a47b4a5 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
++++ b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+@@ -37,6 +37,11 @@ ifeq ($(CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE),y)
+ TARGET_CFLAGS+=-DUSE_SUNXIFB_DIRECT_MODE
+ endif
+ 
++# p1_nor_JYY070: 7.2" MIPI 800x1280 竖屏，UI 不旋转；p1_nor 等仍用 projector_config.h 默认 3
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
++TARGET_CFLAGS+=-DLV_PROJECTOR_DISP_ROTATE=0
++endif
++
+ ifeq ($(CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER),y)
+ TARGET_CFLAGS+=-DUSE_HARDWARE_JPEGDECODER
+ TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/allwinner/include
+diff --git a/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h b/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
+index 3907e51db..079f3da6b 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
++++ b/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
+@@ -104,7 +104,7 @@
+ /*
+  * sunxifb 显示旋转（G2D 不可用时走 CPU 软转）
+  * 0=无  1=90°  2=180°  3=270°
+- * 命令行仍可覆盖：lv_projector 1
++ * 默认 3（p1_nor 等横屏 UI）；p1_nor_JYY070 在 sunxifb.mk 里 -DLV_PROJECTOR_DISP_ROTATE=0 覆盖
+  */
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+ #define LV_PROJECTOR_DISP_ROTATE  3

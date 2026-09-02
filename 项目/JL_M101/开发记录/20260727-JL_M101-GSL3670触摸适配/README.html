@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JL-M101 GSL3670 触摸适配 — 文档索引 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -172,14 +172,14 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| bin md5 | <code>26c831f3d9884fecc5fdbd329d863a3e</code>（42227 字节） |</p>
 <p>| startup | <code>0xb0=5a5a5a5a</code> (OK) |</p>
 <p>| 镜像（08-03） | <code>out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code> md5 <code>e8bb8718230399d5c2ed958d73f9a29b</code> |</p>
-<p>| 基线 | 须先有 <a href="../20260722-JL_M101-板件新建与MIPI显示定稿/">20260722 显示定稿</a>（原 ctp 为 gt911@5d） |</p>
+<p>| 基线 | 须先有 <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿">20260722 显示定稿</a>（原 ctp 为 gt911@5d） |</p>
 <p>---</p>
 <h2>阅读</h2>
 <p>| 文档 | 内容 |</p>
 <p>|---|---|</p>
-<p>| <a href="./开发记录.md">开发记录.md</a> | 结论、固件来源、A/B、坐标调校、踩坑、验收 |</p>
+<p>| <a href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.md">开发记录.md</a> | 结论、固件来源、A/B、坐标调校、踩坑、验收 |</p>
 <h2>补丁</h2>
-<p>路径：<a href="./patches/">patches/</a></p>
+<p>路径：<a href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/patches">patches/</a></p>
 <p>| 文件 | 作用 |</p>
 <p>|---|---|</p>
 <p>| <code>01-dts-config-gsl3670.patch</code> | board.dts gt911→gsl3670（含坐标定稿）；<code>CONFIG_EXTRA_FIRMWARE</code>；新增 <code>tools/gsl_pack_firmware.py</code> |</p>
@@ -209,9 +209,9 @@ rm -rf out/h133/kernel/build/drivers/base/firmware_loader/builtin/gsl_firmware
 </ul>
 <p>---</p>
 <p>*2026-07-28：四角对齐定稿；技术支持定稿 <code>.h</code> 后 <code>0xb0</code> 通过；源头放入 <code>gslx680new/</code>。*  </p>
-<p>*2026-08-03：<code>report_max</code> 改为 <strong>1280×800</strong>（不再映回 fb 800×1280），对齐 <code>disp_rotate=3</code> 的 LVGL；勿改 <code>tp_rotate</code>。*</p>
+<p>*2026-08-03：<code>report_max</code> 改为 <strong>1280×800</strong>（不再映回 fb 800×1280），对齐 <code>disp_rotate=3</code> 的 LVGL；勿改 <code>tp_rotate</code>。*</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/patches/01-dts-config-gsl3670.patch" download="01-dts-config-gsl3670.patch">下载 01-dts-config-gsl3670.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/patches/01-dts-config-gsl3670.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/patches/apply-jl-m101-gsl3670-tp.sh" download="apply-jl-m101-gsl3670-tp.sh">下载 apply-jl-m101-gsl3670-tp.sh</a><a class="dl" href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/patches/apply-jl-m101-gsl3670-tp.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -279,7 +279,7 @@ rm -rf out/h133/kernel/build/drivers/base/firmware_loader/builtin/gsl_firmware
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

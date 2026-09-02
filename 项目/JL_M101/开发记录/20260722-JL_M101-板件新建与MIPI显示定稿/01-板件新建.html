@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>01 — 板件新建（从 p1_nor_8733 克隆） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -180,7 +180,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>uboot-board.dts</code> | 实文件，与内核 lcd0 同步改 |</p>
 <p>| <code>bootlogo.bmp</code> | 可从 8733 复制；可不进补丁 |</p>
 <p>| <code>openwrt/</code>、<code>bsp/</code>、<code>env.cfg</code>、分区 fex | 随克隆保留；hostname 等在 OpenWrt target 改 |</p>
-<p>关键改动点（详情见 <a href="./03-DTS与背光PWM.md">03</a>）：</p>
+<p>关键改动点（详情见 <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.md">03</a>）：</p>
 <ul>
 <li><code>lcd_driver_name = &quot;jl_m101_jd9365da&quot;</code></li>
 <li>时序 / DSI 4-lane / <code>lcd_gpio_0=PB11</code></li>
@@ -244,10 +244,10 @@ cp -a openwrt/target/h133/h133-p1_nor_8733 openwrt/target/h133/h133-p1_nor_JL_M1
 # 复制并改名编译脚本
 cp tools/build_p1_nor_8733.sh tools/build_p1_nor_JL_M101.sh
 # 把脚本内 BOARD/LUNCH 改为 p1_nor_JL_M101 / h133-p1_nor_JL_M101-tina</code></pre>
-<p>随后按 <a href="./02-panel与init.md)、[03](./03-DTS与背光PWM.md">02</a> 改 panel 与 DTS。  </p>
-<p>也可直接打 phase1 合并补丁（见 <code>20260720-…/patches/</code>），再叠定稿期的 PWM/bl 改动。</p>
+<p>随后按 <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.md)、[03](./03-DTS与背光PWM.md">02</a> 改 panel 与 DTS。  </p>
+<p>也可直接打 phase1 合并补丁（见 <code>20260720-…/patches/</code>），再叠定稿期的 PWM/bl 改动。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/01-kernel-uboot-panel.patch" download="01-kernel-uboot-panel.patch">下载 01-kernel-uboot-panel.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/01-kernel-uboot-panel.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/02-board-tree.patch" download="02-board-tree.patch">下载 02-board-tree.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/02-board-tree.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/03-shared-hooks.patch" download="03-shared-hooks.patch">下载 03-shared-hooks.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/03-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/04-docs.patch" download="04-docs.patch">下载 04-docs.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/04-docs.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/apply-jl-m101-display-final.sh" download="apply-jl-m101-display-final.sh">下载 apply-jl-m101-display-final.sh</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/apply-jl-m101-display-final.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/gen-jl-m101-display-final-patch.sh" download="gen-jl-m101-display-final-patch.sh">下载 gen-jl-m101-display-final-patch.sh</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/gen-jl-m101-display-final-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/jl-m101-display-final.patch" download="jl-m101-display-final.patch">下载 jl-m101-display-final.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/jl-m101-display-final.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -315,7 +315,7 @@ cp tools/build_p1_nor_8733.sh tools/build_p1_nor_JL_M101.sh
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

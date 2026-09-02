@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000003 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 18:00:00 +0800
+Subject: [PATCH 3/4] libkey: sst_test 读写缓冲 128/256 提到 512
+
+对齐 U-Boot 读 snum 的 512 缓冲，支持约 256 字节 SN。
+
+---
+diff --git a/platform/allwinner/common/libkey/demo/main.c b/platform/allwinner/common/libkey/demo/main.c
+index 165b402fb..0c55091eb 100644
+--- a/platform/allwinner/common/libkey/demo/main.c
++++ b/platform/allwinner/common/libkey/demo/main.c
+@@ -80,7 +80,7 @@ void help(void)
+ 
+ int main(int argc, char **argv)
+ {
+-	char buf[256], hdcpkey_file_data[HDCPKEY_BIN_LEN], encrypt_hdcp_key[SUNXI_HDCP_KEY_LEN];
++	char buf[512], hdcpkey_file_data[HDCPKEY_BIN_LEN], encrypt_hdcp_key[SUNXI_HDCP_KEY_LEN];
+ 	int ret, retLen;
+ 	sunxi_secure_storage_info secure_object;
+ 
+@@ -89,7 +89,7 @@ int main(int argc, char **argv)
+ 	}
+ 	if (!strncmp(argv[1], "-r", 2)) {
+ 		if (argv[2]) {	/* api read */
+-			ret = private_data_read(argv[2], buf, 256, &retLen);
++			ret = private_data_read(argv[2], buf, 512, &retLen);
+ 			if (ret < 0) {
+ 				printf("[api] Read %s fail\n", argv[2]);
+ 			} else {
+@@ -99,10 +99,10 @@ int main(int argc, char **argv)
+ 			ret = secure_storage_support();
+ 			if (!ret) {	/*support */
+ 				if (sunxi_secure_storage_init() == 0) {
+-					memset(buf, 0x0, 256);
++					memset(buf, 0x0, 512);
+ 					ret =
+ 					    sunxi_secure_object_read(argv[2],
+-								     buf, 256,
++								     buf, 512,
+ 								     &retLen);
+ 					if (ret < 0) {
+ 						printf("[sst] Read %s fail\n",
+@@ -122,9 +122,9 @@ int main(int argc, char **argv)
+ 			/* private read */
+ 			ret = private_bare_key_support();
+ 			if (!ret) {	/* support */
+-				memset(buf, 0x0, 256);
++				memset(buf, 0x0, 512);
+ 				ret =
+-				    sunxi_private_store_read(argv[2], buf, 256,
++				    sunxi_private_store_read(argv[2], buf, 512,
+ 							     &retLen);
+ 				if (ret < 0) {
+ 					printf("[pri] Read %s fail\n", argv[2]);
+@@ -142,7 +142,7 @@ int main(int argc, char **argv)
+ 			} else {
+ 				ret =
+ 				    private_data_write(argv[2], argv[3],
+-						   strnlen(argv[3], 128));
++						   strnlen(argv[3], 512));
+ 				if (ret < 0) {
+ 					printf("Write %s fail\n", argv[2]);
+ 					goto error;

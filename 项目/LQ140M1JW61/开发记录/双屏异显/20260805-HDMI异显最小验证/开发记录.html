@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>HDMI 异显最小验证 — 开发记录（历史 TEMP） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -170,10 +170,10 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-08-05（卡顿闭环 <strong>2026-08-06</strong>） |</p>
 <p>| 范围 | 架构通路验证 |</p>
 <p>| 验证板 | <code>p1_nor_JL_M101</code> |</p>
-<p>| 显示定稿（板级） | <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/">JL_M101 20260722 定稿</a> |</p>
-<p>| 架构参考 | <a href="../LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> |</p>
-<p>| 补丁 | <a href="./patches/">patches/</a> |</p>
-<p>| 结论 | <strong>TEMP 异显通路 + 流畅度均通过</strong>（历史对照）。产品切换见 <a href="../20260806-同异显切换/">20260806-同异显切换</a>（<strong>WB 常开</strong>，勿再 TEMP 关 WB） |</p>
+<p>| 显示定稿（板级） | <a href="项目/LQ140M1JW61/开发记录/双屏异显/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿">JL_M101 20260722 定稿</a> |</p>
+<p>| 架构参考 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> |</p>
+<p>| 补丁 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches">patches/</a> |</p>
+<p>| 结论 | <strong>TEMP 异显通路 + 流畅度均通过</strong>（历史对照）。产品切换见 <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换">20260806-同异显切换</a>（<strong>WB 常开</strong>，勿再 TEMP 关 WB） |</p>
 <p>---</p>
 <h2>1. 目标与结论</h2>
 <h3>1.1 产品意图（后续接口）</h3>
@@ -294,9 +294,9 @@ git apply -R H133-AI-Skills/开发记录/双屏异显/20260805-HDMI异显最小�
 <h2>8. 变更文件速查</h2>
 <pre><code>kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
 kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c
-platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></pre>
+platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></pre><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/01-kernel-skip-wb-and-fb-clone.patch" download="01-kernel-skip-wb-and-fb-clone.patch">下载 01-kernel-skip-wb-and-fb-clone.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/01-kernel-skip-wb-and-fb-clone.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/02-tlayer-hdmi-only-fence-screen.patch" download="02-tlayer-hdmi-only-fence-screen.patch">下载 02-tlayer-hdmi-only-fence-screen.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/02-tlayer-hdmi-only-fence-screen.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/apply-hdmi-diff-temp.sh" download="apply-hdmi-diff-temp.sh">下载 apply-hdmi-diff-temp.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/apply-hdmi-diff-temp.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/hdmi-diff-display-temp.patch" download="hdmi-diff-display-temp.patch">下载 hdmi-diff-display-temp.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/hdmi-diff-display-temp.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -364,7 +364,7 @@ platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></pre
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

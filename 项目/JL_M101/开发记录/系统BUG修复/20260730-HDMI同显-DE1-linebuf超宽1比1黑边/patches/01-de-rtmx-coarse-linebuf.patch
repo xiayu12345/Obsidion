@@ -1,0 +1,29 @@
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_rtmx.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_rtmx.c
+index a85e5bade..3c003db75 100644
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_rtmx.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_rtmx.c
+@@ -1574,8 +1574,14 @@ static int de_rtmx_get_coarse_fac(unsigned int sel, unsigned int ovl_w,
+ 	*chn = 0;
+ 	*midyw = ovl_w;
+ 	*midcw = ovl_w >> wshift;
+-	/* not scaler */
+-	if ((ovl_w == vsu_outw) && (ovl_h == vsu_outh)) {
++
++	/*
++	 * 源与屏同尺寸时原逻辑直接 return，不查 linebuf。
++	 * H133 DE1 scale_line_buffer 仅 1024，YUV 同显 1920 1:1 会超限花屏/黑边；
++	 * 超宽时即使「1:1」也要走下面的 coarse，压到 linebuf 再由 VSU 拉满。
++	 */
++	linebuf = de_feat_get_scale_linebuf(sel);
++	if ((ovl_w == vsu_outw) && (ovl_h == vsu_outh) && (ovl_w <= linebuf)) {
+ 		*yvm = 0;
+ 		*yvn = 0;
+ 		*cvm = 0;
+@@ -1585,7 +1591,6 @@ static int de_rtmx_get_coarse_fac(unsigned int sel, unsigned int ovl_w,
+ 		return status;
+ 	}
+ 
+-	linebuf = de_feat_get_scale_linebuf(sel);
+ 	if ((ovl_w > linebuf)
+ 	    && (ovl_w > 8 * vsu_outw)) {
+ 		tmpyhn = (linebuf < (8 * vsu_outw)) ?

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>01 — 板件新建（从 p1_nor_8733 克隆） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -157,7 +157,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>uboot-board.dts</code> / <code>sys_*.fex</code> / <code>env.cfg</code> | 若为软链 → 从 <code>p1_nor</code> 拷成实文件 |</p>
 <p>| <code>board.dts</code> | <code>ln -sfn linux-5.4/board.dts board.dts</code> |</p>
 <p>| <code>bootlogo.bmp</code> | 可从 8733 复制；可不进补丁 |</p>
-<p>随后用 <a href="./patches/01-hdmi4k-dts-delta.patch) 改 HDMI 4K（详见 [02](./02-HDMI-4K-DTS与setting.md">patches/01-hdmi4k-dts-delta.patch</a>）。</p>
+<p>随后用 <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch) 改 HDMI 4K（详见 [02](./02-HDMI-4K-DTS与setting.md">patches/01-hdmi4k-dts-delta.patch</a>）。</p>
 <h3>B. OpenWrt target</h3>
 <p>源：<code>openwrt/target/h133/h133-p1_nor_8733/</code>  </p>
 <p>目标：<code>openwrt/target/h133/h133-p1_nor_4k/</code></p>
@@ -165,14 +165,14 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>|---|---|</p>
 <p>| 整树拷贝 | <code>cp -a h133-p1_nor_8733 h133-p1_nor_4k</code> |</p>
 <p>| 文本替换 | <code>h133-p1_nor_8733</code>→<code>h133-p1_nor_4k</code>，<code>p1_nor_8733</code>→<code>p1_nor_4k</code>（<strong>勿误伤</strong> <code>RTL8733BU</code> 字符串时需人工看） |</p>
-<p>| <code>setting.ini</code> 等 | 打 <a href="./patches/02-openwrt-target-delta.patch">02-openwrt-target-delta.patch</a> |</p>
+<p>| <code>setting.ini</code> 等 | 打 <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch">02-openwrt-target-delta.patch</a> |</p>
 <p>包选型继承 8733：<code>rtl8733bu-kmod</code> + firmware，<strong>不开 AIC8800 作用户态主 WiFi</strong>。</p>
 <h3>C. 编译脚本</h3>
-<p><a href="./patches/03-build-script.patch">03-build-script.patch</a> 新增：</p>
+<p><a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch">03-build-script.patch</a> 新增：</p>
 <pre><code>./tools/build_p1_nor_4k.sh kernel|rootfs|full
 # 产物：out/h133_linux_p1_nor_4k_uart0_nor.img</code></pre>
 <h2>1.2 公共挂钩（最小、必须）</h2>
-<p>见 <a href="./patches/04-shared-hooks.patch">04-shared-hooks.patch</a>：</p>
+<p>见 <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch">04-shared-hooks.patch</a>：</p>
 <p>| 文件 | 内容 |</p>
 <p>|---|---|</p>
 <p>| <code>openwrt/.openwrt_targets</code> | 增加 <code>h133-p1_nor_4k-tina</code> |</p>
@@ -201,9 +201,9 @@ cp -a $OW/h133-p1_nor_8733 $OW/h133-p1_nor_4k
 <li><input type="checkbox" disabled /> 本板 <code>fb0=3840×2160</code>、<code>screen0_output_mode=28</code>、<code>lcd_used=0</code></li>
 <li><input type="checkbox" disabled /> lunch / <code>.buildconfig</code>：<code>LICHEE_BOARD=p1_nor_4k</code></li>
 <li><input type="checkbox" disabled /> OpenWrt：<code>rtl8733bu-kmod=y</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch" download="01-hdmi4k-dts-delta.patch">下载 01-hdmi4k-dts-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch" download="02-openwrt-target-delta.patch">下载 02-openwrt-target-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch" download="03-build-script.patch">下载 03-build-script.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch" download="04-shared-hooks.patch">下载 04-shared-hooks.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh" download="apply-p1_nor_4k-board.sh">下载 apply-p1_nor_4k-board.sh</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -271,7 +271,7 @@ cp -a $OW/h133-p1_nor_8733 $OW/h133-p1_nor_4k
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -1,0 +1,29 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+@@ -1056,8 +1056,9 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1024>;
+-	fb0_height               = <600>;
++	/* UI 设计 1280×800，DE0 VSU 缩放到 LVDS 1024×600 */
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
+@@ -297,8 +297,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1024>;
+-	fb0_height               = <600>;
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;

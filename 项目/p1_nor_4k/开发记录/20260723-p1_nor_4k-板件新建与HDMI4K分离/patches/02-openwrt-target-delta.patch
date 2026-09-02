@@ -1,0 +1,52 @@
+Subject: [PATCH] p1_nor_4k board: OpenWrt target delta after clone-from-8733 rename
+
+---
+diff --git a/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/hostname b/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/hostname
+--- a/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/hostname	2026-07-23 02:31:14.377509873 -0700
++++ b/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/hostname	2026-07-23 02:31:14.377509873 -0700
+@@ -1 +1 @@
+-TinaLinux
+\ No newline at end of file
++TinaLinux-4k
+diff --git a/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini b/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini
+--- a/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini	2026-07-23 02:31:14.297509688 -0700
++++ b/openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini	2026-07-23 02:31:14.301509698 -0700
+@@ -61,11 +61,11 @@
+ 
+ [display]
+ # 0=0° 1=90° 2=180° 3=270°
+-disp_rotate = 3
++disp_rotate = 0
+ tp_rotate = 0
+-# 视频 layer：DE 屏坐标（竖屏）
+-video_screen_w = 800
+-video_screen_h = 1280
++# 视频 layer：DE 屏坐标（HDMI 4K 横屏）
++video_screen_w = 3840
++video_screen_h = 2160
+ video_small_x = 330
+ video_small_y = 360
+ video_small_w = 320
+@@ -83,8 +83,8 @@
+ sun_video_lb_w = 210
+ sun_video_lb_h = 373
+ # 全屏
+-sun_video_screen_w = 800
+-sun_video_screen_h = 1280
++sun_video_screen_w = 3840
++sun_video_screen_h = 2160
+ 
+ [s_standard]
+ bass = 0
+diff --git a/openwrt/target/h133/h133-p1_nor_4k/Makefile b/openwrt/target/h133/h133-p1_nor_4k/Makefile
+--- a/openwrt/target/h133/h133-p1_nor_4k/Makefile	2026-07-23 02:31:14.377509873 -0700
++++ b/openwrt/target/h133/h133-p1_nor_4k/Makefile	2026-07-23 02:31:14.377509873 -0700
+@@ -9,7 +9,7 @@
+ 
+ ARCH:=arm
+ BOARD:=h133-p1_nor_4k
+-BOARDNAME:=h133-p1_nor_4k (RTL8733BU USB WiFi)
++BOARDNAME:=h133-p1_nor_4k (pure HDMI 4K30 + RTL8733BU)
+ FEATURES:=fpu dt
+ CPU_TYPE:=cortex-a7
+ CPU_SUBTYPE:=neon

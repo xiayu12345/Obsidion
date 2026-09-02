@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>GPADC 按键识别 — 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -127,8 +127,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>|---|---|</p>
 <p>| 日期 | 2026-08-31 |</p>
 <p>| 范围 | 京龙 <code>p1_nor_JL_M101</code> 内核 DTS |</p>
-<p>| 改配置 | <a href="./如何修改.md">如何修改.md</a> |</p>
-<p>| 测试 | <a href="./测试方法.md">测试方法.md</a> |</p>
+<p>| 改配置 | <a href="专题/GPADC电阻按键/20260831-三键识别/如何修改.md">如何修改.md</a> |</p>
+<p>| 测试 | <a href="专题/GPADC电阻按键/20260831-三键识别/测试方法.md">测试方法.md</a> |</p>
 <p>| 状态 | 两块板 ADC 不同，<strong>两套电压都保留</strong>；当前 DTS/镜像用板乙（经 RA22）；LVGL 未接 |</p>
 <p>---</p>
 <h2>1. 要解决什么</h2>
@@ -167,7 +167,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 5.1k | 335 | 335 |</p>
 <p>| 6.8k | 373 | 373 |</p>
 <p>| 15k | 533 | 533 |</p>
-<p><code>J9538</code> 是 MIC，不是 KEY。换板必须重新测电压，不要拿另一块的 mV 硬套。步骤见 <a href="./测试方法.md">测试方法.md</a>。</p>
+<p><code>J9538</code> 是 MIC，不是 KEY。换板必须重新测电压，不要拿另一块的 mV 硬套。步骤见 <a href="专题/GPADC电阻按键/20260831-三键识别/测试方法.md">测试方法.md</a>。</p>
 <p>---</p>
 <h2>3. 驱动行为</h2>
 <p>驱动：<code>kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.c</code></p>
@@ -190,11 +190,11 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>key3_vol/val</code> | 373 / 114 |</p>
 <p>| <code>key4_vol/val</code> | 533 / 115 |</p>
 <p>| <code>lowdata</code> / <code>higdata</code> | 1700000 / 1550000 |</p>
-<p>板甲若要刷同一软件，把 <code>keyN_vol</code> 改成 3 / 106 / 161 / 208 / 404 再编 kernel。写法见 <a href="./如何修改.md">如何修改.md</a>。</p>
+<p>板甲若要刷同一软件，把 <code>keyN_vol</code> 改成 3 / 106 / 161 / 208 / 404 再编 kernel。写法见 <a href="专题/GPADC电阻按键/20260831-三键识别/如何修改.md">如何修改.md</a>。</p>
 <p>编包：<code>./tools/build_p1_nor_JL_M101.sh kernel</code> 再 <code>./build.sh pack</code>。禁止在 WSL 本地 <code>make</code> 出 <code>.o</code>。</p>
 <p>---</p>
 <h2>5. 实测结论</h2>
-<p>读电压、hexdump、长按、失败判定的<strong>完整步骤</strong>在 <a href="./测试方法.md">测试方法.md</a>，不要只看本节。</p>
+<p>读电压、hexdump、长按、失败判定的<strong>完整步骤</strong>在 <a href="专题/GPADC电阻按键/20260831-三键识别/测试方法.md">测试方法.md</a>，不要只看本节。</p>
 <ul>
 <li>板甲五档 ADC：3 / 106 / 161 / 208 / 404；板乙：207 / 291 / 335 / 373 / 533；空闲 ~1800</li>
 <li>电阻档位相同，两块板 hex 相同：<code>a4</code> / <code>a5</code> / <code>a3</code> / <code>72</code> / <code>73</code>（164 / 165 / 163 / 114 / 115）</li>
@@ -209,9 +209,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <li>两块板电阻档位相同，ADC 差一截：板甲 3/106/161/208/404，板乙 207/291/335/373/533，表不能混用</li>
 <li><code>key0_vol</code> 在经 RA22 的板上不能写 0：座子短路芯片约 0.21V</li>
 <li>板乙上 5.1k 与 6.8k 只差约 38mV，接触不稳会串下一曲/音量减</li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="专题/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch" download="gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">下载 gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a><a class="dl" href="专题/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -279,7 +279,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

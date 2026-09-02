@@ -1,0 +1,17 @@
+# 示例：其它 lunch 板 defconfig 与 p1_nor 对齐
+# 路径：openwrt/target/h133/h133-<BOARD>/defconfig（ota/qa 同样三处）
+# CACHE 保持关闭。改完清 liblvgl 再编 rootfs。
+# 这是示例，路径含 <BOARD>，勿直接 git apply。
+
+--- a/openwrt/target/h133/h133-<BOARD>/defconfig
++++ b/openwrt/target/h133/h133-<BOARD>/defconfig
+@@
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y

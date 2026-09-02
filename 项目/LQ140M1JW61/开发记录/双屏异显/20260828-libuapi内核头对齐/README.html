@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>异显合并后 libuapi 与内核头对齐 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -171,14 +171,14 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 范围 | <strong>架构级</strong>（所有 MIPI+HDMI 板；工具链头全板共用） |</p>
 <p>| 验证板 | <code>p1_nor_ZS101</code>（首曝 Oops） |</p>
 <p>| 状态 | <strong>定稿</strong>：官方 <code>#include &lt;video/sunxi_display2.h&gt;</code>；工具链头换成内核那份 |</p>
-<p>| 正文 | <a href="./开发记录.md">开发记录.md</a> |</p>
-<p>| 前置 | <a href="../20260806-同异显切换/">20260806-同异显切换</a>（WB 常开已合进内核） |</p>
+<p>| 正文 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐/开发记录.md">开发记录.md</a> |</p>
+<p>| 前置 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换">20260806-同异显切换</a>（WB 常开已合进内核） |</p>
 <p>| SDK 摘录 | <code>docs/H133-异显合并-libuapi与内核头对齐.md</code> |</p>
-<p>| 用法 | <a href="../使用与构建.md">../使用与构建.md</a> |</p>
+<p>| 用法 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.md">../使用与构建.md</a> |</p>
 <h2>一句话</h2>
 <p>内核把头变长之后，官方 libuapi 仍吃工具链旧头；<strong>只重编内核不够</strong>。把工具链 <code>video/sunxi_display2.h</code> 换成和内核同一份，libuapi 源码/Makefile 保持官方。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -246,7 +246,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -1,0 +1,13 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+@@ -648,6 +648,9 @@
+ 		ctp_twi_addr = <0x40>;
+ 		ctp_screen_max_x = <0x400>;
+ 		ctp_screen_max_y = <0x258>;
++		/* 与 fb0 1280x800 对齐，驱动内线性映射；未配则与 ctp_screen_max 1:1 */
++		ctp_report_max_x = <1280>;
++		ctp_report_max_y = <800>;
+ 		ctp_revert_x_flag = <0x1>;
+ 		ctp_revert_y_flag = <0x1>;
+ 		ctp_exchange_x_y_flag = <0x0>;

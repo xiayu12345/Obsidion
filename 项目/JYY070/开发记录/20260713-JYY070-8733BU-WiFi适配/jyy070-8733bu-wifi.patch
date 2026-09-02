@@ -1,0 +1,92 @@
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/openwrt/bsp_defconfig
+@@ -87,9 +87,7 @@
+ CONFIG_BLK_DEV_SD=y
+ CONFIG_NETDEVICES=y
+ CONFIG_SUNXI_GMAC=y
+-CONFIG_AIC_WLAN_SUPPORT=y
+-CONFIG_AIC_INTF_USB=y
+-CONFIG_AIC8800_WLAN_SUPPORT=m
++# 8733BU：rtl8733bu-kmod 在 m 时按 Tina out/kernel/build 现场编 ko；勿开 AIC8800（与 8733 板一致）
+ CONFIG_INPUT_EVDEV=y
+ CONFIG_INPUT_SENSORINIT=y
+ CONFIG_KEYBOARD_SUNXI=y
+--- a/openwrt/package/allwinner/wireless/rtl8733bu-kmod/Makefile
++++ b/openwrt/package/allwinner/wireless/rtl8733bu-kmod/Makefile
+@@ -2,14 +2,22 @@
+ include $(INCLUDE_DIR)/kernel.mk
+ 
+ PKG_NAME:=rtl8733bu-kmod
+-PKG_VERSION:=1.0.0
++PKG_VERSION:=5.13.0.1-112
+ PKG_RELEASE:=1
+ 
+ # 与 Tina 运行内核 uname -r（/proc/version 第 3 字段）一致；勿用 OpenWrt LINUX_VERSION(5.4.182)
+ RTL8733BU_MODDIR:=5.4.61
+ 
++# Tina 内核构建树（out/kernel -> out/$(IC)/kernel）；勿用 OpenWrt LINUX_DIR(5.4.182)
++RTL8733BU_KSRC:=$(LICHEE_OUT_DIR)/kernel/build
++ifeq ($(LICHEE_TOOLCHAIN_PATH)$(LICHEE_CROSS_COMPILER),)
++RTL8733BU_CROSS:=arm-linux-gnueabi-
++else
++RTL8733BU_CROSS:=$(LICHEE_TOOLCHAIN_PATH)/bin/$(LICHEE_CROSS_COMPILER)-
++endif
++RTL8733BU_JOBS:=$(shell nproc 2>/dev/null || echo 2)
++
+ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)-$(PKG_VERSION)
+-PKG_FILE_DEPENDS:=./files/8733bu.ko
+ 
+ include $(INCLUDE_DIR)/package.mk
+ 
+@@ -17,20 +25,37 @@
+ 	SECTION:=allwinner
+ 	CATEGORY:=Allwinner
+ 	SUBMENU:=Wireless
+-	TITLE:=RTL8733BU USB driver (prebuilt)
++	TITLE:=RTL8733BU USB driver (build against Tina kernel)
+ 	DEPENDS:=+rtl8733bs-firmware +@USB_SUPPORT
+ endef
+ 
+ define Package/rtl8733bu-kmod/description
+-	Prebuilt RTL8733BU USB WiFi driver (8733bu.ko) from docs/wifi适配 patch.
++	RTL8733BU USB WiFi：OpenWrt 打包时按 $(LICHEE_OUT_DIR)/kernel/build 现场编译 8733bu.ko。
+ endef
+ 
+ define Build/Prepare
+ 	mkdir -p $(PKG_BUILD_DIR)
+-	$(CP) ./files/8733bu.ko $(PKG_BUILD_DIR)/
++	$(CP) ./src/. $(PKG_BUILD_DIR)/
+ endef
+ 
+ define Build/Compile
++	@if [ ! -f "$(RTL8733BU_KSRC)/Module.symvers" ]; then \
++		echo "error: Tina kernel build missing Module.symvers: $(RTL8733BU_KSRC)" >&2; \
++		echo "hint: ./build.sh kernel  (or tools/build_p1_nor_JYY070.sh kernel) first" >&2; \
++		exit 1; \
++	fi
++	@if [ ! -x "$(RTL8733BU_CROSS)gcc" ]; then \
++		echo "error: kernel toolchain missing: $(RTL8733BU_CROSS)gcc" >&2; \
++		exit 1; \
++	fi
++	$(MAKE) -C $(PKG_BUILD_DIR) clean
++	$(MAKE) -C $(PKG_BUILD_DIR) \
++		ARCH=arm \
++		CROSS_COMPILE="$(RTL8733BU_CROSS)" \
++		KSRC="$(RTL8733BU_KSRC)" \
++		M="$(PKG_BUILD_DIR)" \
++		-j$(RTL8733BU_JOBS) \
++		modules
+ endef
+ 
+ define Package/rtl8733bu-kmod/install
+--- a/openwrt/package/allwinner/wireless/rtl8733bu-kmod/src/os_dep/linux/os_intfs.c
++++ b/openwrt/package/allwinner/wireless/rtl8733bu-kmod/src/os_dep/linux/os_intfs.c
+@@ -18,6 +18,8 @@
+ #include <hal_data.h>
+ 
+ MODULE_LICENSE("GPL");
++/* 5.4.61 cfg80211 符号在 VFS namespace，缺此项 modpost 告警 */
++MODULE_IMPORT_NS(VFS_internal_I_am_really_a_filesystem_and_am_NOT_a_driver);
+ MODULE_DESCRIPTION("Realtek Wireless Lan Driver");
+ MODULE_AUTHOR("Realtek Semiconductor Corp.");
+ MODULE_VERSION(DRIVERVERSION);

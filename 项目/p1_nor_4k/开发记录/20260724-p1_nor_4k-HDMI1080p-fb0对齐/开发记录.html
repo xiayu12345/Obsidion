@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>p1_nor_4k：HDMI 1080p + fb0 与输出 1:1 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -146,7 +146,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: log · date: 2026-07-24</p>
 <h1>p1_nor_4k：HDMI 1080p + fb0 与输出 1:1</h1>
-<p>> 板件分离（初版 4K）见 <a href="../20260723-p1_nor_4k-板件新建与HDMI4K分离/">../20260723-p1_nor_4k-板件新建与HDMI4K分离/</a>。  </p>
+<p>> 板件分离（初版 4K）见 <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离">../20260723-p1_nor_4k-板件新建与HDMI4K分离/</a>。  </p>
 <p>> <strong>当前显示基线以本文为准</strong>（不再以 4K / mode 28 为默认）。</p>
 <p>日期：2026-07-24  </p>
 <p>板型：<code>h133-p1_nor_4k</code>  </p>
@@ -173,7 +173,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>device/.../p1_nor_4k/uboot-board.dts</code> | 同上 |</p>
 <p>| <code>device/product/configs/p1_nor_4k/<strong></code> | 与 chips </strong>硬链**，改一侧即同步 |</p>
 <p>未改：<code>screen0_output_mode</code>（已是 <code>10</code>）、<code>setting.ini</code> 视频尺寸（已是 1920×1080）、desk / sunxifb 源码。</p>
-<p>补丁：<a href="./patches/01-fb0-1920x1080.patch">patches/01-fb0-1920x1080.patch</a></p>
+<p>补丁：<a href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/patches/01-fb0-1920x1080.patch">patches/01-fb0-1920x1080.patch</a></p>
 <p>---</p>
 <h2>4. 数据流</h2>
 <pre><code>Guider 页面 1280×800（左上）
@@ -206,11 +206,11 @@ source build/envsetup.sh &amp;&amp; lunch h133-p1_nor_4k-tina &amp;&amp; p</code
 <h2>7. 与其它专题关系</h2>
 <p>| 专题 | 关系 |</p>
 <p>|------|------|</p>
-<p>| <a href="../20260723-p1_nor_4k-板件新建与HDMI4K分离/">板件新建 / 初版 4K</a> | 历史：mode 28 / fb 4K；<strong>显示默认值已被本文覆盖</strong> |</p>
-<p>| <a href="../CMA与lv_img_header-4K硬解/">CMA / 13-bit header</a> | 仅硬解 <strong>>2047</strong> 像素大图时需要；1080p UI <strong>不必</strong> |</p>
-<p>板级档案：<a href="../../../../skills/h133-display/board-profile-p1_nor_4k.md">board-profile-p1_nor_4k.md</a></p>
+<p>| <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离">板件新建 / 初版 4K</a> | 历史：mode 28 / fb 4K；<strong>显示默认值已被本文覆盖</strong> |</p>
+<p>| <a href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解">CMA / 13-bit header</a> | 仅硬解 <strong>>2047</strong> 像素大图时需要；1080p UI <strong>不必</strong> |</p>
+<p>板级档案：<a href="skills/h133-display/board-profile-p1_nor_4k.md">board-profile-p1_nor_4k.md</a></p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/patches/01-fb0-1920x1080.patch" download="01-fb0-1920x1080.patch">下载 01-fb0-1920x1080.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/patches/01-fb0-1920x1080.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -278,7 +278,7 @@ source build/envsetup.sh &amp;&amp; lunch h133-p1_nor_4k-tina &amp;&amp; p</code
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

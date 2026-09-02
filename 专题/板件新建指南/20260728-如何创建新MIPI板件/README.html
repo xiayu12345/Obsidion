@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>如何创建新的 MIPI 板件 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -126,7 +126,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-07-28 |</p>
 <p>| 类型 | <strong>通用操作指南</strong>（非某一块屏的调试流水） |</p>
 <p>| 推荐基线 | <strong><code>p1_nor_8733</code></strong>（MIPI 竖屏 UI + RTL8733BU） |</p>
-<p>| 范本定稿 | <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/README.md">JL_M101 板件新建与 MIPI 显示定稿</a> |</p>
+<p>| 范本定稿 | <a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/README.md">JL_M101 板件新建与 MIPI 显示定稿</a> |</p>
 <p>| 范本板 | <code>p1_nor_JL_M101</code>（JD9365DA，800×1280，4-lane） |</p>
 <p>下文用占位符：</p>
 <p>| 占位 | 含义 | 范例 |</p>
@@ -145,8 +145,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 模组规格书 | 分辨率、lane 数、VCC、RESET/背光脚 |</p>
 <p>| 厂商 init txt / 参考驱动 | 灌码表、Reset 时序、porch |</p>
 <p>| 主板/转接板原理图 | RESET/PWM/MIPI 走线、分压档、脚冲突 |</p>
-<p>| UI 方向约定 | 竖屏 MIPI 通常对齐 8733：<code>disp_rotate=3</code>，<code>dual_display_rot=3</code>，<code>VIDEO_WB=90</code>（改法见 <a href="../../显示旋转/README.md">显示旋转</a>） |</p>
-<p>对照范本硬件要点：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.md">JL_M101 00-总览</a></p>
+<p>| UI 方向约定 | 竖屏 MIPI 通常对齐 8733：<code>disp_rotate=3</code>，<code>dual_display_rot=3</code>，<code>VIDEO_WB=90</code>（改法见 <a href="专题/显示旋转/README.md">显示旋转</a>） |</p>
+<p>对照范本硬件要点：<a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.md">JL_M101 00-总览</a></p>
 <h3>选基线</h3>
 <p>| 基线 | 何时选 |</p>
 <p>|---|---|</p>
@@ -155,7 +155,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>p1_nor_JYY070</code> | <strong>不要</strong>当 MIPI 基线（LVDS 横屏、<code>disp_rotate=0</code>） |</p>
 <p>---</p>
 <h2>2. 克隆板级（device + OpenWrt + 脚本）</h2>
-<p>范本步骤详解：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">JL_M101 01-板件新建</a></p>
+<p>范本步骤详解：<a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">JL_M101 01-板件新建</a></p>
 <h3>2.1 推荐命令（SDK 根目录）</h3>
 <pre><code>BASE=device/config/chips/h133/configs
 OW=openwrt/target/h133
@@ -200,7 +200,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
 <p>| hostname | 可选改成带板名 |</p>
 <p>---</p>
 <h2>3. 写独立 MIPI panel 驱动</h2>
-<p>范本：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.md">JL_M101 02-panel与init</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.md">JL_M101 02-panel与init</a></p>
 <h3>3.1 文件</h3>
 <p>| 侧 | 路径 |</p>
 <p>|---|---|</p>
@@ -223,7 +223,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
 <p>调屏期：<strong>U-Boot <code>disp_init_enable = &lt;0&gt;</code></strong>，让 Linux 自己灌码。</p>
 <p>---</p>
 <h2>4. 本板 DTS（内核 + U-Boot 同步）</h2>
-<p>范本：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.md">JL_M101 03-DTS与背光PWM</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.md">JL_M101 03-DTS与背光PWM</a></p>
 <h3>4.1 lcd0 骨架（按屏改数字）</h3>
 <pre><code>&amp;lcd0 {
 	lcd_used            = &lt;1&gt;;
@@ -296,7 +296,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
 # 期望：无业务匹配（仅允许 config not-set）</code></pre>
 <p>---</p>
 <h2>6. 无图排查顺序（先硬件后软件）</h2>
-<p>完整踩坑时间线见：<a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.md">JL_M101 04-实机调试</a></p>
+<p>完整踩坑时间线见：<a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.md">JL_M101 04-实机调试</a></p>
 <p>| 优先级 | 查什么 |</p>
 <p>|---|---|</p>
 <p>| 1 | 屏 VCC / RESET <strong>静态电压是否够 VIH</strong>（分压档错误最常见） |</p>
@@ -320,13 +320,13 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
 <p>| 文档 | 角色 |</p>
 <p>|---|---|</p>
 <p>| <strong>本文</strong> | 新开任意 MIPI 板的检查清单 |</p>
-<p>| <a href="../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/">JL_M101 定稿</a> | 800×1280 JD9365DA <strong>参数与补丁</strong> |</p>
-<p>| <a href="../板件开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配/">JL_M101 phase1</a> | 早期调试流水（干净树优先用定稿 final） |</p>
-<p>| <a href="../板件开发记录/p1_nor_4k/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.md">p1_nor_4k 板件新建</a> | 同套克隆手法（HDMI 板，无 LCD panel） |</p>
+<p>| <a href="专题/板件新建指南/板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿">JL_M101 定稿</a> | 800×1280 JD9365DA <strong>参数与补丁</strong> |</p>
+<p>| <a href="专题/板件新建指南/板件开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配">JL_M101 phase1</a> | 早期调试流水（干净树优先用定稿 final） |</p>
+<p>| <a href="专题/板件新建指南/板件开发记录/p1_nor_4k/20260723-p1_nor_4k-板件新建与HDMI4K分离/01-板件新建.md">p1_nor_4k 板件新建</a> | 同套克隆手法（HDMI 板，无 LCD panel） |</p>
 <p>---</p>
 <p>*2026-07-28：据 JL_M101 / 8733 / 4k 板件新建经验整理。*</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -394,7 +394,7 @@ cp tools/build_p1_nor_8733.sh tools/build_${BOARD}.sh
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

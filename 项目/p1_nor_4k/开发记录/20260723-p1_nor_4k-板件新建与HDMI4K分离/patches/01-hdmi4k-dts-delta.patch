@@ -1,0 +1,428 @@
+Subject: [PATCH] p1_nor_4k board: HDMI 4K DTS delta (board.dts + uboot-board.dts vs p1_nor content)
+
+---
+diff --git a/device/config/chips/h133/configs/p1_nor_4k/env.cfg b/device/config/chips/h133/configs/p1_nor_4k/env.cfg
+--- a/device/config/chips/h133/configs/p1_nor_4k/env.cfg	2026-07-23 02:30:38.405426818 -0700
++++ b/device/config/chips/h133/configs/p1_nor_4k/env.cfg	2026-07-23 02:30:38.405426818 -0700
+@@ -13,10 +13,10 @@
+ loglevel=8
+ cma=8M
+ #set kernel cmdline if boot.img or recovery.img has no cmdline we will use this
+-setargs_nor=setenv bootargs earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nor_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+-setargs_nand=setenv bootargs ubi.mtd=${mtd_name} ubi.block=0,${root_partition} earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nand_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+-setargs_nand_ubi=setenv bootargs ubi.mtd=${mtd_name} ubi.block=0,${root_partition} earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nand_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+-setargs_mmc=setenv  bootargs earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${mmc_root}  init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
++setargs_nor=setenv bootargs earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nor_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
++setargs_nand=setenv bootargs ubi.mtd=${mtd_name} ubi.block=0,${root_partition} earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nand_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
++setargs_nand_ubi=setenv bootargs ubi.mtd=${mtd_name} ubi.block=0,${root_partition} earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nand_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
++setargs_mmc=setenv  bootargs earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${mmc_root}  init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+ #nand command syntax: sunxi_flash read address partition_name read_bytes
+ #0x4007f800 = 0x40080000(kernel entry) - 0x800(boot.img header 2k)
+ boot_normal=sunxi_flash read 43000000 ${boot_partition};bootm 43000000
+diff --git a/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts	2026-07-23 02:30:38.389426781 -0700
++++ b/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts	2026-07-23 02:30:38.393426790 -0700
+@@ -469,6 +469,20 @@
+ 		bias-disable;
+ 	};
+ 
++	/* PB12/PWM0 引脚节点保留（父 sunxi-pwms 需要 pwm0）；本板不作 LCD 背光 */
++	pwm0_pin_a: pwm0@0 {
++		pins = "PB12";
++		function = "pwm0";
++		drive-strength = <10>;
++		bias-pull-up;
++	};
++
++	pwm0_pin_b: pwm0@1 {
++		pins = "PB12";
++		function = "gpio_in";
++		bias-disable;
++	};
++
+ 	pwm7_pin_a: pwm7@0 {
+ 		pins = "PD22";
+ 		function = "pwm7";
+@@ -632,6 +646,7 @@
+ };
+ 
+ &twi1 {
++	/* p1_nor_4k：无 TP，TWI1 关闭（原 GSL3670 CTP 已移除） */
+ 	clock-frequency = <400000>;
+ 	pinctrl-0 = <&twi1_pins_a>;
+ 	pinctrl-1 = <&twi1_pins_b>;
+@@ -639,25 +654,7 @@
+ 	twi_drv_used = <1>;
+ 	dmas = <&dma 44>, <&dma 44>;
+ 	dma-names = "tx", "rx";
+-	status = "okay";
+-
+-	/* 乐大海 TPC3386 / GT911 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x5d */
+-	ctp@5d {
+-		compatible = "allwinner,goodix";
+-		device_type = "ctp";
+-		reg = <0x5d>;
+-		status = "okay";
+-		ctp_name = "gt911_tpc3386";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x5d>;
+-		ctp_screen_max_x = <0x320>;
+-		ctp_screen_max_y = <0x500>;
+-		ctp_revert_x_flag = <0x0>;
+-		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x0>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
+-	};
++	status = "disabled";
+ };
+ 
+ &twi2 {
+@@ -668,7 +665,7 @@
+ 	pinctrl-names = "default", "sleep";
+ 	twi_drv_used = <0>;
+ 	status = "okay";
+-	/* CTP on TP-H10: TWI1 @ PG8/PG9 — not twi2@PC0/1; old gt9xx/fts nodes removed */
++	/* p1_nor_4k：无 CTP；TWI2 仅 AC107 */
+ 
+ 	ac107_0: ac107@36 {
+ 		compatible = "ac107_0";
+@@ -1015,11 +1012,12 @@
+                    in display.
+ ----------------------------------------------------------------------------------*/
+ &disp {
++	/* p1_nor_4k：仅 DE0→HDMI 4K@30（mode 28 = DISP_TV_MOD_3840_2160P_30HZ）；无 LCD/辅屏 */
+ 	disp_init_enable         = <1>;
+ 	disp_mode                = <0>;
+ 
+-	screen0_output_type      = <1>;
+-	screen0_output_mode      = <4>;
++	screen0_output_type      = <3>;
++	screen0_output_mode      = <28>;
+ 
+ 	screen0_output_format    = <0>;
+ 	screen0_output_bits      = <0>;
+@@ -1030,8 +1028,8 @@
+ 	screen0_output_scan      = <0>;
+ 	screen0_output_aspect_ratio = <8>;
+ 
+-	screen1_output_type      = <3>;
+-	screen1_output_mode      = <10>;
++	screen1_output_type      = <0>;
++	screen1_output_mode      = <0>;
+ 
+ 	screen1_output_format    = <0>;
+ 	screen1_output_bits      = <0>;
+@@ -1042,27 +1040,27 @@
+ 	screen1_output_scan      = <0>;
+ 	screen1_output_aspect_ratio = <8>;
+ 
+-	dev0_output_type         = <1>;
+-	dev0_output_mode         = <4>;
++	dev0_output_type         = <4>;
++	dev0_output_mode         = <28>;
+ 	dev0_screen_id           = <0>;
+ 	dev0_do_hpd              = <1>;
+ 
+-	dev1_output_type         = <4>;
+-	dev1_output_mode         = <10>;
++	dev1_output_type         = <0>;
++	dev1_output_mode         = <0>;
+ 	dev1_screen_id           = <1>;
+-	dev1_do_hpd              = <1>;
++	dev1_do_hpd              = <0>;
+ 
+ 	def_output_dev           = <0>;
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <3840>;
++	fb0_height               = <2160>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+ 	fb1_height               = <0>;
+-	chn_cfg_mode             = <1>;
++	chn_cfg_mode             = <0>;
+ 
+ 	disp_para_zone           = <1>;
+ 	/*VCC-LCD*/
+@@ -1177,43 +1175,35 @@
+ };*/
+ 
+ &lcd0 {
+-	lcd_used            = <1>;
++	/* p1_nor_4k：纯 HDMI，LCD/MIPI 整路关闭（对齐 p1） */
++	lcd_used            = <0>;
+ 
+ 	lcd_driver_name     = "default_lcd";
+-	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
++	lcd_backlight       = <50>;
++	lcd_if              = <0>;
+ 
+ 	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	lcd_y               = <480>;
++	lcd_width           = <150>;
++	lcd_height          = <94>;
++	lcd_dclk_freq       = <48>;
+ 
+ 	lcd_pwm_used        = <0>;
++	lcd_pwm_ch          = <7>;
+ 	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
++	lcd_pwm_pol         = <0>;
+ 
+-	/* 7.2 MIPI Timing typ: tHP=900, tHadr=800, tHsync=20, tHBP=40, tHFP=40;
+-	 * tvp=1946 in PDF is inconsistent with 800x1280+Vporch; use typ porches:
+-	 * VT = 1280 + tVBP(12) + tVFP(20) + tVsync(4) = 1316 */
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
++	lcd_hbp             = <55>;
++	lcd_ht              = <1240>;
+ 	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
++	lcd_vbp             = <35>;
++	lcd_vt              = <650>;
++	lcd_vspw            = <10>;
+ 
+ 	lcd_lvds_if         = <0>;
+ 	lcd_lvds_colordepth = <1>;
+ 	lcd_lvds_mode       = <0>;
+-	lcd_frm             = <0>;
++	lcd_frm             = <1>;
+ 	lcd_io_phase        = <0x0000>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+@@ -1223,10 +1213,8 @@
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>;
+-	lcd_bl_en           = <&pio PB 12 GPIO_ACTIVE_HIGH>;
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
++	pinctrl-0 = <&rgb24_pins_a>;
++	pinctrl-1 = <&rgb24_pins_b>;
+ };
+ 
+ 
+@@ -1443,7 +1431,7 @@
+ 	fminr-gain	= <0>;		/* default value:0 range:0->1 */
+ 	lineinl-gain	= <0>;		/* default value:0 range:0->1 */
+ 	lineinr-gain	= <0>;		/* default value:0 range:0->1 */
+-	/* PG8: TP-H10 CTP-SCK / TWI1_SCK — do not use for hp-det */
++	/* PG8 空闲（本板无 CTP/TWI1）；勿占用为 hp-det */
+ 	status = "okay";
+ };
+ 
+@@ -1517,9 +1505,10 @@
+ 	usb_port_type = <0x0>;
+ 	usb_detect_type = <0x0>;
+ 	usb_detect_mode = <0>;
+-	usb_id_gpio = <&pio PB 11 GPIO_ACTIVE_HIGH>;
++	/* 纯 HDMI：不占用 PB11/PB12 作 LCD；OTg id/vbus 仍保持注释（与本板 USB 配置一致） */
++	/* usb_id_gpio = <&pio PB 11 GPIO_ACTIVE_HIGH>; */
+ 	enable-active-high;
+-	usb_det_vbus_gpio = <&pio PB 12 GPIO_ACTIVE_HIGH>;
++	/* usb_det_vbus_gpio = <&pio PB 12 GPIO_ACTIVE_HIGH>; */
+ 	usb_wakeup_suspend = <0>;
+ 	usb_serial_unique = <0>;
+ 	usb_serial_number = "20080411";
+@@ -1551,6 +1540,14 @@
+ 	status = "okay";
+ };
+ 
++&pwm0 {
++	/* 通道节点须保持 okay：父 pwm 的 sunxi-pwms 会遍历 pwm0~7，disabled 会 probe 空指针崩机；本板仅不用作 LCD 背光 */
++	pinctrl-names = "active", "sleep";
++	pinctrl-0 = <&pwm0_pin_a>;
++	pinctrl-1 = <&pwm0_pin_b>;
++	status = "okay";
++};
++
+ &pwm3 {
+ 	pinctrl-names = "active", "sleep";
+ 	pinctrl-0 = <&pwm3_pin_a>;
+diff --git a/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts
+--- a/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts	2026-07-23 02:30:38.397426799 -0700
++++ b/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts	2026-07-23 02:30:38.397426799 -0700
+@@ -52,6 +52,31 @@
+ 	status = "okay";
+ };
+ 
++/* 纯 HDMI：不用 PB12 LCD-PWM；pwm0 关闭 */
++&pio {
++	pwm0_pin_a: pwm0@0 {
++		pins = "PB12";
++		function = "pwm0";
++		muxsel = <3>; /* PB12: pwm0 = 0x3 */
++		drive-strength = <10>;
++		bias-pull-up;
++	};
++
++	pwm0_pin_b: pwm0@1 {
++		pins = "PB12";
++		muxsel = <0>;
++		function = "gpio_in";
++	};
++};
++
++&pwm0 {
++	/* 同内核：sunxi-pwms 依赖 pwm0 节点存在，勿 disabled */
++	pinctrl-names = "active", "sleep";
++	pinctrl-0 = <&pwm0_pin_a>;
++	pinctrl-1 = <&pwm0_pin_b>;
++	status = "okay";
++};
++
+ &sdc0_pins_a {
+ 	allwinner,pins = "PF0", "PF1", "PF2",
+ 			 "PF3", "PF4", "PF5";
+@@ -256,11 +281,12 @@
+ };
+ 
+ &disp {
++	/* p1_nor_4k：仅 DE0→HDMI 4K@30；无 LCD/TP */
+ 	disp_init_enable         = <1>;
+ 	disp_mode                = <0>;
+ 
+-	screen0_output_type      = <1>;
+-	screen0_output_mode      = <4>;
++	screen0_output_type      = <3>;
++	screen0_output_mode      = <28>;
+ 
+ 	screen0_output_format    = <0>;
+ 	screen0_output_bits      = <0>;
+@@ -271,8 +297,8 @@
+ 	screen0_output_scan      = <0>;
+ 	screen0_output_aspect_ratio = <8>;
+ 
+-	screen1_output_type      = <3>;
+-	screen1_output_mode      = <10>;
++	screen1_output_type      = <0>;
++	screen1_output_mode      = <0>;
+ 
+ 	screen1_output_format    = <0>;
+ 	screen1_output_bits      = <0>;
+@@ -283,27 +309,27 @@
+ 	screen1_output_scan      = <0>;
+ 	screen1_output_aspect_ratio = <8>;
+ 
+-	dev0_output_type         = <1>;
+-	dev0_output_mode         = <4>;
++	dev0_output_type         = <4>;
++	dev0_output_mode         = <28>;
+ 	dev0_screen_id           = <0>;
+ 	dev0_do_hpd              = <1>;
+ 
+-	dev1_output_type         = <4>;
+-	dev1_output_mode         = <10>;
++	dev1_output_type         = <0>;
++	dev1_output_mode         = <0>;
+ 	dev1_screen_id           = <1>;
+-	dev1_do_hpd              = <1>;
++	dev1_do_hpd              = <0>;
+ 
+ 	def_output_dev           = <0>;
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <3840>;
++	fb0_height               = <2160>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+ 	fb1_height               = <0>;
+-	chn_cfg_mode             = <1>;
++	chn_cfg_mode             = <0>;
+ 
+ 	disp_para_zone           = <1>;
+ 	/*VCC-LCD*/
+@@ -362,39 +388,35 @@
+ */
+ 
+ &lcd0 {
+-	lcd_used            = <1>;
++	/* p1_nor_4k：纯 HDMI，LCD/MIPI 整路关闭（对齐 p1） */
++	lcd_used            = <0>;
+ 
+ 	lcd_driver_name     = "default_lcd";
+-	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
++	lcd_backlight       = <50>;
++	lcd_if              = <0>;
+ 
+ 	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	lcd_y               = <480>;
++	lcd_width           = <150>;
++	lcd_height          = <94>;
++	lcd_dclk_freq       = <48>;
+ 
+ 	lcd_pwm_used        = <0>;
++	lcd_pwm_ch          = <7>;
+ 	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
++	lcd_pwm_pol         = <0>;
++
++	lcd_hbp             = <55>;
++	lcd_ht              = <1240>;
+ 	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
++	lcd_vbp             = <35>;
++	lcd_vt              = <650>;
++	lcd_vspw            = <10>;
+ 
+ 	lcd_lvds_if         = <0>;
+ 	lcd_lvds_colordepth = <1>;
+ 	lcd_lvds_mode       = <0>;
+-	lcd_frm             = <0>;
++	lcd_frm             = <1>;
+ 	lcd_io_phase        = <0x0000>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+@@ -404,10 +426,8 @@
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>;
+-	lcd_bl_en           = <&pio PB 12 GPIO_ACTIVE_HIGH>;
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
++	pinctrl-0 = <&rgb24_pins_a>;
++	pinctrl-1 = <&rgb24_pins_b>;
+ };
+ 
+ &hdmi {

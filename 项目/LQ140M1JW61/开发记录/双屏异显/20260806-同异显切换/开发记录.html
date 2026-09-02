@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>同显 / 异显切换 — 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -171,9 +171,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 范围 | <strong>架构级</strong>（<code>libuapi</code> / disp / tplayer，非单板专属） |</p>
 <p>| 验证板 | <code>p1_nor_JL_M101</code>（首验） |</p>
 <p>| 状态 | <strong>已定稿（WB 常开 + HDMI 层显隐）</strong> |</p>
-<p>| 补丁 | <a href="./patches/">patches/</a> |</p>
-<p>| 前置 | <a href="../20260805-HDMI异显最小验证/">20260805-HDMI异显最小验证</a>（TEMP 关 WB <strong>已废弃</strong>） |</p>
-<p>| 架构参考 | <a href="../LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> |</p>
+<p>| 补丁 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches">patches/</a> |</p>
+<p>| 前置 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证">20260805-HDMI异显最小验证</a>（TEMP 关 WB <strong>已废弃</strong>） |</p>
+<p>| 架构参考 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> |</p>
 <p>---</p>
 <h2>1. 产品规则</h2>
 <p>| 项 | 决策 |</p>
@@ -195,7 +195,7 @@ disp_mode diff  → SET_HDMI_OUT=0 + 视频下次播 screen=2</code></pre>
 <ul>
 <li>用户态 disable / 模式里 <code>DISP_DUAL_DISPLAY_DISABLE</code></li>
 <li><code>g_dual_display_prefer_enable</code></li>
-<li><a href="../20260805-HDMI异显最小验证/patches/">20260805 TEMP 补丁</a>（编译期关 WB）</li>
+<li><a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches">20260805 TEMP 补丁</a>（编译期关 WB）</li>
 </ul>
 <p><code>DISP_DUAL_DISPLAY_DISABLE</code> 占号 <strong>0x408</strong>，内核直接 <code>-EINVAL</code>。</p>
 <p>---</p>
@@ -224,7 +224,7 @@ disp_mode diff  → SET_HDMI_OUT=0 + 视频下次播 screen=2</code></pre>
 <h2>5. 用户态 / 机上命令</h2>
 <pre><code>disp_mode same|diff|get</code></pre>
 <p><code>sunxi_disp_mode_apply</code>：<code>fb_clone=0</code> → <code>ensure_wb_up</code> → <code>set_hdmi_output</code>。</p>
-<p>应用不必走命令：<code>#include &lt;disp_dual.h&gt;</code>、链 <code>-luapi</code>，调 <code>sunxi_disp_mode_set()</code>。异显合进全板后的头文件对齐见 <a href="../20260828-libuapi内核头对齐/">20260828-libuapi内核头对齐</a>。</p>
+<p>应用不必走命令：<code>#include &lt;disp_dual.h&gt;</code>、链 <code>-luapi</code>，调 <code>sunxi_disp_mode_set()</code>。异显合进全板后的头文件对齐见 <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐">20260828-libuapi内核头对齐</a>。</p>
 <p>---</p>
 <h2>6. 编译 / 验收</h2>
 <p>按目标板编 kernel + rootfs。首验：<code>./tools/build_p1_nor_JL_M101.sh full</code>。</p>
@@ -247,9 +247,9 @@ platform/.../libuapi/src/Makefile
 openwrt/package/allwinner/display/libuapi/Makefile
 platform/.../tlayer_ctrl.c
 platform/.../media_session.c
-platform/.../media_session/daemon/Makefile</code></pre>
+platform/.../media_session/daemon/Makefile</code></pre><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/01-kernel-dual-hdmi-out.patch" download="01-kernel-dual-hdmi-out.patch">下载 01-kernel-dual-hdmi-out.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/01-kernel-dual-hdmi-out.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/02-libuapi-disp-mode.patch" download="02-libuapi-disp-mode.patch">下载 02-libuapi-disp-mode.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/02-libuapi-disp-mode.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/03-tlayer-media-session.patch" download="03-tlayer-media-session.patch">下载 03-tlayer-media-session.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/03-tlayer-media-session.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh" download="apply-disp-mode.sh">下载 apply-disp-mode.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/disp-mode-same-diff.patch" download="disp-mode-same-diff.patch">下载 disp-mode-same-diff.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换/patches/disp-mode-same-diff.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -317,7 +317,7 @@ platform/.../media_session/daemon/Makefile</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>如何创建新的 LVDS 板件 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -126,9 +126,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-07-28 |</p>
 <p>| 类型 | <strong>通用操作指南</strong>（非某一块屏的调试流水） |</p>
 <p>| 推荐基线 | <strong><code>p1_nor_8733</code></strong>（WiFi/包选型）再切 LVDS；显示框架对齐 <code>p1_nor</code> 异显路径 |</p>
-<p>| 范本定稿 | <a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/README.md">JYY070 LVDS 显示开发</a> |</p>
+<p>| 范本定稿 | <a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/README.md">JYY070 LVDS 显示开发</a> |</p>
 <p>| 范本板 | <code>p1_nor_JYY070</code>（1024×600 LVDS；UI fb0=1280×800 + DE 缩放） |</p>
-<p>| 板级档案 | <a href="../../../skills/h133-display/board-profile-p1_nor_JYY070.md">board-profile-p1_nor_JYY070.md</a> |</p>
+<p>| 板级档案 | <a href="skills/h133-display/board-profile-p1_nor_JYY070.md">board-profile-p1_nor_JYY070.md</a> |</p>
 <p>下文占位符：</p>
 <p>| 占位 | 含义 | 范例 |</p>
 <p>|---|---|---|</p>
@@ -151,7 +151,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 视频 WB | 常 <strong>90</strong> | 常 <strong>0</strong> |</p>
 <p>| <code>dual_display_rot</code> | 常与竖屏策略一致 | 常 <strong>0</strong> |</p>
 <p>| 特有风险 | DSI 读探针、RESET 分压、smooth | fb/UI 尺寸不一致、异显绿屏方向 |</p>
-<p>MIPI 流程见：<a href="../20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a></p>
+<p>MIPI 流程见：<a href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a></p>
 <p>---</p>
 <h2>2. 开工前准备</h2>
 <p>| 资料 | 用途 |</p>
@@ -159,7 +159,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 模组规格书 | <code>Wp×Hp</code>、LVDS single/dual、6/8bit、NS/JEIDA、porch、dclk |</p>
 <p>| 原理图 | LVDS 差分、背光 EN/PWM、电源时序 |</p>
 <p>| UI 约定 | 是否必须 1280×800 画布（JYY070 是）；还是 fb=物理分辨率即可 |</p>
-<p>| 触摸 | 报点坐标系要对齐 <strong>fb0</strong>（有缩放时用 <code>ctp_report_max</code>，见 <a href="../../GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>） |</p>
+<p>| 触摸 | 报点坐标系要对齐 <strong>fb0</strong>（有缩放时用 <code>ctp_report_max</code>，见 <a href="专题/GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>） |</p>
 <h3>选基线</h3>
 <p>| 基线 | 用途 |</p>
 <p>|---|---|</p>
@@ -168,7 +168,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>p1_nor</code> | 异显 / sunxifb 框架对照（勿直接在其 DTS 上改业务） |</p>
 <p>---</p>
 <h2>3. 克隆板级（与 MIPI 相同套路）</h2>
-<p>克隆命令骨架与 <a href="../20260728-如何创建新MIPI板件/README.md) / [JL_M101 01](../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">MIPI 指南 §2</a> 相同，把 <code>BOARD</code> 换成你的 LVDS 板名即可。</p>
+<p>克隆命令骨架与 <a href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.md) / [JL_M101 01](../板件开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">MIPI 指南 §2</a> 相同，把 <code>BOARD</code> 换成你的 LVDS 板名即可。</p>
 <p>要点再强调：</p>
 <ol>
 <li><code>cp -a p1_nor_8733 → &lt;BOARD&gt;</code>  </li>
@@ -187,7 +187,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>三路旋转<strong>独立</strong>（UI / 触摸 / 视频），勿混用一个宏。详见 JYY070 board-profile。</p>
 <p>---</p>
 <h2>4. 写独立 LVDS panel 驱动</h2>
-<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md)、[02-uboot-panel](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.md">01-kernel-panel</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md)、[02-uboot-panel](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/02-uboot-panel启动logo.md">01-kernel-panel</a></p>
 <p>| 侧 | 路径 |</p>
 <p>|---|---|</p>
 <p>| 内核 | <code>kernel/.../lcd/&lt;PANEL&gt;.c</code> + <code>.h</code> |</p>
@@ -200,7 +200,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </ul>
 <p>---</p>
 <h2>5. DTS：MIPI → LVDS</h2>
-<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS切换LVDS</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS切换LVDS</a></p>
 <h3>5.1 lcd0 骨架</h3>
 <pre><code>&amp;lcd0 {
 	lcd_used            = &lt;1&gt;;
@@ -227,7 +227,7 @@ input[type=checkbox] { margin-right:.4rem; }
 fb0_height = &lt;Hp&gt;;</code></pre>
 <p>验收：<code>/dev/fb0</code> = <code>Wp×Hp</code>，有 fbcon/企鹅即可。适合新屏 bring-up 第一步。</p>
 <p><strong>路线 B — UI 画布更大，DE 硬件缩放（JYY070 定稿）</strong></p>
-<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放</a></p>
 <pre><code>/* lcd0 仍写物理 Wp×Hp */
 fb0_width  = &lt;Wf&gt;;   /* 如 1280 */
 fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
@@ -236,14 +236,14 @@ fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
 <ul>
 <li><strong>不要</strong>依赖注释里的 <code>fb0_scaler_mode_enable</code>（内核无对应实现）  </li>
 <li>crop ≠ frame 时 DE 自动缩放  </li>
-<li>触摸 <code>ctp_report_max</code> 应对齐 <strong>Wf×Hf</strong>（JYY070：1280×800；机制见 <a href="../../GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>）</li>
+<li>触摸 <code>ctp_report_max</code> 应对齐 <strong>Wf×Hf</strong>（JYY070：1280×800；机制见 <a href="专题/GSL触摸坐标映射/README.md">GSL触摸坐标映射</a>）</li>
 </ul>
 <h3>5.3 HDMI 异显</h3>
-<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.md">05-dual_display_rot</a></p>
-<p>横屏 LVDS：<code>dual_display_rot = &lt;0&gt;</code>。内核写死 G2D 旋转会导致 HDMI 全绿/方向错——必须可配，且本板显式写 0。三路改法：<a href="../../显示旋转/README.md">显示旋转</a>。</p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.md">05-dual_display_rot</a></p>
+<p>横屏 LVDS：<code>dual_display_rot = &lt;0&gt;</code>。内核写死 G2D 旋转会导致 HDMI 全绿/方向错——必须可配，且本板显式写 0。三路改法：<a href="专题/显示旋转/README.md">显示旋转</a>。</p>
 <p>---</p>
 <h2>6. 应用层：统一 sunxifb 路径</h2>
-<p>范本：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/00-背景与路径统一.md)、[04-app层](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.md">00-背景与路径统一</a></p>
+<p>范本：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/00-背景与路径统一.md)、[04-app层](../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.md">00-背景与路径统一</a></p>
 <p>| 要求 | 说明 |</p>
 <p>|---|---|</p>
 <p>| 框架 | <strong><code>rotatefbp + split_fb</code></strong>，与 <code>p1_nor</code> 同构 |</p>
@@ -267,7 +267,7 @@ fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
 <p>隔绝自检：</p>
 <pre><code>rg -n &#x27;&lt;PANEL&gt;&#x27; device/config/chips/h133/configs/p1_nor{,_8733,_JL_M101}/linux-5.4/board.dts
 # 期望：无匹配</code></pre>
-<p>更多串口验收项见：<a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/06-编译与实机验证.md">06-编译与实机验证</a></p>
+<p>更多串口验收项见：<a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/06-编译与实机验证.md">06-编译与实机验证</a></p>
 <p>---</p>
 <h2>8. 常见坑</h2>
 <p>| 现象 | 优先查 |</p>
@@ -293,13 +293,13 @@ fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
 <p>| 文档 | 角色 |</p>
 <p>|---|---|</p>
 <p>| <strong>本文</strong> | 新开任意 LVDS 板的检查清单 |</p>
-<p>| <a href="../板件开发记录/JYY070/20260708-JYY070-LVDS显示开发/">JYY070 LVDS 显示开发</a> | 1024×600 + DE 缩放 + 异显 <strong>定稿步骤与补丁</strong> |</p>
-<p>| <a href="../板件开发记录/JYY070/README.md">JYY070 板级索引</a> | WiFi / 触摸 / 音频等后续项 |</p>
-<p>| <a href="../20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a> | 对照：克隆套路相同，显示接口不同 |</p>
+<p>| <a href="专题/板件新建指南/板件开发记录/JYY070/20260708-JYY070-LVDS显示开发">JYY070 LVDS 显示开发</a> | 1024×600 + DE 缩放 + 异显 <strong>定稿步骤与补丁</strong> |</p>
+<p>| <a href="专题/板件新建指南/板件开发记录/JYY070/README.md">JYY070 板级索引</a> | WiFi / 触摸 / 音频等后续项 |</p>
+<p>| <a href="专题/板件新建指南/20260728-如何创建新MIPI板件/README.md">如何创建新MIPI板件</a> | 对照：克隆套路相同，显示接口不同 |</p>
 <p>---</p>
 <p>*2026-07-28：据 JYY070 LVDS 定稿 + 板件隔绝实践整理。*</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -367,7 +367,7 @@ fb0_height = &lt;Hf&gt;;   /* 如 800 */</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

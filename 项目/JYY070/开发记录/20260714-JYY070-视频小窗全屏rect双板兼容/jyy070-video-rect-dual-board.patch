@@ -1,0 +1,142 @@
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+index fc2432c41..a1b2c3d4e 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
++++ b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+@@ -37,6 +37,13 @@ ifeq ($(CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE),y)
+ TARGET_CFLAGS+=-DUSE_SUNXIFB_DIRECT_MODE
+ endif
+ 
++# p1_nor_JYY070：板型宏（视频 rect）+ UI 旋转 0（与旋转双板可合并同一 ifeq）
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
++TARGET_CFLAGS+=-DKTV_BOARD_JYY070=1
++TARGET_CFLAGS+=-DLV_PROJECTOR_DISP_ROTATE=0
++endif
++
+ ifeq ($(CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER),y)
+ TARGET_CFLAGS+=-DUSE_HARDWARE_JPEGDECODER
+ TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/allwinner/include
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/media_session/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/media_session/Makefile
+index 000000000..111111111 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/media_session/Makefile
++++ b/openwrt/package/thirdparty/gui/lvgl-8/media_session/Makefile
+@@ -43,6 +43,12 @@ endef
+ TARGET_CFLAGS += \
+ 	-I$(STAGING_DIR)/usr/include/allwinner/include \
+ 	-I$(STAGING_DIR)/usr/include/allwinner
++# JYY070 板型宏（视频 DE 屏坐标）；勿 include sunxifb.mk（会拉 freetype 等）
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
++TARGET_CFLAGS += -DKTV_BOARD_JYY070=1
++endif
+ TARGET_LDFLAGS += -L$(STAGING_DIR)/usr/lib -Wl,-rpath-link,$(STAGING_DIR)/usr/lib
+ 
+ # 与 av_player_service 对齐的 TPlayer 运行时依赖
+diff --git a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
+index 81b0708fe..d13a2815f 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
++++ b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
+@@ -5,12 +5,23 @@
+ #include "ktv_player_ui.h"
+ #include "karaoke_demo.h"
+ #include "ms_changba.h"
++#ifndef KTV_BOARD_JYY070
+ #include "lv_drivers/display/sunxifb.h"
++#endif
+ 
++#ifdef KTV_BOARD_JYY070
++/* JYY070：视频 DE 屏 1024×600；Guider btn_30@1280×800 缩放 */
++#define KTV_PLAYER_SMALL_RECT_X               (278)
++#define KTV_PLAYER_SMALL_RECT_Y               (113)
++#define KTV_PLAYER_SMALL_RECT_W               (479)
++#define KTV_PLAYER_SMALL_RECT_H               (237)
++#else
+ #define KTV_PLAYER_SMALL_RECT_X               (330)
+ #define KTV_PLAYER_SMALL_RECT_Y               (360)
+ #define KTV_PLAYER_SMALL_RECT_W               (320)
+ #define KTV_PLAYER_SMALL_RECT_H               (570)
++#endif
+ 
+ #define ktv_ui_err_log(fmt, ...) printf("[KTV_UI] " fmt "\n", ##__VA_ARGS__)
+ 
+@@ -568,24 +579,28 @@ int ktv_player_ui_set_right_rect(void)
+     return ktv_player_ui_apply_rect(115,
+                                     KTV_PLAYER_SMALL_RECT_Y,
+                                     570,
++#ifdef KTV_BOARD_JYY070
++                                    600 - KTV_PLAYER_SMALL_RECT_Y);
++#else
+                                     1280 - KTV_PLAYER_SMALL_RECT_Y);
++#endif
+ }
+ 
+ int ktv_player_ui_set_full_rect(void)
+ {
++#ifdef KTV_BOARD_JYY070
++    /* 视频 layer 用 DE 屏坐标，切勿用 FB 1280×800 */
++    return ktv_player_ui_apply_rect(0, 0, 1024, 600);
++#else
+     uint32_t w = 0;
+     uint32_t h = 0;
+ 
+     sunxifb_get_sizes(&w, &h);
+     if (w == 0 || h == 0)
+     {
+         return ktv_player_ui_apply_rect(0,
+                                         0,
+                                         KTV_PLAYER_SCREEN_WIDTH,
+                                         KTV_PLAYER_SCREEN_HEIGHT);
+     }
+ 
+     return ktv_player_ui_apply_rect(0, 0, (int)w, (int)h);
++#endif
+ }
+ 
+ int ktv_player_ui_set_rect(int x, int y, int width, int height)
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
+index 082ae93f5..2c85bab0b 100755
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
+@@ -19,8 +19,15 @@ extern "C" {
+ #define KTV_PLAYER_MAX_URL_LEN                 (1024)
+ #define KTV_PLAYER_MAX_INSTANCE_COUNT          (6)
+ 
++#ifdef KTV_BOARD_JYY070
++#define KTV_PLAYER_SCREEN_WIDTH                (1024)
++#define KTV_PLAYER_SCREEN_HEIGHT               (600)
++#else
+ #define KTV_PLAYER_SCREEN_WIDTH                (800)
+ #define KTV_PLAYER_SCREEN_HEIGHT               (1280)
++#endif
+ 
+ // #define KTV_PLAYER_SMALL_RECT_X                (400)
+ // #define KTV_PLAYER_SMALL_RECT_Y                (300)
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+index 6aaab6ab6..81b4e1cff 100755
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+@@ -28,13 +28,21 @@
+  * 显示区域宏
+  * 默认先使用小屏
+  */
++#ifdef KTV_BOARD_JYY070
++#define KTV_PLAYER_SMALL_RECT_X               (278)
++#define KTV_PLAYER_SMALL_RECT_Y               (113)
++#define KTV_PLAYER_SMALL_RECT_W               (479)
++#define KTV_PLAYER_SMALL_RECT_H               (237)
++#else
+ #define KTV_PLAYER_SMALL_RECT_X               (330)
+ #define KTV_PLAYER_SMALL_RECT_Y               (330)
+ #define KTV_PLAYER_SMALL_RECT_W               (320)
+ #define KTV_PLAYER_SMALL_RECT_H               (600)
++#endif
+ 
+ /*
+  * 双路播放器控制上下文
+@@ -1630,7 +1638,7 @@ int ktv_player_ui_set_right_rect(void)
+     return ktv_player_ui_apply_rect(115,
+                                     KTV_PLAYER_SMALL_RECT_Y,
+                                     570,
+-                                    1280 - KTV_PLAYER_SMALL_RECT_Y);
++                                    KTV_PLAYER_SCREEN_HEIGHT - KTV_PLAYER_SMALL_RECT_Y);
+ }
+ 
+ /*

@@ -1,0 +1,119 @@
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+index 2c08cb881..f9e7c0a6d 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+@@ -166,6 +166,7 @@ typedef struct LayerContext
+     int                  nLayerBufferNum;
+     int                  preFenceFd;
+     int                  currentFenceFd;
++    int                  fenceScreenId; /* HWC timeline 屏号，须与送显屏一致 */
+     VPictureNode*        prePicNode;
+     VPictureNode*        currentPicNode;
+     unsigned int         count;// member of struct sync_info
+@@ -173,6 +174,21 @@ typedef struct LayerContext
+     int                  bResolutionChange;
+ }LayerContext;
+ 
++/* disp_screen 位掩码：优先 screen0；仅 screen1（异显）时用 1 */
++static int layerFenceScreenId(const LayerContext *lc)
++{
++	int mask;
++
++	if (lc == NULL || lc->mDispOutPort == NULL)
++		return 0;
++	mask = lc->mDispOutPort->disp_screen;
++	if (mask & (1 << 0))
++		return 0;
++	if (mask & (1 << 1))
++		return 1;
++	return 0;
++}
++
+ static unsigned int getLbcModBuferrSize(LayerContext* lc)
+ {
+ 	// int nLbcBufferSize = 0;
+@@ -766,7 +782,7 @@ static void __LayerDestroy(LayerCtrl* l)
+     DestroyVideoOutport(lc->mDispOutPort);
+ 
+     // add start for display fence sync
+-    if (destroySyncTimeline(0, lc->fdDisplay) < 0){
++    if (destroySyncTimeline(lc->fenceScreenId, lc->fdDisplay) < 0){
+         loge("destroySyncTimeline failed!");
+     }
+     if (lc->fdDisplay>=0)
+@@ -1208,7 +1224,7 @@ static int __LayerQueueBuffer(LayerCtrl* l, VideoPicture* pBuf, int bValid)
+         newNode->dequeueable = 0;
+         //3. acquire the new fence
+         struct sync_info sync;
+-        createSyncPoint(0, lc->fdDisplay, &sync);
++        createSyncPoint(lc->fenceScreenId, lc->fdDisplay, &sync);
+         lc->count = sync.count;
+         //4. set_layer_config
+         if(GetConfigParamterInt("tr_rotate_flag",0) == 1){
+@@ -1555,8 +1571,9 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+     }
+     memset(lc, 0, sizeof(LayerContext));
+ 	lc->mDispOutPort = CreateVideoOutport(0);
+-	/* WB mirror: video only to DE0 (MIPI); HDMI shows DE0 composite via WB */
+-	lc->mDispOutPort->disp_screen = 1;
++	/* TEMP 最小验证：关 WB 后视频只贴 screen1(HDMI)；LCD 仅 UI */
++	lc->mDispOutPort->disp_screen = 2;
++	lc->fenceScreenId = layerFenceScreenId(lc);
+ 	rect.x = 0;
+ 	rect.y = 0;
+ 	rect.width = 320;
+@@ -1592,8 +1609,8 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+ 	lc->mDispOutPort->SetZorder(lc->mDispOutPort, VIDEO_ZORDER_BOTTOM);
+ 	lc->mDispOutPort->setEnable(lc->mDispOutPort, 1);
+ 	pthread_mutex_unlock(&configMtx);
+-	logw("[WB-MIRROR] video disp_screen=1 (DE0 only, HDMI WB), "
+-	     "VIDEO_WB_MIRROR_ROTATE=%d", VIDEO_WB_MIRROR_ROTATE);
++	logw("[HDMI-ONLY] TEMP video disp_screen=2 fenceScreen=%d (no WB), "
++	     "VIDEO_WB_MIRROR_ROTATE=%d", lc->fenceScreenId, VIDEO_WB_MIRROR_ROTATE);
+     logd("screen:w %d, screen:h %d", lc->nScreenWidth, lc->nScreenHeight);
+     lc->pMemops = GetMemAdapterOpsS();
+     int openRet = SunxiMemOpen(lc->pMemops);
+@@ -1603,7 +1620,7 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+     }
+     lc->bLayerRectCkedFlag = 0;
+ 
+-    // add start for display fence sync
++    // add start for display fence sync（timeline 必须跟送显屏，异显为 screen1）
+     lc->fdDisplay = openDispDev();// open node path /dev/disp
+     if(lc->fdDisplay < 1)
+     {
+@@ -1612,8 +1629,8 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+         return NULL;
+     }
+ 
+-    if (createSyncTimeline(0, lc->fdDisplay) < 0){
+-        loge("create sync time line failed");
++    if (createSyncTimeline(lc->fenceScreenId, lc->fdDisplay) < 0){
++        loge("create sync time line failed (screen=%d)", lc->fenceScreenId);
+         if(lc->fdDisplay>=0)
+             close(lc->fdDisplay);
+         lc->fdDisplay=-1;
+@@ -1678,6 +1695,23 @@ int LayerSetDisplayRect(LayerCtrl* l, int x, int y, unsigned int width, unsigned
+             x, y, width, height);
+     if(width == 0 && height == 0)
+         return -1;
++	/* TEMP HDMI-only：上层常传 LCD video_screen；screen1 须跟 HDMI 物理分辨率 */
++	if (lc->mDispOutPort != NULL && lc->mDispOutPort->disp_screen == 2) {
++		int sw, sh;
++
++		pthread_mutex_lock(&configMtx);
++		sw = lc->mDispOutPort->getScreenWidth(lc->mDispOutPort);
++		sh = lc->mDispOutPort->getScreenHeight(lc->mDispOutPort);
++		pthread_mutex_unlock(&configMtx);
++		if (sw > 0 && sh > 0) {
++			logw("[HDMI-ONLY] TEMP override rect %d,%d %ux%u -> 0,0 %dx%d (HDMI)",
++			     x, y, width, height, sw, sh);
++			x = 0;
++			y = 0;
++			width = (unsigned int)sw;
++			height = (unsigned int)sh;
++		}
++	}
+ 	lc->dst_rect.x = x;
+ 	lc->dst_rect.y = y;
+ 	lc->dst_rect.width = width;

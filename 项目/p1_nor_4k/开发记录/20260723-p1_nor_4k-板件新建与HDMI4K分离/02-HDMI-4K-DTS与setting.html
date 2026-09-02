@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>02 — HDMI 4K DTS 与 setting.ini · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -162,7 +162,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <li><code>device/.../p1_nor_4k/linux-5.4/board.dts</code></li>
 <li><code>device/.../p1_nor_4k/uboot-board.dts</code></li>
 </ul>
-<p>补丁：<a href="./patches/01-hdmi4k-dts-delta.patch">patches/01-hdmi4k-dts-delta.patch</a></p>
+<p>补丁：<a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch">patches/01-hdmi4k-dts-delta.patch</a></p>
 <h2>2.2 setting.ini</h2>
 <p>路径：<code>openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/setting.ini</code></p>
 <p>| 项 | 8733 | 4k |</p>
@@ -170,15 +170,15 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>disp_rotate</code> | <code>3</code> | <strong><code>0</code></strong> |</p>
 <p>| <code>video_screen_w/h</code> | 800×1280 | <strong>3840×2160</strong> |</p>
 <p>| <code>sun_video_screen_w/h</code> | 800×1280 | <strong>3840×2160</strong> |</p>
-<p>补丁：<a href="./patches/02-openwrt-target-delta.patch">patches/02-openwrt-target-delta.patch</a></p>
+<p>补丁：<a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch">patches/02-openwrt-target-delta.patch</a></p>
 <h2>2.3 CMA / 分区（板件基线）</h2>
 <p>| 项 | 板件基线 |</p>
 <p>|----|----------|</p>
 <p>| <code>env.cfg</code> <code>cma=</code> | <strong><code>8M</code></strong>（与多数板相同） |</p>
 <p>| <code>sys_partition_nor.fex</code> | rootfs=<code>34816</code>，rootfs_data=<code>16384</code> 扇区 |</p>
-<p>硬解全屏 4K JPG 再叠 <a href="../CMA与lv_img_header-4K硬解/">CMA 专题补丁</a>。</p>
+<p>硬解全屏 4K JPG 再叠 <a href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解">CMA 专题补丁</a>。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch" download="01-hdmi4k-dts-delta.patch">下载 01-hdmi4k-dts-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch" download="02-openwrt-target-delta.patch">下载 02-openwrt-target-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch" download="03-build-script.patch">下载 03-build-script.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch" download="04-shared-hooks.patch">下载 04-shared-hooks.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh" download="apply-p1_nor_4k-board.sh">下载 apply-p1_nor_4k-board.sh</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -246,7 +246,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

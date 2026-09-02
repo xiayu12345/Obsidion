@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 LVGL 显示不旋转 — 开发记录（编译宏双板） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -184,8 +184,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 关联板型 | <code>p1_nor</code>（保持横屏 270° 旋转，不受影响） |</p>
 <p>| 需求 | JYY070 新固件 LCD 显示不做软件旋转 |</p>
 <p>| <strong>本记录方案</strong> | <code>sunxifb.mk</code> 按 target <code>-DLV_PROJECTOR_DISP_ROTATE=0</code>（<strong>编译宏双板</strong>） |</p>
-<p>| 补丁 | <a href="./jyy070-lvgl-no-rotate.patch">jyy070-lvgl-no-rotate.patch</a> |</p>
-<p>| <strong>树内当前落地</strong> | <a href="../20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>（UI 默认 <code>rot=0</code> + 视频 rect；<strong>不兼顾 p1_nor</strong>） |</p>
+<p>| 补丁 | <a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">jyy070-lvgl-no-rotate.patch</a> |</p>
+<p>| <strong>树内当前落地</strong> | <a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>（UI 默认 <code>rot=0</code> + 视频 rect；<strong>不兼顾 p1_nor</strong>） |</p>
 <p>| 说明 | 本文件保留完整双板做法；树内若已走最小硬编码，打本补丁前须把头文件默认先恢复为 <code>3</code> |</p>
 <p>---</p>
 <h2>1. 背景</h2>
@@ -205,7 +205,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>2. 方案选型</h2>
 <p>| 方案 | 结论 |</p>
 <p>|---|---|</p>
-<p>| 直接改 <code>projector_config.h</code> 默认值为 <code>0</code> | 可用但伤 <code>p1_nor</code>；树内见 <a href="../20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a> |</p>
+<p>| 直接改 <code>projector_config.h</code> 默认值为 <code>0</code> | 可用但伤 <code>p1_nor</code>；树内见 <a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a> |</p>
 <p>| 改 <code>setting.ini</code> / <code>rc.final</code> 传参 | ❌ <code>desk</code> 不读 ini/argv |</p>
 <p>| 各 GUI 包 Makefile 单独加 <code>-D...=0</code> | ✅ 可行但重复（多包） |</p>
 <p>| <strong><code>sunxifb.mk</code> 按 target 覆盖宏</strong> | ✅ <strong>双板采用</strong>：一处修改，所有 include 该 mk 的 LVGL GUI 包生效 |</p>
@@ -239,8 +239,8 @@ p1_nor: sunxifb_rot=3，LVGL 逻辑多为 1280×800</code></pre>
 <ul>
 <li><code>setting.ini</code> 中 <code>disp_rotate</code>：<strong>desk 不读取</strong>，对主界面无效</li>
 <li>内核 <code>disp_rotation_used</code>：未启用</li>
-<li><strong>视频 WB 旋转</strong>：另见 <a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">WB-mirror</a>（<code>VIDEO_WB_MIRROR_ROTATE</code>）</li>
-<li><strong>视频小窗/全屏 rect</strong>：双板用 <code>KTV_BOARD_JYY070</code>，见 <a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">rect双板兼容</a></li>
+<li><strong>视频 WB 旋转</strong>：另见 <a href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.md">WB-mirror</a>（<code>VIDEO_WB_MIRROR_ROTATE</code>）</li>
+<li><strong>视频小窗/全屏 rect</strong>：双板用 <code>KTV_BOARD_JYY070</code>，见 <a href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">rect双板兼容</a></li>
 </ul>
 <p>---</p>
 <h2>4. 编译与验证</h2>
@@ -262,7 +262,7 @@ p1_nor: sunxifb_rot=3，LVGL 逻辑多为 1280×800</code></pre>
 <li><strong>不可并行编译</strong>同一 SDK 目录下的 p1_nor 与 JYY070（共享 <code>.buildconfig</code> / <code>.config</code>）</li>
 <li><strong>子应用</strong>：desk 拉起 sing_ktv 等时不传旋转参数，依赖各自编译时的宏（同样受 <code>sunxifb.mk</code> 控制）</li>
 <li>运行时勿 <code>sing_ktv 3</code> / <code>lv_projector 3</code>（会覆盖编译默认）</li>
-<li>若与 <a href="../20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch">rect 双板补丁</a> 同改 <code>sunxifb.mk</code>：合并为一个 <code>ifeq</code>，同时带 <code>-DKTV_BOARD_JYY070=1</code> 与 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code></li>
+<li>若与 <a href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch">rect 双板补丁</a> 同改 <code>sunxifb.mk</code>：合并为一个 <code>ifeq</code>，同时带 <code>-DKTV_BOARD_JYY070=1</code> 与 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code></li>
 </ol>
 <p>---</p>
 <h2>6. 补丁应用</h2>
@@ -280,13 +280,13 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
 <p>---</p>
 <h2>8. 相关文档</h2>
 <ul>
-<li>树内应用层硬编码（UI 不旋转 + 视频 rect）：<a href="../20260714-JYY070-应用层适配硬编码/开发记录.md">20260714-应用层适配硬编码</a></li>
-<li>视频小窗双板编译宏：<a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">…rect双板兼容</a></li>
-<li>视频 WB：<a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">…WB-mirror</a></li>
+<li>树内应用层硬编码（UI 不旋转 + 视频 rect）：<a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.md">20260714-应用层适配硬编码</a></li>
+<li>视频小窗双板编译宏：<a href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">…rect双板兼容</a></li>
+<li>视频 WB：<a href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.md">…WB-mirror</a></li>
 <li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch" download="jyy070-lvgl-no-rotate.patch">下载 jyy070-lvgl-no-rotate.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -354,7 +354,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260708-JY
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

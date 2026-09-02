@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>00 — 背景与路径统一 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -177,7 +177,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: log · date: 2026-07-08</p>
 <h1>00 — 背景与路径统一</h1>
-<p><strong>下一步：</strong> <a href="./01-kernel-panel驱动.md">01-kernel-panel驱动.md</a></p>
+<p><strong>下一步：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md">01-kernel-panel驱动.md</a></p>
 <p>---</p>
 <h2>1. 背景与目标</h2>
 <p>异显（HDMI WB 镜像 + split_fb）在 <strong>p1_nor（MIPI rot=3）</strong> 上开发完成。JYY070 换 LVDS 横屏后，要求 <strong>应用层显示路径与 p1_nor 保持一致</strong>，仅旋转角度不同，便于维护与后续异显功能复用。</p>
@@ -210,7 +210,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| split_fb log（debug 开） | <code>... MIPI page1 rotate</code> | <code>... MIPI page1 copy</code> |</p>
 <p>---</p>
 <h2>3. fix_lcd_page 已废弃</h2>
-<p>早期 bring-up <a href="../../JYY070-7寸LVDS屏-bringup/02-rotate0双缓冲修复记录.md">02-rotate0双缓冲修复</a> 使用 <strong>独立路径</strong> <code>fix_lcd_page</code>（直写 fb、不走 rotatefbp）。</p>
+<p>早期 bring-up <a href="项目/JYY070/JYY070-7寸LVDS屏-bringup/02-rotate0双缓冲修复记录.md">02-rotate0双缓冲修复</a> 使用 <strong>独立路径</strong> <code>fix_lcd_page</code>（直写 fb、不走 rotatefbp）。</p>
 <p><strong>2026-07-08 决策：</strong> 与 p1_nor 异显框架对齐，<strong>回退 fix_lcd</strong>，改回统一 <code>rotatefbp + split_fb</code>。</p>
 <p>| 方案 | 状态 |</p>
 <p>|---|---|</p>
@@ -220,10 +220,10 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>4. 问题现象与根因（汇总）</h2>
 <p>| 现象 | 根因 | 修复步骤 |</p>
 <p>|---|---|---|</p>
-<p>| LCD 无 UI / 企鹅频闪 | rot=0 未进 rotate 分支 | <a href="./04-app层与sunxifb统一路径.md">04-app层与sunxifb统一路径.md</a> |</p>
-<p>| HDMI 全绿 / 方向错 | 内核写死 G2D rot270 | <a href="./05-HDMI异显dual_display_rot.md">05-HDMI异显dual_display_rot.md</a> |</p>
-<p>| 改 sunxifb 烧录无效 | lv_projector 未重编 | <a href="./04-app层与sunxifb统一路径.md">04</a> § Makefile |</p>
-<p>| 屏不亮 / 分辨率错 | panel / DTS 未切 LVDS | <a href="./01-kernel-panel驱动.md">01～03</a> |</p>
+<p>| LCD 无 UI / 企鹅频闪 | rot=0 未进 rotate 分支 | <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.md">04-app层与sunxifb统一路径.md</a> |</p>
+<p>| HDMI 全绿 / 方向错 | 内核写死 G2D rot270 | <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/05-HDMI异显dual_display_rot.md">05-HDMI异显dual_display_rot.md</a> |</p>
+<p>| 改 sunxifb 烧录无效 | lv_projector 未重编 | <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/04-app层与sunxifb统一路径.md">04</a> § Makefile |</p>
+<p>| 屏不亮 / 分辨率错 | panel / DTS 未切 LVDS | <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md">01～03</a> |</p>
 <p>---</p>
 <h2>5. 变更文件总览</h2>
 <p>| 文件 | 步骤 |</p>
@@ -234,9 +234,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>platform/.../sunxifb.c</code> | 4 |</p>
 <p>| <code>kernel/.../dev_disp.c</code> | 5 |</p>
 <p>| <code>openwrt/.../lv_projector/Makefile</code> | 4 |</p>
-<p>| <code>openwrt/.../rc.final</code>（desk 启动） | 4 |</p>
+<p>| <code>openwrt/.../rc.final</code>（desk 启动） | 4 |</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch" download="06-dts-hw-scale.patch">下载 06-dts-hw-scale.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh" download="apply-jyy070-lvds-display.sh">下载 apply-jyy070-lvds-display.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh" download="gen-jyy070-lvds-display-patch.sh">下载 gen-jyy070-lvds-display-patch.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch" download="jyy070-lvds-display-phase1-5.patch">下载 jyy070-lvds-display-phase1-5.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -304,7 +304,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

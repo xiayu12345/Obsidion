@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>原厂双页翻页（FBIOPAN）— 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -127,7 +127,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 基线 | <code>xia_yixian</code>（<code>e553f3a49</code>） |</p>
 <p>| 原厂对照 | <code>platform/thirdparty/gui/lvgl-9/platform/sunxifb.c</code> |</p>
 <p>| 产品代码 | <code>platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c</code> |</p>
-<p>| 补丁 | <a href="./patches/0001-sunxifb-FBIOPAN-double-buffer.patch">patches/0001-sunxifb-FBIOPAN-double-buffer.patch</a> |</p>
+<p>| 补丁 | <a href="专题/原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch">patches/0001-sunxifb-FBIOPAN-double-buffer.patch</a> |</p>
 <p>相对 <code>xia_yixian</code> 独立可合（已 <code>git apply --check</code>）。<strong>不是</strong>远端第一笔 <code>01f2f8f9d</code> 的完整导出：那一笔还开了 G2D、改了 <code>sunxig2d</code> / <code>g2d_driver_enh.h</code> / ota/qa。</p>
 <p>本补丁里的 <code>sunxifb.c/.h</code>、<code>lv_port_disp.c/.h</code> 与 <code>01f2f8f9d</code> <strong>字节相同</strong>（G2D <code>#ifdef</code> 路径已是 <code>smem_start</code> IOVA）。defconfig 里 G2D 仍关，跑起来不走 G2D。只拨 G2D 开关、不合 G2D 那几笔，会缺 <code>sunxig2d</code> / 结构体 116/236 / <code>libawion</code>，编不过或 ioctl 尺寸不对。</p>
 <p>---</p>
@@ -154,14 +154,14 @@ FBIOPAN_DISPLAY（yoffset = 刚画完的那一页）
 <li>去掉 <code>sunxifb.h</code> 强制 <code>USE_SUNXIFB_SOFT_ROTATE</code>。</li>
 <li><code>sunxifb_hdmi_rotate_restore()</code> 留空符号。</li>
 </ol>
-<p><code>CACHE</code> 保持关。旋转用 CPU 还是 G2D，由 <a href="../G2D旋转/">G2D旋转</a> 决定。</p>
+<p><code>CACHE</code> 保持关。旋转用 CPU 还是 G2D，由 <a href="专题/G2D旋转">G2D旋转</a> 决定。</p>
 <p>---</p>
 <h2>4. 合入（这份只解决翻页）</h2>
 <pre><code>git am H133-AI-Skills/开发记录/原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch</code></pre>
 <p>| 你要 | 合什么 |</p>
 <p>|---|---|</p>
 <p>| 只要翻页 | 本补丁 |</p>
-<p>| 翻页 + G2D | <a href="../G2D旋转/">G2D旋转</a> 的 <code>0001</code> + <code>0002</code> + <code>0004</code>（或远端 <code>xia_g2d_rotate</code> 现树；不要停在 <code>0002</code>） |</p>
+<p>| 翻页 + G2D | <a href="专题/G2D旋转">G2D旋转</a> 的 <code>0001</code> + <code>0002</code> + <code>0004</code>（或远端 <code>xia_g2d_rotate</code> 现树；不要停在 <code>0002</code>） |</p>
 <p><strong>不要</strong>本补丁再叠 G2D 的 <code>0002</code>/<code>0004</code>。那些叠的是远端第一笔（已含 <code>sunxig2d</code>、结构体 116/236、<code>libawion</code>）。本补丁故意没带那些。</p>
 <p>---</p>
 <h2>4.1 换板</h2>
@@ -176,9 +176,9 @@ FBIOPAN_DISPLAY（yoffset = 刚画完的那一页）
 <li>帧末写后台页再 pan</li>
 <li>CACHE 关、G2D 关</li>
 <li>不改 <code>fb0_buffer_num</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="专题/原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch" download="0001-sunxifb-FBIOPAN-double-buffer.patch">下载 0001-sunxifb-FBIOPAN-double-buffer.patch</a><a class="dl" href="专题/原厂翻页/patches/0001-sunxifb-FBIOPAN-double-buffer.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -246,7 +246,7 @@ FBIOPAN_DISPLAY（yoffset = 刚画完的那一页）
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

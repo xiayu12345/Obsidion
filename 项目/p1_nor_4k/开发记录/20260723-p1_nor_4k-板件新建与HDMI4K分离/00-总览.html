@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>00 — 总览 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -149,7 +149,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>结论</h2>
 <p><code>p1_nor_4k</code> = <strong>从 <code>p1_nor_8733</code> 分出的独立板件</strong>，WiFi 仍用 <strong>RTL8733BU</strong>。  </p>
 <p>本文档记录<strong>初版显示</strong>：纯 HDMI <strong>4K@30</strong>。  </p>
-<p><strong>当前显示基线</strong>已改为 HDMI <strong>1080p60 + fb0 1920×1080</strong>，见 <a href="../20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.md">../20260724-p1_nor_4k-HDMI1080p-fb0对齐/</a>。</p>
+<p><strong>当前显示基线</strong>已改为 HDMI <strong>1080p60 + fb0 1920×1080</strong>，见 <a href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.md">../20260724-p1_nor_4k-HDMI1080p-fb0对齐/</a>。</p>
 <p>不改其它板 DTS；不共享 LCD panel。</p>
 <h2>工程标识</h2>
 <p>| 项 | 值 |</p>
@@ -178,10 +178,10 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 专题 | 作用 | 是否板件新建必需 |</p>
 <p>|------|------|------------------|</p>
 <p>| <strong>本目录（板件分离）</strong> | 能 lunch、能编、HDMI 4K 桌面跑起来 | <strong>是</strong> |</p>
-<p>| <a href="../CMA与lv_img_header-4K硬解/">CMA与lv_img_header</a> | 硬解 <strong>>2047</strong> 像素的大图（壁纸） | <strong>否</strong>（默认 <code>cma=8M</code>、11-bit header 即可跑 UI） |</p>
-<p>当前树基线：<code>cma=8M</code>。只有要显示 3840×2160 级 JPG 硬解时才叠 CMA 补丁。</p>
+<p>| <a href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解">CMA与lv_img_header</a> | 硬解 <strong>>2047</strong> 像素的大图（壁纸） | <strong>否</strong>（默认 <code>cma=8M</code>、11-bit header 即可跑 UI） |</p>
+<p>当前树基线：<code>cma=8M</code>。只有要显示 3840×2160 级 JPG 硬解时才叠 CMA 补丁。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch" download="01-hdmi4k-dts-delta.patch">下载 01-hdmi4k-dts-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/01-hdmi4k-dts-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch" download="02-openwrt-target-delta.patch">下载 02-openwrt-target-delta.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/02-openwrt-target-delta.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch" download="03-build-script.patch">下载 03-build-script.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/03-build-script.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch" download="04-shared-hooks.patch">下载 04-shared-hooks.patch</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/04-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh" download="apply-p1_nor_4k-board.sh">下载 apply-p1_nor_4k-board.sh</a><a class="dl" href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离/patches/apply-p1_nor_4k-board.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -249,7 +249,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

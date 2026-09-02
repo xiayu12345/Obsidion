@@ -1,0 +1,413 @@
+diff --git a/openwrt/package/allwinner/display/libuapi/Makefile b/openwrt/package/allwinner/display/libuapi/Makefile
+index 82df4b157..bf8fb2cca 100644
+--- a/openwrt/package/allwinner/display/libuapi/Makefile
++++ b/openwrt/package/allwinner/display/libuapi/Makefile
+@@ -138,6 +138,8 @@ endef
+ define Package/$(PKG_NAME)/install
+ 	$(INSTALL_DIR) $(1)/usr/lib/
+ 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/lib/* $(1)/usr/lib/
++	$(INSTALL_DIR) $(1)/usr/bin/
++	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/disp_mode $(1)/usr/bin/
+ ifeq ($(CONFIG_SUPPORT_CONFIG_FILE),y))
+ 	$(INSTALL_DIR) $(1)/etc/config/
+ 	$(INSTALL_DATA) files/libuapi $(1)/etc/config/
+diff --git a/platform/allwinner/display/libuapi/src/Makefile b/platform/allwinner/display/libuapi/src/Makefile
+index ce3bbad2f..8f465ef02 100644
+--- a/platform/allwinner/display/libuapi/src/Makefile
++++ b/platform/allwinner/display/libuapi/src/Makefile
+@@ -1,4 +1,5 @@
+ TARGET := libuapi.so
++CLI := disp_mode
+ LIBS :=
+ 
+ commonSources:= \
+@@ -6,7 +7,8 @@ commonSources:= \
+ 	sunxi_disp1.c \
+ 	sunxi_disp2.c \
+ 	videoOutPort.c \
+-	gpu_yuv2rgb.c
++	gpu_yuv2rgb.c \
++	disp_dual.c
+ 
+ local_CFLAGS := -I./include
+ 
+@@ -15,15 +17,20 @@ OBJS = $(patsubst %.c, %.c.o, $(commonSources))
+ $(TARGET):$(OBJS)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) $(LIBS) $(local_CFLAGS) -o $@ $^ -fPIC -shared
+ 
++$(CLI): disp_mode_cli.c $(TARGET)
++	$(CC) $(CFLAGS) $(local_CFLAGS) -o $@ disp_mode_cli.c -L. -luapi $(LDFLAGS)
++
+ $(OBJS):%.c.o:%.c
+ 	$(CC) $(CFLAGS) $(LDFLAGS) $(local_CFLAGS) -c $< -o $@ -fPIC -shared
+ 
+-all: $(TARGET) install
++all: $(TARGET) $(CLI) install
+ 
+ clean:
+-	-rm $(OBJS) $(TARGET)
++	-rm $(OBJS) $(TARGET) $(CLI)
+ install:
+ 	mkdir -p $(INSTALL_PREFIX)/usr/lib
+ 	cp $(TARGET) $(INSTALL_PREFIX)/usr/lib
++	mkdir -p $(INSTALL_PREFIX)/usr/bin
++	cp $(CLI) $(INSTALL_PREFIX)/usr/bin/
+ 	mkdir -p $(INSTALL_PREFIX)/usr/include
+ 	cp -r include/*  $(INSTALL_PREFIX)/usr/include
+diff --git a/platform/allwinner/display/libuapi/src/disp_dual.c b/platform/allwinner/display/libuapi/src/disp_dual.c
+new file mode 100644
+index 000000000..36f003278
+--- /dev/null
++++ b/platform/allwinner/display/libuapi/src/disp_dual.c
+@@ -0,0 +1,224 @@
++#ifdef __SUNXI_DISPLAY2__
++
++#include <errno.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <string.h>
++#include <unistd.h>
++#include <sys/ioctl.h>
++#include <stdbool.h>
++
++/* u32/s32 + sunxi_display2.h 由 disp_framework 统一提供 */
++#include "disp_framework.h"
++#include "disp_dual.h"
++
++#define DISP_DEV_PATH "/dev/disp"
++#define DISP_MODE_PATH "/etc/disp_mirror_mode"
++#define MS_KTV_STATE_PATH "/tmp/media_session_ktv.state"
++
++static int disp_open_fd(void)
++{
++	return open(DISP_DEV_PATH, O_RDWR);
++}
++
++static int disp_ioctl1(unsigned int cmd, unsigned long a0)
++{
++	int fd;
++	unsigned long args[4] = {0};
++	int ret;
++
++	fd = disp_open_fd();
++	if (fd < 0)
++		return -errno;
++
++	args[0] = a0;
++	ret = ioctl(fd, cmd, args);
++	if (ret < 0)
++		ret = -errno;
++	close(fd);
++	return ret;
++}
++
++/* 仅内部：确保 WB 已起来（幂等）；不对外提供 disable */
++static int ensure_wb_up(void)
++{
++	return disp_ioctl1(DISP_DUAL_DISPLAY_ENABLE, 0);
++}
++
++static int fb_clone_allow_off(void)
++{
++	return disp_ioctl1(DISP_FB_CLONE_ALLOW_SET, 0);
++}
++
++int sunxi_dual_display_is_enabled(void)
++{
++	int ret = disp_ioctl1(DISP_DUAL_DISPLAY_GET_EN, 0);
++
++	if (ret < 0)
++		return ret;
++	return ret ? 1 : 0;
++}
++
++int sunxi_dual_display_set_hdmi_output(int on)
++{
++	return disp_ioctl1(DISP_DUAL_DISPLAY_SET_HDMI_OUT, on ? 1 : 0);
++}
++
++int sunxi_dual_display_get_hdmi_output(void)
++{
++	int ret = disp_ioctl1(DISP_DUAL_DISPLAY_GET_HDMI_OUT, 0);
++
++	if (ret < 0)
++		return ret;
++	return ret ? 1 : 0;
++}
++
++int sunxi_disp_hdmi_connected(void)
++{
++	int fd;
++	unsigned long args[4] = {0};
++	int ret;
++
++	fd = disp_open_fd();
++	if (fd < 0)
++		return 0;
++
++	args[0] = 1;
++	ret = (int)ioctl(fd, DISP_GET_OUTPUT_TYPE, args);
++	close(fd);
++	if (ret < 0)
++		return 0;
++	return (ret == DISP_OUTPUT_TYPE_HDMI) ? 1 : 0;
++}
++
++static int mode_load(sunxi_disp_mode_t *mode)
++{
++	FILE *fp;
++	int v = 0;
++
++	if (!mode)
++		return -EINVAL;
++
++	*mode = SUNXI_DISP_MODE_SAME;
++	fp = fopen(DISP_MODE_PATH, "r");
++	if (!fp)
++		return 0;
++	if (fscanf(fp, "%d", &v) == 1 && v == SUNXI_DISP_MODE_DIFF)
++		*mode = SUNXI_DISP_MODE_DIFF;
++	fclose(fp);
++	return 0;
++}
++
++static int mode_save(sunxi_disp_mode_t mode)
++{
++	FILE *fp;
++
++	fp = fopen(DISP_MODE_PATH, "w");
++	if (!fp)
++		return -errno;
++	fprintf(fp, "%d\n", (int)mode);
++	fclose(fp);
++	return 0;
++}
++
++static int playback_busy(void)
++{
++	FILE *fp;
++	int active = 0, state = SUNXI_DISP_KTV_STATE_IDLE;
++
++	fp = fopen(MS_KTV_STATE_PATH, "r");
++	if (!fp)
++		return 0;
++	if (fscanf(fp, "active=%d state=%d", &active, &state) < 2) {
++		fclose(fp);
++		return 0;
++	}
++	fclose(fp);
++	if (state != SUNXI_DISP_KTV_STATE_IDLE)
++		return 1;
++	return 0;
++}
++
++int sunxi_disp_mode_get(sunxi_disp_mode_t *mode)
++{
++	return mode_load(mode);
++}
++
++int sunxi_disp_mode_apply(sunxi_disp_mode_t mode)
++{
++	int ret;
++
++	ret = fb_clone_allow_off();
++	if (ret < 0)
++		return ret;
++
++	ret = ensure_wb_up();
++	if (ret < 0 && ret != -EBUSY)
++		return ret;
++
++	/* SAME：HDMI 显示 WB；DIFF：关 HDMI WB 层，腾 DE1 */
++	ret = sunxi_dual_display_set_hdmi_output(
++		mode == SUNXI_DISP_MODE_SAME ? 1 : 0);
++	if (ret < 0)
++		return ret;
++	return 0;
++}
++
++int sunxi_disp_mode_set(sunxi_disp_mode_t mode)
++{
++	int ret;
++
++	if (mode != SUNXI_DISP_MODE_SAME && mode != SUNXI_DISP_MODE_DIFF)
++		return -EINVAL;
++	if (playback_busy())
++		return -EBUSY;
++
++	ret = sunxi_disp_mode_apply(mode);
++	if (ret < 0)
++		return ret;
++	return mode_save(mode);
++}
++
++int sunxi_disp_mode_boot_sync(void)
++{
++	sunxi_disp_mode_t mode = SUNXI_DISP_MODE_SAME;
++
++	mode_load(&mode);
++	return sunxi_disp_mode_apply(mode);
++}
++
++int sunxi_disp_video_screen_mask(void)
++{
++	sunxi_disp_mode_t mode = SUNXI_DISP_MODE_SAME;
++
++	mode_load(&mode);
++	if (!sunxi_disp_hdmi_connected())
++		return 1;
++	if (mode == SUNXI_DISP_MODE_DIFF)
++		return 2;
++	return 1;
++}
++
++#else /* !__SUNXI_DISPLAY2__ */
++
++#include <errno.h>
++#include "disp_dual.h"
++
++int sunxi_dual_display_is_enabled(void) { return 0; }
++int sunxi_dual_display_set_hdmi_output(int on) { (void)on; return -ENOSYS; }
++int sunxi_dual_display_get_hdmi_output(void) { return 0; }
++int sunxi_disp_hdmi_connected(void) { return 0; }
++int sunxi_disp_mode_get(sunxi_disp_mode_t *mode)
++{
++	if (!mode)
++		return -EINVAL;
++	*mode = SUNXI_DISP_MODE_SAME;
++	return 0;
++}
++int sunxi_disp_mode_set(sunxi_disp_mode_t mode) { (void)mode; return -ENOSYS; }
++int sunxi_disp_mode_apply(sunxi_disp_mode_t mode) { (void)mode; return -ENOSYS; }
++int sunxi_disp_mode_boot_sync(void) { return 0; }
++int sunxi_disp_video_screen_mask(void) { return 1; }
++
++#endif /* __SUNXI_DISPLAY2__ */
+diff --git a/platform/allwinner/display/libuapi/src/disp_mode_cli.c b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+new file mode 100644
+index 000000000..64084851d
+--- /dev/null
++++ b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+@@ -0,0 +1,62 @@
++/* 机上切换同/异显：disp_mode same|diff|get（WB 常开，只切 HDMI WB 层） */
++#include <stdio.h>
++#include <string.h>
++#include <errno.h>
++#include "disp_dual.h"
++
++static void usage(const char *argv0)
++{
++	fprintf(stderr,
++		"Usage: %s same|diff|get\n"
++		"  same  同显（WB→HDMI，视频贴 LCD）\n"
++		"  diff  异显（关 HDMI 上 WB 层，视频贴 HDMI；未插仍上 LCD）\n"
++		"  get   查偏好 / HDMI / WB / hdmi_out / 视频屏\n"
++		"播中切换会失败（EBUSY）。切完需再播才会按新屏建层。\n",
++		argv0);
++}
++
++int main(int argc, char **argv)
++{
++	sunxi_disp_mode_t mode;
++	int ret;
++
++	if (argc < 2) {
++		usage(argv[0]);
++		return 1;
++	}
++
++	if (strcmp(argv[1], "get") == 0) {
++		mode = SUNXI_DISP_MODE_SAME;
++		(void)sunxi_disp_mode_get(&mode);
++		printf("mode=%s hdmi=%d wb=%d hdmi_out=%d video_screen=%d\n",
++		       mode == SUNXI_DISP_MODE_DIFF ? "diff" : "same",
++		       sunxi_disp_hdmi_connected(),
++		       sunxi_dual_display_is_enabled(),
++		       sunxi_dual_display_get_hdmi_output(),
++		       sunxi_disp_video_screen_mask());
++		return 0;
++	}
++
++	if (strcmp(argv[1], "same") == 0)
++		mode = SUNXI_DISP_MODE_SAME;
++	else if (strcmp(argv[1], "diff") == 0)
++		mode = SUNXI_DISP_MODE_DIFF;
++	else {
++		usage(argv[0]);
++		return 1;
++	}
++
++	ret = sunxi_disp_mode_set(mode);
++	if (ret < 0) {
++		fprintf(stderr, "set %s failed: %s (%d)\n",
++			argv[1], strerror(-ret), ret);
++		return 1;
++	}
++	printf("ok mode=%s hdmi=%d wb=%d hdmi_out=%d video_screen=%d\n",
++	       mode == SUNXI_DISP_MODE_DIFF ? "diff" : "same",
++	       sunxi_disp_hdmi_connected(),
++	       sunxi_dual_display_is_enabled(),
++	       sunxi_dual_display_get_hdmi_output(),
++	       sunxi_disp_video_screen_mask());
++	return 0;
++}
+diff --git a/platform/allwinner/display/libuapi/src/include/disp_dual.h b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+new file mode 100644
+index 000000000..4443aed9a
+--- /dev/null
++++ b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+@@ -0,0 +1,53 @@
++/*
++ * MIPI+HDMI 同显/异显（libuapi）
++ *
++ * WB 管道由内核启动后常开；切模式只显隐 HDMI 上的 WB 层 + 视频贴屏：
++ *   SAME：HDMI 显示 WB，视频 DE0
++ *   DIFF：关 HDMI 上 WB 层（腾 DE1），视频 DE1（须已插 HDMI）
++ * 播中勿切；未插 HDMI 时视频强制 LCD
++ */
++#ifndef __DISP_DUAL_H__
++#define __DISP_DUAL_H__
++
++#ifdef __cplusplus
++extern "C" {
++#endif
++
++typedef enum {
++	SUNXI_DISP_MODE_SAME = 0,
++	SUNXI_DISP_MODE_DIFF = 1,
++} sunxi_disp_mode_t;
++
++#define SUNXI_DISP_KTV_STATE_IDLE (-2)
++
++#ifndef DISP_DUAL_DISPLAY_ENABLE
++#define DISP_DUAL_DISPLAY_ENABLE       0x407
++#define DISP_DUAL_DISPLAY_GET_EN       0x409
++#define DISP_FB_CLONE_ALLOW_SET        0x40a
++#define DISP_FB_CLONE_ALLOW_GET        0x40b
++#endif
++#ifndef DISP_DUAL_DISPLAY_SET_HDMI_OUT
++#define DISP_DUAL_DISPLAY_SET_HDMI_OUT 0x40c
++#define DISP_DUAL_DISPLAY_GET_HDMI_OUT 0x40d
++#endif
++
++/* HDMI 上 WB 层显隐（不拆 capture/wq） */
++int sunxi_dual_display_set_hdmi_output(int on);
++int sunxi_dual_display_get_hdmi_output(void);
++int sunxi_dual_display_is_enabled(void);
++
++int sunxi_disp_hdmi_connected(void);
++
++int sunxi_disp_mode_get(sunxi_disp_mode_t *mode);
++int sunxi_disp_mode_set(sunxi_disp_mode_t mode);
++int sunxi_disp_mode_apply(sunxi_disp_mode_t mode);
++int sunxi_disp_mode_boot_sync(void);
++
++/* LayerCreate：未插 HDMI→1；DIFF+已插→2；否则 1 */
++int sunxi_disp_video_screen_mask(void);
++
++#ifdef __cplusplus
++}
++#endif
++
++#endif /* __DISP_DUAL_H__ */

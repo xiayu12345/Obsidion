@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>20260811 — LQ190 + GM8775C MIPI 显示定稿 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -161,7 +161,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-08-11（出图）；<strong>2026-08-12 灌表修订（消糊）</strong> |</p>
 <p>| 板型 | <strong><code>p1_nor_LQ190</code>（NOR）</strong> |</p>
 <p>| 状态 | <strong>实机显示已正常、清晰</strong>（主机 MIPI 灌表 + DSI 出图） |</p>
-<p>| 板级档案 | <a href="../../../../skills/h133-display/board-profile-p1_nor_LQ190.md">board-profile-p1_nor_LQ190.md</a> |</p>
+<p>| 板级档案 | <a href="skills/h133-display/board-profile-p1_nor_LQ190.md">board-profile-p1_nor_LQ190.md</a> |</p>
 <p>---</p>
 <h2>1. 一句话结论</h2>
 <p>Sharp <strong>LQ190E1LX65</strong>（1280×1024 双 LVDS）经转接板 <strong>GM8775C</strong> 接 H133 MIPI；主机用 <strong><code>dsi_gen_wr</code></strong> 灌表（<strong><code>0x27=0xAA</code> 解锁</strong>，<strong><code>0x13=0x63</code></strong>，<strong>LINE 交换保留</strong>，<strong><code>0x2A=0x01</code> 关 BIST</strong>）；桥片 RST 走 <strong>PG2（CTP-RST）</strong>，本板 <strong>不开触摸</strong>。</p>
@@ -231,7 +231,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <strong>2026-08-12 定稿清晰（<code>0x13=0x63</code>）</strong> | <strong><code>2ab2ac2697d27072dba4fa7e064427f9</code></strong> |</p>
 <p>---</p>
 <h2>7. 补丁（定稿，相对无 LQ190 干净基线）</h2>
-<p>路径：<a href="./patches/">patches/</a></p>
+<p>路径：<a href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches">patches/</a></p>
 <p>| 文件 | 内容 |</p>
 <p>|---|---|</p>
 <p>| <code>01-kernel-uboot-panel.patch</code> | 内核+U-Boot <code>lq190_mipi2edp</code>（MIPI 灌表）+ 注册 + defconfig |</p>
@@ -254,9 +254,9 @@ bash …/patches/gen-lq190-display-final-patch.sh</code></pre>
 <p>> 若树里<strong>已经</strong>有 LQ190 板（当前出图树），<code>--check</code> / 再 apply 会报 already exists，属正常。</p>
 <p>---</p>
 <p>*2026-08-11：实机出图；文档与 final 补丁同步。*  </p>
-<p>*2026-08-12：确认 <code>0x13=0x63</code> 消糊；灌表 txt / 文档 / board-profile 修订为当前定稿；驱动内旧表备份已删除。*</p>
+<p>*2026-08-12：确认 <code>0x13=0x63</code> 消糊；灌表 txt / 文档 / board-profile 修订为当前定稿；驱动内旧表备份已删除。*</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/01-kernel-uboot-panel.patch" download="01-kernel-uboot-panel.patch">下载 01-kernel-uboot-panel.patch</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/01-kernel-uboot-panel.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/02-board-tree.patch" download="02-board-tree.patch">下载 02-board-tree.patch</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/02-board-tree.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/03-shared-hooks.patch" download="03-shared-hooks.patch">下载 03-shared-hooks.patch</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/03-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/04-docs.patch" download="04-docs.patch">下载 04-docs.patch</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/04-docs.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/apply-lq190-display-final.sh" download="apply-lq190-display-final.sh">下载 apply-lq190-display-final.sh</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/apply-lq190-display-final.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/gen-lq190-display-final-patch.sh" download="gen-lq190-display-final-patch.sh">下载 gen-lq190-display-final-patch.sh</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/gen-lq190-display-final-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/lq190-display-final.patch" download="lq190-display-final.patch">下载 lq190-display-final.patch</a><a class="dl" href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/patches/lq190-display-final.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -324,7 +324,7 @@ bash …/patches/gen-lq190-display-final-patch.sh</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

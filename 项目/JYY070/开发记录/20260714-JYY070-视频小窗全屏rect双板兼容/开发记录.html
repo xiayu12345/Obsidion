@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 视频小窗/全屏 rect 双板兼容 — 开发记录（编译宏，不进树） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -183,9 +183,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 板型 | <code>p1_nor_JYY070</code> + <code>p1_nor</code> 同树分流 |</p>
 <p>| 需求 | 首页小窗对齐；全屏不花屏；与 p1_nor 共用源码 |</p>
 <p>| 方案 | <code>KTV_BOARD_JYY070</code> 编译宏 + <code>#ifdef</code>（<strong>勿用</strong> <code>LV_PROJECTOR_DISP_ROTATE</code> 区分板型） |</p>
-<p>| 补丁 | <a href="./jyy070-video-rect-dual-board.patch">jyy070-video-rect-dual-board.patch</a> |</p>
-<p>| <strong>树内落地</strong> | <a href="../20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>（UI 不旋转 + 视频 rect，无板宏） |</p>
-<p>| 相关 UI 旋转双板 | <a href="../20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">LVGL 不旋转双板补丁</a> |</p>
+<p>| 补丁 | <a href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch">jyy070-video-rect-dual-board.patch</a> |</p>
+<p>| <strong>树内落地</strong> | <a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>（UI 不旋转 + 视频 rect，无板宏） |</p>
+<p>| 相关 UI 旋转双板 | <a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">LVGL 不旋转双板补丁</a> |</p>
 <p>> 本目录保留「编译宏双板」方案与补丁，<strong>默认不进源码树</strong>。需要同树编 p1_nor / JYY070 时再打本补丁（见 §7）。</p>
 <p>---</p>
 <h2>1. 背景</h2>
@@ -235,20 +235,20 @@ m package/media_session/compile package/sing_ktv/compile
 <p>| p1_nor | 无 <code>KTV_BOARD_JYY070</code>，竖屏原行为 |</p>
 <p>---</p>
 <h2>5. 补丁应用</h2>
-<p><strong>基线：</strong> 假定源码仍为 p1_nor 原 rect（小窗 330/…、SCREEN 800×1280、全屏 <code>sunxifb_get_sizes</code>）。若树内已是 <a href="../20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>，须先 <code>patch -R</code> 该最小补丁，或手改成 <code>#ifdef</code> 后再合 Makefile。</p>
+<p><strong>基线：</strong> 假定源码仍为 p1_nor 原 rect（小窗 330/…、SCREEN 800×1280、全屏 <code>sunxifb_get_sizes</code>）。若树内已是 <a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/开发记录.md">应用层适配硬编码</a>，须先 <code>patch -R</code> 该最小补丁，或手改成 <code>#ifdef</code> 后再合 Makefile。</p>
 <pre><code>cd /path/to/H133-AIKTV
 patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch</code></pre>
 <p>撤销：<code>patch -R -p1 &lt; .../jyy070-video-rect-dual-board.patch</code></p>
-<p>与 <a href="../20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">LVGL 不旋转双板</a> 的 <code>sunxifb.mk</code> 重叠时：只保留一处 <code>CONFIG_TARGET_h133_p1_nor_JYY070</code> 块，内含 <code>-DKTV_BOARD_JYY070=1</code> 与 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code>。</p>
+<p>与 <a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">LVGL 不旋转双板</a> 的 <code>sunxifb.mk</code> 重叠时：只保留一处 <code>CONFIG_TARGET_h133_p1_nor_JYY070</code> 块，内含 <code>-DKTV_BOARD_JYY070=1</code> 与 <code>-DLV_PROJECTOR_DISP_ROTATE=0</code>。</p>
 <p>---</p>
 <h2>6. 注意</h2>
 <ol>
 <li><code>KTV_BOARD_JYY070</code> = 板型 / rect；<code>LV_PROJECTOR_DISP_ROTATE</code> = UI 旋转，职责分离。</li>
 <li><code>media_session</code> 必须单独 <code>-D</code>。</li>
-<li>视频 WB 旋转另见 <a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">WB-mirror</a>，仍用 Makefile 板型宏（树内保留）。</li>
-</ol>
+<li>视频 WB 旋转另见 <a href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.md">WB-mirror</a>，仍用 Makefile 板型宏（树内保留）。</li>
+</ol><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch" download="jyy070-video-rect-dual-board.patch">下载 jyy070-video-rect-dual-board.patch</a><a class="dl" href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/jyy070-video-rect-dual-board.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -316,7 +316,7 @@ patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260714-JY
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

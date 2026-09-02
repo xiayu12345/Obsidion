@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -164,7 +164,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <main>
 <article class="">
 <p class="meta">kind: log · date: 2026-07-29</p>
-<p>> <strong>已并入定稿</strong>：请读 <a href="../20260729-LQ140M1JW61-板件新建与双显定稿/README.md">../20260729-LQ140M1JW61-板件新建与双显定稿/</a>。本文仅作早期短记备份。</p>
+<p>> <strong>已并入定稿</strong>：请读 <a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/README.md">../20260729-LQ140M1JW61-板件新建与双显定稿/</a>。本文仅作早期短记备份。</p>
 <h1>LQ140M1JW61 LCD + HDMI 双显排查 — 开发记录</h1>
 <p>| 项 | 内容 |</p>
 <p>|---|---|</p>
@@ -173,7 +173,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 屏 | Sharp LQ140M1JW61 1920×1080（MIPI→eDP bridge <code>lq140_mipi2edp</code>） |</p>
 <p>| 副屏 | HDMI 1080p（双显：DE0 合成 → 抓帧 → DE1/HDMI） |</p>
 <p>| 结论 | <strong>LCD + HDMI 均正常、均不旋转（直出）</strong>；主因是 <strong>板级 DTS/env 配置未自洽或未真正生效</strong>，不是 <code>dev_disp.c</code> 必改 |</p>
-<p>索引：<a href="../README.md">../README.md</a></p>
+<p>索引：<a href="项目/LQ140M1JW61/开发记录/README.md">../README.md</a></p>
 <p>---</p>
 <h2>1. 结论（一句话）</h2>
 <p>双显出图异常（HDMI 全绿 → 偏绿横纹 / LCD 异常）排查后，<strong>回退 <code>dev_disp.c</code> 试验改动后仍正常</strong>，说明稳定点在 <strong>板级配置链路（DTS / env / 打包刷写一致性）</strong>，而非 dual-display 驱动逻辑本身。LCD 当前为 <strong>软件直出</strong>（<code>sunxifb_rot=0</code>，<code>dual_display_rot=0</code>）。</p>
@@ -266,7 +266,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| dual display | <code>kernel/.../disp2/disp/dev_disp.c</code>（<strong>本专题最终未保留改动</strong>） |</p>
 <p>| 编译脚本 | <code>tools/build_p1_nor_LQ140M1JW61.sh</code> |</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -334,7 +334,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

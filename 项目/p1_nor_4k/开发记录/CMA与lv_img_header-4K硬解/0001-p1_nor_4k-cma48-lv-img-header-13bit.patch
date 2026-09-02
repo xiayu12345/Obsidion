@@ -1,0 +1,84 @@
+From: desk-4k-hwjpeg
+Subject: [PATCH] p1_nor_4k: CMA 48M + LV_SUPPORT_PICTURE_VIEWER (13-bit img header)
+
+Fix 4K HW JPEG size truncation (3840x2160 -> 1792x112) and ion OOM.
+
+- Enable LV_SUPPORT_PICTURE_VIEWER in liblvgl/desk (lv_img_header w/h 13-bit)
+- Raise p1_nor_4k env cma 8M -> 48M for full-size ARGB decode
+
+See: H133-AI-Skills/开发记录/p1_nor_4k/CMA与lv_img_header-4K硬解/开发记录.md
+
+---
+diff -ruN a/device/config/chips/h133/configs/p1_nor_4k/bsp/env.cfg b/device/config/chips/h133/configs/p1_nor_4k/bsp/env.cfg
+--- a/device/config/chips/h133/configs/p1_nor_4k/bsp/env.cfg	2026-07-23 00:41:44.154834420 -0700
++++ b/device/config/chips/h133/configs/p1_nor_4k/bsp/env.cfg	2026-07-23 00:41:44.182834378 -0700
+@@ -10,7 +10,7 @@
+ boot_partition=boot
+ init=/sbin/init
+ loglevel=8
+-cma=8M
++cma=48M
+ mac=
+ wifi_mac=
+ bt_mac=
+diff -ruN a/device/config/chips/h133/configs/p1_nor_4k/env.cfg b/device/config/chips/h133/configs/p1_nor_4k/env.cfg
+--- a/device/config/chips/h133/configs/p1_nor_4k/env.cfg	2026-07-23 00:41:44.154834420 -0700
++++ b/device/config/chips/h133/configs/p1_nor_4k/env.cfg	2026-07-23 00:41:44.178834384 -0700
+@@ -11,7 +11,7 @@
+ boot_partition=boot
+ init=/init
+ loglevel=8
+-cma=8M
++cma=48M
+ #set kernel cmdline if boot.img or recovery.img has no cmdline we will use this
+ setargs_nor=setenv bootargs earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nor_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+ setargs_nand=setenv bootargs ubi.mtd=${mtd_name} ubi.block=0,${root_partition} earlyprintk=${earlyprintk} clk_ignore_unused initcall_debug=${initcall_debug} console=${console} loglevel=${loglevel} root=${nand_root} rootfstype=${rootfstype} init=${init} partitions=${partitions} cma=${cma} snum=${snum} mac_addr=${mac_addr} wifi_mac=${wifi_mac} bt_mac=${bt_mac} specialstr=${specialstr} gpt=1
+diff -ruN a/openwrt/package/thirdparty/gui/lvgl-8/desk/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/desk/Makefile
+--- a/openwrt/package/thirdparty/gui/lvgl-8/desk/Makefile	2026-07-23 00:41:44.154834420 -0700
++++ b/openwrt/package/thirdparty/gui/lvgl-8/desk/Makefile	2026-07-23 00:41:44.174834390 -0700
+@@ -58,6 +58,8 @@
+ 	-include $(LVGL8_DIR)/app/desk/src/projector_port/desk_preinclude.h
+ 
+ TARGET_CFLAGS += -DTINA_LINUX_SUPPORT -DENABLE_PQ=1 -DMS_CLIENT_IPC=1
++# 与 liblvgl 一致：lv_img_header_t 13-bit，否则与 so ABI 不一致
++TARGET_CFLAGS += -DLV_SUPPORT_PICTURE_VIEWER
+ TARGET_CFLAGS += -I$(STAGING_DIR)/usr/include/media_session \
+ 	-I$(LVGL8_DIR)/lvgl/src/extra/others/components/lvgl_touch_img_bar
+ 
+diff -ruN a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
+--- a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile	2026-07-23 00:41:44.154834420 -0700
++++ b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile	2026-07-23 00:41:44.170834396 -0700
+@@ -8,7 +8,7 @@
+ 
+ PKG_NAME:=liblvgl
+ PKG_VERSION:=8.3.2
+-PKG_RELEASE:=5
++PKG_RELEASE:=6
+ 
+ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
+ LVGL8_DIR := $(LICHEE_PLATFORM_DIR)/thirdparty/gui/lvgl-8
+@@ -55,6 +55,8 @@
+ endef
+ 
+ TARGET_CFLAGS += -I$(PKG_BUILD_DIR)/src
++# 与 lv_conf.h 一致：编解码路径也须 13-bit header（4K 图 >2047）
++TARGET_CFLAGS += -DLV_SUPPORT_PICTURE_VIEWER
+ 
+ ifeq ($(CONFIG_LVGL8_USE_SUNXIFB_G2D),y)
+ TARGET_CFLAGS += -DLV_USE_SUNXIFB_G2D_FILL \
+diff -ruN a/platform/thirdparty/gui/lvgl-8/liblvgl/src/lv_conf.h b/platform/thirdparty/gui/lvgl-8/liblvgl/src/lv_conf.h
+--- a/platform/thirdparty/gui/lvgl-8/liblvgl/src/lv_conf.h	2026-07-23 00:41:44.154834420 -0700
++++ b/platform/thirdparty/gui/lvgl-8/liblvgl/src/lv_conf.h	2026-07-23 00:41:44.170834396 -0700
+@@ -19,6 +19,12 @@
+ 
+ #include <stdint.h>
+ 
++/*
++ * 4K 图需要 w/h > 2047。默认 lv_img_header_t 仅 11 bit（≤2047），
++ * 3840/2160 写入后截断为 1792/112。本宏把位宽扩到 13 bit（≤8191）。
++ */
++#define LV_SUPPORT_PICTURE_VIEWER 1
++
+ /*====================
+    COLOR SETTINGS
+  *====================*/

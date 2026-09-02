@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 应用层适配硬编码 — 开发记录（树内落地） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -183,9 +183,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 板型 | <code>p1_nor_JYY070</code>（硬编码；<strong>不兼顾 p1_nor</strong>） |</p>
 <p>| 范围 | <strong>应用层</strong>：UI 不旋转 + 视频小窗/全屏 rect（同属一层适配，合并记录） |</p>
 <p>| 方案 | 改头文件默认旋转角、改 DE 屏坐标数字；<strong>不</strong>改 <code>sunxifb.mk</code> / 板型 <code>ifeq</code> |</p>
-<p>| 补丁 | <a href="./jyy070-app-layer-adapt-minimal.patch">jyy070-app-layer-adapt-minimal.patch</a> |</p>
+<p>| 补丁 | <a href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/jyy070-app-layer-adapt-minimal.patch">jyy070-app-layer-adapt-minimal.patch</a> |</p>
 <p>| <strong>退回 p1_nor</strong> | 见 §6：<code>patch -R</code> 或手工改回 <code>DISP_ROTATE=3</code> + 竖屏 rect（应用层适配 p1_nor） |</p>
-<p>| 双板（不进树） | UI：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md) · rect：[rect双板兼容](../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">LVGL 编译宏</a> |</p>
+<p>| 双板（不进树） | UI：<a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.md) · rect：[rect双板兼容](../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">LVGL 编译宏</a> |</p>
 <p>| 非本范围 | 视频 WB：<code>libtmedia/Makefile</code> 的 <code>VIDEO_WB_MIRROR_ROTATE</code>（树内仍按板型宏） |</p>
 <p>本目录合并原「LVGL 不旋转最小改动」与「视频小窗/全屏 rect 硬编码」。</p>
 <p>---</p>
@@ -353,13 +353,13 @@ return ktv_player_ui_apply_rect(115,
 <p>---</p>
 <h2>8. 相关</h2>
 <ul>
-<li>UI 编译宏双板：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
-<li>rect 编译宏双板：<a href="../20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">20260714-…rect双板兼容</a></li>
-<li>LVDS DE 缩放：<a href="../20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放1280x800</a></li>
-<li>视频 WB：<a href="../20260713-JYY070-视频WB-mirror旋转/开发记录.md">20260713-…WB-mirror</a></li>
-</ul>
+<li>UI 编译宏双板：<a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
+<li>rect 编译宏双板：<a href="项目/JYY070/开发记录/20260714-JYY070-视频小窗全屏rect双板兼容/开发记录.md">20260714-…rect双板兼容</a></li>
+<li>LVDS DE 缩放：<a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/07-DE硬件缩放1280x800.md">07-DE硬件缩放1280x800</a></li>
+<li>视频 WB：<a href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/开发记录.md">20260713-…WB-mirror</a></li>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/jyy070-app-layer-adapt-minimal.patch" download="jyy070-app-layer-adapt-minimal.patch">下载 jyy070-app-layer-adapt-minimal.patch</a><a class="dl" href="项目/JYY070/开发记录/20260714-JYY070-应用层适配硬编码/jyy070-app-layer-adapt-minimal.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -427,7 +427,7 @@ return ktv_player_ui_apply_rect(115,
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

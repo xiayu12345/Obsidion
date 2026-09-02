@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>如何改 GPADC 电阻按键配置 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -124,11 +124,11 @@ input[type=checkbox] { margin-right:.4rem; }
 <p class="meta">kind: peripheral · date: 2026-08-31</p>
 <h1>如何改 GPADC 电阻按键配置</h1>
 <p>只改 <strong>本板 <code>board.dts</code> 的 <code>&amp;gpadc</code></strong>，不要改 <code>sunxi_gpadc.c</code>。新电压、新键码、增减键都在这张表里完成。</p>
-<p>对照：<a href="./开发记录.md)（电压定稿）、[测试方法.md](./测试方法.md">开发记录.md</a>（读电压、hexdump）</p>
-<p>其它仍用全志默认表的板件，可合补丁（电阻网络须相同）：<a href="./gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a></p>
+<p>对照：<a href="专题/GPADC电阻按键/20260831-三键识别/开发记录.md)（电压定稿）、[测试方法.md](./测试方法.md">开发记录.md</a>（读电压、hexdump）</p>
+<p>其它仍用全志默认表的板件，可合补丁（电阻网络须相同）：<a href="专题/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a></p>
 <pre><code>cd device/config/chips/h133/configs/&lt;BOARD&gt;
 patch -p1 &lt; H133-AI-Skills/开发记录/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</code></pre>
-<p><code>p1_nor_JL_M101</code> 当前 DTS 是板乙电压。补丁也是板乙。板甲用 3/106/161/208/404，见 <a href="./开发记录.md">开发记录.md</a>，不要拿板乙补丁打到板甲上。电压不同的板先 <code>cat /sys/class/gpadc/data</code> 实测。</p>
+<p><code>p1_nor_JL_M101</code> 当前 DTS 是板乙电压。补丁也是板乙。板甲用 3/106/161/208/404，见 <a href="专题/GPADC电阻按键/20260831-三键识别/开发记录.md">开发记录.md</a>，不要拿板乙补丁打到板甲上。电压不同的板先 <code>cat /sys/class/gpadc/data</code> 实测。</p>
 <p>---</p>
 <h2>0. 改哪个文件</h2>
 <p><strong>文件：</strong> <code>device/config/chips/h133/configs/&lt;BOARD&gt;/linux-5.4/board.dts</code></p>
@@ -250,7 +250,7 @@ key3_val = &lt;114&gt;;   /* KEY_VOLUMEDOWN */
 <p>十进制对照：<code>key0_val = &lt;0xa4&gt;</code> → 164；<code>key1_vol = &lt;0x28d&gt;</code> → 653。</p>
 <p>---</p>
 <h2>5. 板上怎么验</h2>
-<p>完整步骤（选通道、读电压、查 event、hexdump、长按、失败判定）见 <a href="./测试方法.md">测试方法.md</a>。改 <code>keyN_val</code> 后 hex 里的 code 会变，例如改成 114 则按下是 <code>72 00</code> 不是 <code>a4 00</code>。</p>
+<p>完整步骤（选通道、读电压、查 event、hexdump、长按、失败判定）见 <a href="专题/GPADC电阻按键/20260831-三键识别/测试方法.md">测试方法.md</a>。改 <code>keyN_val</code> 后 hex 里的 code 会变，例如改成 114 则按下是 <code>72 00</code> 不是 <code>a4 00</code>。</p>
 <p>---</p>
 <h2>6. 排错</h2>
 <p>| 现象 | 先查 |</p>
@@ -261,9 +261,9 @@ key3_val = &lt;114&gt;;   /* KEY_VOLUMEDOWN */
 <p>| A 键出成 B 键 | <code>key_vol</code> 没按从小到大排；中点窗口重叠；少了占位档 |</p>
 <p>| 最高那颗永远没事件 | 电压 ≥ 1.7V，或被钳成 1.8V（1.95V 就是这个） |</p>
 <p>| 长按刷很多包 | 正常，<code>value=2</code> 是 <code>EV_REP</code>，不是配错 |</p>
-<p>LVGL 此时仍不读 gpadc，<strong>界面不动不算配置失败</strong>。</p>
+<p>LVGL 此时仍不读 gpadc，<strong>界面不动不算配置失败</strong>。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="专题/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch" download="gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">下载 gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch</a><a class="dl" href="专题/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -331,7 +331,7 @@ key3_val = &lt;114&gt;;   /* KEY_VOLUMEDOWN */
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

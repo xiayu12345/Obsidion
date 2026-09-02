@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>GT9110 规格书要点与 H133 驱动对照 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -165,7 +165,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: docs</p>
 <h1>GT9110 规格书要点与 H133 驱动对照</h1>
-<p>> <strong>PDF 原件（工程内）</strong>：<a href="./GT9110-Datasheet_20121205.pdf"><code>GT9110-Datasheet_20121205.pdf</code></a>  </p>
+<p>> <strong>PDF 原件（工程内）</strong>：<a href="项目/LQ140M1JW61/资料/GT9110-Datasheet_20121205.pdf"><code>GT9110-Datasheet_20121205.pdf</code></a>  </p>
 <p>> 文档版本：<strong>Rev.03 — 2012-12-06</strong>（汇顶科技；与 Rev.02 相比主要修订上电/地址时序 T4 等）  </p>
 <p>> 备用下载：同目录 <code>download_GT9110_datasheet.sh</code> 或 <https://dl.linux-sunxi.org/touchscreen/GT9110%20Datasheet.pdf></p>
 <p>---</p>
@@ -241,7 +241,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| <code>kernel/.../gt9xxnew/gt9xx.h</code> | GROUP1 分辨率 800×1280，上升沿中断 |</p>
 <p>| <code>lv_projector</code> <code>lv_drv_conf.h</code> / <code>main.c</code> | 触摸 <code>evdev_read</code> + <code>evdev_touch_init</code> |</p>
 <p>| <code>lv_drivers/indev/evdev.c</code> | 自动查找 <code>gt9xxnew_ts</code> 节点 |</p>
-<p>详细开发过程见：<a href="../驱动/TP驱动&amp;鼠标&amp;触摸/H133-GT9110触摸驱动开发过程.md"><code>docs/驱动/TP驱动&amp;amp;鼠标&amp;amp;触摸/H133-GT9110触摸驱动开发过程.md</code></a></p>
+<p>详细开发过程见：<a href="项目/LQ140M1JW61/驱动/TP驱动&amp;鼠标&amp;触摸/H133-GT9110触摸驱动开发过程.md"><code>docs/驱动/TP驱动&amp;amp;鼠标&amp;amp;触摸/H133-GT9110触摸驱动开发过程.md</code></a></p>
 <p>---</p>
 <h2>7. 与 GT911（5 点）的区别</h2>
 <p>| | GT9110 | GT911 |</p>
@@ -252,7 +252,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| I2C 地址规则 | 同左表 0x14/0x5d | 相同 |</p>
 <p>勿混用 <strong>GT911</strong> 的 datasheet / 配置表到 <strong>GT9110</strong> 模组。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -320,7 +320,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>20260807 — 鸿博 LQ190E1LX65 资料梳理与待确认 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -160,12 +160,12 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>|---|---|</p>
 <p>| 日期 | 2026-08-07 |</p>
 <p>| 板型 | <strong><code>p1_nor_LQ190</code>（NOR，已确认不改 eMMC）</strong> |</p>
-<p>| 状态 | <strong>历史资料梳理</strong>；显示已在 <a href="../20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a> 闭环 |</p>
+<p>| 状态 | <strong>历史资料梳理</strong>；显示已在 <a href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a> 闭环 |</p>
 <p>| 资料目录 | <code>H133-AI-Skills/硬件资料/鸿博芯业/</code> |</p>
 <p>---</p>
 <h2>1. 一句话结论</h2>
 <p>鸿博资料对应的是 <strong>Sharp LQ190E1LX65（1280×1024 双 LVDS）+ GM8875C/GM8775C（MIPI→LVDS）</strong>。  </p>
-<p>本文为早期资料梳理；<strong>出图已在 <a href="../20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a> 闭环</strong>（主机 MIPI 灌表、<code>0x13=0x63</code>、RST=PG2、关 BIST）。</p>
+<p>本文为早期资料梳理；<strong>出图已在 <a href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a> 闭环</strong>（主机 MIPI 灌表、<code>0x13=0x63</code>、RST=PG2、关 BIST）。</p>
 <p>---</p>
 <h2>2. 硬件资料摘要</h2>
 <h3>2.1 屏：LQ190E1LX65</h3>
@@ -229,7 +229,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| # | 问题 | 状态 |</p>
 <p>|---|---|---|</p>
 <p>| 1 | 存储：NOR / eMMC | <strong>已确认：NOR（<code>p1_nor_LQ190</code>）</strong> |</p>
-<p>| 2 | RegList：现成文件先用，还是按 1280×1024 重导 | <strong>已闭环</strong>：工具 MIPI 导出 + 主机 <code>dsi_gen_wr</code>（见 <a href="../20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a>） |</p>
+<p>| 2 | RegList：现成文件先用，还是按 1280×1024 重导 | <strong>已闭环</strong>：工具 MIPI 导出 + 主机 <code>dsi_gen_wr</code>（见 <a href="项目/LQ190/开发记录/20260811-LQ190-GM8775C-MIPI显示定稿/README.md">20260811 定稿</a>） |</p>
 <p>| 3 | GM8875：EEPROM 自举，还是主机灌（MIPI / I2C）；I2C 总线与地址 | <strong>已闭环</strong>：主机 MIPI 灌；转接板 IIC Slave <strong>0x58</strong>（上位机）；解锁 MIPI <strong><code>0x27=0xAA</code></strong> |</p>
 <p>| 4 | 背光 EN/ADJ、桥片 EN/RST：是否跟 LQ140（PB11 RST、PB12 PWM0） | <strong>已闭环</strong>：BL-EN=PG15；PWM0=PB12；桥片 RST=<strong>PG2（CTP-RST）</strong>，非 PB11 |</p>
 <p>| 5 | UI：<code>fb0</code> 直接 1280×1024，还是像 LQ140 做 DE 缩放；<code>disp_rotate</code> 是否仍为 0 | <strong>已闭环</strong>：<code>fb0</code>=1280×1024 直出，<code>disp_rotate=0</code> |</p>
@@ -240,7 +240,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <pre><code>./tools/build_p1_nor_LQ190.sh kernel   # 或 full
 # 产物：out/h133_linux_p1_nor_LQ190_uart0_nor.img</code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -308,7 +308,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

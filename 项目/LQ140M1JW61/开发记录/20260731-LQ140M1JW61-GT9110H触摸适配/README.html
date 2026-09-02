@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LQ140M1JW61 GT9110H 触摸适配 — 文档索引 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -174,12 +174,12 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 地址 / 脚位 | <code>0x5d</code>；TWI1 PG8/9、INT=PG3、RST=PG2 |</p>
 <p>| <code>screen_max</code> | <strong>1920×1080</strong>（fb0） |</p>
 <p>| 状态 | <strong>实机定稿</strong> |</p>
-<p>| 基线 | <a href="../20260729-LQ140M1JW61-板件新建与双显定稿/">20260729 显示定稿</a> |</p>
+<p>| 基线 | <a href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿">20260729 显示定稿</a> |</p>
 <p>---</p>
 <h2>阅读</h2>
 <p>| 文档 | 内容 |</p>
 <p>|---|---|</p>
-<p>| <a href="./开发记录.md">开发记录.md</a> | 改动、踩坑、验收、镜像 md5 |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/开发记录.md">开发记录.md</a> | 改动、踩坑、验收、镜像 md5 |</p>
 <h2>补丁</h2>
 <p>| 文件 | 作用 |</p>
 <p>|---|---|</p>
@@ -193,9 +193,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <li>主板：<code>硬件资料/TP-H10_H133 V2.0 2026.6.12.pdf</code></li>
 <li>模组：<code>硬件资料/音乐骑士/触摸资料/</code>（<code>1401598*.cfg</code> + 编程指南）</li>
 <li>经验：<code>TP驱动&amp;鼠标&amp;触摸/乐大海10.1寸TPC3386-GT911触摸驱动开发.md</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/01-gt9xx-driver.patch" download="01-gt9xx-driver.patch">下载 01-gt9xx-driver.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/01-gt9xx-driver.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/02-board-dts-ctp.patch" download="02-board-dts-ctp.patch">下载 02-board-dts-ctp.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/02-board-dts-ctp.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/apply-lq140-gt9110h-tp.sh" download="apply-lq140-gt9110h-tp.sh">下载 apply-lq140-gt9110h-tp.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配/patches/apply-lq140-gt9110h-tp.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -263,7 +263,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

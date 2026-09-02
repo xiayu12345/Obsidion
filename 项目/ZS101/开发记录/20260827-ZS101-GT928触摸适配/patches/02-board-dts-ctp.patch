@@ -1,0 +1,51 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_ZS101/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_ZS101/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_ZS101/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_ZS101/linux-5.4/board.dts
+@@ -658,20 +658,19 @@
+-	/* 触摸本阶段不做：禁用京龙 GSL3670，避免无 TP 时 I2C 空探 */
+-	ctp@40 {
+-		compatible = "allwinner,gslX680";
+-		device_type = "ctp";
+-		reg = <0x40>;
+-		status = "disabled";
+-		ctp_name = "gsl3670";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x40>;
+-		/* exchange 后 1280×800；report 保持同量程，对齐 LVGL（disp_rotate=3） */
+-		ctp_screen_max_x = <1280>;
+-		ctp_screen_max_y = <800>;
+-		ctp_report_max_x = <1280>;
+-		ctp_report_max_y = <800>;
+-		ctp_revert_x_flag = <0x0>;
+-		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x1>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
+-	};
++	/* 纽曼 FXT101041 GT928：cfg→GROUP2；1280×800 对齐 LVGL（disp_rotate=3） */
++	ctp@5d {
++		compatible = "allwinner,goodix";
++		device_type = "ctp";
++		reg = <0x5d>;
++		status = "okay";
++		ctp_name = "gt928_fxt101041";
++		ctp_twi_id = <0x1>;
++		ctp_twi_addr = <0x5d>;
++		ctp_screen_max_x = <1280>;
++		ctp_screen_max_y = <800>;
++		ctp_report_max_x = <1280>;
++		ctp_report_max_y = <800>;
++		ctp_revert_x_flag = <0x0>;
++		ctp_revert_y_flag = <0x1>;
++		ctp_exchange_x_y_flag = <0x0>;
++		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
++		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
++	};
+diff --git a/device/config/chips/h133/configs/p1_nor_ZS101/openwrt/bsp_defconfig b/device/config/chips/h133/configs/p1_nor_ZS101/openwrt/bsp_defconfig
+--- a/device/config/chips/h133/configs/p1_nor_ZS101/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_ZS101/openwrt/bsp_defconfig
+@@ -99,2 +99,2 @@
+-CONFIG_TOUCHSCREEN_GSLX680NEW=y
+-# CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set
++# CONFIG_TOUCHSCREEN_GSLX680NEW is not set
++CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y

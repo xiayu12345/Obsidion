@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JL-M101 板件新建与 MIPI 显示定稿 — 文档索引 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -168,23 +168,23 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 基线 | <strong><code>p1_nor_8733</code></strong>（MIPI 竖屏 UI + RTL8733BU） |</p>
 <p>| 屏 | JL-M101B196-P21WX-M402632，10.1" <strong>800×1280 MIPI 4-lane</strong>，IC <strong>JD9365DA-H3</strong> |</p>
 <p>| panel | <code>jl_m101_jd9365da</code> |</p>
-<p>| 板级档案 | <a href="../../../../skills/h133-display/board-profile-p1_nor_JL_M101.md">board-profile-p1_nor_JL_M101.md</a> |</p>
+<p>| 板级档案 | <a href="skills/h133-display/board-profile-p1_nor_JL_M101.md">board-profile-p1_nor_JL_M101.md</a> |</p>
 <p>| 镜像 | <code>out/h133_linux_p1_nor_JL_M101_uart0_nor.img</code> |</p>
-<p>| 阶段 1 补丁（初版落地） | <a href="../20260720-JL_M101-JD9365DA-MIPI适配/">../20260720-JL_M101-JD9365DA-MIPI适配/</a> |</p>
+<p>| 阶段 1 补丁（初版落地） | <a href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配">../20260720-JL_M101-JD9365DA-MIPI适配/</a> |</p>
 <p>---</p>
 <h2>阅读顺序</h2>
 <p>| 步骤 | 文档 | 内容 |</p>
 <p>|---|---|---|</p>
-<p>| 0 | <a href="./00-总览与定稿.md">00-总览与定稿.md</a> | 结论、对照表、硬件要点、与其它板隔离 |</p>
-<p>| 1 | <a href="./01-板件新建.md">01-板件新建.md</a> | 从 8733 克隆板级 / OpenWrt / 编译脚本 / 公共挂钩 |</p>
-<p>| 2 | <a href="./02-panel与init.md">02-panel与init.md</a> | <code>jl_m101_jd9365da</code>、京龙 init、Reset 时序、open_flow |</p>
-<p>| 3 | <a href="./03-DTS与背光PWM.md">03-DTS与背光PWM.md</a> | lcd0 时序、PB11/PB12、PWM0@50kHz、USB 脚冲突 |</p>
-<p>| 4 | <a href="./04-实机调试与踩坑.md">04-实机调试与踩坑.md</a> | smooth、DSI 读探针、RESET 分压、出图路径 |</p>
-<p>| 5 | <a href="./05-编译与验收.md">05-编译与验收.md</a> | 编译命令、验收清单、回归 |</p>
+<p>| 0 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.md">00-总览与定稿.md</a> | 结论、对照表、硬件要点、与其它板隔离 |</p>
+<p>| 1 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.md">01-板件新建.md</a> | 从 8733 克隆板级 / OpenWrt / 编译脚本 / 公共挂钩 |</p>
+<p>| 2 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.md">02-panel与init.md</a> | <code>jl_m101_jd9365da</code>、京龙 init、Reset 时序、open_flow |</p>
+<p>| 3 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.md">03-DTS与背光PWM.md</a> | lcd0 时序、PB11/PB12、PWM0@50kHz、USB 脚冲突 |</p>
+<p>| 4 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.md">04-实机调试与踩坑.md</a> | smooth、DSI 读探针、RESET 分压、出图路径 |</p>
+<p>| 5 | <a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.md">05-编译与验收.md</a> | 编译命令、验收清单、回归 |</p>
 <p><strong>建议：</strong> 复盘或新开类似屏 → 先读 <strong>00</strong>；从零克隆新板 → <strong>01</strong>；只查 init/PWM → <strong>02/03</strong>；排无图 → <strong>04</strong>。</p>
 <p>---</p>
 <h2>补丁（定稿，相对干净基线）</h2>
-<p>路径：<a href="./patches/">patches/</a></p>
+<p>路径：<a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches">patches/</a></p>
 <p>| 文件 | 内容 |</p>
 <p>|---|---|</p>
 <p>| <code>01-kernel-uboot-panel.patch</code> | 内核+U-Boot <code>jl_m101_jd9365da</code>（含 <code>LCD_bl_open</code>）+ 注册 |</p>
@@ -204,7 +204,7 @@ bash …/patches/apply-jl-m101-display-final.sh 01
 bash …/patches/gen-jl-m101-display-final-patch.sh</code></pre>
 <p><code>bootlogo.bmp</code> 不进补丁；apply 时若缺失会从 <code>p1_nor_8733</code> 复制。</p>
 <p>> 若树里<strong>已经</strong>有 JL 板（当前出图树），<code>--check</code> / 再 apply 会报 already exists，属正常。</p>
-<p>phase1 旧补丁仍在 <a href="../20260720-JL_M101-JD9365DA-MIPI适配/patches/">../20260720-…/patches/</a>；<strong>新开干净树请用本目录 final 补丁</strong>，勿先打 phase1 再打 final（会冲突）。</p>
+<p>phase1 旧补丁仍在 <a href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/patches">../20260720-…/patches/</a>；<strong>新开干净树请用本目录 final 补丁</strong>，勿先打 phase1 再打 final（会冲突）。</p>
 <p>---</p>
 <h2>与 20260720 目录的关系</h2>
 <p>| 目录 | 角色 |</p>
@@ -212,9 +212,9 @@ bash …/patches/gen-jl-m101-display-final-patch.sh</code></pre>
 <p>| <code>20260720-…-MIPI适配/</code> | phase1 早期补丁与调试流水 |</p>
 <p>| <strong>本目录 <code>20260722-…定稿/</code></strong> | <strong>出图定稿文档 + final 补丁</strong> |</p>
 <p>---</p>
-<p>*2026-07-22：实机完整显示；文档定稿；final 补丁已生成。*</p>
+<p>*2026-07-22：实机完整显示；文档定稿；final 补丁已生成。*</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/01-kernel-uboot-panel.patch" download="01-kernel-uboot-panel.patch">下载 01-kernel-uboot-panel.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/01-kernel-uboot-panel.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/02-board-tree.patch" download="02-board-tree.patch">下载 02-board-tree.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/02-board-tree.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/03-shared-hooks.patch" download="03-shared-hooks.patch">下载 03-shared-hooks.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/03-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/04-docs.patch" download="04-docs.patch">下载 04-docs.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/04-docs.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/apply-jl-m101-display-final.sh" download="apply-jl-m101-display-final.sh">下载 apply-jl-m101-display-final.sh</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/apply-jl-m101-display-final.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/gen-jl-m101-display-final-patch.sh" download="gen-jl-m101-display-final-patch.sh">下载 gen-jl-m101-display-final-patch.sh</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/gen-jl-m101-display-final-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/jl-m101-display-final.patch" download="jl-m101-display-final.patch">下载 jl-m101-display-final.patch</a><a class="dl" href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/patches/jl-m101-display-final.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -282,7 +282,7 @@ bash …/patches/gen-jl-m101-display-final-patch.sh</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

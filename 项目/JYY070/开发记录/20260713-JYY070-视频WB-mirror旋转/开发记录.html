@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 视频 WB mirror 旋转角 — 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -183,8 +183,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 板型 | <code>p1_nor_JYY070</code> |</p>
 <p>| 关联板型 | <code>p1_nor</code>、<code>p1_nor_8733</code>（保持 <code>VIDEO_WB_MIRROR_ROTATE=90</code>） |</p>
 <p>| 需求 | JYY070 播视频不再多转 90°，与 UI 横屏 1280×800（不软旋）一致 |</p>
-<p>| 补丁 | <a href="./jyy070-video-wb-mirror-rotate.patch">jyy070-video-wb-mirror-rotate.patch</a> |</p>
-<p>| 前置 | UI 现由 <code>setting.ini</code> <code>disp_rotate=0</code> 控制（见 <a href="../../../../skills/h133-display/board-profile-p1_nor_JYY070.md">板级档案</a>）；本补丁只定视频宏 |</p>
+<p>| 补丁 | <a href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch">jyy070-video-wb-mirror-rotate.patch</a> |</p>
+<p>| 前置 | UI 现由 <code>setting.ini</code> <code>disp_rotate=0</code> 控制（见 <a href="skills/h133-display/board-profile-p1_nor_JYY070.md">板级档案</a>）；本补丁只定视频宏 |</p>
 <p>| 定稿 | JYY070：<code>VIDEO_WB_MIRROR_ROTATE=0</code>；p1_nor / 8733：<code>90</code>（与远端 <code>tp_good_xia_jyy070</code> 一致） |</p>
 <p>---</p>
 <h2>1. 背景</h2>
@@ -258,7 +258,7 @@ endif</code></pre>
 <p><strong>未改动：</strong> <code>generated/</code>、<code>cedarx.conf</code>、<code>rc.final</code>、<code>TPlayerSetRotate</code> 调用处、内核 disp。</p>
 <p>---</p>
 <h2>6. 补丁应用</h2>
-<p><strong>前置：</strong> 若尚未打 <a href="../20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">jyy070-lvgl-no-rotate.patch</a>，本补丁含 <code>sunxifb.mk</code> 的 <code>LV_PROJECTOR_DISP_ROTATE=0</code> 块；若已打过 LVGL 补丁，打本补丁时 <code>sunxifb.mk</code> 可能冲突，可只保留注释行改动或跳过该 hunk。</p>
+<p><strong>前置：</strong> 若尚未打 <a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/jyy070-lvgl-no-rotate.patch">jyy070-lvgl-no-rotate.patch</a>，本补丁含 <code>sunxifb.mk</code> 的 <code>LV_PROJECTOR_DISP_ROTATE=0</code> 块；若已打过 LVGL 补丁，打本补丁时 <code>sunxifb.mk</code> 可能冲突，可只保留注释行改动或跳过该 hunk。</p>
 <pre><code>cd /path/to/H133-AIKTV
 patch -p1 &lt; H133-AI-Skills/开发记录/板件开发记录/JYY070/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch</code></pre>
 <p>撤销：</p>
@@ -307,13 +307,13 @@ logread | grep -E &quot;DispNvRotate90|MIPI-VID&quot;
 <p>---</p>
 <h2>10. 相关</h2>
 <ul>
-<li>UI 不旋转：<a href="../20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
-<li>LVDS/异显背景：<a href="../20260708-JYY070-LVDS显示开发/README.md">20260708-JYY070-LVDS显示开发</a></li>
+<li>UI 不旋转：<a href="项目/JYY070/开发记录/20260708-JYY070-LVGL显示不旋转/开发记录.md">20260708-JYY070-LVGL显示不旋转</a></li>
+<li>LVDS/异显背景：<a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/README.md">20260708-JYY070-LVDS显示开发</a></li>
 <li>编译脚本：<code>tools/build_p1_nor_JYY070.sh</code></li>
 <li>核心源码：<code>platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch" download="jyy070-video-wb-mirror-rotate.patch">下载 jyy070-video-wb-mirror-rotate.patch</a><a class="dl" href="项目/JYY070/开发记录/20260713-JYY070-视频WB-mirror旋转/jyy070-video-wb-mirror-rotate.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -381,7 +381,7 @@ logread | grep -E &quot;DispNvRotate90|MIPI-VID&quot;
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -1,0 +1,139 @@
+diff -Naur a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts	2026-07-27 01:08:55.019634151 -0700
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts	2026-07-27 01:08:54.955634251 -0700
+@@ -655,17 +655,20 @@
+ 	dma-names = "tx", "rx";
+ 	status = "okay";
+ 
+-	/* 乐大海 TPC3386 / GT911 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x5d */
+-	ctp@5d {
+-		compatible = "allwinner,goodix";
++	/* JL-M101 板载 GSL3670 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x40；固件 conf_3670(3)+GSL3670_JL_M101.h（800×1280）；IRQ 下降沿 */
++	ctp@40 {
++		compatible = "allwinner,gslX680";
+ 		device_type = "ctp";
+-		reg = <0x5d>;
++		reg = <0x40>;
+ 		status = "okay";
+-		ctp_name = "gt911_tpc3386";
++		ctp_name = "gsl3670";
+ 		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x5d>;
+-		ctp_screen_max_x = <0x320>;
+-		ctp_screen_max_y = <0x500>;
++		ctp_twi_addr = <0x40>;
++		/* exchange 后 1280×800；report 保持同量程，对齐 LVGL（disp_rotate=3） */
++		ctp_screen_max_x = <1280>;
++		ctp_screen_max_y = <800>;
++		ctp_report_max_x = <1280>;
++		ctp_report_max_y = <800>;
+ 		ctp_revert_x_flag = <0x0>;
+ 		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x0>;
++		ctp_exchange_x_y_flag = <0x1>;
+diff -Naur a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4	2026-07-27 01:08:55.063634082 -0700
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4	2026-07-27 01:08:55.027634138 -0700
+@@ -1132,7 +1132,8 @@
+ # Firmware loader
+ #
+ CONFIG_FW_LOADER=y
+-CONFIG_EXTRA_FIRMWARE=""
++CONFIG_EXTRA_FIRMWARE="gsl_firmware/gsl3670.bin"
++CONFIG_EXTRA_FIRMWARE_DIR="../../openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/lib/firmware"
+ # CONFIG_FW_LOADER_USER_HELPER is not set
+ # CONFIG_FW_LOADER_COMPRESS is not set
+ CONFIG_FW_CACHE=y
+diff -Naur a/tools/gsl_pack_firmware.py b/tools/gsl_pack_firmware.py
+--- a/tools/gsl_pack_firmware.py	1969-12-31 16:00:00.000000000 -0800
++++ b/tools/gsl_pack_firmware.py	2026-07-27 01:08:55.067634076 -0700
+@@ -0,0 +1,89 @@
++#!/usr/bin/env python3
++"""Pack GSL fw_data + config arrays from a .h file into Allwinner gsl_firmware/*.bin."""
++
++import argparse
++import re
++import struct
++import sys
++from pathlib import Path
++
++
++FW_PAIR_RE = re.compile(r"\{0x([0-9a-fA-F]+)\s*,\s*0x([0-9a-fA-F]+)\}")
++UINT_RE = re.compile(r"0x([0-9a-fA-F]+)|\b(\d+)\b")
++
++
++def extract_array_block(text: str, name: str) -> str:
++    marker = f"{name}[]"
++    start = text.find(marker)
++    if start < 0:
++        raise ValueError(f"array not found: {name}")
++    brace = text.find("{", start)
++    if brace < 0:
++        raise ValueError(f"opening brace not found for {name}")
++    depth = 0
++    for i in range(brace, len(text)):
++        ch = text[i]
++        if ch == "{":
++            depth += 1
++        elif ch == "}":
++            depth -= 1
++            if depth == 0:
++                return text[brace + 1 : i]
++    raise ValueError(f"closing brace not found for {name}")
++
++
++def parse_fw_data(block: str):
++    entries = []
++    for off_s, val_s in FW_PAIR_RE.findall(block):
++        entries.append((int(off_s, 16), int(val_s, 16)))
++    if not entries:
++        raise ValueError("no fw_data entries parsed")
++    return entries
++
++
++def parse_config(block: str):
++    vals = []
++    for hex_m, dec_m in UINT_RE.findall(block):
++        vals.append(int(hex_m, 16) if hex_m else int(dec_m))
++    if not vals:
++        raise ValueError("no config entries parsed")
++    return vals
++
++
++def pack_bin(fw_entries, config_ids, name: str) -> bytes:
++    out = bytearray()
++    out += struct.pack("<I", len(fw_entries))
++    for offset, val in fw_entries:
++        out += struct.pack("<II", offset & 0xFF, val & 0xFFFFFFFF)
++    out += struct.pack("<I", len(config_ids))
++    for val in config_ids:
++        out += struct.pack("<I", val & 0xFFFFFFFF)
++    name_b = name.encode("ascii")
++    out += struct.pack("<I", len(name_b))
++    out += name_b
++    return bytes(out)
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument("header", type=Path, help="source .h file")
++    parser.add_argument("--fw-array", required=True, help="fw_data array name")
++    parser.add_argument("--config-array", required=True, help="config array name")
++    parser.add_argument("--name", required=True, help="ctp_name / embedded firmware name")
++    parser.add_argument("-o", "--output", type=Path, required=True, help="output .bin path")
++    args = parser.parse_args()
++
++    text = args.header.read_text(encoding="utf-8", errors="ignore")
++    fw = parse_fw_data(extract_array_block(text, args.fw_array))
++    cfg = parse_config(extract_array_block(text, args.config_array))
++    blob = pack_bin(fw, cfg, args.name)
++    args.output.parent.mkdir(parents=True, exist_ok=True)
++    args.output.write_bytes(blob)
++    print(f"wrote {args.output} ({len(blob)} bytes)")
++    print(f"  fw entries: {len(fw)}")
++    print(f"  config entries: {len(cfg)}")
++    print(f"  name: {args.name}")
++
++
++if __name__ == "__main__":
++    main()

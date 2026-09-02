@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>双屏异显（架构级） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -166,21 +166,21 @@ input[type=checkbox] { margin-right:.4rem; }
 <p class="meta">kind: log</p>
 <h1>双屏异显（架构级）</h1>
 <p>MIPI（screen0）+ HDMI（screen1）的<strong>同显 / 异显</strong>，跨板共用。补丁已合进树。</p>
-<p><strong>先看：<a href="./使用与构建.md">使用与构建.md</a></strong>（怎么切、C API、编包注意）。</p>
+<p><strong>先看：<a href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.md">使用与构建.md</a></strong>（怎么切、C API、编包注意）。</p>
 <p>| 文档 | 说明 |</p>
 <p>|---|---|</p>
-<p>| <a href="./使用与构建.md">使用与构建.md</a> | <strong>合并后用法 + 构建注意</strong> |</p>
-<p>| <a href="./LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> | 中间件架构设计稿（待完整落地） |</p>
-<p>| <a href="./20260806-同异显切换/">20260806-同异显切换/</a> | 定稿过程：WB 常开 + <code>SET_HDMI_OUT</code> |</p>
-<p>| <a href="./20260828-libuapi内核头对齐/">20260828-libuapi内核头对齐/</a> | 合进内核后须换工具链 <code>sunxi_display2.h</code> |</p>
-<p>| <a href="./20260805-HDMI异显最小验证/">20260805-HDMI异显最小验证/</a> | 历史 TEMP（<strong>勿作产品默认</strong>） |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/双屏异显/使用与构建.md">使用与构建.md</a> | <strong>合并后用法 + 构建注意</strong> |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/双屏异显/LV_DS-双屏异显中间件架构.md">LV_DS-双屏异显中间件架构.md</a> | 中间件架构设计稿（待完整落地） |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换">20260806-同异显切换/</a> | 定稿过程：WB 常开 + <code>SET_HDMI_OUT</code> |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260828-libuapi内核头对齐">20260828-libuapi内核头对齐/</a> | 合进内核后须换工具链 <code>sunxi_display2.h</code> |</p>
+<p>| <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证">20260805-HDMI异显最小验证/</a> | 历史 TEMP（<strong>勿作产品默认</strong>） |</p>
 <h2>产品一句话</h2>
 <p>同显：WB 镜像 UI+视频到 HDMI。  </p>
 <p>异显：关掉 HDMI 上的 WB 层，视频直贴 DE1；LCD 只留 UI。</p>
 <p>干净树才需要补丁：</p>
 <pre><code>bash H133-AI-Skills/开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh</code></pre>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -248,7 +248,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

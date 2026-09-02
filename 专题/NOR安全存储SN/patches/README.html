@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>NOR SST / snum 补丁 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -128,9 +128,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <pre><code>bash H133-AI-Skills/开发记录/NOR安全存储SN/patches/apply-snum-sst.sh
 ./tools/build_p1_nor_ZS101.sh full</code></pre>
 <p><code>0004</code> <strong>不含</strong> G2D / DIRECT_MODE。其它 lunch 若也走 <code>sun8iw20p1_defconfig</code>，合 <code>0001</code>+<code>0002</code> 即可；要命令行写号再在该板 <code>defconfig</code> 开 <code>CONFIG_PACKAGE_libkey-demo=y</code>。</p>
-<p>官方 <code>sun8iw20p1_nor_defconfig</code> 本来就有 SST=64 和 SERIAL，ZS101 的 <code>BoardConfig.mk</code> 指定的是 <code>sun8iw20p1_defconfig</code>，所以必须改这一份。</p>
+<p>官方 <code>sun8iw20p1_nor_defconfig</code> 本来就有 SST=64 和 SERIAL，ZS101 的 <code>BoardConfig.mk</code> 指定的是 <code>sun8iw20p1_defconfig</code>，所以必须改这一份。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="专题/NOR安全存储SN/patches/0001-uboot-nor-sst-sunxi-serial.patch" download="0001-uboot-nor-sst-sunxi-serial.patch">下载 0001-uboot-nor-sst-sunxi-serial.patch</a><a class="dl" href="专题/NOR安全存储SN/patches/0001-uboot-nor-sst-sunxi-serial.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/NOR安全存储SN/patches/0002-uboot-bootargs-snum-null-tmpbuf512.patch" download="0002-uboot-bootargs-snum-null-tmpbuf512.patch">下载 0002-uboot-bootargs-snum-null-tmpbuf512.patch</a><a class="dl" href="专题/NOR安全存储SN/patches/0002-uboot-bootargs-snum-null-tmpbuf512.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/NOR安全存储SN/patches/0003-libkey-sst_test-512.patch" download="0003-libkey-sst_test-512.patch">下载 0003-libkey-sst_test-512.patch</a><a class="dl" href="专题/NOR安全存储SN/patches/0003-libkey-sst_test-512.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/NOR安全存储SN/patches/0004-zs101-enable-libkey-demo.patch" download="0004-zs101-enable-libkey-demo.patch">下载 0004-zs101-enable-libkey-demo.patch</a><a class="dl" href="专题/NOR安全存储SN/patches/0004-zs101-enable-libkey-demo.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="专题/NOR安全存储SN/patches/apply-snum-sst.sh" download="apply-snum-sst.sh">下载 apply-snum-sst.sh</a><a class="dl" href="专题/NOR安全存储SN/patches/apply-snum-sst.sh">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -198,7 +198,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -1,0 +1,166 @@
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+index 2c08cb881..2790b8b62 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+@@ -19,6 +19,7 @@
+ #include "layerControl.h"
+ #include <ion_mem_alloc.h>
+ #include <videoOutPort.h>
++#include <disp_dual.h>
+ #include "iniparserapi.h"
+ #include "tdisp_ctrl.h"
+ #include "sunxi_tr.h"
+@@ -166,6 +167,7 @@ typedef struct LayerContext
+     int                  nLayerBufferNum;
+     int                  preFenceFd;
+     int                  currentFenceFd;
++    int                  fenceScreenId; /* HWC timeline 屏号，须与送显屏一致 */
+     VPictureNode*        prePicNode;
+     VPictureNode*        currentPicNode;
+     unsigned int         count;// member of struct sync_info
+@@ -173,6 +175,21 @@ typedef struct LayerContext
+     int                  bResolutionChange;
+ }LayerContext;
+ 
++/* disp_screen 位掩码：优先 screen0；仅 screen1（异显）时用 1 */
++static int layerFenceScreenId(const LayerContext *lc)
++{
++	int mask;
++
++	if (lc == NULL || lc->mDispOutPort == NULL)
++		return 0;
++	mask = lc->mDispOutPort->disp_screen;
++	if (mask & (1 << 0))
++		return 0;
++	if (mask & (1 << 1))
++		return 1;
++	return 0;
++}
++
+ static unsigned int getLbcModBuferrSize(LayerContext* lc)
+ {
+ 	// int nLbcBufferSize = 0;
+@@ -766,7 +783,7 @@ static void __LayerDestroy(LayerCtrl* l)
+     DestroyVideoOutport(lc->mDispOutPort);
+ 
+     // add start for display fence sync
+-    if (destroySyncTimeline(0, lc->fdDisplay) < 0){
++    if (destroySyncTimeline(lc->fenceScreenId, lc->fdDisplay) < 0){
+         loge("destroySyncTimeline failed!");
+     }
+     if (lc->fdDisplay>=0)
+@@ -1208,7 +1225,7 @@ static int __LayerQueueBuffer(LayerCtrl* l, VideoPicture* pBuf, int bValid)
+         newNode->dequeueable = 0;
+         //3. acquire the new fence
+         struct sync_info sync;
+-        createSyncPoint(0, lc->fdDisplay, &sync);
++        createSyncPoint(lc->fenceScreenId, lc->fdDisplay, &sync);
+         lc->count = sync.count;
+         //4. set_layer_config
+         if(GetConfigParamterInt("tr_rotate_flag",0) == 1){
+@@ -1555,8 +1572,10 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+     }
+     memset(lc, 0, sizeof(LayerContext));
+ 	lc->mDispOutPort = CreateVideoOutport(0);
+-	/* WB mirror: video only to DE0 (MIPI); HDMI shows DE0 composite via WB */
+-	lc->mDispOutPort->disp_screen = 1;
++	/* 按同/异显偏好 + HDMI HPD 选屏；fence 须跟送显屏 */
++	(void)sunxi_disp_mode_boot_sync();
++	lc->mDispOutPort->disp_screen = sunxi_disp_video_screen_mask();
++	lc->fenceScreenId = layerFenceScreenId(lc);
+ 	rect.x = 0;
+ 	rect.y = 0;
+ 	rect.width = 320;
+@@ -1592,8 +1611,10 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+ 	lc->mDispOutPort->SetZorder(lc->mDispOutPort, VIDEO_ZORDER_BOTTOM);
+ 	lc->mDispOutPort->setEnable(lc->mDispOutPort, 1);
+ 	pthread_mutex_unlock(&configMtx);
+-	logw("[WB-MIRROR] video disp_screen=1 (DE0 only, HDMI WB), "
+-	     "VIDEO_WB_MIRROR_ROTATE=%d", VIDEO_WB_MIRROR_ROTATE);
++	logw("[DISP-MODE] video disp_screen=%d fenceScreen=%d hdmi=%d, "
++	     "VIDEO_WB_MIRROR_ROTATE=%d",
++	     lc->mDispOutPort->disp_screen, lc->fenceScreenId,
++	     sunxi_disp_hdmi_connected(), VIDEO_WB_MIRROR_ROTATE);
+     logd("screen:w %d, screen:h %d", lc->nScreenWidth, lc->nScreenHeight);
+     lc->pMemops = GetMemAdapterOpsS();
+     int openRet = SunxiMemOpen(lc->pMemops);
+@@ -1603,7 +1624,7 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+     }
+     lc->bLayerRectCkedFlag = 0;
+ 
+-    // add start for display fence sync
++    // add start for display fence sync（timeline 必须跟送显屏，异显为 screen1）
+     lc->fdDisplay = openDispDev();// open node path /dev/disp
+     if(lc->fdDisplay < 1)
+     {
+@@ -1612,8 +1633,8 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+         return NULL;
+     }
+ 
+-    if (createSyncTimeline(0, lc->fdDisplay) < 0){
+-        loge("create sync time line failed");
++    if (createSyncTimeline(lc->fenceScreenId, lc->fdDisplay) < 0){
++        loge("create sync time line failed (screen=%d)", lc->fenceScreenId);
+         if(lc->fdDisplay>=0)
+             close(lc->fdDisplay);
+         lc->fdDisplay=-1;
+@@ -1678,6 +1699,23 @@ int LayerSetDisplayRect(LayerCtrl* l, int x, int y, unsigned int width, unsigned
+             x, y, width, height);
+     if(width == 0 && height == 0)
+         return -1;
++	/* 异显贴 HDMI：上层常传 LCD video_screen，须跟 screen1 物理分辨率 */
++	if (lc->mDispOutPort != NULL && lc->mDispOutPort->disp_screen == 2) {
++		int sw, sh;
++
++		pthread_mutex_lock(&configMtx);
++		sw = lc->mDispOutPort->getScreenWidth(lc->mDispOutPort);
++		sh = lc->mDispOutPort->getScreenHeight(lc->mDispOutPort);
++		pthread_mutex_unlock(&configMtx);
++		if (sw > 0 && sh > 0) {
++			logw("[DISP-MODE] HDMI override rect %d,%d %ux%u -> 0,0 %dx%d",
++			     x, y, width, height, sw, sh);
++			x = 0;
++			y = 0;
++			width = (unsigned int)sw;
++			height = (unsigned int)sh;
++		}
++	}
+ 	lc->dst_rect.x = x;
+ 	lc->dst_rect.y = y;
+ 	lc->dst_rect.width = width;
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/daemon/Makefile b/platform/thirdparty/gui/lvgl-8/lib/media_session/daemon/Makefile
+index 08f728e90..e7573b687 100644
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/daemon/Makefile
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/daemon/Makefile
+@@ -78,7 +78,8 @@ DAEMON_CFLAGS := $(BASE_CFLAGS) -DMS_DAEMON_BUILD -DLV_PROJECTOR_LOG_ENABLE=0 -D
+             -I$(LEISHI_SDK)/include \
+             -DLV_USE_LINUX_TPLAYER
+ ifneq ($(STAGING_DIR),)
+-DAEMON_CFLAGS += -I$(STAGING_DIR)/usr/include/allwinner/include \
++DAEMON_CFLAGS += -I$(STAGING_DIR)/usr/include \
++            -I$(STAGING_DIR)/usr/include/allwinner/include \
+             -I$(STAGING_DIR)/usr/include/allwinner
+ LDFLAGS  += -L$(STAGING_DIR)/usr/lib -Wl,-rpath-link,$(STAGING_DIR)/usr/lib
+ endif
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
+index 225dfcec3..32965b18c 100644
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
+@@ -19,6 +19,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <time.h>
++#include <disp_dual.h>
+ 
+ typedef struct {
+     ms_cmd_item_t **items;
+@@ -500,6 +501,9 @@ int media_session_init(uint32_t queue_capacity)
+         g_ms.items[i] = NULL;
+     }
+ 
++    /* 同/异显偏好开机同步（默认 SAME；DIFF 时关 WB） */
++    (void)sunxi_disp_mode_boot_sync();
++
+ MS_DBG("[media_session] init ok, capacity=%u\n", queue_capacity);
+     return 0;
+ }

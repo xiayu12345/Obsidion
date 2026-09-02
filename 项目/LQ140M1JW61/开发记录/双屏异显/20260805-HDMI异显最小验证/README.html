@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>HDMI 异显最小验证（历史 TEMP） · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -170,15 +170,15 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 日期 | 2026-08-05（卡顿闭环 2026-08-06） |</p>
 <p>| 范围 | 架构通路验证 |</p>
 <p>| 验证板 | <code>p1_nor_JL_M101</code> |</p>
-<p>| 状态 | <strong>历史对照</strong>；产品请用 <a href="../20260806-同异显切换/">20260806-同异显切换</a> |</p>
-<p>| 正文 | <a href="./开发记录.md">开发记录.md</a> |</p>
-<p>| 补丁 | <a href="./patches/">patches/</a>（TEMP：<strong>勿作产品默认</strong>） |</p>
+<p>| 状态 | <strong>历史对照</strong>；产品请用 <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260806-同异显切换">20260806-同异显切换</a> |</p>
+<p>| 正文 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/开发记录.md">开发记录.md</a> |</p>
+<p>| 补丁 | <a href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches">patches/</a>（TEMP：<strong>勿作产品默认</strong>） |</p>
 <h2>一句话</h2>
 <p>当时用编译期关 WB + <code>disp_screen=2</code> 验证异显通路与 fence；正式方案改为 <strong>WB 常开、只显隐 HDMI 上 WB 层</strong>。</p>
 <h2>注意</h2>
-<p>本目录 TEMP 补丁与「WB 常开」冲突，干净树请用 20260806，不要 apply 此处补丁。</p>
+<p>本目录 TEMP 补丁与「WB 常开」冲突，干净树请用 20260806，不要 apply 此处补丁。</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/01-kernel-skip-wb-and-fb-clone.patch" download="01-kernel-skip-wb-and-fb-clone.patch">下载 01-kernel-skip-wb-and-fb-clone.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/01-kernel-skip-wb-and-fb-clone.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/02-tlayer-hdmi-only-fence-screen.patch" download="02-tlayer-hdmi-only-fence-screen.patch">下载 02-tlayer-hdmi-only-fence-screen.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/02-tlayer-hdmi-only-fence-screen.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/apply-hdmi-diff-temp.sh" download="apply-hdmi-diff-temp.sh">下载 apply-hdmi-diff-temp.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/apply-hdmi-diff-temp.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/hdmi-diff-display-temp.patch" download="hdmi-diff-display-temp.patch">下载 hdmi-diff-display-temp.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/双屏异显/20260805-HDMI异显最小验证/patches/hdmi-diff-display-temp.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -246,7 +246,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

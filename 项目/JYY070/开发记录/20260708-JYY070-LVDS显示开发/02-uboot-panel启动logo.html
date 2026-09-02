@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>02 — U-Boot Panel / 启动 Logo · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -177,8 +177,8 @@ input[type=checkbox] { margin-right:.4rem; }
 <article class="">
 <p class="meta">kind: log · date: 2026-07-08</p>
 <h1>02 — U-Boot Panel / 启动 Logo</h1>
-<p><strong>上一步：</strong> <a href="./01-kernel-panel驱动.md">01-kernel-panel驱动.md</a>  </p>
-<p><strong>下一步：</strong> <a href="./03-DTS切换LVDS.md">03-DTS切换LVDS.md</a></p>
+<p><strong>上一步：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/01-kernel-panel驱动.md">01-kernel-panel驱动.md</a>  </p>
+<p><strong>下一步：</strong> <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS切换LVDS.md</a></p>
 <p>---</p>
 <h2>1. 本步目标</h2>
 <p>U-Boot 阶段使用同一套 JYY070 LVDS panel，开机 logo 以 1024×600 正常显示。</p>
@@ -196,13 +196,13 @@ input[type=checkbox] { margin-right:.4rem; }
 <ul>
 <li>U-Boot 编译通过</li>
 <li>上电后 <strong>开机 logo 横屏 1024×600</strong>，无竖条/花屏</li>
-<li>若 logo 正常但进 Linux 后黑屏 → 检查 <a href="./03-DTS切换LVDS.md">03-DTS</a></li>
+<li>若 logo 正常但进 Linux 后黑屏 → 检查 <a href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/03-DTS切换LVDS.md">03-DTS</a></li>
 </ul>
 <p>---</p>
 <h2>4. 深入阅读</h2>
-<p><a href="../../JYY070-7寸LVDS屏-bringup/01-LVDS显示驱动开发记录.md">01-LVDS显示驱动开发记录.md</a> § U-Boot 章节</p>
+<p><a href="项目/JYY070/JYY070-7寸LVDS屏-bringup/01-LVDS显示驱动开发记录.md">01-LVDS显示驱动开发记录.md</a> § U-Boot 章节</p><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch" download="06-dts-hw-scale.patch">下载 06-dts-hw-scale.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/06-dts-hw-scale.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh" download="apply-jyy070-lvds-display.sh">下载 apply-jyy070-lvds-display.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/apply-jyy070-lvds-display.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh" download="gen-jyy070-lvds-display-patch.sh">下载 gen-jyy070-lvds-display-patch.sh</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/gen-jyy070-lvds-display-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch" download="jyy070-lvds-display-phase1-5.patch">下载 jyy070-lvds-display-phase1-5.patch</a><a class="dl" href="项目/JYY070/开发记录/20260708-JYY070-LVDS显示开发/patches/jyy070-lvds-display-phase1-5.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -270,7 +270,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>p1_nor_4k 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -148,12 +148,12 @@ input[type=checkbox] { margin-right:.4rem; }
 <h1>p1_nor_4k 开发记录</h1>
 <p>| 目录 | 内容 |</p>
 <p>|------|------|</p>
-<p>| <a href="./20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.md">20260724-p1_nor_4k-HDMI1080p-fb0对齐/</a> | <strong>当前显示基线</strong>：HDMI 1080p60 + fb0 1920×1080（1:1）；UI 1280×800 左上 |</p>
-<p>| <a href="./20260723-p1_nor_4k-板件新建与HDMI4K分离/">20260723-p1_nor_4k-板件新建与HDMI4K分离/</a> | 板件从 8733 分离；初版曾配纯 HDMI 4K@30（文档 + 补丁） |</p>
-<p>| <a href="./CMA与lv_img_header-4K硬解/">CMA与lv_img_header-4K硬解/</a> | 可选：硬解宽/高 >2047 的大图（<code>cma=48M</code> + 13-bit <code>lv_img_header</code>） |</p>
-<p>板级档案：<a href="../../../skills/h133-display/board-profile-p1_nor_4k.md">board-profile-p1_nor_4k.md</a></p>
+<p>| <a href="项目/p1_nor_4k/开发记录/20260724-p1_nor_4k-HDMI1080p-fb0对齐/开发记录.md">20260724-p1_nor_4k-HDMI1080p-fb0对齐/</a> | <strong>当前显示基线</strong>：HDMI 1080p60 + fb0 1920×1080（1:1）；UI 1280×800 左上 |</p>
+<p>| <a href="项目/p1_nor_4k/开发记录/20260723-p1_nor_4k-板件新建与HDMI4K分离">20260723-p1_nor_4k-板件新建与HDMI4K分离/</a> | 板件从 8733 分离；初版曾配纯 HDMI 4K@30（文档 + 补丁） |</p>
+<p>| <a href="项目/p1_nor_4k/开发记录/CMA与lv_img_header-4K硬解">CMA与lv_img_header-4K硬解/</a> | 可选：硬解宽/高 >2047 的大图（<code>cma=48M</code> + 13-bit <code>lv_img_header</code>） |</p>
+<p>板级档案：<a href="skills/h133-display/board-profile-p1_nor_4k.md">board-profile-p1_nor_4k.md</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -221,7 +221,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

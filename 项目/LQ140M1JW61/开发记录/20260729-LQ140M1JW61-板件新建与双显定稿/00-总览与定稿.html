@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>00 — 总览与定稿 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -218,10 +218,10 @@ input[type=checkbox] { margin-right:.4rem; }
 <li>~~HDMI 右侧黑边（fb 1080p vs Guider 1280×800）~~：已改 <code>fb0=1280×800</code> + DE0 放大，刷机后按 <code>05</code> 验收。</li>
 <li><code>setting.ini</code> 中 <code>video_screen_*</code> / <code>sun_video_screen_*</code> 仍可能残留 <strong>800×1280</strong>（克隆遗留）；横屏播 MV 前按实际视频窗口改。</li>
 <li>panel init 为 <strong>占位</strong>（仅 <code>dsi_clk_enable</code>）；若桥片后续要求厂商 DCS 表，再填，<strong>勿擅自加 DSI 读命令</strong>。</li>
-<li>触摸：~~本专题未定稿~~ → 见 <a href="../20260731-LQ140M1JW61-GT9110H触摸适配/">20260731-GT9110H触摸适配</a>（代码已落地，待实机验收）。</li>
-</ul>
+<li>触摸：~~本专题未定稿~~ → 见 <a href="项目/LQ140M1JW61/开发记录/20260731-LQ140M1JW61-GT9110H触摸适配">20260731-GT9110H触摸适配</a>（代码已落地，待实机验收）。</li>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/01-kernel-uboot-panel.patch" download="01-kernel-uboot-panel.patch">下载 01-kernel-uboot-panel.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/01-kernel-uboot-panel.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/02-board-tree.patch" download="02-board-tree.patch">下载 02-board-tree.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/02-board-tree.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/03-shared-hooks.patch" download="03-shared-hooks.patch">下载 03-shared-hooks.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/03-shared-hooks.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/04-docs.patch" download="04-docs.patch">下载 04-docs.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/04-docs.patch">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/apply-lq140-display-final.sh" download="apply-lq140-display-final.sh">下载 apply-lq140-display-final.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/apply-lq140-display-final.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/gen-lq140-display-final-patch.sh" download="gen-lq140-display-final-patch.sh">下载 gen-lq140-display-final-patch.sh</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/gen-lq140-display-final-patch.sh">整页打开</a></p><p class="dlbar"><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/lq140-display-final.patch" download="lq140-display-final.patch">下载 lq140-display-final.patch</a><a class="dl" href="项目/LQ140M1JW61/开发记录/20260729-LQ140M1JW61-板件新建与双显定稿/patches/lq140-display-final.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -289,7 +289,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

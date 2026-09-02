@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JYY070 RTL8733BU WiFi 适配 — 开发记录 · 全志</title>
-<style>/* nav-v30 */ 
+<style>/* nav-v31 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -84,7 +84,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v30</span></a>
+<nav class="side"><a class="brand" href="index.html">全志 <span class="ver">v31</span></a>
 <div class="group open">
 <a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
@@ -183,7 +183,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p>| 板型 | <code>p1_nor_JYY070</code>（与 <code>p1_nor_8733</code> 共用同一 WiFi 包） |</p>
 <p>| 参照板型 | <code>h133-p1_nor_8733</code> |</p>
 <p>| 硬件 | RTL8733BU USB；<code>wlan_busnum=1</code>（EHCI1）；rfkill <code>PG17</code> / <code>PG10</code> |</p>
-<p>| 补丁 | <a href="./jyy070-8733bu-wifi.patch">jyy070-8733bu-wifi.patch</a> |</p>
+<p>| 补丁 | <a href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/jyy070-8733bu-wifi.patch">jyy070-8733bu-wifi.patch</a> |</p>
 <p>| 驱动源码树 | <code>openwrt/package/allwinner/wireless/rtl8733bu-kmod/src/</code>（v5.13.0.1-112） |</p>
 <p>---</p>
 <h2>0. 当前结论（先看这个）</h2>
@@ -240,7 +240,7 @@ WERR: wpa_supplicant ... executed failed</code></pre>
 <p>---</p>
 <h2>4. 落地改动</h2>
 <h3>4.1 补丁覆盖（text）</h3>
-<p>见 <a href="./jyy070-8733bu-wifi.patch">jyy070-8733bu-wifi.patch</a>：</p>
+<p>见 <a href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/jyy070-8733bu-wifi.patch">jyy070-8733bu-wifi.patch</a>：</p>
 <p>| 路径 | 改动 |</p>
 <p>|---|---|</p>
 <p>| <code>device/.../p1_nor_JYY070/openwrt/bsp_defconfig</code> | 去掉 AIC8800；注释标明走 rtl8733bu-kmod |</p>
@@ -303,9 +303,9 @@ wpa_cli -p /etc/wifi/wpa_supplicant/sockets -i wlan0 status</code></pre>
 <li><code>openwrt/package/allwinner/wireless/rtl8733bu-kmod/</code>（<code>Makefile</code> + <code>src/</code>）</li>
 <li><code>openwrt/target/h133/h133-p1_nor_8733/</code></li>
 <li><code>device/config/chips/h133/configs/p1_nor_JYY070/openwrt/bsp_defconfig</code></li>
-</ul>
+</ul><h2>补丁</h2><p class="dlbar"><a class="dl" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/jyy070-8733bu-wifi.patch" download="jyy070-8733bu-wifi.patch">下载 jyy070-8733bu-wifi.patch</a><a class="dl" href="项目/JYY070/开发记录/20260713-JYY070-8733BU-WiFi适配/jyy070-8733bu-wifi.patch">整页打开</a></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 08:06 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 08:16 UTC</footer>
 </main>
 <script>
 (function () {
@@ -373,7 +373,7 @@ wpa_cli -p /etc/wifi/wpa_supplicant/sockets -i wlan0 status</code></pre>
     mark(this);
     go(this.href, true);
   }
-  var VER = "v30";
+  var VER = "v31";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
