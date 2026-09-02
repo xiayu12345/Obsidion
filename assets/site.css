@@ -35,6 +35,9 @@ nav.side .family-kids > a.item.board,
 nav.side .family-kids > a.item.home { padding-left:28px; }
 nav.side .family-kids > .sec { padding: .45rem 0 .1rem 28px; }
 nav.side .family-kids > .sub { margin-left:20px; }
+nav.side .family-kids > .group > a.item.cat { padding-left:28px; }
+nav.side .family-kids > .group a.item.subcat { padding-left:40px; }
+nav.side .family-kids > .group .group a.item.child { padding-left:52px; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
 nav.side a.item.subcat { padding-left:16px; font-size:12px; }
 nav.side .group .group a.item.child { padding-left:30px; }
