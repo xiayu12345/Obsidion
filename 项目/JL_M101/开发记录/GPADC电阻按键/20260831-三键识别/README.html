@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>GPADC 三键识别 · H133 板件</title>
-<style>/* nav-v18 */ 
+<style>/* nav-v19 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -40,6 +40,8 @@ nav.side a.item.cat { padding-left:10px; color:var(--muted); }
 nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
 nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
@@ -70,7 +72,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v18</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v19</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -108,12 +110,24 @@ input[type=checkbox] { margin-right:.4rem; }
 <div class="group">
 <a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
 <div class="kids">
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
 <a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">屏 init</span></a>
 <a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">屏 D101</span></a>
-<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
 <a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">屏规格书</span></a>
-<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">其他</span></a>
+<div class="kids">
 <a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
+</div></div>
 </div>
 </div>
 </div>
@@ -139,7 +153,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <h2>一句话</h2>
 <p>改 <code>&amp;gpadc</code>。电阻 0Ω/3.3k/5.1k/6.8k/15k → 播放/上一曲/下一曲/音量减/音量加。板甲 ADC 3/106/161/208/404；板乙（当前镜像）207/291/335/373/533。hexdump 看 164/165/163/114/115。</p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 03:33 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 03:46 UTC</footer>
 </main>
 <script>
 (function () {
@@ -207,7 +221,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v18";
+  var VER = "v19";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

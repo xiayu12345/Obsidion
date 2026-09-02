@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>NI4042J4H8II-B · H133 板件</title>
-<style>/* nav-v18 */ 
+<style>/* nav-v19 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -40,6 +40,8 @@ nav.side a.item.cat { padding-left:10px; color:var(--muted); }
 nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
 nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
@@ -70,7 +72,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v18</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v19</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -96,13 +98,25 @@ input[type=checkbox] { margin-right:.4rem; }
 <div class="group open">
 <a class="item cat" href="项目/ZS101/资料.html"><span class="txt">资料</span></a>
 <div class="kids">
+<div class="group">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
 <a class="item child" href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html"><span class="txt">触摸规格</span></a>
 <a class="item child" href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html"><span class="txt">GT928 配置</span></a>
+</div></div>
+<div class="group open">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
 <a class="item child current" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html"><span class="txt">NI4042J4H8II-B</span></a>
+<a class="item child" href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html"><span class="txt">新代码02群创10.1+ILI9881C-0D_2P_20190920</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/ZS101/资料.html"><span class="txt">其他</span></a>
+<div class="kids">
 <a class="item child" href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html"><span class="txt">位号图</span></a>
 <a class="item child" href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html"><span class="txt">测试报告</span></a>
 <a class="item child" href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html"><span class="txt">主板原理图</span></a>
-<a class="item child" href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html"><span class="txt">新代码02群创10.1+ILI9881C-0D_2P_20190920</span></a>
+</div></div>
 </div>
 </div>
 </div>
@@ -113,7 +127,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>NI4042J4H8II-B</h1><p class="dlbar"><a class="dl" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.pdf" download="ZS101NI4042J4H8II-B.pdf">下载 ZS101NI4042J4H8II-B.pdf</a><a class="dl" href="项目/ZS101/资料/ZS101NI4042J4H8II-B.pdf">整页打开</a></p><iframe class="docview" src="项目/ZS101/资料/ZS101NI4042J4H8II-B.pdf" title="ZS101NI4042J4H8II-B.pdf"></iframe>
 </article>
-<footer>一块板一个项目 · 2026-09-02 03:33 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 03:46 UTC</footer>
 </main>
 <script>
 (function () {
@@ -181,7 +195,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v18";
+  var VER = "v19";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

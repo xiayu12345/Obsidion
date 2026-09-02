@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>JL_M101 · H133 板件</title>
-<style>/* nav-v18 */ 
+<style>/* nav-v19 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -40,6 +40,8 @@ nav.side a.item.cat { padding-left:10px; color:var(--muted); }
 nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
 nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
@@ -70,7 +72,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v18</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v19</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board current" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -108,12 +110,24 @@ input[type=checkbox] { margin-right:.4rem; }
 <div class="group">
 <a class="item cat" href="项目/JL_M101/资料.html"><span class="txt">资料</span></a>
 <div class="kids">
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">触摸</span></a>
+<div class="kids">
+<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
+<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
 <a class="item child" href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html"><span class="txt">屏 init</span></a>
 <a class="item child" href="项目/JL_M101/资料/D101Q45A15.html"><span class="txt">屏 D101</span></a>
-<a class="item child" href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html"><span class="txt">GSL3670 规格</span></a>
 <a class="item child" href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html"><span class="txt">屏规格书</span></a>
-<a class="item child" href="项目/JL_M101/资料/conf_3670(3).html"><span class="txt">GSL 配置</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JL_M101/资料.html"><span class="txt">其他</span></a>
+<div class="kids">
 <a class="item child" href="项目/JL_M101/资料/s10-h133-v1_0625.html"><span class="txt">主板原理图</span></a>
+</div></div>
 </div>
 </div>
 </div>
@@ -142,9 +156,9 @@ input[type=checkbox] { margin-right:.4rem; }
 <p><h3><a href="项目/JL_M101/记录.html">记录</a></h3><ul><li><a href="项目/JL_M101/开发记录/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.html">MIPI 适配</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/00-总览与定稿.html">MIPI 定稿 · 总览</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/01-板件新建.html">MIPI 定稿 · 新建板件</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/02-panel与init.html">MIPI 定稿 · Panel init</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/03-DTS与背光PWM.html">MIPI 定稿 · DTS 背光</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.html">MIPI 定稿 · 实机踩坑</a></li><li><a href="项目/JL_M101/开发记录/20260722-JL_M101-板件新建与MIPI显示定稿/05-编译与验收.html">MIPI 定稿 · 编译验收</a></li><li><a href="项目/JL_M101/开发记录/20260727-JL_M101-GSL3670触摸适配/开发记录.html">GSL3670 触摸</a></li><li><a href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/如何修改.html">GPADC 三键 · 怎么改</a></li><li><a href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/开发记录.html">GPADC 三键</a></li><li><a href="项目/JL_M101/开发记录/GPADC电阻按键/20260831-三键识别/测试方法.html">GPADC 三键 · 怎么测</a></li><li><a href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/如何修改.html">三路旋转 · 怎么改</a></li><li><a href="项目/JL_M101/开发记录/显示旋转/20260825-三路旋转控制/开发记录.html">三路旋转</a></li></ul></p>
 <p><h3><a href="项目/JL_M101/外设.html">外设</a></h3><ul><li><a href="项目/JL_M101/外设-GPADC.html">GPADC 按键</a></li></ul></p>
 <p><h3><a href="项目/JL_M101/修复.html">修复</a></h3><ul><li><a href="项目/JL_M101/开发记录/系统BUG修复/20260730-HDMI同显-DE1-linebuf超宽1比1黑边/开发记录.html">HDMI 黑边</a></li></ul></p>
-<p><h3><a href="项目/JL_M101/资料.html">资料</a></h3><ul><li><a href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html">屏 init</a></li><li><a href="项目/JL_M101/资料/D101Q45A15.html">屏 D101</a></li><li><a href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html">GSL3670 规格</a></li><li><a href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html">屏规格书</a></li><li><a href="项目/JL_M101/资料/conf_3670(3).html">GSL 配置</a></li><li><a href="项目/JL_M101/资料/s10-h133-v1_0625.html">主板原理图</a></li></ul></p>
+<p><h3><a href="项目/JL_M101/资料.html">资料</a></h3><h4>触摸</h4><ul><li><a href="项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.html">GSL3670 规格</a></li><li><a href="项目/JL_M101/资料/conf_3670(3).html">GSL 配置</a></li></ul><h4>显示屏</h4><ul><li><a href="项目/JL_M101/资料/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).html">屏 init</a></li><li><a href="项目/JL_M101/资料/D101Q45A15.html">屏 D101</a></li><li><a href="项目/JL_M101/资料/JL-M101B196-P21WX-M402632 规格书V1.0.html">屏规格书</a></li></ul><h4>其他</h4><ul><li><a href="项目/JL_M101/资料/s10-h133-v1_0625.html">主板原理图</a></li></ul></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 03:33 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 03:46 UTC</footer>
 </main>
 <script>
 (function () {
@@ -212,7 +226,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v18";
+  var VER = "v19";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);

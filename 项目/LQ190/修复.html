@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>LQ190 · 修复 · H133 板件</title>
-<style>/* nav-v18 */ 
+<style>/* nav-v19 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -40,6 +40,8 @@ nav.side a.item.cat { padding-left:10px; color:var(--muted); }
 nav.side a.item.cat::before { content:"▸ "; opacity:.65; margin-right:2px; }
 nav.side .group.open > a.item.cat::before { content:"▾ "; }
 nav.side a.item.child { padding-left:22px; color:var(--muted); font-weight:500; }
+nav.side a.item.subcat { padding-left:16px; font-size:12px; }
+nav.side .group .group a.item.child { padding-left:30px; }
 nav.side a.item.cat.current, nav.side a.item.child.current,
 nav.side a.item.cat.current:hover, nav.side a.item.child.current:hover { color:#fff; }
 main { padding:1rem 1.2rem 1.5rem; min-width:0; min-height:0; overflow:auto; }
@@ -70,7 +72,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v18</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v19</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -95,15 +97,23 @@ input[type=checkbox] { margin-right:.4rem; }
 <div class="group">
 <a class="item cat" href="项目/LQ190/资料.html"><span class="txt">资料</span></a>
 <div class="kids">
+<div class="group">
+<a class="item cat subcat" href="项目/LQ190/资料.html"><span class="txt">显示屏</span></a>
+<div class="kids">
 <a class="item child" href="项目/LQ190/资料/1280x1024_2024.html"><span class="txt">1280x1024_2024</span></a>
 <a class="item child" href="项目/LQ190/资料/1280x1024_20260811144404.html"><span class="txt">1280x1024_20260811144404</span></a>
 <a class="item child" href="项目/LQ190/资料/GM8775C_SBOARD_1V3.html"><span class="txt">转接板</span></a>
 <a class="item child" href="项目/LQ190/资料/GM8775C数据手册V1.0_20190731.html"><span class="txt">GM8775C 手册</span></a>
-<a class="item child" href="项目/LQ190/资料/HB-SPJ-PTN1101D 1.0 Sch.html"><span class="txt">功放原理图</span></a>
 <a class="item child" href="项目/LQ190/资料/LQ190E1LX65_LD-27X08A_20151127_202407011157(1).html"><span class="txt">E1LX65_LD-27X08A_20151127_202407011157</span></a>
 <a class="item child" href="项目/LQ190/资料/MIPI TO D LVDS V1.2 SCH.html"><span class="txt">MIPI转LVDS</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/LQ190/资料.html"><span class="txt">其他</span></a>
+<div class="kids">
+<a class="item child" href="项目/LQ190/资料/HB-SPJ-PTN1101D 1.0 Sch.html"><span class="txt">功放原理图</span></a>
 <a class="item child" href="项目/LQ190/资料/TP-H10_H133 V2.0 2026.6.12.html"><span class="txt">主板原理图</span></a>
 <a class="item child" href="项目/LQ190/资料/接线框图.html"><span class="txt">功放接线</span></a>
+</div></div>
 </div>
 </div>
 </div>
@@ -115,7 +125,7 @@ input[type=checkbox] { margin-right:.4rem; }
 
 <h1>LQ190 · 修复</h1><p><a href="项目/LQ190.html">回板件概览</a></p><ul><li>暂无。YAML 写 <code>kind: fix</code>。</li></ul>
 </article>
-<footer>一块板一个项目 · 2026-09-02 03:33 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 03:46 UTC</footer>
 </main>
 <script>
 (function () {
@@ -183,7 +193,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v18";
+  var VER = "v19";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
