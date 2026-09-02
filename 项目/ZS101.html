@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>ZS101 · H133 板件</title>
-<style>/* nav-v21 */ 
+<style>/* nav-v22 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -75,11 +75,11 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v21</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v22</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <div class="group open">
-<a class="item cat family" href="index.html"><span class="txt">H133</span></a>
+<a class="item cat family" href="#"><span class="txt">H133</span></a>
 <div class="kids family-kids">
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
 <a class="item board" href="项目/JYY070.html"><span class="txt">JYY070</span></a>
@@ -132,7 +132,11 @@ input[type=checkbox] { margin-right:.4rem; }
 </div>
 <a class="item board" href="项目/p1_emmc_LQ140M1JW61.html"><span class="txt">p1_emmc_LQ140M1JW61</span></a>
 <a class="item board" href="项目/p1_nor_4k.html"><span class="txt">p1_nor_4k</span></a>
-</div></div></nav>
+</div></div>
+<div class="group">
+<a class="item cat family" href="#"><span class="txt">F102</span></a>
+<div class="kids family-kids"></div>
+</div></nav>
 <main>
 <article class="">
 <p class="meta">status: 验证 · config: p1_nor_ZS101</p>
@@ -153,7 +157,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <p><h3><a href="项目/ZS101/修复.html">修复</a></h3><ul><li>暂无</li></ul></p>
 <p><h3><a href="项目/ZS101/资料.html">资料</a></h3><h4>触摸</h4><ul><li><a href="项目/ZS101/资料/FXT101041-MN-A1电容屏规格书(客户型号VP01).html">触摸规格</a></li><li><a href="项目/ZS101/资料/FXT101041_GT928_1080_VER00_Config_20260827_115020 - 副本.html">GT928 配置</a></li></ul><h4>显示屏</h4><ul><li><a href="项目/ZS101/资料/ZS101NI4042J4H8II-B.html">NI4042J4H8II-B</a></li><li><a href="项目/ZS101/资料/新代码02群创10.1(T2)+ILI9881C-0D_2P_20190920.html">新代码02群创10.1+ILI9881C-0D_2P_20190920</a></li></ul><h4>原理图</h4><ul><li><a href="项目/ZS101/资料/ZX30-D618-H133-V1_位号图.html">位号图</a></li><li><a href="项目/ZS101/资料/zx30-d618-h133-v1_0730.html">主板原理图</a></li></ul><h4>测试报告</h4><ul><li><a href="项目/ZS101/资料/p1_nor_ZS101主板测试报告.html">测试报告</a></li></ul></p>
 </article>
-<footer>一块板一个项目 · 2026-09-02 06:20 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 06:26 UTC</footer>
 </main>
 <script>
 (function () {
@@ -221,7 +225,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v21";
+  var VER = "v22";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
