@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <base href="/Obsidion/">
 <title>H133 复盘 · H133 板件</title>
-<style>/* nav-v19 */ 
+<style>/* nav-v20 */ 
 :root { --bg:#f4f1ec; --card:#fff; --fg:#222; --muted:#667; --line:#e4e0da; --acc:#284b63; --navw:250px; }
 @media (prefers-color-scheme: dark) {
   :root { --bg:#121214; --card:#1c1c20; --fg:#eee; --muted:#aaa; --line:#333; --acc:#7b97aa; }
@@ -72,7 +72,7 @@ input[type=checkbox] { margin-right:.4rem; }
 </style>
 </head>
 <body>
-<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v19</span></a>
+<nav class="side"><a class="brand" href="index.html">H133 板件 <span class="ver">v20</span></a>
 <a class="item home" href="index.html"><span class="txt">首页</span></a>
 <div class="sec">板件</div>
 <a class="item board" href="项目/JL_M101.html"><span class="txt">JL_M101</span></a>
@@ -116,14 +116,26 @@ input[type=checkbox] { margin-right:.4rem; }
 <a class="item child" href="项目/JYY070/资料/da_1728355135267..html"><span class="txt">da_1728355135267.</span></a>
 </div></div>
 <div class="group open">
-<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">其他</span></a>
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">原理图</span></a>
 <div class="kids">
-<a class="item child" href="项目/JYY070/资料/BY25FQ256ES_v1.6_QA-DT-033.html"><span class="txt">Flash 规格</span></a>
 <a class="item child" href="项目/JYY070/资料/TP-H10-H133-V1_20260408.html"><span class="txt">主板原理图</span></a>
-<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">测试报告</span></a>
-<a class="item child" href="项目/JYY070/资料/一体板功放mcu 与 android 交互协议v2.13_20250329.html"><span class="txt">功放协议</span></a>
 <a class="item child current" href="项目/JYY070/资料/修改电路.html"><span class="txt">改电路</span></a>
 <a class="item child" href="项目/JYY070/资料/本板资料说明.html"><span class="txt">说明</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">功放</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/一体板功放mcu 与 android 交互协议v2.13_20250329.html"><span class="txt">功放协议</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">存储</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/BY25FQ256ES_v1.6_QA-DT-033.html"><span class="txt">Flash 规格</span></a>
+</div></div>
+<div class="group">
+<a class="item cat subcat" href="项目/JYY070/资料.html"><span class="txt">测试报告</span></a>
+<div class="kids">
+<a class="item child" href="项目/JYY070/资料/p1_nor_JYY070主板测试报告(2)(2)(1).html"><span class="txt">测试报告</span></a>
 </div></div>
 </div>
 </div>
@@ -153,7 +165,7 @@ input[type=checkbox] { margin-right:.4rem; }
 <li><strong>多块样板需求要及时统计库存</strong>；后续可能用到的零部件应备份 1～2 件（对应问题 3）。若需重新打板，时间成本很高，自主性也低。</li>
 </ol>
 </article>
-<footer>一块板一个项目 · 2026-09-02 03:46 UTC</footer>
+<footer>一块板一个项目 · 2026-09-02 04:03 UTC</footer>
 </main>
 <script>
 (function () {
@@ -221,7 +233,7 @@ input[type=checkbox] { margin-right:.4rem; }
     mark(this);
     go(this.href, true);
   }
-  var VER = "v19";
+  var VER = "v20";
   function fetchPage(url) {
     try {
       var u = new URL(url, location.href);
