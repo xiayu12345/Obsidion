@@ -1,0 +1,62 @@
+From: H133-AIKTV GPADC 电阻按键
+Subject: [PATCH] gpadc: 五键 0Ω/3.3k/5.1k/6.8k/15k（GPADC0）
+
+只改 board.dts 的 &gpadc，不改 sunxi_gpadc.c。
+
+电阻 → ADC → 功能（两块板电阻档位相同，电压不同，见开发记录）：
+  板甲（RA22 未串进采样）：3 / 106 / 161 / 208 / 404 mV
+  板乙（经 RA22，本补丁、当前 DTS）：207 / 291 / 335 / 373 / 533 mV
+  0Ω    播放/暂停  164 KEY_PLAYPAUSE
+  3.3k  上一曲    165 KEY_PREVIOUSSONG
+  5.1k  下一曲    163 KEY_NEXTSONG
+  6.8k  音量减    114 KEY_VOLUMEDOWN
+  15k   音量加    115 KEY_VOLUMEUP
+空闲约 1800 mV。lowdata=1.7V 按下，higdata=1.55V 松开。
+
+前提：目标板 &gpadc 仍是全志默认 210/410/590/750/880、higdata=1200000。
+电阻网络不同时先 cat /sys/class/gpadc/data 实测，不要硬合电压数字。
+
+用法（把 <BOARD> 换成板件名，如 p1_nor_ZS101）：
+  cd device/config/chips/h133/configs/<BOARD>
+  patch -p1 < 本补丁绝对路径
+
+例：
+  cd /root/Work/H133-AIKTV/device/config/chips/h133/configs/p1_nor_ZS101
+  patch -p1 < /root/Work/H133-AIKTV/H133-AI-Skills/开发记录/GPADC电阻按键/20260831-三键识别/gpadc-5btn-0R-3.3k-5.1k-6.8k-15k.patch
+
+--- a/linux-5.4/board.dts
++++ b/linux-5.4/board.dts
+@@ -5,19 +5,22 @@
+ 	channel_compare_select = <1>;
+ 	channel_cld_select = <1>;
+ 	channel_chd_select = <1>;
++	/* 低于 1.7V 视为按下；空闲约 1.8V */
+ 	channel0_compare_lowdata = <1700000>;
+-	channel0_compare_higdata = <1200000>;
++	/* 高于 1.55V 视为松开 */
++	channel0_compare_higdata = <1550000>;
++	/* ADC 实测 mV（经 RA22）：207 / 291 / 335 / 373 / 533 */
+ 	key_cnt = <5>;
+-	key0_vol = <210>;
+-	key0_val = <115>;
+-	key1_vol = <410>;
+-	key1_val = <114>;
+-	key2_vol = <590>;
+-	key2_val = <139>;
+-	key3_vol = <750>;
+-	key3_val = <28>;
+-	key4_vol = <880>;
+-	key4_val = <240>;
++	key0_vol = <207>;   /* 0Ω 播放/暂停 */
++	key0_val = <164>;   /* KEY_PLAYPAUSE */
++	key1_vol = <291>;   /* 3.3k 上一曲 */
++	key1_val = <165>;   /* KEY_PREVIOUSSONG */
++	key2_vol = <335>;   /* 5.1k 下一曲 */
++	key2_val = <163>;   /* KEY_NEXTSONG */
++	key3_vol = <373>;   /* 6.8k 音量减 */
++	key3_val = <114>;   /* KEY_VOLUMEDOWN */
++	key4_vol = <533>;   /* 15k 音量加 */
++	key4_val = <115>;   /* KEY_VOLUMEUP */
+ 	status = "okay";
+ };
+ 

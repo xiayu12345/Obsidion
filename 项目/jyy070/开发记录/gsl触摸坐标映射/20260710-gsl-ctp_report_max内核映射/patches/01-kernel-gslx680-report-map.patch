@@ -1,0 +1,85 @@
+diff --git a/kernel/linux-5.4/drivers/input/touchscreen/gslx680new/gslX680.c b/kernel/linux-5.4/drivers/input/touchscreen/gslx680new/gslX680.c
+index 8d37f0073..0a24a4d1d 100644
+--- a/kernel/linux-5.4/drivers/input/touchscreen/gslx680new/gslX680.c
++++ b/kernel/linux-5.4/drivers/input/touchscreen/gslx680new/gslX680.c
+@@ -50,6 +50,7 @@
+ #include <linux/device.h>
+ 
+ #include <linux/gpio.h>
++#include <linux/of.h>
+ 
+ #include "../../init-input.h"
+ 
+@@ -233,10 +234,38 @@ static DECLARE_WORK(glsX680_monitor_work, glsX680_monitor_events);
+ 
+ static int screen_max_x;
+ static int screen_max_y;
++/* userspace 上报范围；默认等于 screen_max，DTS 可配 ctp_report_max_* 做线性缩放 */
++static int report_max_x;
++static int report_max_y;
+ static int revert_x_flag;
+ static int revert_y_flag;
+ static int exchange_x_y_flag;
+ 
++static void tp_load_report_max_from_dt(void)
++{
++	struct device_node *np = of_find_node_by_name(NULL, "ctp");
++
++	report_max_x = screen_max_x;
++	report_max_y = screen_max_y;
++	if (!np)
++		return;
++
++	of_property_read_u32(np, "ctp_report_max_x", &report_max_x);
++	of_property_read_u32(np, "ctp_report_max_y", &report_max_y);
++	if (report_max_x == 0)
++		report_max_x = screen_max_x;
++	if (report_max_y == 0)
++		report_max_y = screen_max_y;
++}
++
++static u16 tp_map_to_report(u16 v, int src_max, int dst_max)
++{
++	if (src_max <= 0 || dst_max <= 0 || src_max == dst_max)
++		return v;
++
++	return (u16)(((int)v * dst_max) / src_max);
++}
++
+ /*
+  * Some GSL modules wire reset as active-high.
+  * status==1 in ctp_wakeup() means "running (deassert reset)".
+@@ -1236,6 +1265,9 @@ static void report_data(struct gsl_ts *ts, u16 x, u16 y, u8 pressure, u8 id)
+ 		return;
+ 	}
+ 
++	x = tp_map_to_report(x, screen_max_x, report_max_x);
++	y = tp_map_to_report(y, screen_max_y, report_max_y);
++
+ #ifdef REPORT_DATA_ANDROID_4_0
+ 	input_mt_slot(ts->input, id);
+ 	input_report_abs(ts->input, ABS_MT_TRACKING_ID, id);
+@@ -1561,9 +1593,9 @@ static int gsl_ts_init_ts(struct i2c_client *client, struct gsl_ts *ts)
+ 	set_bit(ABS_MT_WIDTH_MAJOR, input_device->absbit);
+ 
+ 	input_set_abs_params(input_device, ABS_MT_POSITION_X, 0,
+-							SCREEN_MAX_X, 0, 0);
++							report_max_x, 0, 0);
+ 	input_set_abs_params(input_device, ABS_MT_POSITION_Y, 0,
+-							SCREEN_MAX_Y, 0, 0);
++							report_max_y, 0, 0);
+ 	input_set_abs_params(input_device, ABS_MT_TOUCH_MAJOR, 0,
+ 							PRESS_MAX, 0, 0);
+ 	input_set_abs_params(input_device, ABS_MT_WIDTH_MAJOR, 0, 200, 0, 0);
+@@ -2305,6 +2337,11 @@ static int ctp_get_system_config(void)
+ 		return 0;
+ 	}
+ 
++	tp_load_report_max_from_dt();
++	if (report_max_x != screen_max_x || report_max_y != screen_max_y)
++		pr_info("gslX680 report map: tp %dx%d -> %dx%d\n",
++			screen_max_x, screen_max_y, report_max_x, report_max_y);
++
+ 	return 1;
+ }
+ static int __init gsl_ts_init(void)

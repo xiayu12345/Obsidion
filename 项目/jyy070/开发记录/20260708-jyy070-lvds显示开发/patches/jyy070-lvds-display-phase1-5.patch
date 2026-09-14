@@ -1,0 +1,1102 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/config-5.4
+index deae6a21b..02f653d45 100755
+--- a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/config-5.4
+@@ -2545,6 +2545,7 @@ CONFIG_LCD_SUPPORT_FX070=y
+ CONFIG_LCD_SUPPORT_K101IM2QA04=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
++CONFIG_LCD_SUPPORT_JYY070_LVDS=y
+ # end of LCD panels select
+ 
+ #
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
+old mode 100644
+new mode 100755
+index eab168afd..d3a73c250
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
+@@ -64,6 +64,7 @@ disp-$(CONFIG_LCD_SUPPORT_K101IM2QA04) += lcd/k101im2qa04.o
+ disp-$(CONFIG_LCD_SUPPORT_CC08021801_310_800X1280) += lcd/CC08021801_310_800X1280.o
+ disp-$(CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280) += lcd/K080_IM2HYL802R_800X1280.o
+ disp-$(CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280) += lcd/K101_IM2BYL02_L_800X1280.o
++disp-$(CONFIG_LCD_SUPPORT_JYY070_LVDS) += lcd/jyy070_lvds.o
+ 
+ disp-$(CONFIG_EINK_PANEL_USED) += de/disp_eink_manager.o \
+ 		de/eink_buffer_manager.o de/eink_pipeline_manager.o \
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
+old mode 100644
+new mode 100755
+index 342f95dd5..11cd1eab8
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
+@@ -211,3 +211,9 @@ config LCD_SUPPORT_K080_IM2HYL802R_800X1280
+ 	---help---
+ 		If you want to support K080_IM2HYL802R_800X1280 panel for display driver, select it.
+ 
++config LCD_SUPPORT_JYY070_LVDS
++	bool "LCD support JYY070BD35L27A1-50 7inch LVDS panel"
++	default y
++	---help---
++		If you want to support JYY070 7inch 1024x600 LVDS panel, select it.
++
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.c
+new file mode 100644
+index 000000000..e25743465
+--- /dev/null
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.c
+@@ -0,0 +1,78 @@
++/*
++ * JYY070BD35L27A1-50 7" 1024x600 TTL panel via LVDS adapter board.
++ * H133 outputs LVDS; adapter converts to TTL DE mode. Backlight is external.
++ */
++#include "jyy070_lvds.h"
++
++static void LCD_power_on(u32 sel);
++static void LCD_power_off(u32 sel);
++static void LCD_bl_open(u32 sel);
++static void LCD_bl_close(u32 sel);
++static void LCD_panel_init(u32 sel);
++static void LCD_panel_exit(u32 sel);
++
++static void LCD_cfg_panel_info(struct panel_extend_para *info)
++{
++	(void)info;
++}
++
++static s32 LCD_open_flow(u32 sel)
++{
++	LCD_OPEN_FUNC(sel, LCD_power_on, 40);
++	LCD_OPEN_FUNC(sel, LCD_panel_init, 10);
++	LCD_OPEN_FUNC(sel, sunxi_lcd_tcon_enable, 200);
++	LCD_OPEN_FUNC(sel, LCD_bl_open, 0);
++
++	return 0;
++}
++
++static s32 LCD_close_flow(u32 sel)
++{
++	LCD_CLOSE_FUNC(sel, LCD_bl_close, 0);
++	LCD_CLOSE_FUNC(sel, sunxi_lcd_tcon_disable, 10);
++	LCD_CLOSE_FUNC(sel, LCD_panel_exit, 0);
++	LCD_CLOSE_FUNC(sel, LCD_power_off, 0);
++
++	return 0;
++}
++
++static void LCD_power_on(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 1);
++}
++
++static void LCD_power_off(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 0);
++}
++
++static void LCD_bl_open(u32 sel)
++{
++}
++
++static void LCD_bl_close(u32 sel)
++{
++}
++
++static void LCD_panel_init(u32 sel)
++{
++}
++
++static void LCD_panel_exit(u32 sel)
++{
++}
++
++static s32 LCD_user_defined_func(u32 sel, u32 para1, u32 para2, u32 para3)
++{
++	return 0;
++}
++
++struct __lcd_panel jyy070_lvds_panel = {
++	.name = "jyy070_lvds",
++	.func = {
++		.cfg_panel_info = LCD_cfg_panel_info,
++		.cfg_open_flow = LCD_open_flow,
++		.cfg_close_flow = LCD_close_flow,
++		.lcd_user_defined_func = LCD_user_defined_func,
++	},
++};
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.h b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.h
+new file mode 100644
+index 000000000..564b451c5
+--- /dev/null
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jyy070_lvds.h
+@@ -0,0 +1,6 @@
++#ifndef _JYY070_LVDS_H
++#define _JYY070_LVDS_H
++
++#include "panels.h"
++
++#endif
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
+old mode 100644
+new mode 100755
+index d048b40de..3512a5be1
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
+@@ -126,6 +126,9 @@ struct __lcd_panel *panel_array[] = {
+ #endif
+ #ifdef CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280
+ 	&K101_IM2BYL02_L_800X1280_mipi_panel,
++#endif
++#ifdef CONFIG_LCD_SUPPORT_JYY070_LVDS
++	&jyy070_lvds_panel,
+ #endif
+ 	NULL,
+ };
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
+old mode 100644
+new mode 100755
+index be656d59b..7c614156f
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
+@@ -167,5 +167,8 @@ extern struct __lcd_panel K101_IM2BYL02_L_800X1280_mipi_panel;
+ #ifdef CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280
+ extern struct __lcd_panel K080_IM2HYL802R_800X1280_mipi_panel;
+ #endif
++#ifdef CONFIG_LCD_SUPPORT_JYY070_LVDS
++extern struct __lcd_panel jyy070_lvds_panel;
++#endif
+ 
+ #endif
+diff --git a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
+old mode 100644
+new mode 100755
+index 99bcfa526..ecaa7c712
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
+@@ -164,6 +164,7 @@ CONFIG_LCD_SUPPORT_K101IM2BYL02L=y
+ CONFIG_LCD_SUPPORT_BP101WX1=y
+ CONFIG_LCD_SUPPORT_FX070=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
++CONFIG_LCD_SUPPORT_JYY070_LVDS=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=n
+ #CONFIG_LCD_SUPPORT_GG1P4062UTSW
+ # CONFIG_LCD_SUPPORT_DX0960BE40A1 is not set
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
+old mode 100644
+new mode 100755
+index a27ff9aa5..57a18ef59
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
+@@ -57,6 +57,7 @@ disp-$(CONFIG_LCD_SUPPORT_KD101NA5) += lcd/kd101na5.o
+ disp-$(CONFIG_LCD_SUPPORT_KD070D57) += lcd/kd070d57.o
+ disp-$(CONFIG_LCD_SUPPORT_ZS080NI4003E7H3H_A) += lcd/zs080ni4003e7h3h_a.o
+ disp-$(CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280) += lcd/K101_IM2BYL02_L_800X1280.o
++disp-$(CONFIG_LCD_SUPPORT_JYY070_LVDS) += lcd/jyy070_lvds.o
+ disp-$(CONFIG_LCD_SUPPORT_JD9366AB_3) += lcd/jd9366ab_3.o
+ disp-$(CONFIG_LCD_SUPPORT_TFT08006) += lcd/tft08006.o
+ 
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
+old mode 100644
+new mode 100755
+index 75960aef7..76588725e
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
+@@ -217,6 +217,12 @@ config LCD_SUPPORT_K080_IM2HYL802R_800X1280
+ 	---help---
+ 		If you want to support K080_IM2HYL802R_800X1280 panel for display driver, select it.
+ 
++config LCD_SUPPORT_JYY070_LVDS
++	bool "LCD support JYY070BD35L27A1-50 7inch LVDS panel"
++	default y
++	---help---
++		If you want to support JYY070 7inch 1024x600 LVDS panel, select it.
++
+ config LCD_SUPPORT_K101_IM2BYL02_L_800X1280
+ 	bool "LCD support K101_IM2BYL02_L_800X1280 panel"
+ 	default n
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.c b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.c
+new file mode 100644
+index 000000000..99ac611dc
+--- /dev/null
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.c
+@@ -0,0 +1,77 @@
++/*
++ * JYY070BD35L27A1-50 7" 1024x600 TTL panel via LVDS adapter board.
++ */
++#include "jyy070_lvds.h"
++
++static void LCD_power_on(u32 sel);
++static void LCD_power_off(u32 sel);
++static void LCD_bl_open(u32 sel);
++static void LCD_bl_close(u32 sel);
++static void LCD_panel_init(u32 sel);
++static void LCD_panel_exit(u32 sel);
++
++static void LCD_cfg_panel_info(panel_extend_para *info)
++{
++	(void)info;
++}
++
++static s32 LCD_open_flow(u32 sel)
++{
++	LCD_OPEN_FUNC(sel, LCD_power_on, 40);
++	LCD_OPEN_FUNC(sel, LCD_panel_init, 10);
++	LCD_OPEN_FUNC(sel, sunxi_lcd_tcon_enable, 200);
++	LCD_OPEN_FUNC(sel, LCD_bl_open, 0);
++
++	return 0;
++}
++
++static s32 LCD_close_flow(u32 sel)
++{
++	LCD_CLOSE_FUNC(sel, LCD_bl_close, 0);
++	LCD_CLOSE_FUNC(sel, sunxi_lcd_tcon_disable, 10);
++	LCD_CLOSE_FUNC(sel, LCD_panel_exit, 0);
++	LCD_CLOSE_FUNC(sel, LCD_power_off, 0);
++
++	return 0;
++}
++
++static void LCD_power_on(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 1);
++}
++
++static void LCD_power_off(u32 sel)
++{
++	sunxi_lcd_pin_cfg(sel, 0);
++}
++
++static void LCD_bl_open(u32 sel)
++{
++}
++
++static void LCD_bl_close(u32 sel)
++{
++}
++
++static void LCD_panel_init(u32 sel)
++{
++}
++
++static void LCD_panel_exit(u32 sel)
++{
++}
++
++static s32 LCD_user_defined_func(u32 sel, u32 para1, u32 para2, u32 para3)
++{
++	return 0;
++}
++
++__lcd_panel_t jyy070_lvds_panel = {
++	.name = "jyy070_lvds",
++	.func = {
++		.cfg_panel_info = LCD_cfg_panel_info,
++		.cfg_open_flow = LCD_open_flow,
++		.cfg_close_flow = LCD_close_flow,
++		.lcd_user_defined_func = LCD_user_defined_func,
++	},
++};
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.h b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.h
+new file mode 100644
+index 000000000..564b451c5
+--- /dev/null
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jyy070_lvds.h
+@@ -0,0 +1,6 @@
++#ifndef _JYY070_LVDS_H
++#define _JYY070_LVDS_H
++
++#include "panels.h"
++
++#endif
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
+old mode 100644
+new mode 100755
+index 2fc8e9adf..034e6d935
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
+@@ -155,6 +155,10 @@ __lcd_panel_t* panel_array[] = {
+ 	&K101_IM2BYL02_L_800X1280_mipi_panel,
+ #endif
+ 
++#ifdef CONFIG_LCD_SUPPORT_JYY070_LVDS
++	&jyy070_lvds_panel,
++#endif
++
+ #ifdef CONFIG_LCD_SUPPORT_JD9366AB_3
+ 	&jd9366ab_3_panel,
+ #endif
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
+old mode 100644
+new mode 100755
+index 8ab42ccb9..924687d9b
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
+@@ -252,6 +252,9 @@ extern __lcd_panel_t zs080ni4003e7h3h_a_panel;
+ #ifdef CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280
+ extern __lcd_panel_t K080_IM2HYL802R_800X1280_mipi_panel;
+ #endif
++#ifdef CONFIG_LCD_SUPPORT_JYY070_LVDS
++extern __lcd_panel_t jyy070_lvds_panel;
++#endif
+ 
+ #ifdef CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280
+ extern __lcd_panel_t K101_IM2BYL02_L_800X1280_mipi_panel;
+diff --git a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
+index 6caf86784..20f9a9547 100755
+--- a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
+@@ -1056,8 +1056,8 @@ chn_cfg_mode     : Hardware DE channel allocation config. 0:single display with
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <1024>;
++	fb0_height               = <600>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+@@ -1179,39 +1179,27 @@ pull up or pull down(default 0), driver level(default 1), data>
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	lcd_driver_name     = "default_lcd";
++	lcd_driver_name     = "jyy070_lvds";
+ 	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
++	lcd_if              = <3>;
+ 
+-	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	lcd_x               = <1024>;
++	lcd_y               = <600>;
++	lcd_width           = <154>;
++	lcd_height          = <86>;
++	lcd_dclk_freq       = <51>;
+ 
+ 	lcd_pwm_used        = <0>;
+-	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
+ 
+-	/* 7.2 MIPI Timing typ: tHP=900, tHadr=800, tHsync=20, tHBP=40, tHFP=40;
+-	 * tvp=1946 in PDF is inconsistent with 800x1280+Vporch; use typ porches:
+-	 * VT = 1280 + tVBP(12) + tVFP(20) + tVsync(4) = 1316 */
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
+-	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
++	lcd_hbp             = <184>;
++	lcd_ht              = <1344>;
++	lcd_hspw            = <24>;
++	lcd_vbp             = <25>;
++	lcd_vt              = <635>;
++	lcd_vspw            = <2>;
+ 
+ 	lcd_lvds_if         = <0>;
+-	lcd_lvds_colordepth = <1>;
++	lcd_lvds_colordepth = <0>;
+ 	lcd_lvds_mode       = <0>;
+ 	lcd_frm             = <0>;
+ 	lcd_io_phase        = <0x0000>;
+@@ -1223,10 +1211,8 @@ pull up or pull down(default 0), driver level(default 1), data>
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>;
+-	lcd_bl_en           = <&pio PB 12 GPIO_ACTIVE_HIGH>;
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
++	pinctrl-0 = <&lvds0_pins_a>;
++	pinctrl-1 = <&lvds0_pins_b>;
+ };
+ 
+ 
+diff --git a/device/config/chips/h133/configs/p1_nor_jyy070/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_jyy070/uboot-board.dts
+index 13196f0cf..dddad4d49 100755
+--- a/device/config/chips/h133/configs/p1_nor_jyy070/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_jyy070/uboot-board.dts
+@@ -297,8 +297,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <1024>;
++	fb0_height               = <600>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+@@ -364,35 +364,27 @@
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	lcd_driver_name     = "default_lcd";
++	lcd_driver_name     = "jyy070_lvds";
+ 	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
++	lcd_if              = <3>;
+ 
+-	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	lcd_x               = <1024>;
++	lcd_y               = <600>;
++	lcd_width           = <154>;
++	lcd_height          = <86>;
++	lcd_dclk_freq       = <51>;
+ 
+ 	lcd_pwm_used        = <0>;
+-	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
+-	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
++
++	lcd_hbp             = <184>;
++	lcd_ht              = <1344>;
++	lcd_hspw            = <24>;
++	lcd_vbp             = <25>;
++	lcd_vt              = <635>;
++	lcd_vspw            = <2>;
+ 
+ 	lcd_lvds_if         = <0>;
+-	lcd_lvds_colordepth = <1>;
++	lcd_lvds_colordepth = <0>;
+ 	lcd_lvds_mode       = <0>;
+ 	lcd_frm             = <0>;
+ 	lcd_io_phase        = <0x0000>;
+@@ -404,10 +396,8 @@
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>;
+-	lcd_bl_en           = <&pio PB 12 GPIO_ACTIVE_HIGH>;
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
++	pinctrl-0 = <&lvds0_pins_a>;
++	pinctrl-1 = <&lvds0_pins_b>;
+ };
+ 
+ &hdmi {
+diff --git a/H133-AI-Skills/skills/h133-build/scripts/build_p1_nor_jyy070.sh b/H133-AI-Skills/skills/h133-build/scripts/build_p1_nor_jyy070.sh
+new file mode 100755
+index 000000000..90290507e
+--- /dev/null
++++ b/H133-AI-Skills/skills/h133-build/scripts/build_p1_nor_jyy070.sh
+@@ -0,0 +1,120 @@
++#!/bin/bash
++# H133 p1_nor_jyy070 编译脚本 — 由 .cursor/skills/h133-build 提供
++# Usage: build_p1_nor_jyy070.sh [full|kernel|rootfs]
++
++ROOT="${H133_SDK_ROOT:-$(cd "$(dirname "$0")/../../../.." && pwd)}"
++cd "$ROOT" || exit 1
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++
++# SDK 自带 python3.8，Ubuntu 20.04+ 默认无 python 命令
++if ! command -v python >/dev/null 2>&1; then
++	export PATH="$ROOT/prebuilt/hostbuilt/python3.8/bin:${PATH:-}"
++	mkdir -p "$ROOT/.local/bin"
++	ln -sf "$ROOT/prebuilt/hostbuilt/python3.8/bin/python3" "$ROOT/.local/bin/python" 2>/dev/null || true
++	export PATH="$ROOT/.local/bin:${PATH:-}"
++fi
++if ! command -v python >/dev/null 2>&1; then
++	echo "error: python not found. 请安装: sudo apt install -y python-is-python3" >&2
++	exit 1
++fi
++
++# 无系统 gcc 时才加载离线 host 工具链
++if ! command -v gcc >/dev/null 2>&1; then
++	[ -f "$SCRIPT_DIR/env_host.sh" ] && source "$SCRIPT_DIR/env_host.sh"
++fi
++if ! command -v make >/dev/null 2>&1; then
++	export PATH="$ROOT/prebuilt/hostbuilt/make4.1/bin:${PATH:-}"
++fi
++if ! command -v make >/dev/null 2>&1; then
++	echo "error: make not found. 请先安装: sudo apt install -y build-essential" >&2
++	exit 1
++fi
++if ! command -v gcc >/dev/null 2>&1; then
++	echo "error: gcc not found. 请先安装: sudo apt install -y build-essential" >&2
++	exit 1
++fi
++
++if [ ! -f "build/envsetup.sh" ]; then
++	echo "error: not in H133 SDK root (missing build/envsetup.sh): $ROOT" >&2
++	exit 1
++fi
++
++# envsetup 会 source openwrt/build/envsetup.sh，其中 unalias make 在无别名时 exit 1；
++# 不能与 set -e 同时使用，否则脚本在 load openwrt 后立刻退出。
++set +e
++# shellcheck source=/dev/null
++source build/envsetup.sh
++_envsetup_ret=$?
++set -e
++if [ "$_envsetup_ret" -ne 0 ]; then
++	echo "error: source build/envsetup.sh failed ($_envsetup_ret)" >&2
++	exit 1
++fi
++
++MODE="${1:-full}"
++NPROC="$(nproc 2>/dev/null || echo 4)"
++
++# 从备份覆盖 disp 源文件后 mtime 可能更旧，须 touch 否则 .o 不重建、触摸 I2C 仍异常
++touch_disp_for_rebuild() {
++	local d="$ROOT/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2"
++	touch "$d/disp/dev_disp.c" "$d/disp/dev_fb.c" "$d/hdmi2/hdmi_tx.c" 2>/dev/null || true
++}
++
++# lv_projector 打包时复制 ../lv_drivers，须随 sunxifb 变更触发重编
++touch_lvgl_sunxifb_for_rebuild() {
++	local f="$ROOT/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c"
++	touch "$f" 2>/dev/null || true
++	rm -rf "$ROOT/out/h133/p1_nor_jyy070/openwrt/build_dir/target/lv_projector" 2>/dev/null || true
++}
++
++case "$MODE" in
++kernel)
++	echo "==> ./build.sh kernel bootloader"
++	touch_disp_for_rebuild
++	./build.sh kernel bootloader
++	# 内核产物在 kernel/staging，需同步到 openwrt 再 p 才会打进 img
++	if [ -f "$ROOT/out/h133/kernel/staging/boot.img" ]; then
++		cp -a "$ROOT/out/h133/kernel/staging/boot.img" \
++			"$ROOT/out/h133/kernel/staging/uImage" \
++			"$ROOT/out/h133/p1_nor_jyy070/openwrt/"
++		echo "==> synced kernel staging -> openwrt/"
++	fi
++	;;
++rootfs)
++	echo "==> m + p (no kernel rebuild)"
++	touch_lvgl_sunxifb_for_rebuild
++	m -j"${NPROC}"
++	p
++	;;
++full)
++	echo "==> ./build.sh kernel bootloader + m + p"
++	touch_disp_for_rebuild
++	./build.sh kernel bootloader
++	if [ -f "$ROOT/out/h133/kernel/staging/boot.img" ]; then
++		cp -a "$ROOT/out/h133/kernel/staging/boot.img" \
++			"$ROOT/out/h133/kernel/staging/uImage" \
++			"$ROOT/out/h133/p1_nor_jyy070/openwrt/"
++		echo "==> synced kernel staging -> openwrt/"
++	fi
++	touch_lvgl_sunxifb_for_rebuild
++	m -j"${NPROC}"
++	p
++	;;
++*)
++	echo "Usage: $0 [full|kernel|rootfs]" >&2
++	echo "  full   - kernel+bootloader, then m, p (default)" >&2
++	echo "  kernel - only ./build.sh kernel bootloader" >&2
++	echo "  rootfs - only m + p" >&2
++	exit 1
++	;;
++esac
++
++IMG="$ROOT/out/h133_linux_p1_nor_jyy070_uart0_nor.img"
++if [ -f "$IMG" ]; then
++	echo "==> OK: $IMG"
++	ls -la "$IMG"
++	md5sum "$IMG" 2>/dev/null || true
++else
++	echo "==> note: image not found (kernel-only mode?): $IMG"
++fi
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/lv_projector/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/lv_projector/Makefile
+index d9cab23a8..cdf7601f2 100755
+--- a/openwrt/package/thirdparty/gui/lvgl-8/lv_projector/Makefile
++++ b/openwrt/package/thirdparty/gui/lvgl-8/lv_projector/Makefile
+@@ -37,7 +37,8 @@ PKG_RELEASE:=1
+ 
+ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
+ SRC_CODE_DIR := $(LICHEE_PLATFORM_DIR)/thirdparty/gui/lvgl-8/$(PKG_NAME)
+-PKG_FILE_DEPENDS += $(SRC_CODE_DIR)
++LV_DRIVERS_DIR := $(SRC_CODE_DIR)/../lv_drivers
++PKG_FILE_DEPENDS += $(SRC_CODE_DIR) $(LV_DRIVERS_DIR)
+ define Package/$(PKG_NAME)
+   SECTION:=gui
+   SUBMENU:=Littlevgl
+diff --git a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/etc/init.d/rc.final b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/etc/init.d/rc.final
+index f12402470..16949dab1 100755
+--- a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/etc/init.d/rc.final
++++ b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/etc/init.d/rc.final
+@@ -60,8 +60,8 @@ amix_server -CS 1 -ADJ 1 -p 1024 -n 4 &
+ # WiFi STA autoconnect
+ [ -x /etc/init.d/wifi_autoconnect ] && /etc/init.d/wifi_autoconnect boot &
+ 
+-# 开机启动主界面；lv_daemon 崩溃后自动拉起
+-lv_projector 3 &
++# 开机启动主界面；lv_daemon 崩溃后自动拉起（JYY070 LVDS 横屏，不旋转）
++lv_projector 0 &
+ /usr/bin/lv_daemon.sh &
+ 
+ # OpenSSH + SFTP (sftp-server via /usr/libexec/sftp-server)
+diff --git a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/lv_daemon.sh b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/lv_daemon.sh
+index 772a43024..336700880 100755
+--- a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/lv_daemon.sh
++++ b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/lv_daemon.sh
+@@ -33,8 +33,8 @@ function lv_daemon()
+                 kill -9 ${pid}
+             fi
+ 
+-            # 3: restart lv_projector (sunxifb_rot=3, match LV_PROJECTOR_DISP_ROTATE)
+-            lv_projector 3 &
++            # restart lv_projector（JYY070 LVDS 1024x600 横屏，sunxifb_rot=0）
++            lv_projector 0 &
+             echo "run lv_projector!"
+             sleep 5s
+         fi
+diff --git a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/tp_debug.sh b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/tp_debug.sh
+index 9e23e449e..f50cb6a3a 100755
+--- a/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/tp_debug.sh
++++ b/openwrt/target/h133/h133-p1_nor_jyy070/busybox-init-base-files/usr/bin/tp_debug.sh
+@@ -19,11 +19,11 @@ stop)
+ 	;;
+ start-test)
+ 	stop_ui
+-	lv_tp_test "${2:-3}" &
++	lv_tp_test "${2:-0}" &
+ 	;;
+ start-desktop|start-projector|projector)
+ 	stop_ui
+-	lv_projector "${2:-3}" &
++	lv_projector "${2:-0}" &
+ 	/usr/bin/lv_daemon.sh &
+ 	;;
+ watch|*)
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_projector/src/include/projector_config.h b/platform/thirdparty/gui/lvgl-8/lv_projector/src/include/projector_config.h
+old mode 100644
+new mode 100755
+index 1b34724b8..2af65c88d
+--- a/platform/thirdparty/gui/lvgl-8/lv_projector/src/include/projector_config.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_projector/src/include/projector_config.h
+@@ -107,8 +107,8 @@
+  * 命令行仍可覆盖：lv_projector 3
+  */
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-/* tuopu-10.1-h133-tp-lvgl: MIPI 软转 90° 与视频 DispNvRotate90 同向，LVGL 逻辑 1280x800 */
+-#define LV_PROJECTOR_DISP_ROTATE  3
++/* JYY070 7" LVDS 1024x600 横屏：无需 sunxifb 软转（原 MIPI 竖屏为 3） */
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ /* 1=左上角触摸坐标红点（调试）；0=正式唱吧 UI */
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+index 21a58bf9f..e1d655e66 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+@@ -28,6 +28,7 @@
+ #include <sys/mman.h>
+ #include <sys/ioctl.h>
+ #include <linux/fb.h>
++#include <linux/kd.h>
+ #include <pthread.h>
+ 
+ #ifdef LV_USE_SUNXIFB_DEBUG
+@@ -145,6 +146,18 @@ struct sunxifb_info {
+ static struct sunxifb_info sinfo;
+ #endif /* USE_SUNXIFB_DOUBLE_BUFFER */
+ 
++static void sunxifb_detach_fbcon(void)
++{
++    int tty0;
++
++    tty0 = open("/dev/tty0", O_RDWR);
++    if (tty0 >= 0) {
++        if (ioctl(tty0, KDSETMODE, KD_GRAPHICS) < 0)
++            perror("sunxifb: KDSETMODE KD_GRAPHICS fail");
++        close(tty0);
++    }
++}
++
+ #if defined(USE_SUNXIFB_G2D) && defined(USE_SUNXIFB_DOUBLE_BUFFER)
+ static bool sunxifb_g2d_fb_ready(void)
+ {
+@@ -189,6 +202,8 @@ static void sunxifb_g2d_init_fb_resource(void)
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+ static void sunxifb_soft_rotate(char *dst);
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
++static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
++        int32_t y2);
+ static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+         int32_t y2);
+ static void sunxifb_soft_rotate_area(char *dst, int32_t x1, int32_t y1,
+@@ -269,6 +284,8 @@ void sunxifb_init(uint32_t rotated) {
+     fbp_h = vinfo.yres;
+     fbp_line_length = finfo.line_length;
+ 
++    sunxifb_detach_fbcon();
++
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+     memset(&sinfo, 0, sizeof(struct sunxifb_info));
+     sinfo.dbuf_en = true;
+@@ -284,6 +301,11 @@ void sunxifb_init(uint32_t rotated) {
+         if (vinfo.yoffset == 0) {
+             sinfo.fbindex = !sinfo.fbindex;
+             fbp = sinfo.screenfbp[sinfo.fbindex];
++        } else {
++            sinfo.fbindex = (uint32_t)(vinfo.yoffset / vinfo.yres);
++            if (sinfo.fbindex >= sinfo.fbnum)
++                sinfo.fbindex = 0;
++            fbp = sinfo.screenfbp[sinfo.fbindex];
+         }
+ 
+         if (sinfo.fbnum > 2) {
+@@ -314,11 +336,12 @@ void sunxifb_init(uint32_t rotated) {
+ #endif /* USE_SUNXIFB_G2D */
+ 
+ #ifdef SUNXIFB_ROTATE_EN
+-        if (rotated != LV_DISP_ROT_NONE) {
++        /* 统一 rotatefbp + split_fb；rot=0 时 SUNXIFB_ROT_0 直拷贝 MIPI 页，不做旋转变换 */
++        {
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+             size_t rotate_buf_size;
+ 
+-            SUNXIFB_DBG("Turn on software rotate (G2D disabled).\n");
++            SUNXIFB_DBG("Turn on software rotate path (rot=%u).\n", rotated);
+             if (s_lv_logical_override) {
+                 rotate_buf_size = (size_t) s_lv_logical_w * s_lv_logical_h
+                         * (vinfo.bits_per_pixel / 8);
+@@ -346,6 +369,11 @@ void sunxifb_init(uint32_t rotated) {
+ #endif /* !USE_SUNXIFB_SOFT_ROTATE */
+ 
+             switch (rotated) {
++            case LV_DISP_ROT_NONE:
++                sinfo.rotated = SUNXIFB_ROT_0;
++                sinfo.rotatefbp_w = vinfo.xres;
++                sinfo.rotatefbp_h = vinfo.yres;
++                break;
+             case LV_DISP_ROT_90:
+                 sinfo.rotated = SUNXIFB_ROT_270;
+                 sinfo.rotatefbp_w = vinfo.yres;
+@@ -448,8 +476,9 @@ void sunxifb_init(uint32_t rotated) {
+                     memset(sinfo.screenfbp[sinfo.mipi_fbindex], 0,
+                             (size_t) finfo.line_length * vinfo.yres);
+                 }
+-                SUNXIFB_DBG("Split fb: dirty sync HDMI page0 %ux%u, MIPI page1 rotate\n",
+-                        sinfo.rotatefbp_w, sinfo.rotatefbp_h);
++                SUNXIFB_DBG("Split fb: dirty sync HDMI page0 %ux%u, MIPI page1 %s\n",
++                        sinfo.rotatefbp_w, sinfo.rotatefbp_h,
++                        sinfo.rotated == SUNXIFB_ROT_0 ? "copy" : "rotate");
+             }
+ #endif /* USE_SUNXIFB_SOFT_ROTATE */
+         }
+@@ -721,7 +750,7 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+          * but not when it is refreshed globally,
+          * otherwise the screen will be partially missing
+          */
+-        if (!drv->full_refresh) {
++        if (!drv->full_refresh && sinfo.rotatefbp == NULL) {
+ #if defined(USE_SUNXIFB_G2D) && !defined(SUNXIFB_ROTATE_EN)
+             if (sinfo.g2d_dbuf_blit_ok && sunxifb_g2d_fb_ready() &&
+                 sunxifb_g2d_blit_to_fb(0, vinfo.xres_virtual,
+@@ -747,13 +776,13 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+         }
+ 
+         sinfo.fbindex = nextindex;
+-#ifndef SUNXIFB_ROTATE_EN
+-        fbp = sinfo.screenfbp[sinfo.fbindex];
++        if (sinfo.rotatefbp == NULL) {
++            fbp = sinfo.screenfbp[sinfo.fbindex];
+ #ifdef USE_SUNXIFB_DIRECT_MODE
+-        drv->draw_buf->buf1 = fbp;
+-        drv->draw_buf->buf_act = fbp;
++            drv->draw_buf->buf1 = fbp;
++            drv->draw_buf->buf_act = fbp;
+ #endif
+-#endif /* SUNXIFB_ROTATE_EN */
++        }
+ 
+ #ifdef LV_USE_SUNXIFB_DEBUG
+         if (sinfo.fbnum <= 2) {
+@@ -948,12 +977,11 @@ static void sunxifb_show_fps(void) {
+ #ifdef SUNXIFB_ROTATE_EN
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+-/* 脏区：rotatefbp → fb0 page0（HDMI 未旋转），行 stride 均用 fbp_line_length */
+-static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
++/* 脏区：rotatefbp → 目标 fb 页，行 stride 均用 fbp_line_length */
++static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
+         int32_t y2)
+ {
+     char *src = sinfo.rotatefbp;
+-    char *dst = sinfo.screenfbp[sinfo.hdmi_fbindex];
+     uint32_t bpp = vinfo.bits_per_pixel / 8;
+     int32_t w = x2 - x1 + 1;
+     size_t row_bytes = (size_t) w * bpp;
+@@ -966,6 +994,12 @@ static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+     }
+ }
+ 
++static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
++        int32_t y2)
++{
++    sunxifb_copy_area(sinfo.screenfbp[sinfo.hdmi_fbindex], x1, y1, x2, y2);
++}
++
+ /* 1920×1080 等逻辑分辨率：缩放后软转到 MIPI 有效 1280×800 区域 */
+ static void sunxifb_soft_rotate_area_scaled(char *dst, int32_t x1, int32_t y1,
+         int32_t x2, int32_t y2)
+@@ -1031,7 +1065,7 @@ static void sunxifb_soft_rotate_area_scaled(char *dst, int32_t x1, int32_t y1,
+         }
+         break;
+     default:
+-        sunxifb_copy_area_to_hdmi(x1, y1, x2, y2);
++        sunxifb_copy_area(dst, x1, y1, x2, y2);
+         break;
+     }
+ }
+@@ -1099,7 +1133,7 @@ static void sunxifb_soft_rotate_area(char *dst, int32_t x1, int32_t y1,
+         }
+         break;
+     default:
+-        sunxifb_copy_area_to_hdmi(x1, y1, x2, y2);
++        sunxifb_copy_area(dst, x1, y1, x2, y2);
+         break;
+     }
+ }
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.h b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.h
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.h
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.h
+@@ -82,6 +82,8 @@ struct disp_init_para {
+ 	unsigned int fb_height[DISP_SCREEN_NUM];
+ 
+ 	unsigned int chn_cfg_mode;
++	/* HDMI WB mirror G2D rot: 0=0deg 1=90 2=180 3=270 (same as degreeX), default 3 */
++	unsigned int dual_display_rot;
+ };
+ 
+ struct disp_ion_mgr {
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+@@ -1176,6 +1176,63 @@ static dma_addr_t disp_dual_display_rot_phy(unsigned int idx)
+ 		(dma_addr_t)idx * g_dual_display_rot_frame_size;
+ }
+ 
++static unsigned int disp_dual_display_rot_degree(void)
++{
++	unsigned int degree = g_disp_drv.disp_init.dual_display_rot;
++
++	if (degree > 3)
++		degree = 3;
++	return degree;
++}
++
++static void disp_dual_display_rot_out_size(unsigned int src_w, unsigned int src_h,
++		unsigned int degree, unsigned int *out_w, unsigned int *out_h)
++{
++	if (degree == 1 || degree == 3) {
++		*out_w = src_h;
++		*out_h = src_w;
++	} else {
++		*out_w = src_w;
++		*out_h = src_h;
++	}
++}
++
++static const char *disp_dual_display_rot_name(unsigned int degree)
++{
++	switch (degree) {
++	case 0:
++		return "0";
++	case 1:
++		return "90";
++	case 2:
++		return "180";
++	case 3:
++		return "270";
++	default:
++		return "?";
++	}
++}
++
++#if IS_ENABLED(CONFIG_SUNXI_G2D) && IS_ENABLED(CONFIG_SUNXI_G2D_ROTATE)
++static g2d_blt_flags_h disp_dual_display_degree_to_g2d(unsigned int degree)
++{
++	switch (degree) {
++	case 0:
++		return G2D_ROT_0;
++	case 1:
++		return G2D_ROT_90;
++	case 2:
++		return G2D_ROT_180;
++	case 3:
++		return G2D_ROT_270;
++	default:
++		pr_warn("[DISP] dual display: invalid dual_display_rot %u, use 270\n",
++			degree);
++		return G2D_ROT_270;
++	}
++}
++#endif
++
+ static void disp_dual_wb_rot270_u8(unsigned char *src_addr,
+ 		unsigned int src_widthstep, unsigned int src_width,
+ 		unsigned int src_height, unsigned char *dst_addr,
+@@ -1253,7 +1310,8 @@ static void disp_dual_display_g2d_setup_blt(void)
+ 	g2d_blt_h *blit = &g_dual_display_g2d_blt;
+ 
+ 	memset(blit, 0, sizeof(*blit));
+-	blit->flag_h = G2D_ROT_270;
++	blit->flag_h = disp_dual_display_degree_to_g2d(
++			disp_dual_display_rot_degree());
+ 	blit->src_image_h.format = G2D_FORMAT_YUV420UVC_U1V1U0V0;
+ 	blit->dst_image_h.format = G2D_FORMAT_YUV420UVC_U1V1U0V0;
+ 	blit->src_image_h.bbuff = 1;
+@@ -1348,9 +1406,21 @@ static int disp_dual_display_apply_rot(dma_addr_t dst_phy, void *dst_vir)
+ 	if (!g_dual_display_vir_addr || !dst_vir)
+ 		return -EINVAL;
+ 
+-	disp_dual_display_rot270_nv12(g_dual_display_vir_addr, dst_vir,
+-				      g_dual_display_width,
+-				      g_dual_display_height);
++	switch (disp_dual_display_rot_degree()) {
++	case 0:
++		memcpy(dst_vir, g_dual_display_vir_addr,
++		       g_dual_display_rot_frame_size);
++		break;
++	case 3:
++		disp_dual_display_rot270_nv12(g_dual_display_vir_addr, dst_vir,
++					      g_dual_display_width,
++					      g_dual_display_height);
++		break;
++	default:
++		pr_err("[DISP] dual display: CPU fallback unsupported rot %u\n",
++		       disp_dual_display_rot_degree());
++		return -EINVAL;
++	}
+ 	disp_dual_display_flush_rot_frame(dst_vir);
+ 	return 0;
+ }
+@@ -1438,7 +1508,8 @@ static int disp_dual_display_init_hdmi_layer(struct disp_manager *mgr1,
+ 	if (mgr1->device && mgr1->device->get_resolution &&
+ 	    mgr1->device->get_resolution(mgr1->device, &dst_w, &dst_h) == 0 &&
+ 	    dst_w > 0 && dst_h > 0) {
+-		pr_info("[DISP] dual display HDMI G2D rot270: %ux%u full on %ux%u (WB %ux%u)\n",
++		pr_info("[DISP] dual display HDMI G2D rot%s: %ux%u full on %ux%u (WB %ux%u)\n",
++			disp_dual_display_rot_name(disp_dual_display_rot_degree()),
+ 			g_dual_display_rot_width, g_dual_display_rot_height,
+ 			dst_w, dst_h,
+ 			g_dual_display_width, g_dual_display_height);
+@@ -1580,8 +1651,10 @@ static int disp_dual_display_enable(void)
+ 		goto unlock;
+ 	}
+ 
+-	g_dual_display_rot_width = height;
+-	g_dual_display_rot_height = width;
++	disp_dual_display_rot_out_size(width, height,
++				       disp_dual_display_rot_degree(),
++				       &g_dual_display_rot_width,
++				       &g_dual_display_rot_height);
+ 	g_dual_display_rot_frame_size = g_dual_display_rot_width *
+ 		g_dual_display_rot_height * 3 / 2;
+ 	g_dual_display_rot_buf_size = g_dual_display_rot_frame_size * 2;
+@@ -1649,10 +1722,12 @@ static int disp_dual_display_enable(void)
+ 	disp_register_sync_finish_proc(disp_dual_display_sync_proc);
+ 
+ 	g_dual_display_enabled = true;
+-	pr_info("[DISP] dual display enabled: %dx%d NV21, buf=0x%llx (%d KB), G2D rot270 ping-pong %dx%d\n",
++	pr_info("[DISP] dual display enabled: %dx%d NV21, buf=0x%llx (%d KB), G2D rot%s ping-pong %dx%d (dual_display_rot=%u)\n",
+ 		width, height, (unsigned long long)g_dual_display_phy_addr,
+ 		g_dual_display_buf_size / 1024,
+-		g_dual_display_rot_width, g_dual_display_rot_height);
++		disp_dual_display_rot_name(disp_dual_display_rot_degree()),
++		g_dual_display_rot_width, g_dual_display_rot_height,
++		disp_dual_display_rot_degree());
+ 	mutex_unlock(&g_dual_display_mutex);
+ 	return 0;
+ 
+@@ -1853,6 +1928,14 @@ static s32 parser_disp_init_para(const struct device_node *np,
+ 		value = 0;
+ 	init_para->chn_cfg_mode = value;
+ 
++	if (of_property_read_u32(np, "dual_display_rot", &value) < 0)
++		value = 3;
++	if (value > 3) {
++		__wrn("invalid dual_display_rot %u, use 270\n", value);
++		value = 3;
++	}
++	init_para->dual_display_rot = value;
++
+ 	if (of_property_read_u32(np, "disp_mode", &value) < 0) {
+ 		__wrn("of_property_read disp_init.disp_mode fail\n");
+ 		return -1;
+diff --git a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_jyy070/linux-5.4/board.dts
+@@ -1012,6 +1012,9 @@
+ chn_cfg_mode     : Hardware DE channel allocation config. 0:single display with 6
+ 				   channel, 1:dual display with 4 channel in main display and 2 channel in second
+                    display, 2:dual display with 3 channel in main display and 3 channel in second
+                    in display.
++dual_display_rot : HDMI WB mirror G2D rotation for dual display (same as degreeX).
++                   0=0deg 1=90deg 2=180deg 3=270deg. Default 3 if omitted.
++                   JYY070 1024x600 landscape: 0. Legacy MIPI 800x1280 portrait: 3.
+ ----------------------------------------------------------------------------------*/
+ &disp {
+ 	disp_init_enable         = <1>;
+@@ -1065,6 +1068,7 @@
+ 	fb1_width                = <0>;
+ 	fb1_height               = <0>;
+ 	chn_cfg_mode             = <1>;
++	dual_display_rot         = <0>;
+ 
+ 	disp_para_zone           = <1>;
+ 	/*VCC-LCD*/
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
+@@ -1056,8 +1056,9 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1024>;
+-	fb0_height               = <600>;
++	/* UI 设计 1280×800，DE0 VSU 缩放到 LVDS 1024×600 */
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/uboot-board.dts
+@@ -297,8 +297,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1024>;
+-	fb0_height               = <600>;
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;

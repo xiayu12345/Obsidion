@@ -1,0 +1,31 @@
+diff --git a/openwrt/.openwrt_targets b/openwrt/.openwrt_targets
+index 11e49fa6d..65c0d0efd 100644
+--- a/openwrt/.openwrt_targets
++++ b/openwrt/.openwrt_targets
+@@ -1,9 +1,10 @@
+ h133-p1_emmc_LQ140M1JW61-tina
+-h133-p1_nor-tina
+ h133-p1_nor_4k-tina
+ h133-p1_nor_8733-tina
+ h133-p1_nor_JL_M101-tina
+ h133-p1_nor_JYY070-tina
+ h133-p1_nor_LQ140M1JW61-tina
+ h133-p1_nor_LQ190-tina
++h133-p1_nor-tina
++h133-p1_nor_ZS101-tina
+ h133-p2-tina
+diff --git a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+index 5a37beaa7..a5a959bff 100644
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -66,8 +66,8 @@ ifeq ($(CONFIG_AW_ION_ALLOC_IOMMU),y)
+ endif
+ 
+ # WB mirror CPU 旋转角（度）；按 target -D，tlayer_ctrl #if VIDEO_WB_MIRROR_ROTATE
+-# JYY070 / p1_nor_4k=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101),y)
++# JYY070 / p1_nor_4k=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101 / p1_nor_ZS101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_ZS101),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070)$(CONFIG_TARGET_h133_p1_nor_4k),y)

@@ -1,0 +1,14 @@
+# 示例：工厂 setting.ini [display]
+# 路径：openwrt/target/h133/h133-<BOARD>/busybox-init-base-files/etc/setting.ini
+# 竖屏 MIPI 用 3；横屏把 3 改成 0（如下）。
+# video_rotate 一般不写（默认 0）；与 UI 独立，盖不住 VIDEO_WB_MIRROR_ROTATE。
+# 改完编 rootfs。板上 /mnt/UDISK/setting.ini 会覆盖 /etc。勿 git apply 本文件。
+
+--- a/openwrt/target/h133/h133-<BOARD>/busybox-init-base-files/etc/setting.ini
++++ b/openwrt/target/h133/h133-<BOARD>/busybox-init-base-files/etc/setting.ini
+@@
+ [display]
+ # 0=0° 1=90° 2=180° 3=270°
+-disp_rotate = 3
++disp_rotate = 0
+ tp_rotate = 0

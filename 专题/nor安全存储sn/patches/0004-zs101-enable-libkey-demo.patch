@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000004 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 18:00:00 +0800
+Subject: [PATCH 4/4] ZS101: 编上 libkey-demo（sst_test）
+
+固件里有 /usr/bin/sst_test，产线/调试用命令写读 snum。
+不含 G2D 等其它 defconfig 改动。
+
+---
+ openwrt/target/h133/h133-p1_nor_ZS101/defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/openwrt/target/h133/h133-p1_nor_ZS101/defconfig b/openwrt/target/h133/h133-p1_nor_ZS101/defconfig
+index c1a4611fd..aaaaaaaaa 100644
+--- a/openwrt/target/h133/h133-p1_nor_ZS101/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_ZS101/defconfig
+@@ -2805,7 +2805,7 @@ CONFIG_AW_ION_ALLOC_IOMMU=y
+ # CONFIG_PACKAGE_cpu_monitor is not set
+ CONFIG_PACKAGE_libkey=y
+ # CONFIG_LIBKEY_STATIC is not set
+-# CONFIG_PACKAGE_libkey-demo is not set
++CONFIG_PACKAGE_libkey-demo=y
+ # CONFIG_PACKAGE_librpbuf is not set
+ # CONFIG_PACKAGE_librpmsg is not set
+ CONFIG_PACKAGE_mtop=y
+--

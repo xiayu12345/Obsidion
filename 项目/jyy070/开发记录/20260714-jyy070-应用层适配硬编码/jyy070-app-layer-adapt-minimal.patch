@@ -1,0 +1,184 @@
+diff --git a/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h b/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
++++ b/platform/thirdparty/gui/lvgl-8/app/desk/src/projector_port/include/projector_config.h
+@@ -107,7 +107,7 @@
+  * 命令行仍可覆盖：lv_projector 1
+  */
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ #endif
+diff --git a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/include/projector_config.h b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/include/projector_config.h
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/include/projector_config.h
++++ b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/include/projector_config.h
+@@ -108,7 +108,7 @@
+  */
+ /* JYY070：默认 0；编回 p1_nor 改回 3（双板见开发记录补丁） */
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ /*
+diff --git a/platform/thirdparty/gui/lvgl-8/app/liyuan_opera/src/include/projector_config.h b/platform/thirdparty/gui/lvgl-8/app/liyuan_opera/src/include/projector_config.h
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/liyuan_opera/src/include/projector_config.h
++++ b/platform/thirdparty/gui/lvgl-8/app/liyuan_opera/src/include/projector_config.h
+@@ -94,7 +94,7 @@
+ 
+ /* JYY070：默认 0；编回 p1_nor 改回 3（双板见开发记录补丁） */
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ #endif
+diff --git a/platform/thirdparty/gui/lvgl-8/app/MixStation/src/main.c b/platform/thirdparty/gui/lvgl-8/app/MixStation/src/main.c
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/MixStation/src/main.c
++++ b/platform/thirdparty/gui/lvgl-8/app/MixStation/src/main.c
+@@ -20,7 +20,7 @@
+ #include <sys/time.h>
+ 
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ lv_ui guider_ui;
+diff --git a/platform/thirdparty/gui/lvgl-8/app/LiveStreamPlayer/src/main.c b/platform/thirdparty/gui/lvgl-8/app/LiveStreamPlayer/src/main.c
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/LiveStreamPlayer/src/main.c
++++ b/platform/thirdparty/gui/lvgl-8/app/LiveStreamPlayer/src/main.c
+@@ -19,7 +19,7 @@
+ #include <sys/time.h>
+ 
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ #define LIVE_TOAST_DURATION_MS    3000
+diff --git a/platform/thirdparty/gui/lvgl-8/app/BluetoothPlayer/src/main.c b/platform/thirdparty/gui/lvgl-8/app/BluetoothPlayer/src/main.c
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/BluetoothPlayer/src/main.c
++++ b/platform/thirdparty/gui/lvgl-8/app/BluetoothPlayer/src/main.c
+@@ -18,7 +18,7 @@
+ #include <errno.h>
+ 
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ #include <stdlib.h>
+ #include <string.h>
+diff --git a/platform/thirdparty/gui/lvgl-8/app/ai_mv/src/main.c b/platform/thirdparty/gui/lvgl-8/app/ai_mv/src/main.c
+index 000000000..111111111 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/ai_mv/src/main.c
++++ b/platform/thirdparty/gui/lvgl-8/app/ai_mv/src/main.c
+@@ -24,7 +24,7 @@
+ #include <sys/time.h>
+ 
+ #ifndef LV_PROJECTOR_DISP_ROTATE
+-#define LV_PROJECTOR_DISP_ROTATE  3
++#define LV_PROJECTOR_DISP_ROTATE  0
+ #endif
+ 
+ lv_ui guider_ui;
+diff --git a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
+index 81b0708fe..d13a2815f 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
++++ b/platform/thirdparty/gui/lvgl-8/app/sing_ktv/src/generated/ktv_player/core/ktv_player_ui.c
+@@ -5,12 +5,12 @@
+ #include "ktv_player_ui.h"
+ #include "karaoke_demo.h"
+ #include "ms_changba.h"
+-#include "lv_drivers/display/sunxifb.h"
+ 
+-#define KTV_PLAYER_SMALL_RECT_X               (330)
+-#define KTV_PLAYER_SMALL_RECT_Y               (360)
+-#define KTV_PLAYER_SMALL_RECT_W               (320)
+-#define KTV_PLAYER_SMALL_RECT_H               (570)
++/* JYY070：视频 DE 屏 1024×600；Guider btn_30@1280×800 缩放 */
++#define KTV_PLAYER_SMALL_RECT_X               (278)
++#define KTV_PLAYER_SMALL_RECT_Y               (113)
++#define KTV_PLAYER_SMALL_RECT_W               (479)
++#define KTV_PLAYER_SMALL_RECT_H               (237)
+ 
+ #define ktv_ui_err_log(fmt, ...) printf("[KTV_UI] " fmt "\n", ##__VA_ARGS__)
+ 
+@@ -568,24 +568,13 @@ int ktv_player_ui_set_right_rect(void)
+     return ktv_player_ui_apply_rect(115,
+                                     KTV_PLAYER_SMALL_RECT_Y,
+                                     570,
+-                                    1280 - KTV_PLAYER_SMALL_RECT_Y);
++                                    600 - KTV_PLAYER_SMALL_RECT_Y);
+ }
+ 
+ int ktv_player_ui_set_full_rect(void)
+ {
+-    uint32_t w = 0;
+-    uint32_t h = 0;
+-
+-    sunxifb_get_sizes(&w, &h);
+-    if (w == 0 || h == 0)
+-    {
+-        return ktv_player_ui_apply_rect(0,
+-                                        0,
+-                                        KTV_PLAYER_SCREEN_WIDTH,
+-                                        KTV_PLAYER_SCREEN_HEIGHT);
+-    }
+-
+-    return ktv_player_ui_apply_rect(0, 0, (int)w, (int)h);
++    /* 视频 layer 用 DE 屏坐标，切勿用 FB 1280×800 */
++    return ktv_player_ui_apply_rect(0, 0, 1024, 600);
+ }
+ 
+ int ktv_player_ui_set_rect(int x, int y, int width, int height)
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
+index 082ae93f5..2c85bab0b 100755
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_common.h
+@@ -19,8 +19,8 @@ extern "C" {
+ #define KTV_PLAYER_MAX_URL_LEN                 (1024)
+ #define KTV_PLAYER_MAX_INSTANCE_COUNT          (6)
+ 
+-#define KTV_PLAYER_SCREEN_WIDTH                (800)
+-#define KTV_PLAYER_SCREEN_HEIGHT               (1280)
++#define KTV_PLAYER_SCREEN_WIDTH                (1024)
++#define KTV_PLAYER_SCREEN_HEIGHT               (600)
+ 
+ // #define KTV_PLAYER_SMALL_RECT_X                (400)
+ // #define KTV_PLAYER_SMALL_RECT_Y                (300)
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+index 6aaab6ab6..81b4e1cff 100755
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+@@ -28,10 +28,10 @@
+  * 显示区域宏
+  * 默认先使用小屏
+  */
+-#define KTV_PLAYER_SMALL_RECT_X               (330)
+-#define KTV_PLAYER_SMALL_RECT_Y               (330)
+-#define KTV_PLAYER_SMALL_RECT_W               (320)
+-#define KTV_PLAYER_SMALL_RECT_H               (600)
++#define KTV_PLAYER_SMALL_RECT_X               (278)
++#define KTV_PLAYER_SMALL_RECT_Y               (113)
++#define KTV_PLAYER_SMALL_RECT_W               (479)
++#define KTV_PLAYER_SMALL_RECT_H               (237)
+ 
+ /*
+  * 双路播放器控制上下文
+@@ -1630,7 +1630,7 @@ int ktv_player_ui_set_right_rect(void)
+     return ktv_player_ui_apply_rect(115,
+                                     KTV_PLAYER_SMALL_RECT_Y,
+                                     570,
+-                                    1280 - KTV_PLAYER_SMALL_RECT_Y);
++                                    KTV_PLAYER_SCREEN_HEIGHT - KTV_PLAYER_SMALL_RECT_Y);
+ }
+ 
+ /*

@@ -1,0 +1,891 @@
+From 01f2f8f9d572f2f6ed2022608f7237d884ceb108 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 16:08:43 +0800
+Subject: [PATCH] =?UTF-8?q?feat:=20LVGL=20=E5=AF=B9=E9=BD=90=E5=8E=9F?=
+ =?UTF-8?q?=E5=8E=82=20G2D=20=E6=97=8B=E8=BD=AC=E7=BF=BB=E9=A1=B5=EF=BC=88?=
+ =?UTF-8?q?DIRECT=5FMODE=20+=20FBIOPAN=EF=BC=89?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+仅合入 sunxifb/G2D 旋转与翻页：去掉 split_fb/dmabuf 混用，blit 走 smem_start，开 G2D/DIRECT_MODE。
+不含 ZS101、投屏、点歌等其它改动。CACHE 保持关闭。
+
+Co-authored-by: Cursor <cursoragent@cursor.com>
+---
+ .../thirdparty/gui/lvgl-8/liblvgl/Config.in   |   6 +-
+ .../thirdparty/gui/lvgl-8/liblvgl/Makefile    |   2 +-
+ openwrt/target/h133/h133-p1_nor/defconfig     |   6 +-
+ openwrt/target/h133/h133-p1_nor/defconfig_ota |   5 +-
+ openwrt/target/h133/h133-p1_nor/defconfig_qa  |   5 +-
+ .../target/h133/h133-p1_nor_8733/defconfig    |   6 +-
+ .../h133/h133-p1_nor_8733/defconfig_ota       |   5 +-
+ .../target/h133/h133-p1_nor_8733/defconfig_qa |   5 +-
+ .../target/h133/h133-p1_nor_JYY070/defconfig  |   6 +-
+ .../h133/h133-p1_nor_JYY070/defconfig_ota     |   5 +-
+ .../h133/h133-p1_nor_JYY070/defconfig_qa      |   5 +-
+ .../lv_drivers/display/g2d_driver_enh.h       |   9 +-
+ .../gui/lvgl-8/lv_drivers/display/sunxifb.c   | 201 ++++--------------
+ .../gui/lvgl-8/lv_drivers/display/sunxifb.h   |   6 -
+ .../gui/lvgl-8/lv_drivers/display/sunxig2d.c  | 154 +++++---------
+ .../gui/lvgl-8/lv_drivers/display/sunxig2d.h  |   2 -
+ .../gui/lvgl-8/lv_drivers/lv_port_disp.c      |   5 +-
+ .../gui/lvgl-8/lv_drivers/lv_port_disp.h      |   2 +-
+ 18 files changed, 128 insertions(+), 307 deletions(-)
+
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
+index 4f0fa2120..89072c0ec 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
++++ b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
+@@ -17,14 +17,14 @@ config LVGL8_USE_SUNXIFB_CACHE
+ config LVGL8_USE_SUNXIFB_G2D
+ 	bool "use sunxifb g2d"
+ 	select LVGL8_USE_SUNXIFB_DOUBLE_BUFFER
+-	default n
++	default y
+ 	help
+ 		Whether use sunxifb g2d
+ 
+ config LVGL8_USE_SUNXIFB_G2D_ROTATE
+ 	bool "use sunxifb g2d rotate"
+ 	select LVGL8_USE_SUNXIFB_G2D
+-	default n
++	default y
+ 	help
+ 		Whether use sunxifb g2d rotate
+ 
+@@ -37,7 +37,7 @@ config LVGL8_USE_FREETYPE
+ config LVGL8_USE_SUNXIFB_DIRECT_MODE
+ 	bool "use sunxifb direct mode"
+ 	depends on LVGL8_USE_SUNXIFB_DOUBLE_BUFFER
+-	default n
++	default y
+ 	help
+ 		Whether use sunxifb direct mode (requires double buffer)
+ 
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
+index 4efd4dc88..9ac266be8 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
++++ b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
+@@ -19,7 +19,7 @@ define Package/$(PKG_NAME)
+   SECTION:=gui
+   SUBMENU:=Littlevgl
+   CATEGORY:=Gui
+-  DEPENDS:=+LVGL8_USE_SUNXIFB_G2D:libuapi +LVGL8_USE_SUNXIFB_G2D:kmod-sunxi-g2d \
++  DEPENDS:=+LVGL8_USE_SUNXIFB_G2D:libuapi +LVGL8_USE_SUNXIFB_G2D:libawion +LVGL8_USE_SUNXIFB_G2D:kmod-sunxi-g2d \
+            +LVGL8_USE_FREETYPE:libfreetype \
+            +LVGL8_USE_HARDWARE_JPEGDECODER:libcedarx
+   TITLE:=liblvgl — LVGL 8.3.2 shared library (lvgl + lv_drivers)
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig b/openwrt/target/h133/h133-p1_nor/defconfig
+index 2ae3f8134..24fe79398 100755
+--- a/openwrt/target/h133/h133-p1_nor/defconfig
++++ b/openwrt/target/h133/h133-p1_nor/defconfig
+@@ -3330,10 +3330,10 @@ CONFIG_PACKAGE_liblvgl=y
+ #
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig_ota b/openwrt/target/h133/h133-p1_nor/defconfig_ota
+index b15ae740c..51821ecb3 100755
+--- a/openwrt/target/h133/h133-p1_nor/defconfig_ota
++++ b/openwrt/target/h133/h133-p1_nor/defconfig_ota
+@@ -2994,8 +2994,9 @@ CONFIG_PACKAGE_xr829-firmware=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ CONFIG_LVGL8_USE_SUNXIFB_CACHE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_FREETYPE is not set
+ # CONFIG_PACKAGE_lv_g2d_test is not set
+ # CONFIG_PACKAGE_lv_monitor is not set
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig_qa b/openwrt/target/h133/h133-p1_nor/defconfig_qa
+index 354a75436..4457825f1 100755
+--- a/openwrt/target/h133/h133-p1_nor/defconfig_qa
++++ b/openwrt/target/h133/h133-p1_nor/defconfig_qa
+@@ -2731,8 +2731,9 @@ CONFIG_PACKAGE_libpng=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_PACKAGE_lv_monitor is not set
+ # CONFIG_PACKAGE_smartva is not set
+ 
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+index bf82603a9..5b5eff226 100755
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+@@ -3330,10 +3330,10 @@ CONFIG_PACKAGE_liblvgl=y
+ #
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig_ota b/openwrt/target/h133/h133-p1_nor_8733/defconfig_ota
+index b15ae740c..51821ecb3 100755
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig_ota
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig_ota
+@@ -2994,8 +2994,9 @@ CONFIG_PACKAGE_xr829-firmware=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ CONFIG_LVGL8_USE_SUNXIFB_CACHE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_FREETYPE is not set
+ # CONFIG_PACKAGE_lv_g2d_test is not set
+ # CONFIG_PACKAGE_lv_monitor is not set
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig_qa b/openwrt/target/h133/h133-p1_nor_8733/defconfig_qa
+index 354a75436..4457825f1 100755
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig_qa
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig_qa
+@@ -2731,8 +2731,9 @@ CONFIG_PACKAGE_libpng=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_PACKAGE_lv_monitor is not set
+ # CONFIG_PACKAGE_smartva is not set
+ 
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+index 35e1f9666..e954ecb53 100755
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+@@ -3330,10 +3330,10 @@ CONFIG_PACKAGE_liblvgl=y
+ #
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_ota b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_ota
+index b15ae740c..51821ecb3 100755
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_ota
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_ota
+@@ -2994,8 +2994,9 @@ CONFIG_PACKAGE_xr829-firmware=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER=y
+ CONFIG_LVGL8_USE_SUNXIFB_CACHE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_FREETYPE is not set
+ # CONFIG_PACKAGE_lv_g2d_test is not set
+ # CONFIG_PACKAGE_lv_monitor is not set
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_qa b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_qa
+index 354a75436..4457825f1 100755
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_qa
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig_qa
+@@ -2731,8 +2731,9 @@ CONFIG_PACKAGE_libpng=y
+ # CONFIG_PACKAGE_lv_examples is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_DOUBLE_BUFFER is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_CACHE is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+-# CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
++CONFIG_LVGL8_USE_SUNXIFB_G2D=y
++CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE=y
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_PACKAGE_lv_monitor is not set
+ # CONFIG_PACKAGE_smartva is not set
+ 
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/g2d_driver_enh.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/g2d_driver_enh.h
+index 552678250..727aead08 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/g2d_driver_enh.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/g2d_driver_enh.h
+@@ -349,6 +349,7 @@ typedef struct {
+ 	__u32		 align[3];	/* image windows alignment, y/u/v planes*/
+ 
+ 	g2d_rect	 clip_rect;	/* roi */
++	g2d_size	 resize;	/* 与内核/原厂 g2d_driver.h 一致，占位不可省 */
+ 	g2d_coor	 coor;	/* top-left corner coordinates placed in the dst_image window
+ 						 * after src_image has been processed */
+ 
+@@ -364,10 +365,10 @@ typedef struct {
+ 
+ #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+ #include <stddef.h>
+-/* Must match linux-5.4 include/linux/g2d_driver.h on 32-bit ARM */
+-_Static_assert(offsetof(g2d_image_enh, fd) == 96,
++/* 对齐 linux-5.4 include/linux/g2d_driver.h（含 resize）32-bit ARM：相对旧头 clip 后 +8 */
++_Static_assert(offsetof(g2d_image_enh, fd) == 104,
+ 	       "g2d_image_enh layout mismatch: fd offset");
+-_Static_assert(offsetof(g2d_image_enh, use_phy_addr) == 100,
++_Static_assert(offsetof(g2d_image_enh, use_phy_addr) == 108,
+ 	       "g2d_image_enh layout mismatch: use_phy_addr offset");
+ #endif
+ 
+@@ -421,7 +422,7 @@ typedef struct {
+ } g2d_blt_h;
+ 
+ #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 201112L
+-_Static_assert(sizeof(g2d_blt_h) == 220, "g2d_blt_h size mismatch with kernel");
++_Static_assert(sizeof(g2d_blt_h) == 236, "g2d_blt_h size mismatch with kernel");
+ #endif
+ 
+ typedef struct {
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+index e1d655e66..c14090b42 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+@@ -97,15 +97,8 @@ static int sunxifb_launched_by_desk(void)
+ #define FBIO_ENABLE_CACHE       0x4631
+ #define FBIO_GET_IONFD          0x4632
+ #define FBIO_GET_PHY_ADDR       0x4633
+-#define FBIO_HDMI_SRC_FB0       0x4634
+-#define FBIOGET_DMABUF          _IOR('F', 0x21, struct fb_dmabuf_export)
+ #define SUNXIFB_NUM_MAX         12
+ 
+-struct fb_dmabuf_export {
+-    int fd;
+-    __u32 flags;
+-};
+-
+ static void* sunxi_fb_task_do_render(void *arg);
+ static void sunxifb_show_fps(void);
+ 
+@@ -121,22 +114,14 @@ struct sunxifb_info {
+     uint32_t render_run;
+     uint32_t render_end;
+     uint32_t dispindex;
+-#ifdef USE_SUNXIFB_G2D
+-    uintptr_t fb_paddr;
+-    int fb_dma_fd;
+-    bool g2d_dbuf_blit_ok;
+-#endif /* USE_SUNXIFB_G2D */
+ #ifdef SUNXIFB_ROTATE_EN
+     uint32_t rotated;
+     char *rotatefbp;
+     uint32_t rotatefbp_w;
+     uint32_t rotatefbp_h;
+-    bool split_fb_en;
+     bool lv_logical_override;
+     uint32_t mipi_landscape_w;
+     uint32_t mipi_landscape_h;
+-    uint32_t hdmi_fbindex;
+-    uint32_t mipi_fbindex;
+ #ifdef USE_SUNXIFB_G2D_ROTATE
+     uintptr_t rotatefbp_phy;
+ #endif /* USE_SUNXIFB_G2D_ROTATE */
+@@ -158,54 +143,12 @@ static void sunxifb_detach_fbcon(void)
+     }
+ }
+ 
+-#if defined(USE_SUNXIFB_G2D) && defined(USE_SUNXIFB_DOUBLE_BUFFER)
+-static bool sunxifb_g2d_fb_ready(void)
+-{
+-    return sinfo.fb_paddr != 0 || sinfo.fb_dma_fd >= 0;
+-}
+-
+-static void sunxifb_g2d_init_fb_resource(void)
+-{
+-    unsigned long fb_phy_arg = 0;
+-
+-    sinfo.fb_paddr = finfo.smem_start;
+-    sinfo.fb_dma_fd = -1;
+-    sinfo.g2d_dbuf_blit_ok = true;
+-
+-    if (sinfo.fb_paddr == 0) {
+-        struct fb_dmabuf_export dmabuf_exp = { -1, 0 };
+-
+-        if (ioctl(fbfd, FBIOGET_DMABUF, &dmabuf_exp) == 0 && dmabuf_exp.fd >= 0) {
+-            sinfo.fb_dma_fd = dmabuf_exp.fd;
+-            printf("fb G2D uses dmabuf, fd=%d\n", sinfo.fb_dma_fd);
+-        } else if (ioctl(fbfd, FBIO_GET_PHY_ADDR, &fb_phy_arg) == 0 &&
+-                   fb_phy_arg != 0) {
+-            sinfo.fb_paddr = (uintptr_t) fb_phy_arg;
+-            printf("fb G2D phy=0x%lx (via FBIO_GET_PHY_ADDR)\n",
+-                   (unsigned long) sinfo.fb_paddr);
+-        } else {
+-            sinfo.g2d_dbuf_blit_ok = false;
+-            printf("Warning: fb G2D unavailable (smem_start=0, dmabuf/phy ioctl fail), use memcpy for dbuf\n");
+-        }
+-    } else {
+-        printf("fb G2D phy=0x%lx (smem_start)\n", (unsigned long) sinfo.fb_paddr);
+-    }
+-
+-    sunxifb_g2d_set_fb_resource(sinfo.fb_paddr, sinfo.fb_dma_fd);
+-    printf("%s: fb_paddr=0x%lx fb_dma_fd=%d dbuf_g2d=%d\n",
+-           SUNXIFB_G2D_DRIVER_TAG, (unsigned long) sinfo.fb_paddr,
+-           sinfo.fb_dma_fd, sunxifb_g2d_fb_ready() ? 1 : 0);
+-}
+-#endif /* USE_SUNXIFB_G2D && USE_SUNXIFB_DOUBLE_BUFFER */
+-
+ #ifdef SUNXIFB_ROTATE_EN
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+ static void sunxifb_soft_rotate(char *dst);
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+ static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
+         int32_t y2);
+-static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+-        int32_t y2);
+ static void sunxifb_soft_rotate_area(char *dst, int32_t x1, int32_t y1,
+         int32_t x2, int32_t y2);
+ #endif /* USE_SUNXIFB_SOFT_ROTATE */
+@@ -332,11 +275,10 @@ void sunxifb_init(uint32_t rotated) {
+         sunxifb_g2d_init(vinfo.bits_per_pixel);
+ 
+         sunxifb_mem_init();
+-        sunxifb_g2d_init_fb_resource();
+ #endif /* USE_SUNXIFB_G2D */
+ 
+ #ifdef SUNXIFB_ROTATE_EN
+-        /* 统一 rotatefbp + split_fb；rot=0 时 SUNXIFB_ROT_0 直拷贝 MIPI 页，不做旋转变换 */
++        /* 对齐原厂 G2D_ROTATE：LVGL 画 rotatefbp，帧末软旋到后台 fb 页再 pan */
+         {
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+             size_t rotate_buf_size;
+@@ -457,30 +399,6 @@ void sunxifb_init(uint32_t rotated) {
+             } else {
+                 sinfo.lv_logical_override = false;
+             }
+-
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-            if (sinfo.fbnum > 1) {
+-                sinfo.split_fb_en = true;
+-                sinfo.hdmi_fbindex = 0;
+-                sinfo.mipi_fbindex = 1;
+-                {
+-                    uintptr_t hdmi_args[3] = { 1, sinfo.rotatefbp_w,
+-                            sinfo.rotatefbp_h };
+-                    if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0)
+-                        perror("Error: FBIO_HDMI_SRC_FB0 fail");
+-                }
+-                /* desk fork 子 app：保留 desk 最后一帧，避免切屏黑一下 */
+-                if (!sunxifb_launched_by_desk()) {
+-                    memset(sinfo.screenfbp[sinfo.hdmi_fbindex], 0,
+-                            (size_t) finfo.line_length * vinfo.yres);
+-                    memset(sinfo.screenfbp[sinfo.mipi_fbindex], 0,
+-                            (size_t) finfo.line_length * vinfo.yres);
+-                }
+-                SUNXIFB_DBG("Split fb: dirty sync HDMI page0 %ux%u, MIPI page1 %s\n",
+-                        sinfo.rotatefbp_w, sinfo.rotatefbp_h,
+-                        sinfo.rotated == SUNXIFB_ROT_0 ? "copy" : "rotate");
+-            }
+-#endif /* USE_SUNXIFB_SOFT_ROTATE */
+         }
+ #endif /* SUNXIFB_ROTATE_EN */
+     }
+@@ -500,23 +418,7 @@ void sunxifb_init(uint32_t rotated) {
+ 
+ void sunxifb_hdmi_rotate_restore(void)
+ {
+-#if defined(USE_SUNXIFB_DOUBLE_BUFFER) && defined(SUNXIFB_ROTATE_EN) && defined(USE_SUNXIFB_SOFT_ROTATE)
+-    if (fbfd <= 0 || !sinfo.split_fb_en) {
+-        return;
+-    }
+-
+-    {
+-        uintptr_t hdmi_args[3] = { 1, sinfo.rotatefbp_w, sinfo.rotatefbp_h };
+-        if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0) {
+-            perror("Error: FBIO_HDMI_SRC_FB0 restore fail");
+-        } else {
+-            printf("sunxifb: HDMI rotate restored %ux%u\n",
+-                   sinfo.rotatefbp_w, sinfo.rotatefbp_h);
+-        }
+-    }
+-#else
+-    (void)0;
+-#endif
++    /* 原厂双页乒乓无 FBIO_HDMI_SRC_FB0；desk 仍调此符号 */
+ }
+ 
+ void sunxifb_exit(void) {
+@@ -545,11 +447,6 @@ void sunxifb_exit(void) {
+ #endif /* USE_SUNXIFB_G2D */
+ #ifdef SUNXIFB_ROTATE_EN
+     if (sinfo.rotatefbp != NULL) {
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-        uintptr_t hdmi_args[3] = { 0, 0, 0 };
+-        if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0)
+-            perror("Error: FBIO_HDMI_SRC_FB0 disable fail");
+-#endif /* USE_SUNXIFB_SOFT_ROTATE */
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+         free(sinfo.rotatefbp);
+         sinfo.rotatefbp = NULL;
+@@ -669,15 +566,6 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+         /*Not supported bit per pixel*/
+     }
+ 
+-#if defined(USE_SUNXIFB_SOFT_ROTATE) && defined(SUNXIFB_ROTATE_EN)
+-    /* 异显：脏区写入 rotatefbp 后，同步到 HDMI page0 与 MIPI page1 */
+-    if (sinfo.split_fb_en && sinfo.rotatefbp != NULL) {
+-        sunxifb_copy_area_to_hdmi(act_x1, act_y1, act_x2, act_y2);
+-        sunxifb_soft_rotate_area(sinfo.screenfbp[sinfo.mipi_fbindex], act_x1,
+-                act_y1, act_x2, act_y2);
+-    }
+-#endif
+-
+     //May be some direct update command is required
+     //ret = ioctl(state->fd, FBIO_UPDATE, (unsigned long)((uintptr_t)rect));
+ #endif
+@@ -685,35 +573,18 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+     if (sinfo.fbnum > 1 && sinfo.dbuf_en && lv_disp_flush_is_last(drv)) {
+         int nextindex;
+-#ifdef USE_SUNXIFB_CACHE
+-        uintptr_t args[2];
+-        args[1] = finfo.line_length * vinfo.yres;
+-        if (sinfo.split_fb_en) {
+-            args[0] = (uintptr_t) sinfo.screenfbp[sinfo.hdmi_fbindex];
+-            if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0)
+-                perror("Error: FBIO_CACHE_SYNC hdmi fail");
+-        }
+-        args[0] = (uintptr_t) sinfo.screenfbp[sinfo.split_fb_en ?
+-                sinfo.mipi_fbindex : sinfo.fbindex];
+-        if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0) {
+-            perror("Error: FBIO_CACHE_SYNC fail");
+-        }
+-#endif /* USE_SUNXIFB_CACHE */
+-
+ #ifdef SUNXIFB_ROTATE_EN
+         if (sinfo.rotatefbp != NULL) {
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+-            if (!sinfo.split_fb_en) {
+-                sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+-            }
+-            /* split_fb：脏区已在 flush 中同步，帧末仅 pan/cache */
++            sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+ #else
+             sunxifb_mem_flush_cache(sinfo.rotatefbp,
+                     finfo.line_length * vinfo.yres);
+             if (sunxifb_g2d_blit_to_fb(sinfo.rotatefbp_phy, sinfo.rotatefbp_w,
+                     sinfo.rotatefbp_h, 0, 0, sinfo.rotatefbp_w, sinfo.rotatefbp_h,
+-                    0, vinfo.xres_virtual, vinfo.yres_virtual, 0,
+-                    sinfo.fbindex * vinfo.yres, vinfo.xres, vinfo.yres,
++                    (uintptr_t) finfo.smem_start, vinfo.xres,
++                    vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                    vinfo.xres, vinfo.yres,
+                     (g2d_blt_flags_h) sinfo.rotated) < 0) {
+                 sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+             }
+@@ -721,6 +592,17 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+         }
+ #endif /* SUNXIFB_ROTATE_EN */
+ 
++#ifdef USE_SUNXIFB_CACHE
++        {
++            uintptr_t args[2];
++
++            args[0] = (uintptr_t) sinfo.screenfbp[sinfo.fbindex];
++            args[1] = finfo.line_length * vinfo.yres;
++            if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0)
++                perror("Error: FBIO_CACHE_SYNC fail");
++        }
++#endif /* USE_SUNXIFB_CACHE */
++
+         if (sinfo.fbnum > 2) {
+             int tmpindex = sinfo.fbindex + 1;
+             if (tmpindex > sinfo.fbnum - 1)
+@@ -730,12 +612,6 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+                 pthread_cond_wait(&sinfo.render_cond, &sinfo.render_lock);
+ 
+             nextindex = tmpindex;
+-        } else if (sinfo.split_fb_en) {
+-            vinfo.yoffset = sinfo.mipi_fbindex * vinfo.yres;
+-            if (ioctl(fbfd, FBIOPAN_DISPLAY, &vinfo) < 0) {
+-                perror("Error: FBIOPAN_DISPLAY fail");
+-            }
+-            nextindex = sinfo.mipi_fbindex;
+         } else {
+             vinfo.yoffset = sinfo.fbindex * vinfo.yres;
+             if (ioctl(fbfd, FBIOPAN_DISPLAY, &vinfo) < 0) {
+@@ -752,19 +628,12 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+          */
+         if (!drv->full_refresh && sinfo.rotatefbp == NULL) {
+ #if defined(USE_SUNXIFB_G2D) && !defined(SUNXIFB_ROTATE_EN)
+-            if (sinfo.g2d_dbuf_blit_ok && sunxifb_g2d_fb_ready() &&
+-                sunxifb_g2d_blit_to_fb(0, vinfo.xres_virtual,
+-                    vinfo.yres_virtual, 0, sinfo.fbindex * vinfo.yres,
+-                    vinfo.xres, vinfo.yres, 0,
+-                    vinfo.xres_virtual, vinfo.yres_virtual, 0,
++            if (sunxifb_g2d_blit_to_fb((uintptr_t) finfo.smem_start, vinfo.xres,
++                    vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                    vinfo.xres, vinfo.yres, (uintptr_t) finfo.smem_start,
++                    vinfo.xres, vinfo.yres * sinfo.fbnum, 0,
+                     nextindex * vinfo.yres, vinfo.xres, vinfo.yres, G2D_ROT_0)
+                     < 0) {
+-                sinfo.g2d_dbuf_blit_ok = false;
+-                printf("G2D dbuf blit disabled, fallback to memcpy\n");
+-                memcpy(sinfo.screenfbp[nextindex],
+-                        sinfo.screenfbp[sinfo.fbindex],
+-                        finfo.line_length * vinfo.yres);
+-            } else if (!sinfo.g2d_dbuf_blit_ok || !sunxifb_g2d_fb_ready()) {
+                 memcpy(sinfo.screenfbp[nextindex],
+                         sinfo.screenfbp[sinfo.fbindex],
+                         finfo.line_length * vinfo.yres);
+@@ -885,13 +754,12 @@ int sunxifb_set_dbuf_en(lv_disp_drv_t *drv, bool dbuf_en) {
+         }
+ 
+ #ifdef USE_SUNXIFB_G2D
+-        if (sinfo.g2d_dbuf_blit_ok && sunxifb_g2d_fb_ready())
+-            sunxifb_g2d_blit_to_fb(0, vinfo.xres_virtual,
+-                vinfo.yres_virtual, 0, sinfo.fbindex * vinfo.yres, vinfo.xres,
+-                vinfo.yres, 0, vinfo.xres_virtual,
+-                vinfo.yres_virtual, 0, !sinfo.fbindex * vinfo.yres, vinfo.xres,
+-                vinfo.yres, G2D_ROT_0);
+-        else
++        if (sunxifb_g2d_blit_to_fb((uintptr_t) finfo.smem_start, vinfo.xres,
++                vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                vinfo.xres, vinfo.yres, (uintptr_t) finfo.smem_start,
++                vinfo.xres, vinfo.yres * sinfo.fbnum, 0,
++                !sinfo.fbindex * vinfo.yres, vinfo.xres, vinfo.yres,
++                G2D_ROT_0) < 0)
+ #endif /* USE_SUNXIFB_G2D */
+             memcpy(sinfo.screenfbp[!sinfo.fbindex], sinfo.screenfbp[sinfo.fbindex],
+                     finfo.line_length * vinfo.yres);
+@@ -994,12 +862,6 @@ static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
+     }
+ }
+ 
+-static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+-        int32_t y2)
+-{
+-    sunxifb_copy_area(sinfo.screenfbp[sinfo.hdmi_fbindex], x1, y1, x2, y2);
+-}
+-
+ /* 1920×1080 等逻辑分辨率：缩放后软转到 MIPI 有效 1280×800 区域 */
+ static void sunxifb_soft_rotate_area_scaled(char *dst, int32_t x1, int32_t y1,
+         int32_t x2, int32_t y2)
+@@ -1145,6 +1007,15 @@ static void sunxifb_soft_rotate(char *dst)
+             vinfo.xres, desH = vinfo.yres, srcW = sinfo.rotatefbp_w, srcH =
+             sinfo.rotatefbp_h;
+ 
++#ifdef USE_SUNXIFB_SOFT_ROTATE
++    if (sinfo.lv_logical_override) {
++        sunxifb_soft_rotate_area(dst, 0, 0,
++                (int32_t) sinfo.rotatefbp_w - 1,
++                (int32_t) sinfo.rotatefbp_h - 1);
++        return;
++    }
++#endif /* USE_SUNXIFB_SOFT_ROTATE */
++
+     switch (sinfo.rotated) {
+     case SUNXIFB_ROT_90:
+         for (i = 0; i < desH; i++) {
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
+index 4e449f53a..69358493b 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
+@@ -29,11 +29,6 @@ extern "C" {
+ #include "lvgl/lvgl.h"
+ #endif
+ 
+-/* G2D 暂不可用时由 sunxifb 做整帧 CPU 旋转；恢复 G2D 后在 menuconfig 开 LVGL8_USE_SUNXIFB_G2D_ROTATE */
+-#ifndef USE_SUNXIFB_G2D_ROTATE
+-#define USE_SUNXIFB_SOFT_ROTATE
+-#endif
+-
+ /*********************
+  *      DEFINES
+  *********************/
+@@ -48,7 +43,6 @@ extern "C" {
+ void sunxifb_set_lv_resolution(uint32_t w, uint32_t h);
+ void sunxifb_init(uint32_t rotated);
+ void sunxifb_exit(void);
+-/* desk 子进程退出后恢复 FBIO_HDMI_SRC_FB0（子进程 sunxifb_exit 可能关掉旋转） */
+ void sunxifb_hdmi_rotate_restore(void);
+ void sunxifb_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
+ void sunxifb_get_sizes(uint32_t *width, uint32_t *height);
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.c
+index 13c5c0154..b3ef25755 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.c
+@@ -33,9 +33,6 @@
+  **********************/
+ static bool sunxifb_g2d_lookup_phy(void *virt, uintptr_t *phy_out);
+ 
+-static uintptr_t g_fb_phy;
+-static int g_fb_dma_fd = -1;
+-
+ /**********************
+  *  STATIC VARIABLES
+  **********************/
+@@ -79,7 +76,7 @@ bool sunxifb_g2d_init(uint32_t bits_per_pixel) {
+     if (g_g2dfd > 0)
+         return true;
+ 
+-    printf("%s: g2d_image_enh=%zu g2d_blt_h=%zu (kernel expect 108/220)\n",
++    printf("%s: g2d_image_enh=%zu g2d_blt_h=%zu (kernel expect 116/236)\n",
+            SUNXIFB_G2D_DRIVER_TAG, sizeof(g2d_image_enh), sizeof(g2d_blt_h));
+ 
+     if ((g_g2dfd = open("/dev/g2d", O_RDWR)) < 0) {
+@@ -126,69 +123,6 @@ void sunxifb_g2d_deinit(void) {
+     }
+ }
+ 
+-void sunxifb_g2d_set_fb_resource(uintptr_t phy, int dma_fd)
+-{
+-    g_fb_phy = phy;
+-    g_fb_dma_fd = dma_fd;
+-}
+-
+-static bool sunxifb_g2d_image_ready(const g2d_image_enh *img)
+-{
+-    if (!img)
+-        return false;
+-
+-    if (img->use_phy_addr)
+-        return img->laddr[0] != 0;
+-
+-    return img->fd >= 0;
+-}
+-
+-static int sunxifb_g2d_setup_blit_image(g2d_image_enh *img, uintptr_t phy_addr,
+-        uint32_t width, uint32_t height, uint32_t cx, uint32_t cy, uint32_t cw,
+-        uint32_t ch, bool fb_resource)
+-{
+-    img->format = g_format;
+-    img->width = width;
+-    img->height = height;
+-    img->clip_rect.x = cx;
+-    img->clip_rect.y = cy;
+-    img->clip_rect.w = cw;
+-    img->clip_rect.h = ch;
+-    img->mode = G2D_PIXEL_ALPHA;
+-    img->alpha = 255;
+-    img->color = 0xee8899;
+-    img->align[0] = 0;
+-    img->align[1] = 0;
+-    img->align[2] = 0;
+-    img->laddr[1] = 0;
+-    img->laddr[2] = 0;
+-    img->bbuff = 1;
+-    img->fd = -1;
+-    img->use_phy_addr = 1;
+-    img->laddr[0] = phy_addr;
+-
+-    if (phy_addr != 0)
+-        return 0;
+-
+-    if (!fb_resource)
+-        return -1;
+-
+-    if (g_fb_dma_fd >= 0) {
+-        img->fd = g_fb_dma_fd;
+-        img->use_phy_addr = 0;
+-        img->laddr[0] = 0;
+-        return 0;
+-    }
+-
+-    if (g_fb_phy != 0) {
+-        img->laddr[0] = g_fb_phy;
+-        img->use_phy_addr = 1;
+-        return 0;
+-    }
+-
+-    return -1;
+-}
+-
+ /**
+  * 1. For 32bpp formats such as ARGB8888, the output width is required to be greater than 2
+  * 2. For 24bpp formats such as RGB888, the output width is required to be greater than 3
+@@ -223,34 +157,58 @@ int sunxifb_g2d_blit_to_fb(uintptr_t src_buf, uint32_t src_w, uint32_t src_h,
+         uint32_t dst_cy, uint32_t dst_cw, uint32_t dst_ch,
+         g2d_blt_flags_h rotated) {
+     g2d_blt_h info;
+-    bool src_is_fb = (src_buf == 0);
+-    bool dst_is_fb = (dst_buf == 0);
+ 
+     memset(&info, 0, sizeof(g2d_blt_h));
+ 
+     info.flag_h = rotated;
++    info.src_image_h.width = src_w;
++    info.src_image_h.height = src_h;
++    info.src_image_h.laddr[0] = src_buf;
++    info.src_image_h.clip_rect.x = src_cx;
++    info.src_image_h.clip_rect.y = src_cy;
++    info.src_image_h.clip_rect.w = src_cw;
++    info.src_image_h.clip_rect.h = src_ch;
++    info.src_image_h.format = g_format;
++    info.src_image_h.mode = G2D_GLOBAL_ALPHA;
++    info.src_image_h.alpha = 255;
++    info.src_image_h.color = 0xee8899;
++    info.src_image_h.align[0] = 0;
++    info.src_image_h.align[1] = info.src_image_h.align[0];
++    info.src_image_h.align[2] = info.src_image_h.align[0];
++    info.src_image_h.laddr[1] = (uintptr_t) 0;
++    info.src_image_h.laddr[2] = (uintptr_t) 0;
++    info.src_image_h.use_phy_addr = 1;
++    info.src_image_h.bbuff = 1;
+ 
+-    if (sunxifb_g2d_setup_blit_image(&info.src_image_h, src_buf, src_w, src_h,
+-                src_cx, src_cy, src_cw, src_ch, src_is_fb) < 0)
+-        return -1;
+-
+-    if (sunxifb_g2d_setup_blit_image(&info.dst_image_h, dst_buf, dst_w, dst_h,
+-                dst_cx, dst_cy, dst_cw, dst_ch, dst_is_fb) < 0)
+-        return -1;
+-
+-    if (!sunxifb_g2d_image_ready(&info.src_image_h) ||
+-        !sunxifb_g2d_image_ready(&info.dst_image_h))
+-        return -1;
++    info.dst_image_h.format = g_format;
++    info.dst_image_h.width = dst_w;
++    info.dst_image_h.height = dst_h;
++    info.dst_image_h.clip_rect.x = dst_cx;
++    info.dst_image_h.clip_rect.y = dst_cy;
++    info.dst_image_h.clip_rect.w = dst_cw;
++    info.dst_image_h.clip_rect.h = dst_ch;
++    info.dst_image_h.mode = G2D_GLOBAL_ALPHA;
++    info.dst_image_h.alpha = 255;
++    info.dst_image_h.color = 0xee8899;
++    info.dst_image_h.align[0] = 0;
++    info.dst_image_h.align[1] = info.dst_image_h.align[0];
++    info.dst_image_h.align[2] = info.dst_image_h.align[0];
++    info.dst_image_h.laddr[0] = dst_buf;
++    info.dst_image_h.laddr[1] = (uintptr_t) 0;
++    info.dst_image_h.laddr[2] = (uintptr_t) 0;
++    info.dst_image_h.use_phy_addr = 1;
++    info.dst_image_h.bbuff = 1;
+ 
+ #ifdef LV_USE_SUNXIFB_DEBUG
+     printf(
+             "sunxifb_g2d_blit_to_fb src[phy=%p format=%d alpha=%d wh=[%d %d] clip=[%d %d %d %d]] "
+                     "dst=[phy=%p format=%d wh=[%d %d] clip=[%d %d %d %d]]\n",
+-            (void*) info.src_image_h.laddr[0], info.src_image_h.format,
+-            info.src_image_h.alpha, info.src_image_h.width,
+-            info.src_image_h.height, info.src_image_h.clip_rect.x,
+-            info.src_image_h.clip_rect.y, info.src_image_h.clip_rect.w,
+-            info.src_image_h.clip_rect.h, (void*) info.dst_image_h.laddr[0],
++            (void*) (uintptr_t) info.src_image_h.laddr[0],
++            info.src_image_h.format, info.src_image_h.alpha,
++            info.src_image_h.width, info.src_image_h.height,
++            info.src_image_h.clip_rect.x, info.src_image_h.clip_rect.y,
++            info.src_image_h.clip_rect.w, info.src_image_h.clip_rect.h,
++            (void*) (uintptr_t) info.dst_image_h.laddr[0],
+             info.dst_image_h.format, info.dst_image_h.width,
+             info.dst_image_h.height, info.dst_image_h.clip_rect.x,
+             info.dst_image_h.clip_rect.y, info.dst_image_h.clip_rect.w,
+@@ -260,18 +218,18 @@ int sunxifb_g2d_blit_to_fb(uintptr_t src_buf, uint32_t src_w, uint32_t src_h,
+     if (ioctl(g_g2dfd, G2D_CMD_BITBLT_H, (uintptr_t)(&info)) < 0) {
+         perror("Error: sunxifb_g2d_blit_to_fb G2D_CMD_BITBLT_H failed");
+         printf(
+-                "sunxifb_g2d_blit_to_fb src[phy=%p fd=%d use_phy=%u format=%d wh=[%d %d] clip=[%d %d %d %d]] "
+-                        "dst=[phy=%p fd=%d use_phy=%u format=%d wh=[%d %d] clip=[%d %d %d %d]]\n",
+-                (void*) info.src_image_h.laddr[0], info.src_image_h.fd,
+-                info.src_image_h.use_phy_addr, info.src_image_h.format,
++                "sunxifb_g2d_blit_to_fb src[phy=%p format=%d alpha=%d wh=[%d %d] clip=[%d %d %d %d]] "
++                        "dst=[phy=%p format=%d wh=[%d %d] clip=[%d %d %d %d]]\n",
++                (void*) (uintptr_t) info.src_image_h.laddr[0],
++                info.src_image_h.format, info.src_image_h.alpha,
+                 info.src_image_h.width, info.src_image_h.height,
+                 info.src_image_h.clip_rect.x, info.src_image_h.clip_rect.y,
+                 info.src_image_h.clip_rect.w, info.src_image_h.clip_rect.h,
+-                (void*) info.dst_image_h.laddr[0], info.dst_image_h.fd,
+-                info.dst_image_h.use_phy_addr, info.dst_image_h.format,
+-                info.dst_image_h.width, info.dst_image_h.height,
+-                info.dst_image_h.clip_rect.x, info.dst_image_h.clip_rect.y,
+-                info.dst_image_h.clip_rect.w, info.dst_image_h.clip_rect.h);
++                (void*) (uintptr_t) info.dst_image_h.laddr[0],
++                info.dst_image_h.format, info.dst_image_h.width,
++                info.dst_image_h.height, info.dst_image_h.clip_rect.x,
++                info.dst_image_h.clip_rect.y, info.dst_image_h.clip_rect.w,
++                info.dst_image_h.clip_rect.h);
+         return -1;
+     }
+     return 0;
+@@ -408,10 +366,6 @@ int sunxifb_g2d_blit(lv_color_t *dest_buf, const lv_area_t *disp_area,
+     info.dst_image_h.use_phy_addr = 1;
+     info.dst_image_h.bbuff = 1;
+ 
+-    if (!sunxifb_g2d_image_ready(&info.src_image_h) ||
+-        !sunxifb_g2d_image_ready(&info.dst_image_h))
+-        return -1;
+-
+ #ifdef LV_USE_SUNXIFB_DEBUG
+     printf(
+             "sunxifb_g2d_blit src[vir=%p phy=%p format=%d alpha=%d wh=[%d %d] clip=[%d %d %d %d]] "
+@@ -528,10 +482,6 @@ int sunxifb_g2d_blend(lv_color_t *dest_buf, const lv_area_t *disp_area,
+     /* src_image[0] is used as dst_image, no need to malloc a buffer */
+     info.src_image[0] = info.dst_image;
+ 
+-    if (!sunxifb_g2d_image_ready(&info.src_image[1]) ||
+-        !sunxifb_g2d_image_ready(&info.dst_image))
+-        return -1;
+-
+ #ifdef LV_USE_SUNXIFB_DEBUG
+     printf(
+             "sunxifb_g2d_blend "
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.h
+index a77437365..60a792335 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxig2d.h
+@@ -50,8 +50,6 @@ bool sunxifb_g2d_init(uint32_t bits_per_pixel);
+ 
+ void sunxifb_g2d_deinit(void);
+ 
+-void sunxifb_g2d_set_fb_resource(uintptr_t phy, int dma_fd);
+-
+ int32_t sunxifb_g2d_get_limit(sunxi_g2d_limit limit);
+ 
+ int sunxifb_g2d_blit_to_fb(uintptr_t src_buf, uint32_t src_w, uint32_t src_h,
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
+index d93af3b40..d902b8896 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
+@@ -30,8 +30,9 @@ void lv_port_disp_apply_rotate(lv_disp_drv_t *drv, uint32_t sunxi_rot)
+         drv->sw_rotate = 1;
+ #endif
+ 
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-    /* 旋转仅 sunxifb 负责，避免 LVGL 再变换触摸坐标 */
++#if defined(USE_SUNXIFB_G2D_ROTATE) || defined(USE_SUNXIFB_SOFT_ROTATE)
++    /* G2D/软转：logical_size 已按旋转换宽高，rotated 必须 NONE。
++     * 原厂 demo 设 90/270 是因为 hor_res 仍是 fb 物理尺寸；两边叠一起会半屏。 */
+     drv->rotated = LV_DISP_ROT_NONE;
+ #else
+     if (sunxi_rot > 3)
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
+index 0eed02ff2..31fa3059f 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
+@@ -23,7 +23,7 @@ void lv_port_disp_logical_size_from_fb(uint32_t fb_w, uint32_t fb_h,
+ 
+ /**
+  * 配置 disp_drv 旋转字段（须在 lv_disp_drv_register 之前调用）。
+- * USE_SUNXIFB_SOFT_ROTATE 时 rotated=NONE，旋转仅由 sunxifb 完成，触摸不再被 LVGL 二次变换。
++ * G2D/软转时 rotated=NONE（logical_size 已换宽高）；未硬件转时才把 rotated 交给 LVGL。
+  */
+ void lv_port_disp_apply_rotate(lv_disp_drv_t *drv, uint32_t sunxi_rot);
+ 
+-- 
+2.43.0
+

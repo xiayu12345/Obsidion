@@ -1,0 +1,414 @@
+From: H133-AIKTV USB 语音遥控
+Subject: [PATCH] 天猫 2.4G 空鼠（7045:2018）F24 走 USB 麦，AC107 不动
+
+实机已枚举，代码未合入主线。默认不打此补丁。
+
+行为：
+  遥控 KEY_F24 按下 → VOICE START app=usb_remote source=usb
+  松开 → VOICE STOP
+  机身/UI 语音仍走 CaptureAC107
+  先按的算数（CAPTURE_BUSY / VOICE_BUSY）
+  USB 麦不在就不回退 AC107
+
+内核 SND_USB 目前只开 p1_nor_JL_M101。其它板要另开 bsp_defconfig。
+
+用法（在 SDK 根目录）：
+  patch -p1 < H133-AI-Skills/开发记录/USB语音遥控/20260907-天猫2.4G空鼠/patches/usb-voice-tmall-7045-2018.patch
+  ./tools/build_p1_nor_JL_M101.sh full
+
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
+@@ -2603,7 +2603,17 @@
+ CONFIG_SND_HDA_PREALLOC_SIZE=64
+ # CONFIG_SND_ARM is not set
+ # CONFIG_SND_SPI is not set
+-# CONFIG_SND_USB is not set
++CONFIG_SND_USB=y
++CONFIG_SND_USB_AUDIO=y
++# CONFIG_SND_USB_UA101 is not set
++# CONFIG_SND_USB_CAIAQ is not set
++# CONFIG_SND_USB_6FIRE is not set
++# CONFIG_SND_USB_HIFACE is not set
++# CONFIG_SND_BCD2000 is not set
++# CONFIG_SND_USB_POD is not set
++# CONFIG_SND_USB_PODHD is not set
++# CONFIG_SND_USB_TONEPORT is not set
++# CONFIG_SND_USB_VARIAX is not set
+ CONFIG_SND_SOC=y
+ CONFIG_SND_SOC_GENERIC_DMAENGINE_PCM=y
+ # CONFIG_SND_SOC_AMD_ACP is not set
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/openwrt/bsp_defconfig
+@@ -96,6 +96,8 @@
+ CONFIG_KEYBOARD_SUNXI=y
+ CONFIG_INPUT_MOUSE=y
+ CONFIG_USB_HID=y
++CONFIG_SND_USB=y
++CONFIG_SND_USB_AUDIO=y
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_SUNXI=y
+ CONFIG_TOUCHSCREEN_GSLX680NEW=y
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_capture.h
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_capture.h
+@@ -13,10 +13,16 @@
+     AAS_PROFILE_RECORD_44100_STEREO
+ } aas_capture_profile_t;
+ 
++typedef enum {
++    AAS_CAPTURE_SRC_AC107 = 0,
++    AAS_CAPTURE_SRC_USB
++} aas_capture_source_t;
++
+ int aas_capture_init(void);
+ void aas_capture_deinit(void);
+ 
+-int aas_capture_acquire(const char *app_id, aas_capture_profile_t profile);
++int aas_capture_acquire(const char *app_id, aas_capture_profile_t profile,
++                        aas_capture_source_t source);
+ int aas_capture_start(const char *app_id, uint32_t seq);
+ int aas_capture_stop(const char *app_id, uint32_t seq, char *out_path, size_t out_path_len);
+ int aas_capture_release(const char *app_id);
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_capture.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_capture.c
+@@ -23,6 +23,8 @@
+ 
+ static char g_owner[AAS_CAPTURE_APP_MAX];
+ static aas_capture_profile_t g_profile = AAS_PROFILE_ASR_16K_MONO;
++static aas_capture_source_t g_source = AAS_CAPTURE_SRC_AC107;
++static char g_alsa_dev[64];
+ static pid_t g_arecord_pid = -1;
+ static char g_current_path[AAS_CAPTURE_PATH_MAX];
+ static uint32_t g_seq = 0;
+@@ -33,10 +35,68 @@
+ 
+ static int aas_capture_profile_needs_mcu(aas_capture_profile_t profile)
+ {
++    if (g_source == AAS_CAPTURE_SRC_USB) {
++        return 0;
++    }
+     return profile == AAS_PROFILE_RECORD_44100_STEREO ||
+            profile == AAS_PROFILE_ASR_16K_MONO;
+ }
+ 
++/* sysfs device 链到 usb 的 card 才是遥控麦；找不到则失败，禁止改走 AC107 */
++static int aas_capture_find_usb_plughw(char *out, size_t out_len)
++{
++    DIR *dir;
++    struct dirent *ent;
++    char sys[128];
++    char link[256];
++    ssize_t n;
++    int card = -1;
++    const char *p;
++    int digits;
++
++    dir = opendir("/sys/class/sound");
++    if (!dir) {
++        return -1;
++    }
++    while ((ent = readdir(dir)) != NULL) {
++        if (strncmp(ent->d_name, "card", 4) != 0) {
++            continue;
++        }
++        p = ent->d_name + 4;
++        if (*p == '\0') {
++            continue;
++        }
++        digits = 1;
++        while (*p) {
++            if (*p < '0' || *p > '9') {
++                digits = 0;
++                break;
++            }
++            p++;
++        }
++        if (!digits) {
++            continue;
++        }
++        snprintf(sys, sizeof(sys), "/sys/class/sound/%s/device", ent->d_name);
++        n = readlink(sys, link, sizeof(link) - 1);
++        if (n <= 0) {
++            continue;
++        }
++        link[n] = '\0';
++        if (strstr(link, "usb") == NULL && strstr(link, "USB") == NULL) {
++            continue;
++        }
++        card = atoi(ent->d_name + 4);
++        break;
++    }
++    closedir(dir);
++    if (card < 0 || out == NULL || out_len < 16) {
++        return -1;
++    }
++    snprintf(out, out_len, "plughw:%d,0", card);
++    return 0;
++}
++
+ static int aas_capture_ensure_record_dir(void)
+ {
+     struct stat st;
+@@ -212,6 +272,8 @@
+ {
+     memset(g_owner, 0, sizeof(g_owner));
+     g_profile = AAS_PROFILE_ASR_16K_MONO;
++    g_source = AAS_CAPTURE_SRC_AC107;
++    g_alsa_dev[0] = '\0';
+     g_arecord_pid = -1;
+     g_current_path[0] = '\0';
+     return 0;
+@@ -230,10 +292,15 @@
+         g_mcu_open = 0;
+     }
+     memset(g_owner, 0, sizeof(g_owner));
++    g_source = AAS_CAPTURE_SRC_AC107;
++    g_alsa_dev[0] = '\0';
+ }
+ 
+-int aas_capture_acquire(const char *app_id, aas_capture_profile_t profile)
++int aas_capture_acquire(const char *app_id, aas_capture_profile_t profile,
++                        aas_capture_source_t source)
+ {
++    char usb_dev[64];
++
+     if (app_id == NULL || app_id[0] == '\0') {
+         return -1;
+     }
+@@ -246,8 +313,21 @@
+         return -1;
+     }
+ 
++    if (source == AAS_CAPTURE_SRC_USB) {
++        if (aas_capture_find_usb_plughw(usb_dev, sizeof(usb_dev)) != 0) {
++            aas_ipc_publish_eventf(
++                "EVT error app=%s code=USB_MIC_MISSING msg=USB麦克风不可用",
++                app_id);
++            return -1;
++        }
++        snprintf(g_alsa_dev, sizeof(g_alsa_dev), "%s", usb_dev);
++    } else {
++        snprintf(g_alsa_dev, sizeof(g_alsa_dev), "%s", AAS_ALSA_RECORD);
++    }
++
+     snprintf(g_owner, sizeof(g_owner), "%s", app_id);
+     g_profile = profile;
++    g_source = source;
+ 
+     if (aas_capture_profile_needs_mcu(profile)) {
+         if (g_mcu_open) {
+@@ -289,13 +369,18 @@
+ 
+     unlink(g_current_path);
+ 
+-    if (g_profile == AAS_PROFILE_ASR_16K_MONO) {
++    if (g_alsa_dev[0] == '\0') {
++        return -1;
++    }
++    alsa = g_alsa_dev;
++    if (g_source == AAS_CAPTURE_SRC_USB) {
++        rate = "16000";
++        channels = "1";
++    } else if (g_profile == AAS_PROFILE_ASR_16K_MONO) {
+         /* AC107 mic is routed as 44.1k stereo; mono 16k plug captures wrong/empty channel. */
+-        alsa = AAS_ALSA_RECORD;
+         rate = "44100";
+         channels = "2";
+     } else {
+-        alsa = AAS_ALSA_RECORD;
+         rate = "44100";
+         channels = "2";
+     }
+@@ -376,8 +461,13 @@
+         snprintf(out_path, out_path_len, "%s", path);
+     }
+ 
+-    rate = 44100;
+-    ch = 2;
++    if (g_source == AAS_CAPTURE_SRC_USB) {
++        rate = 16000;
++        ch = 1;
++    } else {
++        rate = 44100;
++        ch = 2;
++    }
+     aas_ipc_publish_eventf("EVT capture_done app=%s path=%s rate=%d ch=%d bytes=%lld seq=%u",
+                              app_id, path, rate, ch, (long long)st.st_size, seq);
+     return 0;
+@@ -400,6 +490,8 @@
+     }
+ 
+     memset(g_owner, 0, sizeof(g_owner));
++    g_source = AAS_CAPTURE_SRC_AC107;
++    g_alsa_dev[0] = '\0';
+     g_current_path[0] = '\0';
+     return 0;
+ }
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_session.h
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_session.h
+@@ -2,13 +2,15 @@
+ #define AAS_SESSION_H
+ 
+ #include "aas_config.h"
++#include "aas_capture.h"
+ 
+ int aas_session_init(const aas_runtime_config_t *cfg);
+ void aas_session_deinit(void);
+ int aas_session_start(void);
+ void aas_session_stop(void);
+ 
+-int aas_session_voice_start(const char *app_id, uint32_t seq);
++int aas_session_voice_start(const char *app_id, uint32_t seq,
++                            aas_capture_source_t source);
+ int aas_session_voice_stop(const char *app_id, uint32_t seq);
+ void aas_session_voice_cancel(const char *app_id);
+ 
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_session.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_session.c
+@@ -85,7 +85,8 @@
+     doubao_module_stop();
+ }
+ 
+-int aas_session_voice_start(const char *app_id, uint32_t seq)
++int aas_session_voice_start(const char *app_id, uint32_t seq,
++                            aas_capture_source_t source)
+ {
+     if (!app_id || app_id[0] == '\0') {
+         return -1;
+@@ -101,12 +102,13 @@
+     aas_intent_set_app(app_id);
+ 
+     if (strcmp(aas_capture_owner(), app_id) != 0) {
+-        if (aas_capture_acquire(app_id, AAS_PROFILE_ASR_16K_MONO) != 0) {
++        if (aas_capture_acquire(app_id, AAS_PROFILE_ASR_16K_MONO, source) != 0) {
+             memset(g_voice_owner, 0, sizeof(g_voice_owner));
+             return -1;
+         }
+     }
+     if (aas_capture_start(app_id, seq) != 0) {
++        (void)aas_capture_release(app_id);
+         memset(g_voice_owner, 0, sizeof(g_voice_owner));
+         return -1;
+     }
+@@ -130,6 +132,7 @@
+ 
+     rc = aas_capture_stop(app_id, seq, wav_path, sizeof(wav_path));
+     if (rc != 0) {
++        (void)aas_capture_release(app_id);
+         memset(g_voice_owner, 0, sizeof(g_voice_owner));
+         aas_session_refresh_state();
+         return -1;
+@@ -138,6 +141,7 @@
+     (void)aas_capture_backup_asr_wav(wav_path);
+ 
+     rc = doubao_module_process_audio_file(wav_path);
++    (void)aas_capture_release(app_id);
+     memset(g_voice_owner, 0, sizeof(g_voice_owner));
+     aas_session_refresh_state();
+     return rc;
+@@ -149,6 +153,12 @@
+         return;
+     }
+     aas_capture_cancel(app_id);
++    if (app_id == NULL || app_id[0] == '\0') {
++        app_id = aas_capture_owner();
++    }
++    if (app_id != NULL && app_id[0] != '\0') {
++        (void)aas_capture_release(app_id);
++    }
+     memset(g_voice_owner, 0, sizeof(g_voice_owner));
+     aas_session_refresh_state();
+ }
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_cli_fifo.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_cli_fifo.c
+@@ -119,7 +119,9 @@
+     const char *text;
+     const char *json;
+     const char *seq_str;
++    const char *source_str;
+     uint32_t seq = 0;
++    aas_capture_source_t source = AAS_CAPTURE_SRC_AC107;
+ 
+     line = trim(line);
+     if (!line || line[0] == '\0') {
+@@ -147,6 +149,10 @@
+     if (seq_str && seq_str[0] != '\0') {
+         seq = (uint32_t)strtoul(seq_str, NULL, 10);
+     }
++    source_str = arg_value(tokens, tok_count, "source");
++    if (source_str && strcmp(source_str, "usb") == 0) {
++        source = AAS_CAPTURE_SRC_USB;
++    }
+ 
+     if (strcmp(verb, "PING") == 0) {
+         aas_ipc_publish_event("EVT pong");
+@@ -164,7 +170,7 @@
+     if (strcmp(verb, "CAPTURE") == 0 && tok_count >= 2) {
+         if (strcmp(tokens[1], "ACQUIRE") == 0) {
+             profile = arg_value(tokens, tok_count, "profile");
+-            aas_capture_acquire(app, parse_profile(profile));
++            aas_capture_acquire(app, parse_profile(profile), AAS_CAPTURE_SRC_AC107);
+             aas_session_refresh_state();
+             return;
+         }
+@@ -187,7 +193,7 @@
+ 
+     if (strcmp(verb, "VOICE") == 0 && tok_count >= 2) {
+         if (strcmp(tokens[1], "START") == 0) {
+-            aas_session_voice_start(app, seq);
++            aas_session_voice_start(app, seq, source);
+             return;
+         }
+         if (strcmp(tokens[1], "STOP") == 0) {
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c
+@@ -348,6 +348,37 @@
+     }
+ }
+ 
++#define AAS_USB_VOICE_FIFO "/tmp/aas_cmd"
++#define AAS_USB_VOICE_APP  "usb_remote"
++
++/* 天猫空鼠语音键=KEY_F24；只打 AAS FIFO，不注入 LVGL。source=usb，麦没有则 daemon 失败不回退 AC107 */
++static void keypad_usb_remote_voice(int press)
++{
++    static uint32_t seq = 1;
++    char line[128];
++    int fd;
++    size_t len;
++
++    if (press) {
++        snprintf(line, sizeof(line),
++                 "VOICE START app=%s source=usb seq=%u\n", AAS_USB_VOICE_APP, seq);
++    } else {
++        snprintf(line, sizeof(line),
++                 "VOICE STOP app=%s seq=%u\n", AAS_USB_VOICE_APP, seq);
++        seq++;
++        if (seq == 0U) {
++            seq = 1U;
++        }
++    }
++    fd = open(AAS_USB_VOICE_FIFO, O_WRONLY | O_NONBLOCK);
++    if (fd < 0) {
++        return;
++    }
++    len = strlen(line);
++    (void)write(fd, line, len);
++    close(fd);
++}
++
+ int open_evdev_fd(void)
+ {
+     const char *input_name;
+@@ -618,6 +649,12 @@
+                     if (in.value == 2)
+                         continue;
+ 
++                    if (raw_code == KEY_F24) {
++                        keypad_usb_remote_voice(in.value == 1);
++                        pthread_mutex_unlock(&s_keypad_mtx);
++                        return;
++                    }
++
+                     if (in.value == 0) {
+                         evdev_key_longpress = 0;
+                         data->key = keypad_lv_key_from_code(raw_code);

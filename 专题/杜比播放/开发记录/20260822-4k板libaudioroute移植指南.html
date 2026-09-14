@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>20260822-4K板libaudioroute移植指南</title><meta charset="utf-8"/><link rel="preload" href="../../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="H133 板件"/><meta property="og:title" content="20260822-4K板libaudioroute移植指南"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="20260822-4K板libaudioroute移植指南"/><meta name="twitter:description" content="4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南 项内容日期2026-08-22目标板型h133-p1_nor_4k（TP-H10，1920×1080，4K_app）参照首验JL_M101 透传落地架构参照音频路由架构.md状态待移植（板级 + App 未改；平台层已与 JL 共用） 1."/><meta property="og:description" content="4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南 项内容日期2026-08-22目标板型h133-p1_nor_4k（TP-H10，1920×1080，4K_app）参照首验JL_M101 透传落地架构参照音频路由架构.md状态待移植（板级 + App 未改；平台层已与 JL 共用） 1."/><meta property="og:image:alt" content="4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南 项内容日期2026-08-22目标板型h133-p1_nor_4k（TP-H10，1920×1080，4K_app）参照首验JL_M101 透传落地架构参照音频路由架构.md状态待移植（板级 + App 未改；平台层已与 JL 共用） 1."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南 项内容日期2026-08-22目标板型h133-p1_nor_4k（TP-H10，1920×1080，4K_app）参照首验JL_M101 透传落地架构参照音频路由架构.md状态待移植（板级 + App 未改；平台层已与 JL 共用） 1."/><meta name="generator" content="Quartz"/><link href="../../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="专题/杜比播放/开发记录/20260822-4k板libaudioroute移植指南" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">H133 板件</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-45" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>探索</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-45" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../专题/">专题</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../专题/杜比播放/">杜比播放</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../专题/杜比播放/开发记录/">开发记录</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>20260822-4K板libaudioroute移植指南</a></div></nav><h1 class="article-title">20260822-4K板libaudioroute移植指南</h1><p show-comma="true" class="content-meta"><time datetime="2026-08-22T10:10:03.000Z">2026年8月22日</time><span>6分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="4k-板h133-p1_nor_4klibaudioroute--杜比移植指南">4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4k-板h133-p1_nor_4klibaudioroute--杜比移植指南" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>内容</th></tr></thead><tbody><tr><td>日期</td><td>2026-08-22</td></tr><tr><td>目标板型</td><td><code>h133-p1_nor_4k</code>（TP-H10，1920×1080，<code>4K_app</code>）</td></tr><tr><td>参照首验</td><td><a href="../../../专题/杜比播放/开发记录/20260822-libaudioroute-hdmi透传落地/readme" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/20260822-libaudioroute-hdmi透传落地/readme">JL_M101 透传落地</a></td></tr><tr><td>架构参照</td><td><a href="../../../专题/杜比播放/开发记录/音频路由架构" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/音频路由架构">音频路由架构.md</a></td></tr><tr><td>状态</td><td><strong>待移植</strong>（板级 + App 未改；平台层已与 JL 共用）</td></tr></tbody></table></div>
+<hr/>
+<h2 id="1-结论先看这个">1. 结论（先看这个）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-结论先看这个" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>4K 与 JL_M101 <strong>硬件音频拓扑相同</strong>（喇叭/光纤 = sndowa，HDMI = sndi2s2），<code>asound.conf</code> / <code>audio_route.sh</code> / <code>mcu_spdif_init.sh</code> <strong>已对齐，不用重抄</strong>。</p>
+<p>移植只需三块：</p>
+<ol>
+<li><strong>板级</strong>：4K <code>defconfig</code> 开 <code>LIBAUDIOROUTE</code>；<code>audio_configuration.xml</code> 把 <code>OUT_HDMI_ARC</code> 改到 <strong>sndi2s2</strong></li>
+<li><strong>平台</strong>：AIKTV 主干已含 JL 透传改动（<code>tsound_ctrl.c</code>、<code>AudioPortAlsaConfig.cpp</code>），<strong>一般不用再 patch</strong></li>
+<li><strong>App</strong>：<code>4K_app/desk</code> 设置切路由时接 <code>ms_changba_reopen_sound_route()</code>（与 <a href="../../../专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步">设置切换待修</a> 同方案）</li>
+</ol>
+<p><strong>不能</strong>继续用 4K 现网 <code>CONFIG_TR_AUDIO_API_ALSA_LIB</code>：ALSALIB 分支无 AC3/EAC3 透传，杜比必走 libaudioroute。</p>
+<hr/>
+<h2 id="2-4k-与-jl_m101-差异对照">2. 4K 与 JL_M101 差异对照<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-4k-与-jl_m101-差异对照" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>JL_M101（已验收）</th><th>4K（当前）</th></tr></thead><tbody><tr><td>OpenWrt 板目录</td><td><code>h133-p1_nor_JL_M101</code></td><td><code>h133-p1_nor_4k</code></td></tr><tr><td>编译脚本</td><td><code>tools/build_p1_nor_JL_M101.sh</code></td><td><code>tools/build_p1_nor_4k.sh</code></td></tr><tr><td>GUI</td><td><code>app/desk</code>、<code>app/sing_ktv</code></td><td><strong><code>4K_app/desk</code>、<code>4K_app/sing_ktv</code></strong></td></tr><tr><td>二进制</td><td><code>desk</code> / <code>sing_ktv</code></td><td><strong><code>4k-desk</code> / <code>4k-sing_ktv</code></strong></td></tr><tr><td><code>CONFIG_TR_AUDIO_API</code></td><td><code>LIBAUDIOROUTE=y</code></td><td><strong><code>ALSALIB=y</code></strong></td></tr><tr><td><code>OUT_HDMI_ARC</code>（xml）</td><td>sndi2s2 @ 48k/960</td><td><strong>sndowa</strong>（错误，须改）</td></tr><tr><td><code>asound.conf</code></td><td>PlaybackHDMI → sndi2s2</td><td><strong>相同</strong></td></tr><tr><td>启动音频</td><td>mcu_spdif_init → audio_route auto</td><td>相同 + <strong><code>4k-dspd</code></strong>（MCU 遥控，与路由无关）</td></tr><tr><td>media_session</td><td>独立进程 + FIFO</td><td><strong>相同</strong></td></tr></tbody></table></div>
+<hr/>
+<h2 id="3-分层改什么不改什么">3. 分层：改什么、不改什么<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-分层改什么不改什么" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<pre><code>┌──────────────────────────────────────────────────────────┐
+│ 平台 platform/（全板共用，JL 已合入）                      │
+│  libtmedia/.../tsound_ctrl.c                             │
+│  libaudioroute/AudioPortAlsaConfig.cpp                   │
+│  → 4K 仅通过 defconfig 选 LIBAUDIOROUTE 编译分支          │
+└──────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ 板级 openwrt/target/h133/h133-p1_nor_4k/  【必改】        │
+│  defconfig                                               │
+│  busybox-init-base-files/etc/audio_configuration.xml     │
+└──────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ App 4K_app/desk/setting/core/desk_setting_param.c 【建议】 │
+│  P_SOUND_OUT_MODE → REOPEN_SOUND                         │
+└──────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│ 可不动                                                    │
+│  asound.conf / audio_route.sh / audio_output.mode        │
+│  mcu_spdif_init.sh / rc.final 音频段                      │
+│  4K_app/sing_ktv（只链 libms_client，无 tplayer 直连）     │
+└──────────────────────────────────────────────────────────┘
+</code></pre>
+<hr/>
+<h2 id="4-板级改动">4. 板级改动<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-板级改动" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="41-defconfig">4.1 defconfig<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-defconfig" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>文件：<code>openwrt/target/h133/h133-p1_nor_4k/defconfig</code></p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="diff" data-theme="github-light github-dark"><code data-language="diff" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#B31D28;--shiki-dark:#FDAEB7;" data-token-type="error">- CONFIG_TR_AUDIO_API_ALSA_LIB=y</span></span>
+<span data-line><span style="--shiki-light:#B31D28;--shiki-dark:#FDAEB7;" data-token-type="error">- # CONFIG_TR_AUDIO_API_LIBAUDIOROUTE is not set</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="string">+ # CONFIG_TR_AUDIO_API_ALSA_LIB is not set</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="string">+ CONFIG_TR_AUDIO_API_LIBAUDIOROUTE=y</span></span></code></pre></figure>
+<p>改完后同步 <code>openwrt/openwrt/.config</code>（或执行 <code>build_p1_nor_4k.sh</code> 时由脚本从板级 defconfig 覆盖）。</p>
+<p><code>4k-desk</code>、<code>media_session</code> 的 OpenWrt Makefile 已依赖 <code>+libaudioroute</code>，<strong>无需改包依赖</strong>。</p>
+<h3 id="42-audio_configurationxml">4.2 audio_configuration.xml<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-audio_configurationxml" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>文件：<code>openwrt/target/h133/h133-p1_nor_4k/busybox-init-base-files/etc/audio_configuration.xml</code></p>
+<p>将 <code>OUT_HDMI_ARC</code> 从 sndowa 改为 sndi2s2（与 JL patch <code>01-board-audio_configuration.xml.patch</code> 等价）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="diff" data-theme="github-light github-dark"><code data-language="diff" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">     &lt;snd_card_config</span></span>
+<span data-line><span style="--shiki-light:#B31D28;--shiki-dark:#FDAEB7;" data-token-type="error">-        card_name=&quot;sndowa&quot;</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="string">+        card_name=&quot;sndi2s2&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">         device=&quot;0&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">         channels=&quot;2&quot;</span></span>
+<span data-line><span style="--shiki-light:#B31D28;--shiki-dark:#FDAEB7;" data-token-type="error">-        rate=&quot;44100&quot;</span></span>
+<span data-line><span style="--shiki-light:#B31D28;--shiki-dark:#FDAEB7;" data-token-type="error">-        period_size=&quot;882&quot;</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="string">+        rate=&quot;48000&quot;</span></span>
+<span data-line><span style="--shiki-light:#22863A;--shiki-dark:#85E89D;" data-token-type="string">+        period_size=&quot;960&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">         period_count=&quot;4&quot;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">         type=&quot;OUT_HDMI_ARC&quot;></span></span></code></pre></figure>
+<p><code>OUT_SPK</code>、<code>OUT_OWA</code> 保持 <strong>sndowa</strong>；<code>IN_MIC</code>（sndi2s1）等采集配置不动。</p>
+<h3 id="43-无需改的板级文件">4.3 无需改的板级文件<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-无需改的板级文件" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>说明</th></tr></thead><tbody><tr><td><code>etc/asound.conf</code></td><td>已与 JL 一致：<code>PlaybackSPDIF</code>→sndowa，<code>PlaybackHDMI</code>→sndi2s2</td></tr><tr><td><code>usr/bin/audio_route.sh</code></td><td>写 <code>/etc/audio_output.mode</code> + 改 default pcm</td></tr><tr><td><code>usr/bin/mcu_spdif_init.sh</code></td><td>MCU 功放 SPDIF 初始化</td></tr><tr><td><code>etc/init.d/rc.final</code></td><td><code>mcu_spdif_init</code> → <code>audio_route.sh auto</code> → <code>media_sessiond</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="5-平台层确认即可">5. 平台层（确认即可）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-平台层确认即可" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>JL 已落地的平台改动在 AIKTV 全板共用，4K 编译 <code>LIBAUDIOROUTE</code> 后自动生效：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>要点</th></tr></thead><tbody><tr><td><code>tsound_ctrl.c</code></td><td><code>TSoundDeviceCreate</code> 读 <code>/etc/audio_output.mode</code>；透传 <code>sunxi_passthough</code> + <code>direct_mode</code>；禁止 <code>openSoundDevice</code> 内 sync（防死锁）</td></tr><tr><td><code>AudioPortAlsaConfig.cpp</code></td><td><code>direct_mode=1</code> 时 <code>snd_pcm_writei</code> 直写，不经 amix</td></tr></tbody></table></div>
+<p>若从<strong>未合入 JL 改动的旧分支</strong>移植，可参考 <a href="../../../20260822-libaudioroute-hdmi透传落地/patches/" class="internal internal-link alias" data-slug="20260822-libaudioroute-hdmi透传落地/patches/index">patches/03、04</a>（以 H133-0820 为基线）；<strong>当前主干以源码为准</strong>，勿重复 apply。</p>
+<hr/>
+<h2 id="6-app-层设置切换建议与板级一并做">6. App 层：设置切换（建议与板级一并做）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-app-层设置切换建议与板级一并做" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>4K 使用 <strong><code>4K_app/desk</code></strong>，与 HD <code>app/desk</code> <strong>禁止互引源码</strong>，须单独改。</p>
+<p>文件：<code>platform/thirdparty/gui/lvgl-8/4K_app/desk/setting/core/desk_setting_param.c</code></p>
+<p>在 <code>P_SOUND_OUT_MODE</code> 分支，<code>audio_set_output_device</code> + <code>desk_setting_apply_audio_route</code> 之后：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="punctuation">#include</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;ms_changba.h&quot;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">/* audio_route 成功后 */</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">void</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">ms_changba_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">ms_changba_reopen_sound_route</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span></span></code></pre></figure>
+<p>原因见 <a href="../../../专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步">设置切换后播放器路由不同步</a>：desk 与 <code>media_sessiond</code> 各一份 <code>AudioManager</code>，必须 FIFO 通知重建播放器。</p>
+<p><code>4K_app/sing_ktv</code> 经 <code>libms_client</code> 访问播放，<strong>一般不用改</strong>。</p>
+<hr/>
+<h2 id="7-与官方-sdkh133-0820的关系">7. 与官方 SDK（H133-0820）的关系<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-与官方-sdkh133-0820的关系" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>SDK <code>lv_projector</code> 为<strong>同进程</strong> tplayer：<code>audio_set_output_device</code> → <code>handleAudioDeviceChange</code> 即时换 port。</p>
+<p>AIKTV（含 4K）为 <strong>desk + media_sessiond 跨进程</strong>，SDK 的 callback 链<strong>不能照搬</strong>；4K 移植后仍须 <code>REOPEN_SOUND</code> + mode 文件。详见对话记录与 <a href="../../../专题/杜比播放/开发记录/音频路由架构" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/音频路由架构">音频路由架构.md</a> §2、§8。</p>
+<hr/>
+<h2 id="8-编译">8. 编译<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-编译" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_4k.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> rootfs</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 产物：out/h133_linux_p1_nor_4k_*.img（以实际 out 文件名为准）</span></span></code></pre></figure>
+<p>改 <code>defconfig</code> 后建议全量编 <code>libtmedia</code>、<code>media_session</code>、<code>4k-desk</code>、<code>4k-sing_ktv</code> 相关包（或直接 <code>rootfs</code>）。</p>
+<p><strong>禁止</strong>在 WSL/x86 上对 <code>desk/src</code> 等本地 <code>make</code> 产 <code>.o</code>（污染交叉编译）。</p>
+<hr/>
+<h2 id="9-验收清单">9. 验收清单<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-验收清单" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="91-杜比--冷启动">9.1 杜比 / 冷启动<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#91-杜比--冷启动" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>设置 → <strong>HDMI/ARC</strong>（或确认 <code>setting.ini</code> <code>sound_output=1</code>）</li>
+<li>播放 AC3/EAC3 样品（如 <code>ac3-5.1.mkv</code>）</li>
+<li>log 关键字：<code>snd_type=32</code>、<code>pcm_open</code> <strong>card:0</strong>（sndi2s2）、<code>direct_mode</code>、<code>sunxi_passthough_open</code></li>
+<li>电视识别杜比并有声</li>
+</ol>
+<h3 id="92-pcm">9.2 PCM<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#92-pcm" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>同设置下播 AAC/MP3 → HDMI PCM 正常。</p>
+<h3 id="93-运行中切换接-reopen_sound-后">9.3 运行中切换（接 REOPEN_SOUND 后）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#93-运行中切换接-reopen_sound-后" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>步骤</th><th>预期</th></tr></thead><tbody><tr><td>HDMI 播 AC3 正常</td><td>基线</td></tr><tr><td>设置 → SPDIF → 播歌</td><td><code>card=2</code>（sndowa），喇叭有声</td></tr><tr><td>设置 → HDMI → <strong>不重启</strong> → 再播 AC3</td><td>电视有声；log 有 <code>REOPEN_SOUND</code> / <code>reopen sound route</code></td></tr><tr><td><code>aplay test.wav</code></td><td>与当前设置同物理口（<code>audio_route.sh show</code>）</td></tr></tbody></table></div>
+<h3 id="94-投屏--蓝牙回归">9.4 投屏 / 蓝牙（回归）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#94-投屏--蓝牙回归" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>进 <code>lv_cast_test_pro</code> / <code>BluetoothPlayer</code> 时 desk 会 kill <code>media_sessiond</code>；退出后 guardian 应能拉回。行为应与改前一致，仅 KTV 路径走 libaudioroute。</p>
+<hr/>
+<h2 id="10-风险与注意">10. 风险与注意<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-风险与注意" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>风险</th><th>说明</th></tr></thead><tbody><tr><td>误绑 sndowa 给 HDMI</td><td>透传比特流进 MCU，电视无声；必改 xml</td></tr><tr><td>照搬 SDK「全 default」</td><td>JL/4K 喇叭与 HDMI 分卡，不可合并</td></tr><tr><td>只改 defconfig 不接 REOPEN</td><td>冷启动可能正常，<strong>运行中切路由</strong>仍不同步</td></tr><tr><td>改错 desk 树</td><td>4K 只改 <code>4K_app/desk</code>，HD 改 <code>app/desk</code></td></tr><tr><td><code>4k-dspd</code></td><td>MCU 串口遥控，不参与 HDMI 杜比链路</td></tr><tr><td>平台补丁重复 apply</td><td>以当前 AIKTV 源码为准，冲突则跳过 03/04</td></tr></tbody></table></div>
+<hr/>
+<h2 id="11-移植步骤推荐顺序">11. 移植步骤（推荐顺序）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-移植步骤推荐顺序" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li>改 4K <code>defconfig</code> + <code>audio_configuration.xml</code></li>
+<li><code>./tools/build_p1_nor_4k.sh rootfs</code> → 刷机 → <strong>验收 §9.1、§9.2</strong></li>
+<li>改 <code>4K_app/desk_setting_param.c</code> 接 <code>REOPEN_SOUND</code> → 再编 <code>4k-desk</code> → <strong>验收 §9.3</strong></li>
+<li>投屏/蓝牙抽测 <strong>§9.4</strong></li>
+<li>在本文件顶部把状态改为 <strong>已验收</strong>，并记录镜像 md5</li>
+</ol>
+<hr/>
+<h2 id="12-相关文档">12. 相关文档<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-相关文档" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文档</th><th>用途</th></tr></thead><tbody><tr><td><a href="../../../专题/杜比播放/开发记录/音频路由架构" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/音频路由架构">音频路由架构.md</a></td><td>双通路、双进程、PCM/透传数据流</td></tr><tr><td><a href="../../../专题/杜比播放/开发记录/20260822-libaudioroute-hdmi透传落地/readme" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/20260822-libaudioroute-hdmi透传落地/readme">20260822-libaudioroute-HDMI透传落地/</a></td><td>JL 首验、平台补丁说明</td></tr><tr><td><a href="../../../专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步" class="internal internal-link alias" data-slug="专题/杜比播放/开发记录/20260822-设置切换后播放器路由不同步">20260822-设置切换后播放器路由不同步.md</a></td><td>REOPEN_SOUND 根因与修法</td></tr></tbody></table></div></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>关系图谱</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-37" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#4k-板h133-p1_nor_4klibaudioroute--杜比移植指南" data-for="4k-板h133-p1_nor_4klibaudioroute--杜比移植指南">4K 板（h133-p1_nor_4k）libaudioroute / 杜比移植指南</a></li><li class="depth-1"><a href="#1-结论先看这个" data-for="1-结论先看这个">1. 结论（先看这个）</a></li><li class="depth-1"><a href="#2-4k-与-jl_m101-差异对照" data-for="2-4k-与-jl_m101-差异对照">2. 4K 与 JL_M101 差异对照</a></li><li class="depth-1"><a href="#3-分层改什么不改什么" data-for="3-分层改什么不改什么">3. 分层：改什么、不改什么</a></li><li class="depth-1"><a href="#4-板级改动" data-for="4-板级改动">4. 板级改动</a></li><li class="depth-2"><a href="#41-defconfig" data-for="41-defconfig">4.1 defconfig</a></li><li class="depth-2"><a href="#42-audio_configurationxml" data-for="42-audio_configurationxml">4.2 audio_configuration.xml</a></li><li class="depth-2"><a href="#43-无需改的板级文件" data-for="43-无需改的板级文件">4.3 无需改的板级文件</a></li><li class="depth-1"><a href="#5-平台层确认即可" data-for="5-平台层确认即可">5. 平台层（确认即可）</a></li><li class="depth-1"><a href="#6-app-层设置切换建议与板级一并做" data-for="6-app-层设置切换建议与板级一并做">6. App 层：设置切换（建议与板级一并做）</a></li><li class="depth-1"><a href="#7-与官方-sdkh133-0820的关系" data-for="7-与官方-sdkh133-0820的关系">7. 与官方 SDK（H133-0820）的关系</a></li><li class="depth-1"><a href="#8-编译" data-for="8-编译">8. 编译</a></li><li class="depth-1"><a href="#9-验收清单" data-for="9-验收清单">9. 验收清单</a></li><li class="depth-2"><a href="#91-杜比--冷启动" data-for="91-杜比--冷启动">9.1 杜比 / 冷启动</a></li><li class="depth-2"><a href="#92-pcm" data-for="92-pcm">9.2 PCM</a></li><li class="depth-2"><a href="#93-运行中切换接-reopen_sound-后" data-for="93-运行中切换接-reopen_sound-后">9.3 运行中切换（接 REOPEN_SOUND 后）</a></li><li class="depth-2"><a href="#94-投屏--蓝牙回归" data-for="94-投屏--蓝牙回归">9.4 投屏 / 蓝牙（回归）</a></li><li class="depth-1"><a href="#10-风险与注意" data-for="10-风险与注意">10. 风险与注意</a></li><li class="depth-1"><a href="#11-移植步骤推荐顺序" data-for="11-移植步骤推荐顺序">11. 移植步骤（推荐顺序）</a></li><li class="depth-1"><a href="#12-相关文档" data-for="12-相关文档">12. 相关文档</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>反向链接</h3><ul id="list-0" class="overflow"><li><a href="../../../专题/杜比播放/开发记录/readme" class="internal">README</a></li><li><a href="../../../视图/项目子页.base" class="internal">项目子页</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-0159f17c.js" type="module" data-persist="true"></script></html>

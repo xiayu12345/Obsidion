@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000002 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 18:00:00 +0800
+Subject: [PATCH 2/4] uboot: snum 为空不拼 serialno，tmpbuf 提到 512
+
+没烧过 SN 时 env_get("snum") 为空，原先 sprintf 会空指针。
+cmdline 拼 androidboot.serialno 的临时缓冲 128 不够 256 字节 SN。
+
+---
+diff --git a/brandy/brandy-2.0/u-boot-2018/board/sunxi/sunxi_bootargs.c b/brandy/brandy-2.0/u-boot-2018/board/sunxi/sunxi_bootargs.c
+index 7abd2890c..8128da089 100644
+--- a/brandy/brandy-2.0/u-boot-2018/board/sunxi/sunxi_bootargs.c
++++ b/brandy/brandy-2.0/u-boot-2018/board/sunxi/sunxi_bootargs.c
+@@ -206,7 +206,7 @@ void update_bootargs(void)
+ 	int dram_clk = 0;
+ 	char *str;
+ 	char cmdline[2048]	   = { 0 };
+-	char tmpbuf[128]	     = { 0 };
++	char tmpbuf[512]	     = { 0 };
+ 	char *verifiedbootstate_info = env_get("verifiedbootstate");
+ 	str			     = env_get("bootargs");
+ 	__attribute__((unused)) char disp_reserve[80];
+@@ -223,10 +223,11 @@ void update_bootargs(void)
+ 		}
+ 	}
+ #ifdef CONFIG_SUNXI_SERIAL
+-	//serial info
+ 	str = env_get("snum");
+-	sprintf(tmpbuf, " androidboot.serialno=%s", str);
+-	strcat(cmdline, tmpbuf);
++	if (str) {
++		sprintf(tmpbuf, " androidboot.serialno=%s", str);
++		strcat(cmdline, tmpbuf);
++	}
+ #endif
+ #ifdef CONFIG_SUNXI_MAC
+ 	str = env_get("mac");

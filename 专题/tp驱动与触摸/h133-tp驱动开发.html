@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>H133-TP驱动开发</title><meta charset="utf-8"/><link rel="preload" href="../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="H133 板件"/><meta property="og:title" content="H133-TP驱动开发"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="H133-TP驱动开发"/><meta name="twitter:description" content="H133 触摸屏（CTP）驱动开发 本文基于本工程（H133-02，芯片 sun8iw20 / H133，板级 p1_nor）源码与 TP-H10 主板 bring-up 记录整理，说明 电容触摸（CTP） 在全志 Tina Linux 上的设备树、内核驱动、固件与应用对接方式。 配合阅读： H133-LCD驱动开发.md — 主屏 MIPI 分辨率与 lcd0 H133-MIPI-HDMI双显开发记录.md — 双显与备份基线（MIPI+TP 在备份已调通） H133-LCD背光亮度-硬件供电分析.md — 主板供电与原理图 LV_DS-双屏异显中间件架构.md — 应用层 touch_de..."/><meta property="og:description" content="H133 触摸屏（CTP）驱动开发 本文基于本工程（H133-02，芯片 sun8iw20 / H133，板级 p1_nor）源码与 TP-H10 主板 bring-up 记录整理，说明 电容触摸（CTP） 在全志 Tina Linux 上的设备树、内核驱动、固件与应用对接方式。 配合阅读： H133-LCD驱动开发.md — 主屏 MIPI 分辨率与 lcd0 H133-MIPI-HDMI双显开发记录.md — 双显与备份基线（MIPI+TP 在备份已调通） H133-LCD背光亮度-硬件供电分析.md — 主板供电与原理图 LV_DS-双屏异显中间件架构.md — 应用层 touch_de..."/><meta property="og:image:alt" content="H133 触摸屏（CTP）驱动开发 本文基于本工程（H133-02，芯片 sun8iw20 / H133，板级 p1_nor）源码与 TP-H10 主板 bring-up 记录整理，说明 电容触摸（CTP） 在全志 Tina Linux 上的设备树、内核驱动、固件与应用对接方式。 配合阅读： H133-LCD驱动开发.md — 主屏 MIPI 分辨率与 lcd0 H133-MIPI-HDMI双显开发记录.md — 双显与备份基线（MIPI+TP 在备份已调通） H133-LCD背光亮度-硬件供电分析.md — 主板供电与原理图 LV_DS-双屏异显中间件架构.md — 应用层 touch_de..."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-tp驱动开发"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-tp驱动开发"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="H133 触摸屏（CTP）驱动开发 本文基于本工程（H133-02，芯片 sun8iw20 / H133，板级 p1_nor）源码与 TP-H10 主板 bring-up 记录整理，说明 电容触摸（CTP） 在全志 Tina Linux 上的设备树、内核驱动、固件与应用对接方式。 配合阅读： H133-LCD驱动开发.md — 主屏 MIPI 分辨率与 lcd0 H133-MIPI-HDMI双显开发记录.md — 双显与备份基线（MIPI+TP 在备份已调通） H133-LCD背光亮度-硬件供电分析.md — 主板供电与原理图 LV_DS-双屏异显中间件架构.md — 应用层 touch_de..."/><meta name="generator" content="Quartz"/><link href="../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-tp驱动开发-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-tp驱动开发-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-tp驱动开发-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="专题/tp驱动与触摸/h133-tp驱动开发" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../..">H133 板件</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-17" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>探索</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-17" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/">专题</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/tp驱动与触摸/">TP驱动与触摸</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>H133-TP驱动开发</a></div></nav><h1 class="article-title">H133-TP驱动开发</h1><p show-comma="true" class="content-meta"><time datetime="2026-08-25T07:05:12.000Z">2026年8月25日</time><span>10分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="h133-触摸屏ctp驱动开发">H133 触摸屏（CTP）驱动开发<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#h133-触摸屏ctp驱动开发" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>本文基于本工程（<code>H133-02</code>，芯片 <strong>sun8iw20 / H133</strong>，板级 <strong>p1_nor</strong>）源码与 <strong>TP-H10</strong> 主板 bring-up 记录整理，说明 <strong>电容触摸（CTP）</strong> 在全志 Tina Linux 上的设备树、内核驱动、固件与应用对接方式。</p>
+<p><strong>配合阅读：</strong></p>
+<ul>
+<li><a href="../../h133-lcd驱动开发" class="internal internal-link alias" data-slug="h133-lcd驱动开发">H133-LCD驱动开发.md</a> — 主屏 MIPI 分辨率与 <code>lcd0</code></li>
+<li><a href="../../h133-mipi-hdmi双显开发记录" class="internal internal-link alias" data-slug="h133-mipi-hdmi双显开发记录">H133-MIPI-HDMI双显开发记录.md</a> — 双显与备份基线（<strong>MIPI+TP 在备份已调通</strong>）</li>
+<li><a href="../../h133-lcd背光亮度-硬件供电分析" class="internal internal-link alias" data-slug="h133-lcd背光亮度-硬件供电分析">H133-LCD背光亮度-硬件供电分析.md</a> — 主板供电与原理图</li>
+<li><a href="../../项目/lq140m1jw61/开发记录/双屏异显/lv_ds-双屏异显中间件架构" class="internal internal-link alias" data-slug="项目/lq140m1jw61/开发记录/双屏异显/lv_ds-双屏异显中间件架构">LV_DS-双屏异显中间件架构.md</a> — 应用层 <code>touch_dev</code></li>
+<li>原理图：<code>docs/硬件资料/主板原理图/TP-H10-H133-V1_20260408.pdf</code>（设计名 <strong>H133_DONGLE_STD</strong>）</li>
+<li>编译打包：<code>.cursor/skills/h133-build/SKILL.md</code></li>
+</ul>
+<p><strong>参考基线（触摸已验证）：</strong> <code>H133-beifen/H133-20260306/</code>（或 <code>H133-备份/...</code>）同硬件下 <strong>MIPI + GSL 触摸</strong> 正常。</p>
+<hr/>
+<h2 id="1-硬件与接口tp-h10">1. 硬件与接口（TP-H10）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-硬件与接口tp-h10" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="11-本板-ctp-走线与备份一致">1.1 本板 CTP 走线（与备份一致）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-本板-ctp-走线与备份一致" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>原理图 <strong>CTP</strong> 接 SoC <strong>TWI1</strong>（注释见 <code>board.dts</code>：<code>PG8</code> = CTP-SCK，<code>PG9</code> = CTP-SDA）。<strong>不要</strong>与 <code>twi2</code>（<code>PC0/PC1</code>）或旧 demo 的 <code>PB8/PB9</code> 混淆。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>信号</th><th>备份 DTS（已调通）</th><th>说明</th></tr></thead><tbody><tr><td>I2C 总线</td><td><strong>twi1</strong>，<code>ctp_twi_id = &lt;1></code></td><td>用户空间 <code>i2cdetect -y 1</code></td></tr><tr><td>I2C 地址</td><td><strong>0x40</strong></td><td>GSL 系列常见地址</td></tr><tr><td>中断 INT</td><td><strong>PG3</strong></td><td><code>ctp_int_port</code></td></tr><tr><td>复位/唤醒 RST</td><td><strong>PG2</strong></td><td><code>ctp_wakeup</code></td></tr><tr><td>触摸 IC</td><td><strong>Silead GSL</strong>（驱动名 <code>gslX680</code>）</td><td>非 GT9</td></tr></tbody></table></div>
+<h3 id="12-与显示的关系">1.2 与显示的关系<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-与显示的关系" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>触摸与 LCD <strong>独立</strong>：显示走 <code>disp</code> / <code>default_lcd</code> / MIPI DSI；触摸走 <strong>I2C + input 子系统</strong>。出现「有背光无图」或「有图无触摸」时，应 <strong>分开排查</strong>（参见 <a href="../../h133-mipi-hdmi双显开发记录" class="internal internal-link alias" data-slug="h133-mipi-hdmi双显开发记录">H133-MIPI-HDMI双显开发记录.md</a> §4.6）。</p>
+<h3 id="13-触摸有效区域">1.3 触摸有效区域<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#13-触摸有效区域" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>10.1 寸 MIPI 主屏为 <strong>800×1280</strong> 时，DTS 中应使用：</p>
+<ul>
+<li><code>ctp_screen_max_x = &lt;0x320></code>（800）</li>
+<li><code>ctp_screen_max_y = &lt;0x500></code>（1280）</li>
+</ul>
+<p>旧模板里的 <code>0x1e0</code>（480）对应其它分辨率屏，<strong>不能</strong>直接用于本板竖屏。</p>
+<hr/>
+<h2 id="2-软件架构">2. 软件架构<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-软件架构" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>┌─────────────────────────────────────────────────────────────┐</span></span>
+<span data-line><span>│ 应用：lv_projector（evdev）、lv_ds（touch_dev）等            │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ /dev/input/eventX  ←  EV_ABS / BTN_TOUCH / SYN_REPORT       │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ 触摸 IC 驱动：gslx680new / gt9xxnew / focaltech_touch …      │</span></span>
+<span data-line><span>│   · 通过 ctp_name 加载固件（GSL）或内置配置（GT9）            │</span></span>
+<span data-line><span>│   · late_initcall 注册 i2c_driver                           │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ init-input.c：读 board.dts ctp 节点，GPIO/IRQ/上电/分辨率     │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ sunxi-twi（I2C）+ 设备树 ctp@xx 子节点                       │</span></span>
+<span data-line><span>└─────────────────────────────────────────────────────────────┘</span></span>
+<span data-line><span>         TWI1 (PG8/PG9) ──► GSL @ 0x40</span></span></code></pre></figure>
+<h3 id="21-关键路径p1_nor">2.1 关键路径（p1_nor）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#21-关键路径p1_nor" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>层级</th><th>路径</th></tr></thead><tbody><tr><td>板级 DTS</td><td><code>device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code></td></tr><tr><td>内核 BSP 片段</td><td><code>device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code></td></tr><tr><td>CTP 公共层</td><td><code>kernel/linux-5.4/drivers/input/init-input.c</code></td></tr><tr><td>GSL 驱动</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/gslx680new/</code></td></tr><tr><td>GT9 驱动</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/gt9xxnew/</code></td></tr><tr><td>Focaltech</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/focaltech_touch/</code></td></tr><tr><td>电阻屏（本板未用）</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/sunxi-ts.c</code>，DTS <code>&amp;rtp</code></td></tr><tr><td>LVGL 触摸</td><td><code>platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="3-本工程可选驱动一览">3. 本工程可选驱动一览<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-本工程可选驱动一览" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>方案</th><th><code>compatible</code></th><th><code>ctp_name</code> / 模块名</th><th>内核配置</th><th>本板</th></tr></thead><tbody><tr><td><strong>GSL（推荐）</strong></td><td><code>allwinner,gslX680</code></td><td><code>mtk_gslX680</code> → 固件 <code>gsl_firmware/mtk_gslX680.bin</code></td><td><code>CONFIG_TOUCHSCREEN_GSLX680NEW=y</code></td><td><strong>备份已用</strong></td></tr><tr><td>Goodix GT9 / <strong>GT9110</strong></td><td><code>allwinner,goodix</code></td><td><code>gt9xxnew_ts</code></td><td><code>CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y</code></td><td><strong>当前拓步/12.1 方案</strong>，见 <a href="../../专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程">H133-GT9110触摸驱动开发过程.md</a></td></tr><tr><td>Focaltech</td><td><code>focaltech,fts</code></td><td>标准 OF 属性</td><td><code>focaltech_touch</code> 相关</td><td><code>fts@38</code> 为备选模板</td></tr><tr><td>电阻屏</td><td><code>allwinner,sunxi-ts</code></td><td>—</td><td><code>CONFIG_TOUCHSCREEN_SUNXI=y</code></td><td><code>&amp;rtp</code> 为 <code>disabled</code></td></tr></tbody></table></div>
+<p>驱动通过 <strong><code>ctp_name</code> 与 <code>compatible</code> 必须与芯片一致</strong>；换 IC 时三者（硬件、DTS、Kconfig）一起改。</p>
+<hr/>
+<h2 id="4-设备树配置以-gsl--twi1-为例">4. 设备树配置（以 GSL + TWI1 为例）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-设备树配置以-gsl--twi1-为例" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="41-pinctrltwi1-引脚">4.1 pinctrl：TWI1 引脚<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-pinctrltwi1-引脚" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>备份（正确，TP-H10）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>twi1_pins_a: twi1@0 {</span></span>
+<span data-line><span>    pins = &quot;PG8&quot;, &quot;PG9&quot;;</span></span>
+<span data-line><span>    function = &quot;twi1&quot;;</span></span>
+<span data-line><span>    drive-strength = &lt;10>;</span></span>
+<span data-line><span>};</span></span></code></pre></figure>
+<p>当前 <code>H133-02</code> 仍为 <code>PE14/PE15</code>，与原理图 <strong>不符</strong>，需改回 <strong>PG8/PG9</strong> 后再 enable <code>twi1</code>。</p>
+<h3 id="42-twi1-与-ctp-子节点">4.2 <code>&amp;twi1</code> 与 <code>ctp</code> 子节点<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-twi1-与-ctp-子节点" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>备份参考（路径：<code>H133-备份/H133-20260306/device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code>）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>&amp;twi1 {</span></span>
+<span data-line><span>    clock-frequency = &lt;400000>;</span></span>
+<span data-line><span>    pinctrl-0 = &lt;&amp;twi1_pins_a>;</span></span>
+<span data-line><span>    pinctrl-1 = &lt;&amp;twi1_pins_b>;</span></span>
+<span data-line><span>    pinctrl-names = &quot;default&quot;, &quot;sleep&quot;;</span></span>
+<span data-line><span>    twi_drv_used = &lt;1>;</span></span>
+<span data-line><span>    dmas = &lt;&amp;dma 44>, &lt;&amp;dma 44>;</span></span>
+<span data-line><span>    dma-names = &quot;tx&quot;, &quot;rx&quot;;</span></span>
+<span data-line><span>    status = &quot;okay&quot;;</span></span>
+<span data-line> </span>
+<span data-line><span>    ctp@40 {</span></span>
+<span data-line><span>        compatible = &quot;allwinner,gslX680&quot;;</span></span>
+<span data-line><span>        device_type = &quot;ctp&quot;;</span></span>
+<span data-line><span>        reg = &lt;0x40>;</span></span>
+<span data-line><span>        status = &quot;okay&quot;;</span></span>
+<span data-line><span>        ctp_name = &quot;mtk_gslX680&quot;;</span></span>
+<span data-line><span>        ctp_twi_id = &lt;0x1>;</span></span>
+<span data-line><span>        ctp_twi_addr = &lt;0x40>;</span></span>
+<span data-line><span>        ctp_screen_max_x = &lt;0x320>;</span></span>
+<span data-line><span>        ctp_screen_max_y = &lt;0x500>;</span></span>
+<span data-line><span>        ctp_revert_x_flag = &lt;0x0>;</span></span>
+<span data-line><span>        ctp_revert_y_flag = &lt;0x0>;</span></span>
+<span data-line><span>        ctp_exchange_x_y_flag = &lt;0x0>;</span></span>
+<span data-line><span>        ctp_int_port = &lt;&amp;pio PG 3 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>        ctp_wakeup = &lt;&amp;pio PG 2 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>    };</span></span>
+<span data-line><span>};</span></span></code></pre></figure>
+<h3 id="43-禁用错误总线上的旧节点">4.3 禁用错误总线上的旧节点<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-禁用错误总线上的旧节点" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>当前工程在 <strong><code>&amp;twi2</code></strong> 下仍保留 <strong>GT9</strong>（<code>0x14</code>，PB8/PB9）与 <strong>Focaltech</strong> 模板，且均为 <code>disabled</code>。对齐 TP-H10 后应：</p>
+<ul>
+<li><strong><code>&amp;twi2</code></strong>：<code>status = &quot;disabled&quot;</code>，并注释说明 CTP 不在此总线；</li>
+<li>勿 enable 与 PG2/PG3 冲突的 GPIO 定义。</li>
+</ul>
+<h3 id="44-dts-属性说明init-inputc-解析">4.4 DTS 属性说明（<code>init-input.c</code> 解析）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#44-dts-属性说明init-inputc-解析" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>属性</th><th>含义</th></tr></thead><tbody><tr><td><code>status</code></td><td>必须为 <code>okay</code>，否则 <code>ctp_used = 0</code>，驱动直接退出</td></tr><tr><td><code>ctp_twi_id</code></td><td>TWI 控制器编号（twi1 → 1）</td></tr><tr><td><code>ctp_twi_addr</code></td><td>7 位 I2C 地址</td></tr><tr><td><code>ctp_name</code></td><td>GSL 固件文件名（不含路径/后缀）：<code>gsl_firmware/&lt;ctp_name>.bin</code></td></tr><tr><td><code>ctp_int_port</code></td><td>中断 GPIO</td></tr><tr><td><code>ctp_wakeup</code></td><td>复位/唤醒 GPIO</td></tr><tr><td><code>ctp_screen_max_x/y</code></td><td>逻辑坐标上限，与屏分辨率一致</td></tr><tr><td><code>ctp_revert_x/y_flag</code></td><td>X/Y 镜像</td></tr><tr><td><code>ctp_exchange_x_y_flag</code></td><td>X/Y 对调</td></tr><tr><td><code>ctp-supply</code> / <code>ctp_power_ldo</code></td><td>可选，触摸独立 LDO 时配置</td></tr></tbody></table></div>
+<hr/>
+<h2 id="5-内核配置与固件">5. 内核配置与固件<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-内核配置与固件" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="51-bsp_defconfig备份-vs-当前">5.1 <code>bsp_defconfig</code>（备份 vs 当前）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#51-bsp_defconfig备份-vs-当前" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>配置项</th><th>备份（TP 正常）</th><th>当前 H133-02</th></tr></thead><tbody><tr><td><code>CONFIG_INPUT_SENSORINIT</code></td><td>y</td><td>y</td></tr><tr><td><code>CONFIG_TOUCHSCREEN_GSLX680NEW</code></td><td><strong>y</strong></td><td><strong>未设置</strong></td></tr><tr><td><code>CONFIG_TOUCHSCREEN_GT9XXNEW_TS</code></td><td>未设置</td><td>未设置</td></tr><tr><td><code>CONFIG_FW_LOADER</code></td><td>y</td><td>需与 GSL 同时打开</td></tr><tr><td><code>CONFIG_EXTRA_FIRMWARE</code></td><td><code>gsl_firmware/mtk_gslX680.bin</code></td><td>无</td></tr><tr><td><code>CONFIG_EXTRA_FIRMWARE_DIR</code></td><td>指向 rootfs <code>lib/firmware</code></td><td>无</td></tr></tbody></table></div>
+<p>修改 <code>device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code> 后，须 <strong>重新编译 kernel</strong>（<code>build_p1_nor.sh full</code> 或 <code>./build.sh kernel</code> + <code>m</code> + <code>p</code>）。</p>
+<h3 id="52-gsl-固件">5.2 GSL 固件<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#52-gsl-固件" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>驱动加载逻辑（<code>gslx680new/gslX680.c</code>）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">snprintf</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(fw_name, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">128</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;gsl_firmware/</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%s</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">.bin&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, config_info.name);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">request_firmware_direct</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">fw</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, fw_name, config_info.dev);</span></span></code></pre></figure>
+<p>要求：</p>
+<ol>
+<li>文件名为 <strong><code>mtk_gslX680.bin</code></strong>（与 <code>ctp_name</code> 一致）；</li>
+<li>放置路径（二选一或同时）：
+<ul>
+<li>编进内核：<code>CONFIG_EXTRA_FIRMWARE</code> + <code>CONFIG_EXTRA_FIRMWARE_DIR</code>（备份指向 <code>openwrt/target/h133/h133-p1_nor/busybox-init-base-files/lib/firmware</code>）；</li>
+<li>或 rootfs：<code>/lib/firmware/gsl_firmware/mtk_gslX680.bin</code>。</li>
+</ul>
+</li>
+<li>固件须由 <strong>屏厂/模组厂</strong> 提供，与玻璃、IC 型号、校准一致；<strong>不能</strong>用别家平台的表代替。</li>
+</ol>
+<p>若仓库中暂无 <code>.bin</code>，可从 <strong>备份工程编译产物</strong> 或模组资料包中提取，再放入上述目录。</p>
+<h3 id="53-gt9--focaltech-简要说明">5.3 GT9 / Focaltech 简要说明<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#53-gt9--focaltech-简要说明" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><strong>GT9</strong>：<code>compatible = &quot;allwinner,goodix&quot;</code>，<code>ctp_name = &quot;gt9xxnew_ts&quot;</code>，驱动 <code>gt9xxnew/gt9xx.c</code>，同样依赖 <code>init-input</code>，<code>late_initcall</code> 注册。</li>
+<li><strong>Focaltech</strong>：更偏标准 <code>focaltech,fts</code> 节点（<code>focaltech,reset-gpio</code> / <code>focaltech,irq-gpio</code>），与全志 <code>ctp_*</code> 命名并存时需只 enable 一套。</li>
+</ul>
+<hr/>
+<h2 id="6-开发流程bring-up-清单">6. 开发流程（bring-up 清单）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-开发流程bring-up-清单" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="61-硬件确认">6.1 硬件确认<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#61-硬件确认" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>读原理图：TWI 号、SCL/SDA、INT、RST、供电。</li>
+<li>上电后 <code>i2cdetect -y &lt;bus></code>，确认从机地址（本板期望 <strong>0x40</strong>）。</li>
+<li>确认与 <strong>耳机检测</strong> 等复用：注释要求 <strong>PG8 勿作 hp-det</strong>。</li>
+</ol>
+<h3 id="62-修改设备树">6.2 修改设备树<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#62-修改设备树" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>修正 <code>twi1_pins</code> → PG8/PG9。</li>
+<li>在 <code>&amp;twi1</code> 下添加/恢复 <code>ctp@40</code>，<code>status = &quot;okay&quot;</code>。</li>
+<li>分辨率、翻转标志与 MIPI 方向一致。</li>
+<li>关闭 <code>twi2</code> 上错误 <code>ctp</code> 节点。</li>
+</ol>
+<h3 id="63-修改内核配置并编译">6.3 修改内核配置并编译<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#63-修改内核配置并编译" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">.cursor/skills/h133-build/scripts/build_p1_nor.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> full</span></span></code></pre></figure>
+<p>改过 <strong>DTS 或内核</strong> 必须走 full；仅改 rootfs 且不动 boot 时可用 <code>rootfs</code> 目标。</p>
+<h3 id="64-板上验证">6.4 板上验证<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#64-板上验证" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 驱动与固件</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">dmesg</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -iE</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'ctp|gsl|gt9|goodix|firmware|input'</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># I2C（twi1 一般为 bus 1，以 ctp_twi_id 为准）</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">i2cdetect</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -y</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># input 设备</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /proc/bus/input/devices</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 事件（安装 evtest 时）</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">evtest</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 或</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getevent</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -lt</span></span></code></pre></figure>
+<p>期望：</p>
+<ul>
+<li>出现 <strong><code>gslX680</code></strong> 设备名；</li>
+<li>触摸时有 <code>ABS_MT_POSITION_X/Y</code> 或 <code>ABS_X/Y</code> 事件；</li>
+<li>坐标范围约 0～799 / 0～1279（竖屏）。</li>
+</ul>
+<h3 id="65-坐标与应用">6.5 坐标与应用<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#65-坐标与应用" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>坐标颠倒/镜像：只调 DTS 三个 flag 和 <code>ctp_screen_max_*</code>，<strong>优先不要改应用</strong>。</li>
+<li>芯片量程 ≠ UI：<code>ctp_report_max_*</code> 内核线性缩放，见 <a href="../.././开发记录/gsl触摸坐标映射/readme" class="internal internal-link alias" data-slug="开发记录/gsl触摸坐标映射/readme">GSL触摸坐标映射</a>。</li>
+<li><strong>lv_projector</strong>：<code>evdev.c</code> 按名称自动查找 <strong><code>gslX680</code></strong> 的 event 节点。</li>
+<li><strong>lv_ds</strong>：配置项 <code>touch_dev</code>（如 <code>/dev/input/event0</code>），见 <a href="../../项目/lq140m1jw61/开发记录/双屏异显/lv_ds-双屏异显中间件架构" class="internal internal-link alias" data-slug="项目/lq140m1jw61/开发记录/双屏异显/lv_ds-双屏异显中间件架构">LV_DS-双屏异显中间件架构.md</a>。</li>
+</ul>
+<hr/>
+<h2 id="7-与-h133-备份-对齐情况">7. 与 <code>H133-备份</code> 对齐情况<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-与-h133-备份-对齐情况" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项目</th><th>H133-备份（MIPI+TP 正常）</th><th>H133-02（当前工程）</th></tr></thead><tbody><tr><td>TWI1 引脚</td><td>PG8 / PG9</td><td><strong>已对齐</strong></td></tr><tr><td>CTP 总线</td><td><strong>twi1</strong> @ 0x40</td><td><strong>已对齐</strong></td></tr><tr><td>触摸驱动</td><td><strong>GSL</strong> <code>mtk_gslX680</code></td><td><strong>已开 <code>GSLX680NEW</code></strong></td></tr><tr><td>分辨率</td><td>800×1280</td><td><strong>已对齐 <code>0x320</code>×<code>0x500</code></strong></td></tr><tr><td>INT / RST</td><td>PG3 / PG2</td><td><strong>已对齐</strong></td></tr><tr><td>固件</td><td><code>EXTRA_FIRMWARE</code> + rootfs</td><td><strong><code>openwrt/.../lib/firmware/gsl_firmware/mtk_gslX680.bin</code></strong></td></tr></tbody></table></div>
+<p>改 DTS/内核后须 <strong>全量编译烧录</strong>（<code>build_p1_nor.sh full</code>），板上用 §6.4 命令验收。</p>
+<hr/>
+<h2 id="8-常见问题速查">8. 常见问题速查<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-常见问题速查" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象</th><th>可能原因</th><th>处理</th></tr></thead><tbody><tr><td><code>ctp is not used</code> / <code>ctp_used set to 0</code></td><td><code>ctp</code> 或 <code>twi</code> 节点 <code>status</code> 非 okay</td><td>检查 DTS</td></tr><tr><td><code>can not get fw from file gsl_firmware/...</code></td><td>未开 <code>FW_LOADER</code> / 无 <code>.bin</code> / <code>ctp_name</code> 错</td><td>补固件与 <code>bsp_defconfig</code></td></tr><tr><td><code>i2cdetect</code> 无 0x40</td><td>TWI 引脚错、未 enable twi1、供电/复位</td><td>对照原理图与备份 DTS</td></tr><tr><td>有 I2C 无触摸事件</td><td>INT/RST 接错、固件与屏不匹配</td><td>换正确固件；查 GPIO</td></tr><tr><td>坐标范围不对 / 飘移</td><td><code>ctp_screen_max_*</code> 或 revert/exchange 错</td><td>只改 DTS 坐标相关项</td></tr><tr><td>有显示无触摸</td><td>误查 LCD；触摸独立 I2C</td><td>分开查 TP 与 <code>default_panel</code></td></tr><tr><td>LVGL 无响应</td><td>event 节点错</td><td><code>cat /proc/bus/input/devices</code>，确认 <code>gslX680</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="9-docs硬件资料tp-说明别家参考非本板交付">9. <code>docs/硬件资料/TP</code> 说明（别家参考，非本板交付）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-docs硬件资料tp-说明别家参考非本板交付" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>目录 <code>docs/硬件资料/TP/</code> 仅含：</p>
+<ul>
+<li><code>rockchip_gslX680_rk312x.c</code></li>
+<li><code>rockchip_gslX680_rk312x.h</code></li>
+</ul>
+<p>其为 <strong>Rockchip RK312x</strong> 平台 GSL 参考源码（设备名 <code>gslX680_312x</code>，固件编译在 <code>.h</code> 数组内），<strong>未编入本 H133 内核</strong>。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>对比项</th><th><code>docs/硬件资料/TP</code></th><th>H133-02 正式栈</th></tr></thead><tbody><tr><td>平台</td><td>RK312x</td><td>sun8iw20 + <code>init-input</code></td></tr><tr><td>配置</td><td>平台代码 / 旧 GPIO</td><td><strong>board.dts <code>ctp@xx</code></strong></td></tr><tr><td>固件</td><td>C 数组 <code>GSLX680_FW_*[]</code></td><td><strong><code>mtk_gslX680.bin</code></strong></td></tr><tr><td>能否直接移植</td><td><strong>否</strong></td><td>仅可参考寄存器/协议思路</td></tr></tbody></table></div>
+<p>本板开发请以 <strong>备份 DTS、<code>gslx680new</code> 驱动、模组厂 <code>.bin</code></strong> 为准。</p>
+<hr/>
+<h2 id="10-相关源码索引">10. 相关源码索引<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-相关源码索引" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>内容</th><th>路径</th></tr></thead><tbody><tr><td>CTP 配置解析</td><td><code>kernel/linux-5.4/drivers/input/init-input.c</code></td></tr><tr><td>GSL 驱动</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/gslx680new/gslX680.c</code></td></tr><tr><td>GT9 驱动</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/gt9xxnew/gt9xx.c</code></td></tr><tr><td>Focaltech</td><td><code>kernel/linux-5.4/drivers/input/touchscreen/focaltech_touch/</code></td></tr><tr><td>备份 board.dts（触摸）</td><td><code>H133-备份/H133-20260306/device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code></td></tr><tr><td>备份 bsp_defconfig</td><td><code>H133-备份/H133-20260306/device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code></td></tr><tr><td>LVGL evdev</td><td><code>platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c</code></td></tr><tr><td>别家 GSL 参考（勿直接合入）</td><td><code>docs/硬件资料/TP/rockchip_gslX680_rk312x.*</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="11-修订记录">11. 修订记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-修订记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>日期</th><th>说明</th></tr></thead><tbody><tr><td>2026-05-22</td><td>初版：TP-H10 GSL/TWI1 架构、备份对齐说明、别家 <code>docs/硬件资料/TP</code> 界定、联调命令与 FAQ</td></tr><tr><td>2026-05-22</td><td>工程已按备份合入 <code>board.dts</code>、<code>bsp_defconfig</code>、<code>mtk_gslX680.bin</code></td></tr><tr><td>2026-05-22</td><td>触摸 I2C NAK：回退 <code>hdmi_tx.c</code> HPD→<code>disp_set_hdmi_detect</code> 桥、<code>dev_disp.c</code> 简化为备份实现；<code>&amp;sdc0</code> 与备份同为 <code>disabled</code></td></tr><tr><td>2026-05-22</td><td>A/B 确认问题在 <strong>boot 内核</strong>：<code>bsp_defconfig</code> 去掉 <code>SUNXI_RFKILL</code>/<code>AIC8800</code>/<code>CFG80211</code>（与备份一致）；去掉 <code>disp_fb_clone</code> 与 <code>hdmi_tx.c</code> 多余 include；测试镜像 MD5 <strong><code>8c1db755bb434ea83fde1aa8a8977eeb</code></strong></td></tr></tbody></table></div></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>关系图谱</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-13" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#h133-触摸屏ctp驱动开发" data-for="h133-触摸屏ctp驱动开发">H133 触摸屏（CTP）驱动开发</a></li><li class="depth-1"><a href="#1-硬件与接口tp-h10" data-for="1-硬件与接口tp-h10">1. 硬件与接口（TP-H10）</a></li><li class="depth-2"><a href="#11-本板-ctp-走线与备份一致" data-for="11-本板-ctp-走线与备份一致">1.1 本板 CTP 走线（与备份一致）</a></li><li class="depth-2"><a href="#12-与显示的关系" data-for="12-与显示的关系">1.2 与显示的关系</a></li><li class="depth-2"><a href="#13-触摸有效区域" data-for="13-触摸有效区域">1.3 触摸有效区域</a></li><li class="depth-1"><a href="#2-软件架构" data-for="2-软件架构">2. 软件架构</a></li><li class="depth-2"><a href="#21-关键路径p1_nor" data-for="21-关键路径p1_nor">2.1 关键路径（p1_nor）</a></li><li class="depth-1"><a href="#3-本工程可选驱动一览" data-for="3-本工程可选驱动一览">3. 本工程可选驱动一览</a></li><li class="depth-1"><a href="#4-设备树配置以-gsl--twi1-为例" data-for="4-设备树配置以-gsl--twi1-为例">4. 设备树配置（以 GSL + TWI1 为例）</a></li><li class="depth-2"><a href="#41-pinctrltwi1-引脚" data-for="41-pinctrltwi1-引脚">4.1 pinctrl：TWI1 引脚</a></li><li class="depth-2"><a href="#42-twi1-与-ctp-子节点" data-for="42-twi1-与-ctp-子节点">4.2 &amp;twi1 与 ctp 子节点</a></li><li class="depth-2"><a href="#43-禁用错误总线上的旧节点" data-for="43-禁用错误总线上的旧节点">4.3 禁用错误总线上的旧节点</a></li><li class="depth-2"><a href="#44-dts-属性说明init-inputc-解析" data-for="44-dts-属性说明init-inputc-解析">4.4 DTS 属性说明（init-input.c 解析）</a></li><li class="depth-1"><a href="#5-内核配置与固件" data-for="5-内核配置与固件">5. 内核配置与固件</a></li><li class="depth-2"><a href="#51-bsp_defconfig备份-vs-当前" data-for="51-bsp_defconfig备份-vs-当前">5.1 bsp_defconfig（备份 vs 当前）</a></li><li class="depth-2"><a href="#52-gsl-固件" data-for="52-gsl-固件">5.2 GSL 固件</a></li><li class="depth-2"><a href="#53-gt9--focaltech-简要说明" data-for="53-gt9--focaltech-简要说明">5.3 GT9 / Focaltech 简要说明</a></li><li class="depth-1"><a href="#6-开发流程bring-up-清单" data-for="6-开发流程bring-up-清单">6. 开发流程（bring-up 清单）</a></li><li class="depth-2"><a href="#61-硬件确认" data-for="61-硬件确认">6.1 硬件确认</a></li><li class="depth-2"><a href="#62-修改设备树" data-for="62-修改设备树">6.2 修改设备树</a></li><li class="depth-2"><a href="#63-修改内核配置并编译" data-for="63-修改内核配置并编译">6.3 修改内核配置并编译</a></li><li class="depth-2"><a href="#64-板上验证" data-for="64-板上验证">6.4 板上验证</a></li><li class="depth-2"><a href="#65-坐标与应用" data-for="65-坐标与应用">6.5 坐标与应用</a></li><li class="depth-1"><a href="#7-与-h133-备份-对齐情况" data-for="7-与-h133-备份-对齐情况">7. 与 H133-备份 对齐情况</a></li><li class="depth-1"><a href="#8-常见问题速查" data-for="8-常见问题速查">8. 常见问题速查</a></li><li class="depth-1"><a href="#9-docs硬件资料tp-说明别家参考非本板交付" data-for="9-docs硬件资料tp-说明别家参考非本板交付">9. docs/硬件资料/TP 说明（别家参考，非本板交付）</a></li><li class="depth-1"><a href="#10-相关源码索引" data-for="10-相关源码索引">10. 相关源码索引</a></li><li class="depth-1"><a href="#11-修订记录" data-for="11-修订记录">11. 修订记录</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>反向链接</h3><ul id="list-0" class="overflow"><li><a href="../../" class="internal">index</a></li><li><a href="../../专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程" class="internal">H133-GT9110触摸驱动开发过程</a></li><li><a href="../../专题/tp驱动与触摸/乐大海10.1寸tpc3386-gt911触摸驱动开发" class="internal">乐大海10.1寸TPC3386-GT911触摸驱动开发</a></li><li><a href="../../视图/项目子页.base" class="internal">项目子页</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-0159f17c.js" type="module" data-persist="true"></script></html>

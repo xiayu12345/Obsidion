@@ -1,0 +1,29 @@
+From 0000000000000000000000000000000000000001 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 18:00:00 +0800
+Subject: [PATCH 1/4] uboot: NOR 开 SST 64 扇区 + SUNXI_SERIAL
+
+ZS101 实际用 sun8iw20p1_defconfig（不是 nor_defconfig）。
+对齐官方 NOR：安全存储 64 扇区，开机从 SST 读 snum 进 env/cmdline。
+
+---
+diff --git a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
+index a655d2715..f395deddb 100644
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
+@@ -75,6 +75,7 @@ CONFIG_SF_DEFAULT_SPEED=50000000
+ CONFIG_SF_DEFAULT_MODE=0x3000
+ CONFIG_SPINOR_UBOOT_OFFSET=128
+ CONFIG_SPINOR_LOGICAL_OFFSET=2016
++CONFIG_SPINOR_SECURE_STORAGE_SIZE=64
+ 
+ # flash
+ CONFIG_SUNXI_SDMMC=y
+@@ -100,6 +101,7 @@ CONFIG_ANDROID_BOOT_IMAGE=y
+ #sprite
+ CONFIG_SUNXI_SPRITE=y
+ CONFIG_SUNXI_SECURE_STORAGE=y
++CONFIG_SUNXI_SERIAL=y
+ 
+ #secure feature
+ CONFIG_SUNXI_SECURE_BOOT=y

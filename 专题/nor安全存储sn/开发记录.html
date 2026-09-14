@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>开发记录</title><meta charset="utf-8"/><link rel="preload" href="../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="H133 板件"/><meta property="og:title" content="开发记录"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="开发记录"/><meta name="twitter:description" content="ZS101 NOR 安全存储 SN — 开发记录 项内容日期2026-09-01验证板p1_nor_ZS101补丁patches/命令sst_test/操作方法.md调库libkey/操作方法.md 1."/><meta property="og:description" content="ZS101 NOR 安全存储 SN — 开发记录 项内容日期2026-09-01验证板p1_nor_ZS101补丁patches/命令sst_test/操作方法.md调库libkey/操作方法.md 1."/><meta property="og:image:alt" content="ZS101 NOR 安全存储 SN — 开发记录 项内容日期2026-09-01验证板p1_nor_ZS101补丁patches/命令sst_test/操作方法.md调库libkey/操作方法.md 1."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/专题/nor安全存储sn/开发记录"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/专题/nor安全存储sn/开发记录"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="ZS101 NOR 安全存储 SN — 开发记录 项内容日期2026-09-01验证板p1_nor_ZS101补丁patches/命令sst_test/操作方法.md调库libkey/操作方法.md 1."/><meta name="generator" content="Quartz"/><link href="../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/专题/nor安全存储sn/开发记录-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/专题/nor安全存储sn/开发记录-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/专题/nor安全存储sn/开发记录-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="专题/nor安全存储sn/开发记录" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../..">H133 板件</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-14" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>探索</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-14" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/">专题</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/nor安全存储sn/">NOR安全存储SN</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>开发记录</a></div></nav><h1 class="article-title">开发记录</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">kind</td><td class="note-properties-value metadata-property-value"><span class="note-properties-text">peripheral</span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2026-09-08T03:55:41.000Z">2026年9月08日</time><span>5分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="zs101-nor-安全存储-sn--开发记录">ZS101 NOR 安全存储 SN — 开发记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#zs101-nor-安全存储-sn--开发记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>内容</th></tr></thead><tbody><tr><td>日期</td><td>2026-09-01</td></tr><tr><td>验证板</td><td><code>p1_nor_ZS101</code></td></tr><tr><td>补丁</td><td><a href="../../patches/" class="internal internal-link alias" data-slug="patches/index">patches/</a></td></tr><tr><td>命令</td><td><a href="../../专题/nor安全存储sn/sst_test/操作方法" class="internal internal-link alias" data-slug="专题/nor安全存储sn/sst_test/操作方法">sst_test/操作方法.md</a></td></tr><tr><td>调库</td><td><a href="../../专题/nor安全存储sn/libkey/操作方法" class="internal internal-link alias" data-slug="专题/nor安全存储sn/libkey/操作方法">libkey/操作方法.md</a></td></tr></tbody></table></div>
+<hr/>
+<h2 id="1-要解决什么">1. 要解决什么<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-要解决什么" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>设备要有<strong>掉电、再刷机还在</strong>的硬件 SN。KTV 业务里的 <code>deviceSn</code> 是登录手机号（<code>ktv_phone.txt</code>），<strong>不是</strong>这个号。</p>
+<p>全志约定 key 名 <strong><code>snum</code></strong>（还可顺带 <code>mac_addr</code> / <code>wifi_mac</code> / <code>bt_mac</code>）。</p>
+<hr/>
+<h2 id="2-nor-官方怎么存">2. NOR 官方怎么存<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-nor-官方怎么存" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><code>libkey</code> 三种情况：</p>
+<ol>
+<li>private + SST 都有：写两边，读先 SST 再 private</li>
+<li><strong>只有 SST</strong>：只读写 SST ← <strong>官方所有 <code>sys_partition_nor.fex</code> 都没有 private</strong></li>
+<li>只有 private：只读写 private ← NAND/eMMC 常用</li>
+</ol>
+<p>ZS101 分区：<code>boot-resource</code> / <code>env</code> / <code>boot</code> / <code>rootfs</code> / <code>rootfs_data</code> / <code>UDISK</code>，没有 private。</p>
+<p>SST 在逻辑分区前面：<code>(SPINOR_LOGICAL_OFFSET - SPINOR_SECURE_STORAGE_SIZE) × 512</code>。默认 <code>2016 - 64</code> 扇区。量产擦除（eraseflag=1）走 <code>sunxi_flash_spinor_special_erase</code>：<strong>先擦 SST 前面（boot0/U-Boot），再从逻辑起点擦到末尾，中间 SST 不动</strong>。</p>
+<p>Linux：<code>libsst.so</code> → <code>/dev/sunxi_flash_app</code>（<code>CONFIG_SUNXI_SID</code>）。命令行壳是 <code>sst_test</code>（包 <code>libkey-demo</code>）。应用调库见 <a href="../../专题/nor安全存储sn/libkey/操作方法" class="internal internal-link alias" data-slug="专题/nor安全存储sn/libkey/操作方法">libkey/操作方法.md</a>。</p>
+<h3 id="21-config_spinor_secure_storage_size64-是干什么">2.1 <code>CONFIG_SPINOR_SECURE_STORAGE_SIZE=64</code> 是干什么<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#21-config_spinor_secure_storage_size64-是干什么" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><strong>不是把 SN 改成 64 字节。</strong> 单位是 <strong>512 字节扇区</strong>：<code>64 × 512 = 32KB</code>，整块 SST 仓库的大小。</p>
+<p>SST 按 <strong>4KB 一格</strong> 排：一张 map + <code>snum</code> / MAC / WiFi·蓝牙 MAC / HDCP 等，大约 <strong>8 格</strong>。一条 SN 只占其中一格里的一小截。相对 32MB NOR 约千分之一。</p>
+<p><code>sun8iw20p1_defconfig</code> 的 Kconfig 默认是 <strong>0</strong>（不留 SST）。改成 64 是对齐官方 <code>sun8iw20p1_nor_defconfig</code>。为 0 时：没地方写号，分区擦除也不跳这块。</p>
+<p><strong>不要改小或改大。</strong> 改小少格子、擦除跳过区域和官方对不齐；改大会挤 U-Boot 和分区之间的空隙，U-Boot 镜像太大可能叠到 SST。</p>
+<hr/>
+<h2 id="3-为什么-zs101-原来不行">3. 为什么 ZS101 原来不行<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-为什么-zs101-原来不行" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>官方 <code>sun8iw20p1_nor_defconfig</code> 已有：</p>
+<ul>
+<li><code>CONFIG_SPINOR_SECURE_STORAGE_SIZE=64</code></li>
+<li><code>CONFIG_SUNXI_SERIAL=y</code></li>
+</ul>
+<p>ZS101 的 <code>BoardConfig.mk</code> 却是：</p>
+<pre><code>LICHEE_BRANDY_DEFCONF:=sun8iw20p1_defconfig
+</code></pre>
+<p>这份 <strong>SST size=0、没开 SERIAL</strong>。Linux 写进 SST 的号，开机 U-Boot 不读、cmdline 没有 <code>snum=</code>。以前用 <code>setenv snum</code> 写在 <strong>env 分区</strong>，全盘/分区擦除都会没。</p>
+<p><code>sst_test</code> 原先没编（<code># CONFIG_PACKAGE_libkey-demo is not set</code>）。</p>
+<hr/>
+<h2 id="4-定稿改动">4. 定稿改动<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-定稿改动" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>改什么</th></tr></thead><tbody><tr><td><code>brandy/.../configs/sun8iw20p1_defconfig</code></td><td><code>SPINOR_SECURE_STORAGE_SIZE=64</code>（32KB 仓库，见 2.1）+ <code>SUNXI_SERIAL=y</code></td></tr><tr><td><code>brandy/.../board/sunxi/sunxi_bootargs.c</code></td><td><code>snum</code> 为空不拼 <code>androidboot.serialno</code>；<code>tmpbuf</code> 128→512</td></tr><tr><td><code>platform/allwinner/common/libkey/demo/main.c</code></td><td><code>sst_test</code> 读写 128/256→512</td></tr><tr><td><code>openwrt/target/h133/h133-p1_nor_ZS101/defconfig</code></td><td><code>CONFIG_PACKAGE_libkey-demo=y</code></td></tr></tbody></table></div>
+<p>开机链路：<code>sunxi_set_serial_num()</code> 从 SST 读 <code>snum</code> → <code>env_set</code> → <code>setargs_nor</code> 的 <code>snum=${snum}</code> → <code>update_bootargs</code> 再拼 <code>androidboot.serialno</code>。</p>
+<p>长度：SST 格子约 4KB；U-Boot 读 512；cmdline <code>tmpbuf</code>/ <code>sst_test</code> 现为 512。实测约 256 字节可整段读写。</p>
+<hr/>
+<h2 id="5-phoenixsuit-擦除实机已对">5. PhoenixSuit 擦除（实机已对）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-phoenixsuit-擦除实机已对" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>PC 通过 <code>SUNXI_EFEX_ERASE_TAG</code> 覆盖 dts 里的 <code>eraseflag</code>（本板 dts 原值 1，允许被覆盖）。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>界面选项</th><th>实测/对应</th><th>SN</th><th>分区</th></tr></thead><tbody><tr><td><strong>全盘擦除升级</strong></td><td><code>erase_flag=0x12</code>：Chip Erase 整片 32MB + <code>sunxi_secure_storage_erase_all</code></td><td><strong>丢</strong></td><td>全没</td></tr><tr><td><strong>分区擦除升级</strong></td><td>eraseflag=1：<code>special_erase</code> 跳过 SST</td><td><strong>在</strong></td><td>env/rootfs 等擦再写</td></tr><tr><td><strong>保留数据升级</strong></td><td>eraseflag=0：不先擦片</td><td><strong>在</strong></td><td>只覆盖镜像里的分区；NOR 无 private 可保</td></tr></tbody></table></div>
+<p>串口辨认全盘擦除：</p>
+<pre><code>erase_flag = 0x12
+need erase flash: 18
+The Chip Erase size is: 32M ...
+erase secure storage: 0 ok
+</code></pre>
+<p>刷完 <code>sst_test -r snum</code> 若 <code>map is empty</code> / <code>Read snum fail</code>，就是被 0x12 清了，不是「没写上」。</p>
+<p>第一次 <code>sst_test -w</code> 出现 <code>Item0 (Map) magic is bad</code> / <code>map is empty</code> / <code>private bare key not supported</code> 是 NOR 建表，正常。</p>
+<hr/>
+<h2 id="6-合入">6. 合入<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-合入" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> H133-AI-Skills/开发记录/NOR安全存储SN/patches/apply-snum-sst.sh</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_ZS101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> full</span></span></code></pre></figure>
+<p>禁止在 WSL 对 <code>desk/src</code>、<code>libkey</code> 本地 <code>gcc -c</code>（会留下 x86 <code>.o</code> 污染交叉编译）。</p>
+<hr/>
+<h2 id="7-实测">7. 实测<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-实测" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>写：</p>
+<pre><code>NOR secblk write OK
+[private_data_write]: write data to secure storage done
+[sst] snum = 1234657894…（完整串）
+</code></pre>
+<p>全盘擦除后再读：<code>map is empty</code>，cmdline <code>snum=</code> 空。<br/>
+分区擦除应仍能 <code>-r</code> 到同一串，cmdline 有 <code>snum=</code> 和 <code>androidboot.serialno=</code>。</p>
+<p>写完立刻 <code>sst_test -r</code> 就能读（已 fsync），<strong>不必 reboot</strong>。reboot 只为让 cmdline 带上号。</p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>关系图谱</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-10" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#zs101-nor-安全存储-sn--开发记录" data-for="zs101-nor-安全存储-sn--开发记录">ZS101 NOR 安全存储 SN — 开发记录</a></li><li class="depth-1"><a href="#1-要解决什么" data-for="1-要解决什么">1. 要解决什么</a></li><li class="depth-1"><a href="#2-nor-官方怎么存" data-for="2-nor-官方怎么存">2. NOR 官方怎么存</a></li><li class="depth-2"><a href="#21-config_spinor_secure_storage_size64-是干什么" data-for="21-config_spinor_secure_storage_size64-是干什么">2.1 CONFIG_SPINOR_SECURE_STORAGE_SIZE=64 是干什么</a></li><li class="depth-1"><a href="#3-为什么-zs101-原来不行" data-for="3-为什么-zs101-原来不行">3. 为什么 ZS101 原来不行</a></li><li class="depth-1"><a href="#4-定稿改动" data-for="4-定稿改动">4. 定稿改动</a></li><li class="depth-1"><a href="#5-phoenixsuit-擦除实机已对" data-for="5-phoenixsuit-擦除实机已对">5. PhoenixSuit 擦除（实机已对）</a></li><li class="depth-1"><a href="#6-合入" data-for="6-合入">6. 合入</a></li><li class="depth-1"><a href="#7-实测" data-for="7-实测">7. 实测</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-0159f17c.js" type="module" data-persist="true"></script></html>

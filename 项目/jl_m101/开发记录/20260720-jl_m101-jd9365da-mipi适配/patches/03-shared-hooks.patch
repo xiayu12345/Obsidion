@@ -1,0 +1,78 @@
+diff --git a/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
+index 0b67b42c0..e11ae9bb1 100755
+--- a/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
+@@ -2546,6 +2546,7 @@ CONFIG_LCD_SUPPORT_K101IM2QA04=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ # CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
++# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
+index 291622e42..12974c6cf 100755
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
+@@ -2547,6 +2547,7 @@ CONFIG_LCD_SUPPORT_K101IM2QA04=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ CONFIG_LCD_SUPPORT_JYY070_LVDS=y
++# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+index a194db061..606c43e05 100644
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -66,8 +66,8 @@ ifeq ($(CONFIG_AW_ION_ALLOC_IOMMU),y)
+ endif
+ 
+ # WB mirror CPU 旋转角（度）；按 target -D，tlayer_ctrl #if VIDEO_WB_MIRROR_ROTATE
+-# JYY070=0；p1_nor / p1_nor_8733=90（UI 旋转树内用头文件默认，不由此 mk 控制）
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733),y)
++# JYY070=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig b/openwrt/target/h133/h133-p1_nor/defconfig
+index 496508da3..0d6627fe4 100755
+--- a/openwrt/target/h133/h133-p1_nor/defconfig
++++ b/openwrt/target/h133/h133-p1_nor/defconfig
+@@ -7,6 +7,7 @@ CONFIG_HAVE_DOT_CONFIG=y
+ CONFIG_TARGET_h133_p1_nor=y
+ # CONFIG_TARGET_h133_p1_nor_8733 is not set
+ # CONFIG_TARGET_h133_p1_nor_JYY070 is not set
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_Default=y
+ CONFIG_TARGET_BOARD="h133-p1_nor"
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+index 9a4bee0dd..32bc3dd2a 100755
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+@@ -7,6 +7,7 @@ CONFIG_HAVE_DOT_CONFIG=y
+ # CONFIG_TARGET_h133_p1_nor is not set
+ CONFIG_TARGET_h133_p1_nor_8733=y
+ # CONFIG_TARGET_h133_p1_nor_JYY070 is not set
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_8733_Default=y
+ CONFIG_TARGET_BOARD="h133-p1_nor_8733"
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+index 1c73d95c0..0673b26b5 100755
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+@@ -7,8 +7,10 @@ CONFIG_HAVE_DOT_CONFIG=y
+ # CONFIG_TARGET_h133_p1_nor is not set
+ # CONFIG_TARGET_h133_p1_nor_8733 is not set
+ CONFIG_TARGET_h133_p1_nor_JYY070=y
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_JYY070_Default=y
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ CONFIG_TARGET_BOARD="h133-p1_nor_JYY070"
+ CONFIG_TARGET_SUBTARGET="generic"
+ CONFIG_TARGET_PROFILE="Default"

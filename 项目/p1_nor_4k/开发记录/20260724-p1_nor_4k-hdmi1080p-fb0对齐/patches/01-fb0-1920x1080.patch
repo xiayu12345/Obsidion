@@ -1,0 +1,49 @@
+Subject: [PATCH] p1_nor_4k: fb0 1920x1080 1:1 with HDMI 1080p60
+
+Avoid DE0 VSU stretch (was fb 1280x800 -> screen_win full 1080p).
+UI Guider remains 1280x800 top-left on larger LVGL canvas.
+
+--- a/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/board.dts
+@@ -1012,7 +1012,7 @@
+                    in display.
+ ----------------------------------------------------------------------------------*/
+ &disp {
+-	/* p1_nor_4k：DE0→HDMI 1080p60；fb=UI 1280×800，DE0 VSU 放大到 1920×1080；无 LCD/辅屏 */
++	/* p1_nor_4k：DE0→HDMI 1080p60；fb=1920×1080 与输出 1:1（无 VSU 拉伸）；无 LCD/辅屏 */
+ 	disp_init_enable         = <1>;
+ 	disp_mode                = <0>;
+ 
+@@ -1054,8 +1054,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1280>;
+-	fb0_height               = <800>;
++	fb0_width                = <1920>;
++	fb0_height               = <1080>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+--- a/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_4k/uboot-board.dts
+@@ -281,7 +281,7 @@
+ };
+ 
+ &disp {
+-	/* p1_nor_4k：DE0→HDMI 1080p60；fb=UI 1280×800，DE0 VSU→1920×1080；无 LCD/TP */
++	/* p1_nor_4k：DE0→HDMI 1080p60；fb=1920×1080 与输出 1:1（无 VSU 拉伸）；无 LCD/TP */
+ 	disp_init_enable         = <1>;
+ 	disp_mode                = <0>;
+ 
+@@ -323,8 +323,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1280>;
+-	fb0_height               = <800>;
++	fb0_width                = <1920>;
++	fb0_height               = <1080>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;

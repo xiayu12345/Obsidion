@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>H133-GT9110触摸驱动开发过程</title><meta charset="utf-8"/><link rel="preload" href="../../index-bb6c1746.css" as="style"/><link rel="preload" href="../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="H133 板件"/><meta property="og:title" content="H133-GT9110触摸驱动开发过程"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="H133-GT9110触摸驱动开发过程"/><meta name="twitter:description" content="H133 GT9110 触摸驱动开发过程 平台：全志 H133（sun8iw20），板级 p1_nor 触摸 IC：汇顶 GT9110（10 点，42×30 通道） 规格书：GT9110-Datasheet_20121205.pdf（Rev.03，2012-12-06） SDK：/home/wjz/Desktop/H133-03/H133-03 日期：2026-05 1."/><meta property="og:description" content="H133 GT9110 触摸驱动开发过程 平台：全志 H133（sun8iw20），板级 p1_nor 触摸 IC：汇顶 GT9110（10 点，42×30 通道） 规格书：GT9110-Datasheet_20121205.pdf（Rev.03，2012-12-06） SDK：/home/wjz/Desktop/H133-03/H133-03 日期：2026-05 1."/><meta property="og:image:alt" content="H133 GT9110 触摸驱动开发过程 平台：全志 H133（sun8iw20），板级 p1_nor 触摸 IC：汇顶 GT9110（10 点，42×30 通道） 规格书：GT9110-Datasheet_20121205.pdf（Rev.03，2012-12-06） SDK：/home/wjz/Desktop/H133-03/H133-03 日期：2026-05 1."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程"/><link rel="icon" href="../../static/icon.png"/><meta name="description" content="H133 GT9110 触摸驱动开发过程 平台：全志 H133（sun8iw20），板级 p1_nor 触摸 IC：汇顶 GT9110（10 点，42×30 通道） 规格书：GT9110-Datasheet_20121205.pdf（Rev.03，2012-12-06） SDK：/home/wjz/Desktop/H133-03/H133-03 日期：2026-05 1."/><meta name="generator" content="Quartz"/><link href="../../index-bb6c1746.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-34bdfded.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-642859cd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="专题/tp驱动与触摸/h133-gt9110触摸驱动开发过程" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../..">H133 板件</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="link" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-16" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2>探索</h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-16" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/">专题</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../专题/tp驱动与触摸/">TP驱动与触摸</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>H133-GT9110触摸驱动开发过程</a></div></nav><h1 class="article-title">H133-GT9110触摸驱动开发过程</h1><p show-comma="true" class="content-meta"><time datetime="2026-08-07T04:16:37.000Z">2026年8月07日</time><span>9分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="h133-gt9110-触摸驱动开发过程">H133 GT9110 触摸驱动开发过程<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#h133-gt9110-触摸驱动开发过程" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<blockquote>
+<p><strong>平台</strong>：全志 H133（sun8iw20），板级 <strong>p1_nor</strong><br/>
+<strong>触摸 IC</strong>：汇顶 <strong>GT9110</strong>（10 点，42×30 通道）<br/>
+<strong>规格书</strong>：<a href="../.././../硬件资料/gt9110-datasheet_20121205.pdf" class="internal internal-link" data-slug="硬件资料/gt9110-datasheet_20121205.pdf"><code>GT9110-Datasheet_20121205.pdf</code></a>（Rev.03，2012-12-06）<br/>
+<strong>SDK</strong>：<code>/home/wjz/Desktop/H133-03/H133-03</code><br/>
+<strong>日期</strong>：2026-05</p>
+</blockquote>
+<hr/>
+<h2 id="1-文档目的">1. 文档目的<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-文档目的" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>记录本工程从 <strong>Silead GSL（gslX680）</strong> 切换到 <strong>GT9110（gt9xxnew）</strong> 的完整软件过程，便于：</p>
+<ul>
+<li>换屏/换 TP 模组时按清单改 DTS、内核、LVGL；</li>
+<li>板上用统一命令做 bring-up 与回归；</li>
+<li>与显示（MIPI 800×1280、双显软转）问题 <strong>分开排查</strong>。</li>
+</ul>
+<p><strong>相关文档（同目录）：</strong></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文档</th><th>内容</th></tr></thead><tbody><tr><td><a href="../../专题/tp驱动与触摸/h133-tp驱动开发" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/h133-tp驱动开发">H133-TP驱动开发.md</a></td><td>CTP 通用架构、GSL 时代 TP-H10 走线</td></tr><tr><td><a href="../../专题/tp驱动与触摸/h133的gslx680触摸驱动" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/h133的gslx680触摸驱动">h133的gslx680触摸驱动.md</a></td><td>GSL 链路、IRQ、固件（历史参考）</td></tr><tr><td><a href="../../专题/tp驱动与触摸/tuopu-10.1-h133-tp-lvgl拓步-10.1-寸-tp-开发与-lvgl-坐标映射" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/tuopu-10.1-h133-tp-lvgl拓步-10.1-寸-tp-开发与-lvgl-坐标映射">tuopu-10.1-h133-tp-lvgl拓步 10.1 寸 TP 开发与 LVGL 坐标映射.md</a></td><td>拓步 10.1、<code>lv_tp_test</code>、1280×800 逻辑坐标</td></tr><tr><td><a href="../../专题/tp驱动与触摸/h133-usb鼠标与gt911触摸并存-lvgl" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/h133-usb鼠标与gt911触摸并存-lvgl">H133-USB鼠标与GT911触摸并存-lvgl.md</a></td><td>唱吧 <code>lv_projector</code> 触摸 + USB 鼠标双指针</td></tr><tr><td><a href="../.././../硬件资料/gt9110-规格书要点与驱动对照" class="internal internal-link alias" data-slug="硬件资料/gt9110-规格书要点与驱动对照">GT9110-规格书要点与驱动对照.md</a></td><td>规格书 I2C/复位/寄存器与驱动映射</td></tr></tbody></table></div>
+<hr/>
+<h2 id="2-背景与目标">2. 背景与目标<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-背景与目标" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="21-硬件变更">2.1 硬件变更<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#21-硬件变更" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>阶段</th><th>触摸 IC</th><th>I2C 地址</th><th>说明</th></tr></thead><tbody><tr><td>早期备份（TP-H10）</td><td><strong>GSL</strong> <code>gslX680</code></td><td><strong>0x40</strong></td><td><code>mtk_gslX680.bin</code> 固件，TWI1 @ PG8/PG9</td></tr><tr><td>当前（拓步 10.1 / 12.1 等）</td><td><strong>GT9110</strong></td><td><strong>0x14</strong>（默认）</td><td>无独立 <code>.bin</code>，用驱动内 <strong>Config 组</strong></td></tr></tbody></table></div>
+<p>主板 CTP 走线（与备份一致，<strong>未因换 IC 改线</strong>）：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>信号</th><th>SoC 引脚</th></tr></thead><tbody><tr><td>I2C</td><td><strong>TWI1</strong>，PG8=SCL，PG9=SDA</td></tr><tr><td>INT</td><td><strong>PG3</strong></td></tr><tr><td>RST</td><td><strong>PG2</strong></td></tr></tbody></table></div>
+<h3 id="22-软件目标">2.2 软件目标<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#22-软件目标" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>内核 probe 成功，<code>/dev/input/event*</code> 有 <strong><code>gt9xxnew_ts</code></strong>；</li>
+<li>分辨率与屏一致：<strong>物理竖屏 800×1280</strong>（DTS + Config）；应用层可按产品选 <strong>1280×800 逻辑横屏</strong>（见 §7）；</li>
+<li>I2C 地址按规格书 <strong>默认 0x14</strong>（复位时 INT 为高 → 8 位写 <strong>0x28</strong>）；</li>
+<li>LVGL 通过 <strong>evdev ABS</strong> 读触摸，可与 USB 鼠标并存。</li>
+</ol>
+<hr/>
+<h2 id="3-驱动选型为何用-gt9xxnew">3. 驱动选型（为何用 gt9xxnew）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-驱动选型为何用-gt9xxnew" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>工程内核中存在 <strong>两套</strong> Goodix 触摸实现：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>方案</th><th>路径</th><th>绑定方式</th><th>本板</th></tr></thead><tbody><tr><td><strong>全志 BSP（选用）</strong></td><td><code>gt9xxnew/</code></td><td><code>compatible = &quot;allwinner,goodix&quot;</code> + <code>init-input</code> 解析 <code>ctp_*</code></td><td><strong>是</strong></td></tr><tr><td>上游 Linux</td><td><code>goodix.c</code></td><td><code>goodix,gt9110</code> 标准 OF</td><td>否（无全志 <code>ctp_*</code> 流程）</td></tr></tbody></table></div>
+<p><code>gt9xxnew</code> 已内置 <strong>GT9110</strong> 配置名（如 <code>gt9110_wt097</code>、<code>gt9110_g200</code>），复位时 <strong>I2C 地址选择</strong> 与规格书 §6.1 一致（<code>gtp_reset_guitar()</code>）。</p>
+<p>探测地址表（驱动内）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">static</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> const</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> unsigned</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> short</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="normal"> normal_i2c</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">3</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">0x</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">14</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">0x</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">5d</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, I2C_CLIENT_END};</span></span></code></pre></figure>
+<hr/>
+<h2 id="4-开发过程分阶段">4. 开发过程（分阶段）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-开发过程分阶段" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="阶段-a调研与规格对齐">阶段 A：调研与规格对齐<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#阶段-a调研与规格对齐" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>阅读 <a href="../.././../硬件资料/gt9110-datasheet_20121205.pdf" class="internal internal-link" data-slug="硬件资料/gt9110-datasheet_20121205.pdf"><code>GT9110-Datasheet_20121205.pdf</code></a>：
+<ul>
+<li>I2C ≤ <strong>400kHz</strong>（与 <code>board.dts</code> <code>clock-frequency = &lt;400000></code> 一致）；</li>
+<li>地址 <strong>0x28/0x29</strong>（7bit <strong>0x14</strong>）或 <strong>0xBA/0xBB</strong>（7bit <strong>0x5d</strong>），上电由 RST+INT 时序选定；</li>
+<li>配置寄存器 <strong>0x8048~0x804B</strong> 为 X/Y 最大值。</li>
+</ul>
+</li>
+<li>确认工程已有 <code>gt9xxnew</code>，T113 等 defconfig 默认 <code>CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y</code>。</li>
+<li>整理对照表 → <a href="../.././../硬件资料/gt9110-规格书要点与驱动对照" class="internal internal-link" data-slug="硬件资料/gt9110-规格书要点与驱动对照"><code>GT9110-规格书要点与驱动对照.md</code></a>。</li>
+</ol>
+<h3 id="阶段-b内核与设备树">阶段 B：内核与设备树<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#阶段-b内核与设备树" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="b1-bsp_defconfig">B.1 <code>bsp_defconfig</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#b1-bsp_defconfig" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：<code>device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>操作</th><th>配置项</th></tr></thead><tbody><tr><td>关闭 GSL</td><td><code># CONFIG_TOUCHSCREEN_GSLX680NEW is not set</code></td></tr><tr><td>去掉 GSL 固件</td><td><code># CONFIG_EXTRA_FIRMWARE is not set</code></td></tr><tr><td>开启 GT9</td><td><code>CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y</code></td></tr><tr><td>保持</td><td><code>CONFIG_INPUT_SENSORINIT=y</code>、<code>CONFIG_INPUT_TOUCHSCREEN=y</code></td></tr></tbody></table></div>
+<h4 id="b2-boarddts">B.2 <code>board.dts</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#b2-boarddts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：<code>device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code>，节点在 <strong><code>&amp;twi1</code></strong> 下：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>/* GT9110: I2C 0x28/0x29 (7bit 0x14), INT high @ reset per datasheet default */</span></span>
+<span data-line><span>ctp@14 {</span></span>
+<span data-line><span>	compatible = &quot;allwinner,goodix&quot;;</span></span>
+<span data-line><span>	device_type = &quot;ctp&quot;;</span></span>
+<span data-line><span>	reg = &lt;0x14>;</span></span>
+<span data-line><span>	status = &quot;okay&quot;;</span></span>
+<span data-line><span>	ctp_name = &quot;gt9xxnew_ts&quot;;</span></span>
+<span data-line><span>	ctp_twi_id = &lt;0x1>;</span></span>
+<span data-line><span>	ctp_twi_addr = &lt;0x14>;</span></span>
+<span data-line><span>	ctp_screen_max_x = &lt;0x320>;   /* 800 */</span></span>
+<span data-line><span>	ctp_screen_max_y = &lt;0x500>;   /* 1280 */</span></span>
+<span data-line><span>	ctp_revert_x_flag = &lt;0x0>;</span></span>
+<span data-line><span>	ctp_revert_y_flag = &lt;0x0>;</span></span>
+<span data-line><span>	ctp_exchange_x_y_flag = &lt;0x0>;</span></span>
+<span data-line><span>	ctp_int_port = &lt;&amp;pio PG 3 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>	ctp_wakeup = &lt;&amp;pio PG 2 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>};</span></span></code></pre></figure>
+<p><strong>注意</strong>：勿再 enable <code>&amp;twi2</code> 下旧模板 <code>ctp@14</code>（PB8/PB9），避免与 PG2/PG3 冲突。</p>
+<h4 id="b3-触摸配置组-gt9xxh">B.3 触摸配置组 <code>gt9xx.h</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#b3-触摸配置组-gt9xxh" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：<code>kernel/linux-5.4/drivers/input/touchscreen/gt9xxnew/gt9xx.h</code></p>
+<ul>
+<li>默认 <strong><code>ctp_name = &quot;gt9xxnew_ts&quot;</code></strong> 使用 <strong><code>CTP_CFG_GROUP1</code></strong>；</li>
+<li>将 Config 中分辨率改为 <strong>800×1280</strong>（对应寄存器 0x8048~0x804B，小端）：
+<ul>
+<li>X：<code>0x20, 0x03</code> → 0x0320 = 800</li>
+<li>Y：<code>0x00, 0x05</code> → 0x0500 = 1280</li>
+</ul>
+</li>
+<li><code>GTP_INT_TRIGGER = 0</code>：上升沿（规格书默认 00）；</li>
+<li>校验和由驱动 <code>gtp_send_cfg</code> 前 <strong>自动重算</strong>，无需手改末尾 checksum。</li>
+</ul>
+<p>若屏厂提供专用 <code>.cfg</code>，可新增 <code>ctp_name</code>（如 <code>gt9110_xxx</code>）并在 <code>gt9xx.c</code> 的 <code>config_info.name</code> 分支映射到对应 <code>CTP_CFG_GROUPx</code>（参考已有 <code>gt9110_wt097</code> / <code>gt9110_g200</code>）。</p>
+<h4 id="b4-编译">B.4 编译<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#b4-编译" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 工程根目录，改 DTS/内核后至少：</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> kernel</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          # 或 platform 仅编 lv_projector</span></span></code></pre></figure>
+<p>烧录：<code>out/h133_linux_p1_nor_uart0_nor.img</code>（以实际产物为准）。</p>
+<h3 id="阶段-c板上内核验证">阶段 C：板上内核验证<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#阶段-c板上内核验证" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 1) I2C：默认应为 0x14，显示 UU 表示驱动已绑定</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">i2cdetect</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -y</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 2) 驱动与 input 设备名</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">dmesg</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -iE</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'gt9|GTP|goodix|Guitar'</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /proc/bus/input/devices</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -A8</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> gt9xx</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 3) 原始事件（先停占设备的应用）</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">killall</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> lv_projector</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> lv_tp_test</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> 2></span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">/dev/null</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getevent</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">                    # 找带 ABS 的节点</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getevent</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /dev/input/eventN</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">     # 摸屏看 ABS_MT_POSITION_X/Y</span></span></code></pre></figure>
+<p><strong>期望：</strong></p>
+<ul>
+<li><code>i2cdetect -y 1</code> 在 <strong>0x14</strong> 为 <strong>UU</strong>（若只见 <strong>0x5d</strong>，改 DTS 为 <code>0x5d</code> 并确认复位时 INT 为低）；</li>
+<li><code>dmesg</code> 有 <code>Guitar reset</code>、<code>gt9xxnew_ts</code> 注册成功；</li>
+<li><code>getevent</code> 有 <code>BTN_TOUCH</code> / <code>ABS_MT_POSITION_*</code>。</li>
+</ul>
+<h3 id="阶段-dlvgl--evdev-对接">阶段 D：LVGL / evdev 对接<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#阶段-dlvgl--evdev-对接" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<h4 id="d1-evdev_touch_init">D.1 <code>evdev_touch_init()</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#d1-evdev_touch_init" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：<code>platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c</code></p>
+<p>逻辑：</p>
+<ol>
+<li>若存在 <code>/dev/input/touchscreen</code> 则优先打开；</li>
+<li>否则扫描 <code>event0</code>…<code>event15</code>，检测 <strong>ABS_MT</strong> 或 <strong>ABS_X</strong>；</li>
+<li>设备名含 <strong><code>gt9xx</code></strong> 优先绑定。</li>
+</ol>
+<p>启动 log 示例：<code>evdev touch opened: /dev/input/event3</code></p>
+<h4 id="d2-lv_projector">D.2 <code>lv_projector</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#d2-lv_projector" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：</p>
+<ul>
+<li><code>lv_projector/src/main.c</code>：<code>indev_touch_drv</code> + <code>evdev_read</code>（POINTER）；</li>
+<li><code>lv_projector/src/lv_drv_conf.h</code>：<code>EVDEV_SWAP_AXES=0</code>，<code>EVDEV_CALIBRATE=0</code>。</li>
+</ul>
+<p>可与 USB 鼠标并存，详见 <a href="../../专题/tp驱动与触摸/h133-usb鼠标与gt911触摸并存-lvgl" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/h133-usb鼠标与gt911触摸并存-lvgl">H133-USB鼠标与GT911触摸并存-lvgl.md</a>。</p>
+<h4 id="d3-专用测试程序-lv_tp_test">D.3 专用测试程序 <code>lv_tp_test</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#d3-专用测试程序-lv_tp_test" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>拓步 10.1 阶段用 <strong><code>lv_tp_test</code></strong> 白底画点验证坐标，流程见 <a href="../../专题/tp驱动与触摸/tuopu-10.1-h133-tp-lvgl拓步-10.1-寸-tp-开发与-lvgl-坐标映射" class="internal internal-link alias" data-slug="专题/tp驱动与触摸/tuopu-10.1-h133-tp-lvgl拓步-10.1-寸-tp-开发与-lvgl-坐标映射">tuopu-10.1-h133-tp-lvgl</a>。</p>
+<hr/>
+<h2 id="5-软件架构gt9110-实施后">5. 软件架构（GT9110 实施后）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-软件架构gt9110-实施后" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>┌─────────────────────────────────────────────────────────────┐</span></span>
+<span data-line><span>│ 应用：lv_projector / lv_tp_test                             │</span></span>
+<span data-line><span>│   · 触摸：evdev_read ← gt9xxnew_ts (ABS_MT)                 │</span></span>
+<span data-line><span>│   · 可选：evdev_read_mouse ← USB HID                        │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ /dev/input/eventN                                           │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ gt9xxnew_ts (gt9xx.c)                                       │</span></span>
+<span data-line><span>│   · gtp_reset_guitar() 选 I2C 地址                          │</span></span>
+<span data-line><span>│   · 下发 CTP_CFG_GROUP1（800×1280）                         │</span></span>
+<span data-line><span>│   · input_register_device(&quot;gt9xxnew_ts&quot;)                    │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ init-input.c ← board.dts ctp@14                             │</span></span>
+<span data-line><span>├─────────────────────────────────────────────────────────────┤</span></span>
+<span data-line><span>│ sunxi-twi1 (PG8/PG9) ──► GT9110 @ 0x14                      │</span></span>
+<span data-line><span>└─────────────────────────────────────────────────────────────┘</span></span></code></pre></figure>
+<hr/>
+<h2 id="6-修改文件清单汇总">6. 修改文件清单（汇总）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-修改文件清单汇总" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>序号</th><th>文件</th><th>改动要点</th></tr></thead><tbody><tr><td>1</td><td><code>device/config/chips/h133/configs/p1_nor/openwrt/bsp_defconfig</code></td><td>GT9=y，GSL/EXTRA_FIRMWARE 关</td></tr><tr><td>2</td><td><code>device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts</code></td><td><code>ctp@14</code> goodix，800×1280，PG2/PG3</td></tr><tr><td>3</td><td><code>kernel/.../gt9xxnew/gt9xx.h</code></td><td>GROUP1 分辨率、GTP_INT_TRIGGER</td></tr><tr><td>4</td><td><code>platform/.../lv_drivers/indev/evdev.c</code></td><td><code>evdev_touch_init()</code></td></tr><tr><td>5</td><td><code>platform/.../lv_drivers/indev/evdev.h</code></td><td>声明 <code>evdev_touch_init</code></td></tr><tr><td>6</td><td><code>platform/.../lv_projector/src/main.c</code></td><td>POINTER + <code>evdev_read</code></td></tr><tr><td>7</td><td><code>platform/.../lv_projector/src/lv_drv_conf.h</code></td><td>EVDEV 触摸/鼠标配置</td></tr></tbody></table></div>
+<p><strong>一般不需要改</strong>：<code>init-input.c</code>、<code>sunxifb</code> 显示驱动、HDMI 相关。</p>
+<hr/>
+<h2 id="7-坐标与分辨率说明易混点">7. 坐标与分辨率说明（易混点）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-坐标与分辨率说明易混点" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>层级</th><th>典型取值</th><th>说明</th></tr></thead><tbody><tr><td>物理 LCD</td><td><strong>800×1280</strong> 竖屏</td><td><code>board.dts</code> <code>ctp_screen_max_x/y</code></td></tr><tr><td>GT911 Config</td><td><strong>800×1280</strong></td><td><code>CTP_CFG_GROUP1</code> 字节</td></tr><tr><td>芯片实际上报</td><td>常见 <strong>0<del>1279 × 0</del>799</strong></td><td>横屏逻辑 <strong>1280×800</strong>，与拓步 UI 一致</td></tr><tr><td>LVGL <code>lv_tp_test</code></td><td><strong>1280×800</strong> + sunxifb 90°</td><td>仅 fb 旋转，<strong>勿</strong>再开 <code>disp_drv.rotated</code> 叠转</td></tr><tr><td>GSL 时代</td><td>DTS 曾写 1280×800 交换</td><td><strong>已废弃</strong>，GT9 勿照搬 GSL 的 swap 写法</td></tr></tbody></table></div>
+<p>若触摸与画面对不齐：</p>
+<ol>
+<li>用 <code>getevent</code> 看 raw 范围；</li>
+<li>调 <code>ctp_exchange_x_y_flag</code> / <code>ctp_revert_x/y_flag</code>；</li>
+<li>或 Config 里 <strong>X2Y</strong>（0x804D）与 <code>EVDEV_SWAP_AXES</code>（仅应用层）二选一，避免双重交换。</li>
+</ol>
+<p>双显 + MIPI 软转见：<a href="../.././hdmi-and-mipi-and-lvds/h133-双显-lvgl软转实践总结" class="internal internal-link alias" data-slug="hdmi-and-mipi-and-lvds/h133-双显-lvgl软转实践总结">H133-双显-LVGL软转实践总结.md</a>。</p>
+<hr/>
+<h2 id="8-常见问题">8. 常见问题<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-常见问题" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象</th><th>可能原因</th><th>处理</th></tr></thead><tbody><tr><td><code>i2cdetect</code> 无 0x14/0x5d</td><td>供电、FPC、TWI 引脚错（非 PG8/9）</td><td>对原理图；测 3.3V</td></tr><tr><td>地址是 <strong>0x5d</strong> 而非 0x14</td><td>模组 RST/INT 时序选低地址</td><td>DTS 改 <code>0x5d</code></td></tr><tr><td><code>dmesg</code> 无 gt9</td><td>未编进内核、DTS <code>status</code> 非 okay</td><td>查 <code>bsp_defconfig</code>、重编 kernel</td></tr><tr><td>probe 失败 / Config invalid</td><td>Config 组与屏不匹配</td><td>向屏厂要 <code>.cfg</code> 或换 <code>gt9110_*</code> 组</td></tr><tr><td>有驱动无坐标</td><td>INT 边沿反了</td><td>改 <code>GTP_INT_TRIGGER</code> 或 0x804D</td></tr><tr><td>LVGL 无触摸</td><td>未走 <code>evdev_read</code>、节点被占用</td><td><code>evdev_touch_init</code> log；<code>killall</code> 再测</td></tr><tr><td>触摸与画面错位</td><td>双重旋转或 XY 重复交换</td><td>见 §7；对照 tuopu 文档</td></tr><tr><td>与 GSL 混用</td><td>仍加载 <code>gsl_firmware</code></td><td>确认 GSL Kconfig 与固件已关</td></tr></tbody></table></div>
+<hr/>
+<h2 id="9-从-gsl-迁回-gt9110-的检查表">9. 从 GSL 迁回 GT9110 的检查表<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-从-gsl-迁回-gt9110-的检查表" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul class="contains-task-list">
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>bsp_defconfig</code>：<code>GT9XXNEW_TS=y</code>，<code>GSLX680NEW</code> 关，无 <code>EXTRA_FIRMWARE</code> GSL bin</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>board.dts</code>：<code>allwinner,goodix</code>，<code>0x14</code>，800×1280，PG2/PG3，仅 <strong>twi1</strong> 下 enable</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>gt9xx.h</code>：Config 分辨率 / 中断沿</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 重编 <strong>kernel + rootfs（lv_projector）</strong> 并烧录</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>i2cdetect -y 1</code>、<code>getevent</code>、<code>evdev touch opened</code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> UI 点按与显示对齐（必要时调 mirror / X2Y）</li>
+</ul>
+<hr/>
+<h2 id="10-版本记录">10. 版本记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-版本记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>日期</th><th>说明</th></tr></thead><tbody><tr><td>2026-05</td><td>初版：GSL→GT9110 切换过程、p1_nor 800×1280、gt9xxnew + evdev 对接</td></tr><tr><td>—</td><td>后续：屏厂专用 Config、<code>lv_projector</code> 鼠标并存以专文为准</td></tr></tbody></table></div>
+<hr/>
+<h2 id="11-参考资料">11. 参考资料<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-参考资料" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>汇顶 GT9110 规格书 Rev.03：<code>docs/硬件资料/GT9110-Datasheet_20121205.pdf</code></li>
+<li>全志 Tina：<code>gt9xxnew</code> 源码 <code>kernel/linux-5.4/drivers/input/touchscreen/gt9xxnew/</code></li>
+<li>工具：<code>evtest</code>、<code>getevent</code>、<code>i2cdetect</code></li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="graph"><h3>关系图谱</h3><div class="graph-outer"><div class="graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:1,&quot;scale&quot;:1.1,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.3,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:false,&quot;enableRadial&quot;:false}"></div><button class="global-graph-icon" aria-label="Global Graph"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 55 55" fill="currentColor" xml:space="preserve"><path d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
+                s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
+                c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
+                C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
+                c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
+                v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
+                s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
+                C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z M11,9c0-1.103,0.897-2,2-2s2,0.897,2,2s-0.897,2-2,2
+                S11,10.103,11,9z M6,51c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S8.206,51,6,51z M33,49c0,2.206-1.794,4-4,4s-4-1.794-4-4
+                s1.794-4,4-4S33,46.794,33,49z M29,31c-3.309,0-6-2.691-6-6s2.691-6,6-6s6,2.691,6,6S32.309,31,29,31z M47,41c0,1.103-0.897,2-2,2
+                s-2-0.897-2-2s0.897-2,2-2S47,39.897,47,41z M49,10c-2.206,0-4-1.794-4-4s1.794-4,4-4s4,1.794,4,4S51.206,10,49,10z"></path></svg></button></div><div class="global-graph-outer"><div class="global-graph-container" data-cfg="{&quot;drag&quot;:true,&quot;zoom&quot;:true,&quot;depth&quot;:-1,&quot;scale&quot;:0.9,&quot;repelForce&quot;:0.5,&quot;centerForce&quot;:0.2,&quot;linkDistance&quot;:30,&quot;fontSize&quot;:0.6,&quot;opacityScale&quot;:1,&quot;showTags&quot;:true,&quot;removeTags&quot;:[],&quot;focusOnHover&quot;:true,&quot;enableRadial&quot;:true}"></div></div></div><div class="toc"><button type="button" class="toc-header" aria-controls="toc-12" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#h133-gt9110-触摸驱动开发过程" data-for="h133-gt9110-触摸驱动开发过程">H133 GT9110 触摸驱动开发过程</a></li><li class="depth-1"><a href="#1-文档目的" data-for="1-文档目的">1. 文档目的</a></li><li class="depth-1"><a href="#2-背景与目标" data-for="2-背景与目标">2. 背景与目标</a></li><li class="depth-2"><a href="#21-硬件变更" data-for="21-硬件变更">2.1 硬件变更</a></li><li class="depth-2"><a href="#22-软件目标" data-for="22-软件目标">2.2 软件目标</a></li><li class="depth-1"><a href="#3-驱动选型为何用-gt9xxnew" data-for="3-驱动选型为何用-gt9xxnew">3. 驱动选型（为何用 gt9xxnew）</a></li><li class="depth-1"><a href="#4-开发过程分阶段" data-for="4-开发过程分阶段">4. 开发过程（分阶段）</a></li><li class="depth-2"><a href="#阶段-a调研与规格对齐" data-for="阶段-a调研与规格对齐">阶段 A：调研与规格对齐</a></li><li class="depth-2"><a href="#阶段-b内核与设备树" data-for="阶段-b内核与设备树">阶段 B：内核与设备树</a></li><li class="depth-2"><a href="#阶段-c板上内核验证" data-for="阶段-c板上内核验证">阶段 C：板上内核验证</a></li><li class="depth-2"><a href="#阶段-dlvgl--evdev-对接" data-for="阶段-dlvgl--evdev-对接">阶段 D：LVGL / evdev 对接</a></li><li class="depth-1"><a href="#5-软件架构gt9110-实施后" data-for="5-软件架构gt9110-实施后">5. 软件架构（GT9110 实施后）</a></li><li class="depth-1"><a href="#6-修改文件清单汇总" data-for="6-修改文件清单汇总">6. 修改文件清单（汇总）</a></li><li class="depth-1"><a href="#7-坐标与分辨率说明易混点" data-for="7-坐标与分辨率说明易混点">7. 坐标与分辨率说明（易混点）</a></li><li class="depth-1"><a href="#8-常见问题" data-for="8-常见问题">8. 常见问题</a></li><li class="depth-1"><a href="#9-从-gsl-迁回-gt9110-的检查表" data-for="9-从-gsl-迁回-gt9110-的检查表">9. 从 GSL 迁回 GT9110 的检查表</a></li><li class="depth-1"><a href="#10-版本记录" data-for="10-版本记录">10. 版本记录</a></li><li class="depth-1"><a href="#11-参考资料" data-for="11-参考资料">11. 参考资料</a></li><li class="overflow-end"></li></ul></div><div class="backlinks"><h3>反向链接</h3><ul id="list-0" class="overflow"><li><a href="../../专题/tp驱动与触摸/h133-tp驱动开发" class="internal">H133-TP驱动开发</a></li><li><a href="../../专题/tp驱动与触摸/乐大海10.1寸tpc3386-gt911触摸驱动开发" class="internal">乐大海10.1寸TPC3386-GT911触摸驱动开发</a></li><li><a href="../../视图/项目子页.base" class="internal">项目子页</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../postscript-0159f17c.js" type="module" data-persist="true"></script></html>

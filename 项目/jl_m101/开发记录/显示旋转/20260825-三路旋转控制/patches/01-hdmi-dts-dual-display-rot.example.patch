@@ -1,0 +1,12 @@
+# 示例：本板 board.dts 增加 / 修改 dual_display_rot
+# 路径：device/config/chips/h133/configs/<BOARD>/linux-5.4/board.dts
+# 竖屏 MIPI → <3>；横屏 → <0>。不写则内核默认 3。
+# 改完编 kernel。勿 git apply 本文件。
+
+--- a/device/config/chips/h133/configs/<BOARD>/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/<BOARD>/linux-5.4/board.dts
+@@
+ 	chn_cfg_mode             = <1>;
++	dual_display_rot         = <3>; /* 竖屏 DE0 → 横屏 HDMI；横屏板改 <0> */
+ 
+ 	disp_para_zone           = <1>;

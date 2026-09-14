@@ -1,0 +1,35 @@
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/asound.conf b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/asound.conf
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/asound.conf
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/asound.conf
+@@ -123,11 +123,11 @@ ctl.CaptureHdmiIn {
+ # --- default route (audio_route.sh updates playback.pcm and ctl card) ---
+ ctl.!default {
+     type hw
+-    card sndowa
++    card sndi2s2
+ }
+ 
+ pcm.!default {
+     type asym
+-    playback.pcm "PlaybackSPDIF"
++    playback.pcm "PlaybackHDMI"
+     capture.pcm "CaptureAC107"
+ }
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/audio_output.mode b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/audio_output.mode
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/audio_output.mode
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/audio_output.mode
+@@ -1 +1 @@
+-spdif
++hdmi
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/setting.ini b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/setting.ini
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/setting.ini
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/etc/setting.ini
+@@ -57,7 +57,7 @@ bottom_right_y = 0
+ [sound]
+ volume = 30
+ sound_mode = 0
+-sound_output = 0
++sound_output = 1
+ 
+ [display]
+ # 0=0° 1=90° 2=180° 3=270°
