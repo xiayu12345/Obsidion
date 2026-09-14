@@ -1,10 +1,11 @@
 ---
+title: 音乐骑士 eMMC · p1_emmc_LQ140M1JW61
 type: project
 status: 验证
 config: p1_emmc_LQ140M1JW61
 start: 2026-08-07
 ---
-# p1_emmc_LQ140M1JW61
+# 音乐骑士 eMMC · p1_emmc_LQ140M1JW61
 
 LQ140 的纯 eMMC 板型，显示/触摸跟 [[LQ140M1JW61]]。
 

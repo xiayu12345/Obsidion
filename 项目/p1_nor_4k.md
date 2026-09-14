@@ -1,10 +1,11 @@
 ---
+title: HDMI 基线 · p1_nor_4k
 type: project
 status: 验证
 config: p1_nor_4k
 start: 2026-07-23
 ---
-# p1_nor_4k
+# HDMI 基线 · p1_nor_4k
 
 无屏，HDMI 线。
 

@@ -2,6 +2,8 @@ filters:
   and:
     - 'type == "project"'
 properties:
+  title:
+    displayName: 项目
   status:
     displayName: 状态
   config:
@@ -15,14 +17,14 @@ views:
       and:
         - 'status != "交付"'
     order:
-      - file.name
+      - title
       - status
       - config
       - start
   - type: table
     name: 全部
     order:
-      - file.name
+      - title
       - status
       - config
       - start
