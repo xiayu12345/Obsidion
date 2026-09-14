@@ -1,0 +1,127 @@
+diff --git a/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
+index 1e8f6b152..8611ebb85 100755
+--- a/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
+@@ -2547,7 +2547,9 @@ CONFIG_LCD_SUPPORT_K101IM2QA04=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ # CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
++# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ # CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4
+index 581d0e5eb..bc7bc7d67 100755
+--- a/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_4k/linux-5.4/config-5.4
+@@ -2550,6 +2550,7 @@ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ # CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
+ # CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ # CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
+index dd13670b1..7edf4837a 100755
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/config-5.4
+@@ -2549,6 +2549,7 @@ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ # CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
+ CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y
+ # CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
+index 8563bdb60..083b45354 100755
+--- a/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
+@@ -2548,7 +2548,9 @@ CONFIG_LCD_SUPPORT_K101IM2QA04=y
+ CONFIG_LCD_SUPPORT_K101_IM2BYL02_L_800X1280=y
+ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ CONFIG_LCD_SUPPORT_JYY070_LVDS=y
++# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ # CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/config-5.4
+index 92f1b15e1..b6c1a366c 100755
+--- a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/config-5.4
+@@ -2548,6 +2548,7 @@ CONFIG_LCD_SUPPORT_K080_IM2HYL802R_800X1280=y
+ # CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
+ # CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set
+ CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP=y
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # end of LCD panels select
+ 
+ #
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig b/openwrt/target/h133/h133-p1_nor/defconfig
+index fd393f441..969a5d1da 100644
+--- a/openwrt/target/h133/h133-p1_nor/defconfig
++++ b/openwrt/target/h133/h133-p1_nor/defconfig
+@@ -6,8 +6,11 @@ CONFIG_MODULES=y
+ CONFIG_HAVE_DOT_CONFIG=y
+ CONFIG_TARGET_h133_p1_nor=y
+ # CONFIG_TARGET_h133_p1_nor_8733 is not set
+-# CONFIG_TARGET_h133_p1_nor_JYY070 is not set
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p1_nor_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_emmc_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_nor_LQ190 is not set
++# CONFIG_TARGET_h133_p1_nor_JYY070 is not set
+ # CONFIG_TARGET_h133_p1_nor_4k is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_Default=y
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+index 22310cf42..451015c8d 100644
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+@@ -8,8 +8,10 @@ CONFIG_HAVE_DOT_CONFIG=y
+ # CONFIG_TARGET_h133_p1_nor_4k is not set
+ CONFIG_TARGET_h133_p1_nor_8733=y
+ # CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+-# CONFIG_TARGET_h133_p1_nor_JYY070 is not set
+ # CONFIG_TARGET_h133_p1_nor_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_emmc_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_nor_LQ190 is not set
++# CONFIG_TARGET_h133_p1_nor_JYY070 is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_8733_Default=y
+ CONFIG_TARGET_BOARD="h133-p1_nor_8733"
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+index 7201e91b7..0df43ecfc 100644
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+@@ -7,8 +7,11 @@ CONFIG_HAVE_DOT_CONFIG=y
+ # CONFIG_TARGET_h133_p1_nor is not set
+ # CONFIG_TARGET_h133_p1_nor_4k is not set
+ # CONFIG_TARGET_h133_p1_nor_8733 is not set
+-CONFIG_TARGET_h133_p1_nor_JYY070=y
++# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p1_nor_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_emmc_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_nor_LQ190 is not set
++CONFIG_TARGET_h133_p1_nor_JYY070=y
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_JYY070_Default=y
+ CONFIG_TARGET_BOARD="h133-p1_nor_JYY070"
+diff --git a/openwrt/target/h133/h133-p1_nor_LQ140M1JW61/defconfig b/openwrt/target/h133/h133-p1_nor_LQ140M1JW61/defconfig
+index cd06686e3..ae3a22868 100644
+--- a/openwrt/target/h133/h133-p1_nor_LQ140M1JW61/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_LQ140M1JW61/defconfig
+@@ -10,6 +10,8 @@ CONFIG_HAVE_DOT_CONFIG=y
+ # CONFIG_TARGET_h133_p1_nor_JL_M101 is not set
+ # CONFIG_TARGET_h133_p1_nor_JYY070 is not set
+ CONFIG_TARGET_h133_p1_nor_LQ140M1JW61=y
++# CONFIG_TARGET_h133_p1_emmc_LQ140M1JW61 is not set
++# CONFIG_TARGET_h133_p1_nor_LQ190 is not set
+ # CONFIG_TARGET_h133_p2 is not set
+ CONFIG_TARGET_h133_p1_nor_LQ140M1JW61_Default=y
+ CONFIG_TARGET_BOARD="h133-p1_nor_LQ140M1JW61"

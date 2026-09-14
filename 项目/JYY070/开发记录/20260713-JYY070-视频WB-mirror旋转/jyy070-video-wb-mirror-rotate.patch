@@ -1,0 +1,106 @@
+diff --git a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+index 786246cb0..c76fec9a3 100644
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -65,6 +65,14 @@ ifeq ($(CONFIG_AW_ION_ALLOC_IOMMU),y)
+     KERNEL_VERSION_ION = CONF_KERNEL_IOMMU
+ endif
+ 
++# WB mirror CPU 旋转角（度）；对齐 sunxifb LV_PROJECTOR_DISP_ROTATE，tlayer_ctrl #if VIDEO_WB_MIRROR_ROTATE
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733),y)
++TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
++endif
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
++TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=0
++endif
++
+ ifeq ($(MEDIA_TARGET_BOARD_PLATFORM), y)
+ 
+ ifeq ($(CONFIG_TRECORDER)_$(CONFIG_ONLY_DISABLE_AUDIO), y_y)
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+index fc2432c41..2af2c2f43 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
++++ b/openwrt/package/thirdparty/gui/lvgl-8/sunxifb.mk
+@@ -37,6 +37,11 @@ ifeq ($(CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE),y)
+ TARGET_CFLAGS+=-DUSE_SUNXIFB_DIRECT_MODE
+ endif
+ 
++# p1_nor_JYY070: UI/视频旋转均为 0（LV_PROJECTOR_DISP_ROTATE / VIDEO_WB_MIRROR_ROTATE）
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070),y)
++TARGET_CFLAGS+=-DLV_PROJECTOR_DISP_ROTATE=0
++endif
++
+ ifeq ($(CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER),y)
+ TARGET_CFLAGS+=-DUSE_HARDWARE_JPEGDECODER
+ TARGET_CFLAGS+=-I$(STAGING_DIR)/usr/include/allwinner/include
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+index 1c5dfd693..b69d63830 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+@@ -53,6 +53,14 @@
+ 
+ #define DISPLAY_PICTURE_TIMEDIFF (0)
+ 
++/*
++ * VIDEO_WB_MIRROR_ROTATE（度）：libtmedia/Makefile 按 target -D；dualDispPreparePerScreen 消费。
++ * 0=原 buffer 直填 per_screen_*；90=DispNvRotate90；180/270 预留。
++ */
++#ifndef VIDEO_WB_MIRROR_ROTATE
++#define VIDEO_WB_MIRROR_ROTATE 0
++#endif
++
+ long long TPlayerGetNowMs()
+ {
+ 	struct timeval tv;
+@@ -436,6 +444,7 @@ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+     if (port == NULL || (port->disp_screen != 3 && port->disp_screen != 1))
+         return -1;
+ 
++#if VIDEO_WB_MIRROR_ROTATE == 90
+     if (!lc->mCreateRotateBufFlag) {
+         if (createRotateBuf((LayerCtrl*)lc, pPicture->nHeight, pPicture->nWidth) != 0)
+             return -1;
+@@ -498,6 +507,17 @@ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+     port->per_screen_rb[0].v_phaddr = port->per_screen_rb[0].u_phaddr
+             + (rotW * rotH) / 4;
+     port->per_screen_rb[0].isExtPhy = VIDEO_USE_EXTERN_ION_BUF;
++#elif VIDEO_WB_MIRROR_ROTATE == 180 || VIDEO_WB_MIRROR_ROTATE == 270
++    logw("[MIPI-VID] VIDEO_WB_MIRROR_ROTATE=%d not implemented", VIDEO_WB_MIRROR_ROTATE);
++    return -1;
++#else
++    /* VIDEO_WB_MIRROR_ROTATE==0：per_screen_* 填原横屏 buffer，路径与旋转版一致 */
++    if (pPicture->pData0 == NULL)
++        return -1;
++
++    memcpy(&port->per_screen_vp[0], landscape_vp, sizeof(videoParam));
++    port->per_screen_rb[0] = *landscape_rb;
++#endif
+ 
+     if (port->disp_screen == 3) {
+         memcpy(&port->per_screen_vp[1], landscape_vp, sizeof(videoParam));
+@@ -577,13 +597,14 @@ static int SetLayerParam(LayerContext* lc, VideoPicture* pPicture,LayerBufMode m
+ #if DISPLAY_PICTURE_TIMEDIFF
+         long long queue_to_display_start = TPlayerGetNowMs();
+ #endif
++    /* WB mirror / dual disp：统一 dualDispPreparePerScreen → per_screen_* → queueToDisplay */
+     if (lc->mDispOutPort->disp_screen == 3
+             || lc->mDispOutPort->disp_screen == 1) {
+         static long long s_dual_rot_count = 0;
+         int rot_index = (int)(s_dual_rot_count % ROTATE_BUFFER_NUM);
+ 
+         if (dualDispPreparePerScreen(lc, pPicture, &vparam, &rBuf, rot_index) != 0)
+-            logw("[MIPI-VID] rotate fallback: landscape buffer");
++            logw("[MIPI-VID] per_screen fallback: landscape buffer");
+         s_dual_rot_count++;
+     }
+ 	lc->mDispOutPort->queueToDisplay(lc->mDispOutPort, vparam.srcInfo.w * vparam.srcInfo.h * 3 / 2, &vparam, &rBuf);
+@@ -1571,7 +1592,8 @@ LayerCtrl* LayerCreate(VideoFrameCallback callback,void* pUser)
+ 	lc->mDispOutPort->SetZorder(lc->mDispOutPort, VIDEO_ZORDER_BOTTOM);
+ 	lc->mDispOutPort->setEnable(lc->mDispOutPort, 1);
+ 	pthread_mutex_unlock(&configMtx);
+-	logw("[WB-MIRROR] video disp_screen=1 (DE0/MIPI only, HDMI via WB mirror)");
++	logw("[WB-MIRROR] video disp_screen=1 (DE0 only, HDMI WB), "
++	     "VIDEO_WB_MIRROR_ROTATE=%d", VIDEO_WB_MIRROR_ROTATE);
+     logd("screen:w %d, screen:h %d", lc->nScreenWidth, lc->nScreenHeight);
+     lc->pMemops = GetMemAdapterOpsS();
+     int openRet = SunxiMemOpen(lc->pMemops);

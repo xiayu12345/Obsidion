@@ -1,0 +1,1364 @@
+diff --git a/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JL_M101.md b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JL_M101.md
+new file mode 100644
+index 000000000..094955623
+--- /dev/null
++++ b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JL_M101.md
+@@ -0,0 +1,78 @@
++# H133 p1_nor_JL_M101 板级档案（京龙 JL-M101 10.1" MIPI）
++
++> **定稿（2026-07-22）**：实机已完整出图。从 `p1_nor_8733` 克隆；板差异只进本板件目录。  
++> 详细笔记：[20260722-JL_M101-板件新建与MIPI显示定稿](../../开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/README.md)  
++> phase1 补丁与调试流水：[20260720-JL_M101-JD9365DA-MIPI适配](../../开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配/开发记录.md)
++
++## 工程标识
++
++| 项 | 值 |
++|----|-----|
++| 板级 | **p1_nor_JL_M101** |
++| 屏 | JL-M101B196-P21WX-M402632，10.1" **800×1280 MIPI 4-lane**，IC **JD9365DA-H3**，`jl_m101_jd9365da` |
++| UI / fb0 | **800×1280**（与 `p1_nor_8733` 同） |
++| 触摸 | 暂沿用 8733/GT911；GSL3670 另开 |
++| WiFi | **RTL8733BU**（继承 8733，不开 AIC8800） |
++| lunch | `h133-p1_nor_JL_M101-tina` |
++| 镜像 | `out/h133_linux_p1_nor_JL_M101_uart0_nor.img` |
++| 定稿 md5（参考） | `05a696f4b7672bc692c645cc3e8bb468`（重编会变） |
++| 板级配置 | `device/config/chips/h133/configs/p1_nor_JL_M101/` |
++| OpenWrt target | `openwrt/target/h133/h133-p1_nor_JL_M101/` |
++| 编译 | `./tools/build_p1_nor_JL_M101.sh [full\|kernel\|rootfs]` |
++
++## 板件隔绝
++
++| 允许 | 禁止 |
++|------|------|
++| 只改 `configs/p1_nor_JL_M101/**`、`h133-p1_nor_JL_M101/**` | 改 `p1_nor` / `p1_nor_8733` / `JYY070` 的 DTS |
++| panel 用独立 `jl_m101_jd9365da.c` | 改公共 `default_panel.c` 迁就本屏 |
++| 兄弟板 config 写 JL `not set` | 把京龙 init 塞进共享板 DTS |
++
++## 显示定稿（lcd0）
++
++| 项 | 值 |
++|----|-----|
++| `lcd_driver_name` | `jl_m101_jd9365da` |
++| 时序 | `hbp/ht/hspw=40/880/20`，`vbp/vt/vspw=24/1324/4`，`dclk=70` |
++| DSI | `lcd_if=4`，`lane=4`，`dsi_if=0`（video） |
++| RESET | `lcd_gpio_0=PB11`；转接板 **3.3V-RESET：R52=0R，R53=NC** |
++| 背光 | `lcd_pwm_ch=0`（PB12=PWM0），`freq=50000`，`LCD_bl_open`；**勿** `lcd_bl_en=PB12` |
++| U-Boot | `disp_init_enable=0`（避免 smooth 跳过内核灌码；logo 可后续再开） |
++
++## 旋转与坐标（对齐 8733）
++
++| 链路 | 定稿 | 说明 |
++|------|------|------|
++| **UI** `disp_rotate` | **3** | `/etc/setting.ini` |
++| **触摸** `tp_rotate` | **0** | 换 GSL3670 后再调 |
++| **视频** `VIDEO_WB_MIRROR_ROTATE` | **90** | `libtmedia` 已含本 target |
++
++```ini
++[display]
++disp_rotate = 3
++tp_rotate = 0
++```
++
++## 硬件资料
++
++- `H133-AI-Skills/硬件资料/四川京龙/JL-M101B196-P21WX-M402632 规格书V1.0.pdf`
++- `…/C-JD9365DA-H3_…_800x1280_…20210830 (1)(1).txt`（init）
++- `…/s10-h133-v1_0625.pdf`（CON5 / R52·R53 / PT4117，PWM=50kHz）
++- `…/TP-H10_H133 V2.0 2026.6.12.pdf`
++
++## 与其它板
++
++| 板 | 屏 | UI 软旋 | 视频 WB | WiFi |
++|----|----|---------|---------|------|
++| `p1_nor_8733` | MIPI 800×1280 `default_lcd` | 3 | 90 | 8733BU |
++| **本板** | **同分辨率 + JD9365 init + PWM0 背光** | **3** | **90** | **8733BU** |
++| `p1_nor_JYY070` | LVDS 1024×600 | 0 | 0 | 8733BU |
++
++## 编译
++
++```bash
++./tools/build_p1_nor_JL_M101.sh kernel   # panel/DTS/uboot
++./tools/build_p1_nor_JL_M101.sh full
++```
++
++切回其它板前必须重新 `lunch` 并重编对应 kernel。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260720-JL_M101-JD9365DA-MIPI\351\200\202\351\205\215/\345\274\200\345\217\221\350\256\260\345\275\225.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260720-JL_M101-JD9365DA-MIPI\351\200\202\351\205\215/\345\274\200\345\217\221\350\256\260\345\275\225.md"
+new file mode 100644
+index 000000000..91f82a432
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260720-JL_M101-JD9365DA-MIPI\351\200\202\351\205\215/\345\274\200\345\217\221\350\256\260\345\275\225.md"
+@@ -0,0 +1,371 @@
++# JL-M101 JD9365DA MIPI 适配 — 开发记录
++
++> **状态更新（2026-07-22）：实机已完整出图。**  
++> 定稿笔记（板件新建 + 显示开发）请读：  
++> [../20260722-JL_M101-板件新建与MIPI显示定稿/README.md](../20260722-JL_M101-板件新建与MIPI显示定稿/README.md)  
++> 本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-07-20（实机调试至 2026-07-21；**出图定稿 2026-07-22**） |
++| 板型 | **`p1_nor_JL_M101`** |
++| 参照板型 | **`p1_nor_8733`**（显示链路 + RTL8733BU；DTS 原软链 `p1_nor`） |
++| 屏型号 | JL-M101B196-P21WX-M402632 |
++| 驱动 IC | JD9365DA-H3 |
++| 分辨率 / 接口 | 800×1280，MIPI DSI **4-lane**，video mode |
++| panel 名 | `jl_m101_jd9365da` |
++| 合并补丁 | [patches/jl-m101-mipi-phase1.patch](./patches/jl-m101-mipi-phase1.patch) |
++| 板级档案 | [board-profile-p1_nor_JL_M101.md](../../../skills/h133-display/board-profile-p1_nor_JL_M101.md) |
++| 定稿文档 | [20260722-…定稿](../20260722-JL_M101-板件新建与MIPI显示定稿/README.md) |
++| 索引 | [../README.md](../README.md) |
++
++---
++
++## 0. 当前结论（先看这个）
++
++**从 `p1_nor_8733` 克隆独立板级，只换 MIPI panel（京龙 init），UI/WiFi/视频旋转保持 8733 不变。**  
++禁止改共享的 `p1_nor` / `p1_nor_8733` DTS 迁就本屏。
++
++```bash
++# 应用补丁（干净树）
++bash H133-AI-Skills/开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配/patches/apply-jl-m101-mipi.sh
++
++# 编译（与 JYY070 脚本同结构）
++./tools/build_p1_nor_JL_M101.sh kernel   # 先验证 panel
++./tools/build_p1_nor_JL_M101.sh full     # 完整镜像
++# 产物：out/h133_linux_p1_nor_JL_M101_uart0_nor.img
++```
++
++**实机进度（定稿）：** WiFi 8733bu 正常；内核 `panel_init` + PWM0@50kHz 背光；转接板 **3.3V-RESET**；**LCD 已完整出图**。  
++历史卡点（已闭环）：U-Boot smooth、DSI 读探针、USB 占 PB11/PB12、RESET 分压档、PB12 须为 PWM0 而非 `lcd_bl_en`。详见 [定稿 04-踩坑](../20260722-JL_M101-板件新建与MIPI显示定稿/04-实机调试与踩坑.md)。
++
++**Panel 编入方式（与工程一致）：** `Kconfig` 中 `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA` **`default y`**（同 JYY070）；多 panel 可同时编进内核，运行时靠 DTS `lcd_driver_name` 选择。**不需要**独立 fragment。
++
++| 项 | `p1_nor_8733` | **本板 `p1_nor_JL_M101`** |
++|---|---|---|
++| 屏驱动 | `default_lcd`（无 JD9365 init） | **`jl_m101_jd9365da`**（京龙 init） |
++| 分辨率 | 800×1280 MIPI | **同** |
++| DTS | 软链 `p1_nor` | **独立** `linux-5.4/board.dts` |
++| UI `disp_rotate` | 3 | **3** |
++| 视频 `VIDEO_WB` | 90 | **90** |
++| WiFi | RTL8733BU | **同**（不开 AIC8800） |
++| 背光 | （旧）`lcd_bl_en` GPIO | **PWM0@PB12 / 50kHz** |
++
++---
++
++## 1. 背景与目标
++
++### 1.1 为何对齐 8733 而不是裸 p1_nor / JYY070
++
++| 参照 | 适用点 | 不直接当基线的原因 |
++|---|---|---|
++| **`p1_nor_8733`** | 同 MIPI 竖屏 UI、异显、**8733BU WiFi** | —（**选定基线**） |
++| `p1_nor` | 显示链路同源 | WiFi 为 AIC8800，与目标板不符 |
++| `p1_nor_JYY070` | 板件隔绝 / 分阶段文档可抄 | LVDS 横屏 + `disp_rotate=0`，显示框架不同 |
++
++### 1.2 硬件要点（规格书 + init + 主板）
++
++| 项 | 值 | 来源 |
++|---|---|---|
++| 模组 | JL-M101B196-P21WX-M402632 | 规格书 |
++| IC | JD9365DA-H3 | 规格书 / 模组说明 |
++| 分辨率 | 800(H)×1280(V) | 规格书 |
++| 接口 | MIPI 4-lane（D0–D3 + CLK） | 规格书 Pin |
++| Reset 时序 | H 5ms → L 10ms → H 120ms，再发码 | init txt |
++| Porch（vendor） | HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20 | init 头 |
++| Allwinner 换算 | `hspw=20 hbp=40 ht=880` / `vspw=4 vbp=24 vt=1324` | 与现 p1_nor 注释时序一致 |
++| RST / PWM | `PB11 = LCD-RST` / `PB12 = LCD-PWM(=PWM0)` | SoC GPIO 页 + `s10` LCM 页 |
++| 背光 PWM | `LCD-PWM → PT4117B EN`，**50kHz** | `s10-h133-v1_0625.pdf`：`PWM_Frequence=50KHz` |
++| 转接板 RESET | `LCD-RST → R52 → LCD_RST → CON5 pin6 RESET`；**R52/R53 选 3.3V 或 1.8V 分压** | `s10-h133-v1_0625.pdf`：`3.3V-RESET: R52=0R,R53=NC` / `1.8V-RESET: R52=1.5K,R53=1.8K` |
++| RESET 输入高 | VIH ≥ 0.7×IOVCC（VCC=3.3V 时约 **2.31V**） | JL 规格书 |
++| LCD 供电使能 | `LCD-EN` | 第 14/15 页；控制 LCD 偏压/模拟电源，不是背光 LED 电源 |
++| 背光 LED | `VLED+ / VLED-` | 第 14 页；外部背光接口，规格书典型约 12V/160mA |
++| 主板显示历史 | **JYY070 为 LVDS**，非 MIPI 参考 | 本主板 MIPI 走 PD 组 + 转接板 CON5，**未在实机验证过 DSI 出图** |
++| `0x80=0x03` | 四 lane | init |
++
++**关键差：** 8733 共用的 `default_lcd` **不发** JD9365 init；京龙屏必须独立 panel 灌码。`PB12` 不是普通 `lcd_bl_en` GPIO，而是 `LCD-PWM`，不能继续当背光 enable GPIO 使用。
++
++树内资料：
++
++- `H133-AI-Skills/硬件资料/四川京龙/JL-M101B196-P21WX-M402632 规格书V1.0.pdf`
++- `…/C-JD9365DA-H3_…_800x1280_…20210830 (1)(1).txt`
++- `H133-AI-Skills/硬件资料/TP-H10_H133 V2.0 2026.6.12.pdf`
++- `H133-AI-Skills/硬件资料/四川京龙/s10-h133-v1_0625.pdf`（主板↔屏 **40P 转接板**，含 R52/R53 RESET 档）
++- TP（后续）：`GSL3670_DataSheet_Chinese_RevA2.2.pdf`
++
++---
++
++## 2. 设计原则
++
++1. **板件隔绝**：新板 `p1_nor_JL_M101`；只改本板 `configs/` 与 `h133-p1_nor_JL_M101/`。  
++2. **一屏一驱动**：`jl_m101_jd9365da.c`，不改 `default_panel.c`。  
++3. **拆软链**：本板 `linux-5.4/` 为实文件（从 `p1_nor` 拷贝后再改），避免动 8733。  
++4. **App 先不动**：`disp_rotate=3`、`VIDEO_WB_MIRROR_ROTATE=90`，复用 8733 竖屏路径。  
++5. **最小公共改动**：仅 panel 注册、兄弟板 Kconfig/defconfig 的 `not set`、libtmedia 增加本 target。
++
++---
++
++## 3. 补丁分段
++
++| 段 | 文件 | 内容 |
++|---|---|---|
++| **01** | [01-kernel-panel.patch](./patches/01-kernel-panel.patch) | `jl_m101_jd9365da.c/.h`；`Kconfig` / `Makefile` / `panels.c` / `panels.h` |
++| **02** | [02-board-tree.patch](./patches/02-board-tree.patch) | `device/.../p1_nor_JL_M101/`（无 bootlogo）；`openwrt/.../h133-p1_nor_JL_M101/`；`tools/build_p1_nor_JL_M101.sh` |
++| **03** | [03-shared-hooks.patch](./patches/03-shared-hooks.patch) | libtmedia `VIDEO_WB=90` 含本板；`p1_nor`/`8733`/`JYY070` defconfig 与 kernel config 的 JL not-set |
++| **合并** | [jl-m101-mipi-phase1.patch](./patches/jl-m101-mipi-phase1.patch) | 01+02+03 |
++
++```bash
++bash patches/apply-jl-m101-mipi.sh          # 打合并补丁
++bash patches/apply-jl-m101-mipi.sh --check
++bash patches/apply-jl-m101-mipi.sh 01       # 只打 kernel panel
++bash patches/gen-jl-m101-mipi-patch.sh      # 从当前树重生成
++```
++
++`bootlogo.bmp`：不进补丁；apply 时若缺失则从 `p1_nor_8733` 复制。
++
++---
++
++## 4. 变更文件明细
++
++### 4.1 Kernel panel（01）
++
++| 文件 | 说明 |
++|---|---|
++| `kernel/.../lcd/jl_m101_jd9365da.c` | Reset 序列 + 京龙 init 全表 `dsi_gen_wr`；**无 DSI 读探针**；调通信阶段 **不拉背光**（`LCD_bl_*` 已从 open_flow 去掉） |
++| `brandy/.../jl_m101_jd9365da.c` | 与内核同 init 策略；U-Boot 侧同样去掉背光 |
++| `brandy/.../bootGUI/boot_gui.c` | `disp_init_enable=0` 时 skip，避免 smooth |
++| `kernel/.../lcd/jl_m101_jd9365da.h` | 导出 `jl_m101_jd9365da_panel` |
++| `kernel/.../lcd/Kconfig` | `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA` |
++| `kernel/.../disp/Makefile` | 编译 `jl_m101_jd9365da.o` |
++| `kernel/.../lcd/panels.c` / `panels.h` | 注册到 `panel_array` |
++
++**open_flow：** power_on（含 Reset：H 5ms → L 10ms → H 120ms）→ panel_init → tcon_enable；（调屏阶段无 bl_open）。  
++**init 表：** 由京龙 txt 机械转换；`REGFLAG_DELAY` / `REGFLAG_END_OF_TABLE` 按 **cmd** 字段判断（与 vendor `{REGFLAG_DELAY, ms, {}}` 一致）。
++
++### 4.2 板级树（02）
++
++| 路径 | 说明 |
++|---|---|
++| `device/config/chips/h133/configs/p1_nor_JL_M101/` | 从 8733 克隆；`linux-5.4` **实目录**（非软链） |
++| `…/linux-5.4/board.dts` | `lcd_driver_name = "jl_m101_jd9365da"`；时序见上表；`PB11=LCD-RST`，`PB12=LCD-PWM` |
++| `…/linux-5.4/config-5.4` | `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y`；JYY070 LVDS 关闭 |
++| `openwrt/target/h133/h133-p1_nor_JL_M101/` | lunch `h133-p1_nor_JL_M101-tina`；hostname `TinaLinux-JL_M101`；继承 8733 包选型（含 `rtl8733bu-kmod`） |
++| `…/busybox-init-base-files/etc/setting.ini` | `disp_rotate=3`，`tp_rotate=0`（随 8733） |
++| `tools/build_p1_nor_JL_M101.sh` | 对齐 JYY070 编译脚本：`autoconfig` + kernel/bootloader + `m` + `p` |
++
++### 4.3 公共挂钩（03）
++
++| 文件 | 说明 |
++|---|---|
++| `openwrt/.../libtmedia/Makefile` | `CONFIG_TARGET_h133_p1_nor_JL_M101` → `VIDEO_WB_MIRROR_ROTATE=90` |
++| `openwrt/target/h133/h133-p1_nor{,_8733,_JYY070}/defconfig` | `# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set` |
++| `device/.../p1_nor/.../config-5.4`、`p1_nor_JYY070/.../config-5.4` | `# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set` |
++
++---
++
++## 5. DTS lcd0 要点（本板，已按 s10 原理图对齐）
++
++下面是按当前原理图结论应采用的方向；实际 DTS 仍需逐项核对 `lcd_pwm_ch` / `LCD-EN` 绑定，不能只把 `PB12` 当普通 GPIO 拉高。
++
++```dts
++lcd_driver_name     = "jl_m101_jd9365da";
++lcd_if              = <4>;          /* DSI */
++lcd_x / lcd_y       = <800> / <1280>;
++lcd_dclk_freq       = <70>;         /* 实机可再调；vendor PLL_CLOCK=420 为 MTK 口径 */
++lcd_hbp/ht/hspw     = <40>/<880>/<20>;
++lcd_vbp/vt/vspw     = <24>/<1324>/<4>;
++lcd_dsi_lane        = <4>;
++lcd_gpio_0          = <&pio PB 11 …>;  /* RESET */
++/* s10 原理图：PB12=LCD-PWM → PT4117B EN，禁止当普通 lcd_bl_en GPIO */
++lcd_pwm_used        = <1>;
++lcd_pwm_ch          = <0>;             /* PB12 复用 PWM0（mux 0x3） */
++lcd_pwm_freq        = <50000>;         /* 原理图标注 PWM_Frequence=50KHz（非 500Hz） */
++```
++
++备注：
++
++- 2026-07-22：已按 `s10-h133-v1_0625` + 京龙 init 对齐——开 `pwm0@PB12`、`LCD_bl_open`；init/porch 本就与 vendor txt 一致。
++- `VLED+ / VLED-` 是屏背光 LED 供电输出/接口；板载由 PT4117B 从 5V 升压驱动。
++- `LCD-PWM` 进 PT4117B 的 EN；勿把 PB12 配成 `lcd_bl_en` 纯 GPIO。
++- `usbc0` 里曾残留 `usb_id_gpio=PB11`、`usb_det_vbus_gpio=PB12`，会和 LCD RST/PWM 冲突，已从本板 DTS 移除。
++
++---
++
++## 6. 编译与验收
++
++### 6.1 编译
++
++```bash
++./tools/build_p1_nor_JL_M101.sh kernel
++./tools/build_p1_nor_JL_M101.sh full
++# 或 lunch 后：./build.sh autoconfig -o openwrt -i h133 -b p1_nor_JL_M101 -n nor
++```
++
++注意：改 panel 后需重编内核；`m` 前建议已有 Tina `out/kernel/build`（8733BU 包依赖 `Module.symvers`）。
++
++### 6.2 验收清单
++
++- [ ] 内核编过，无 `jl_m101_jd9365da` 相关 link/compile error  
++- [ ] `dmesg` 可见 panel / DSI / lcd 打开  
++- [ ] 背光亮；无花屏 / 闪屏；分辨率 800×1280  
++- [ ] desk：`disp_rotate=3`，方向与 8733 一致  
++- [ ] WiFi 仍 `rtl8733bu`，bsp **未**开 AIC8800  
++- [ ] 串编回归：`p1_nor_8733` / `p1_nor_JYY070` DTS 未被本改动改坏  
++
++### 6.3 常见问题
++
++| 现象 | 优先查 |
++|---|---|
++| 背光亮但无图 | 若已有 `panel_init` + `attached ok`：查 **转接板 RESET 分压（R52/R53）**、RESET 波形、MIPI CLK/HS；勿对 RESET 外部恒压灌 3.3V |
++| `panel_init` 后无后续 DISP log | 曾由 **DSI LP 读探针** 引起 DPHY 卡读态 + `dsi_gen_wr` 死等；已删探针 |
++| `dclk` 配置 70 但 log 显示 `dclk real 105`、`dsi_rate 150` | H133 BSP `clk_tbl` + `dsi_div=bitwidth/lane` **正常**，非本板独有配错 |
++| 完全不亮 | 背光外部电源/恒流源、`LCD-PWM`、`LCD-EN`、内核 `lcd_used`、panel 名是否匹配 |
++| `8733bu: Unknown symbol mutex_destroy` | 内核 `.config` 变过 / 清过 `.config` 后未重编 ko：`./tools/build_p1_nor_JL_M101.sh rootfs` |
++| 打补丁失败 | 是否已存在板级目录；用 `--check`；或分段打 01→02→03 |
++| WiFi Oops | 先 `kernel` 再 `m`（与 JYY070 8733BU 记录相同） |
++
++---
++
++## 7. 未做（后续）
++
++| 项 | 说明 |
++|---|---|
++| U-Boot logo | 目前 `boot_gui_init` 按 `disp_init_enable=0` 跳过，避免内核 smooth 跳过灌码；调屏完成后再决定是否恢复 U-Boot logo |
++| GSL3670 触摸 | 资料已有；现仍沿用 8733 GT911 配置 |
++| 实机微调 | RESET 硬件档确认后：`LCD-PWM`、`LCD-EN`、MIPI 示波器、gamma |
++| 背光软件 | **已恢复**（2026-07-22）：`lcd_pwm_ch=0` / 50kHz / `LCD_bl_open` |
++| 双板串编脚本 | 可仿 `verify_build_8733_then_JYY070.sh` 加 JL_M101 |
++
++---
++
++## 8. 与 JYY070 显示文档的关系
++
++| 本目录 | JYY070 LVDS 文档 |
++|---|---|
++| 板件隔绝、分阶段补丁、board-profile | 流程模板可抄 |
++| MIPI + JD9365 init | 对应 JYY070 的「LVDS 时序 panel」，接口不同 |
++| UI 对齐 **8733（rot=3）** | JYY070 对齐的是「异显框架 + rot=0」 |
++
++---
++
++## 9. 2026-07-20 实机调试流水
++
++### 9.1 初始现象
++
++- 现象：背光亮，但 LCD 无图；HDMI 有图；烧回 `p1_nor_8733` + 原配屏可出图。
++- 结论：主系统、DE/HDMI、rootfs/UI 不是首要问题；问题集中在 JL_M101 的 LCD MIPI/panel/电源控制。
++
++### 9.2 U-Boot smooth display 问题
++
++| 现象 / log | 判断 | 处理 |
++|---|---|---|
++| U-Boot 出现 `boot_gui_init:start`、`jl_m101_jd9365da: panel_init`，内核出现 `smooth display screen:0` | U-Boot 已开屏并写 `boot_disp`，内核 smooth 复用状态，跳过内核 `cfg_open_flow` | `boot_gui.c` 读取 `disp_init_enable`，为 0 时直接 `boot_gui_init:skip (disp_init_enable=0)`；`uboot-board.dts` 设 `disp_init_enable=<0>` |
++| 新 log 出现 `boot_gui_init:skip`，内核不再 `smooth display`，并出现 `jl_m101_jd9365da: panel_init` | smooth 问题排除，内核确实开始灌 JD9365 init | 进入 MIPI/panel 层排查 |
++
++构建注意：一次 `uboot_force` 触发 OpenWrt rootfs 目标失败，但日志显示 `boot_gui.o` 和 `u-boot.bin` 已重新生成；后续用 `./build.sh pack` 出包。另一次 U-Boot 增量编译遇到旧 `.o` 截断，使用 `make clean` 清理 U-Boot 后恢复。
++
++### 9.3 init 写法试探
++
++| 改动 | 镜像 md5 | 结果 |
++|---|---|---|
++| 去掉额外 soft reset，保留 `0x11/0x29` 特判为 DCS 0 参数 | `d0d7f6a699bcd71ce2a1cef0c45a24f6` / 后续修正包 `cb7a5b1dd4aef881850edc2750666c91` | U-Boot skip 生效，内核执行 panel_init，但 LCD 仍无图 |
++| 全表按同系 `jd9366ab_3` 方式走 `dsi_gen_wr()`，不再特判 `0x11/0x29` | `46f80d6df6d17389b058c556a18ac8bf` | 现象不变 |
++
++结论：单纯在 GEN/DCS 之间切 `0x11/0x29` 没有命中根因。
++
++### 9.4 DSI 读探针
++
++临时在 `kernel/.../jl_m101_jd9365da.c` 里加入 probe：
++
++- `sunxi_lcd_dsi_dcs_read(sel, 0x0A, ...)`
++- `sunxi_lcd_dsi_dcs_read(sel, 0xDA, ...)`
++
++诊断包：
++
++| 镜像 md5 | 关键 log | 判断 |
++|---|---|---|
++| `eaa4edf2d33ba6414600f8774d7eacad` | `probe pre 0x0A ret=0 num=0 val=00 00 00 00`，`probe pre 0xDA ret=0 num=0 val=00 00 00 00` | 屏当前没有回读命令；继续盲改 init 表意义不大，应查 RESET/电源/MIPI LP 命令通道 |
++
++注意：曾只看到 `pre` probe、无 `post`，根因见 **§9.6**（探针已删）。
++
++### 9.5 GPIO / 原理图核对
++
++原理图 `TP-H10_H133 V2.0 2026.6.12.pdf`：
++
++| 网络 | H133 管脚 / 说明 | 结论 |
++|---|---|---|
++| `LCD-RST` | `PB11` | panel reset 脚 |
++| `LCD-PWM` | `PB12` | 背光升压芯片 EN/调光输入，原理图标注 `PWM_Frequency=500Hz` |
++| `LCD-EN` | 第 14/15 页电源使能 | LCD 偏压/模拟电源使能，不是背光 LED 电源 |
++| `VLED+ / VLED-` | 背光接口 | 规格书典型约 12V/160mA；可用外部恒流背光源临时验证亮度 |
++
++曾发现本板 DTS `usbc0` 残留：
++
++```dts
++usb_id_gpio = <&pio PB 11 GPIO_ACTIVE_HIGH>;
++usb_det_vbus_gpio = <&pio PB 12 GPIO_ACTIVE_HIGH>;
++```
++
++这与 `LCD-RST/LCD-PWM` 冲突，已从 `p1_nor_JL_M101` 的 `board.dts` / `linux-5.4/board.dts` 移除。修正包：
++
++| 镜像 md5 | 内容 |
++|---|---|
++| `c5132015ca06bfc4ff4ba35b5aeeb7db` | 移除 USB 对 PB11/PB12 的占用，保留 probe 日志 |
++
++### 9.6 DSI 读探针导致 panel_init 挂死（已修复）
++
++| 现象 | 根因 | 处理 |
++|---|---|---|
++| log 仅有 `probe pre 0x0A/0xDA num=0`，无 `post`、后续 DISP 停 | LP 读触发 BTA，屏不回读时 DPHY 卡在读态；后续 `dsi_gen_wr` 内 `while(dsi_inst_busy)` **无超时** | 删除 `LCD_panel_probe` 及全部 `sunxi_lcd_dsi_dcs_read` |
++
++修复后典型 log：`jl_m101_jd9365da: panel_init` → `attached ok, mgr0<-->dev0` → `type:1,mode:0`（video）。
++
++### 9.7 调通信阶段：背光与 DTS
++
++- 曾临时：外部电源供 `VLED+` + `lcd_pwm_used=0`，open_flow 不含 `LCD_bl_open`。
++- **2026-07-22 已恢复板载背光软件路径**（见 §5）：`pwm0@PB12` / 50kHz / `LCD_bl_open`。
++- `usbc0` 对 PB11/PB12 的占用保持注释掉。
++
++### 9.8 屏侧电压与转接板 RESET（2026-07-21）
++
++| 测量点（用户：屏 FPC 侧） | 值 | 含义 |
++|---|---|---|
++| VCC | 3.3V | 数字供电正常 |
++| RESET | 1.8V（静态） | 低于 VIH≈2.31V（按 3.3V IO 计）时，屏可能**无法可靠退出复位/识别高电平** |
++
++转接板 `s10-h133-v1_0625.pdf`（CON5 40P 座旁）：
++
++- **R52**（0402）：串在 `LCD-RST`（主板）与 `LCD_RST`（座子 pin5/6 链路）之间；丝印 **R52**，靠 CON5 **LCD-RST / RESET** 网络。
++- **R53**（0402）：分压到 GND，标 **1.8K/NC**。
++- 注释：`3.3V-RESET: R52=0R,R53=NC`；`1.8V-RESET: R52=1.5K,R53=1.8K`。
++
++**必做区分（改电阻前）：** 万用表量 **R52 靠主板 `LCD-RST` 输入端**对地：
++
++| R52 输入端电压 | 结论 | 动作 |
++|---|---|---|
++| **3.3V** | 当前为 1.8V **分压档** | 改 R52=0R、R53=NC，撤外部灌 RESET，用现镜像重试 |
++| **1.8V** | SoC PB 域或上游即 1.8V | 换 R52/R53 **无效**，需电平转换或确认屏 IOVCC/逻辑电平 |
++
++**无效操作：** 对 RESET **外部恒压 3.3V** — 驱动需 **H→L 10ms→H** 硬件复位脉冲，外部强灌高电平会**与 PB11 对打**，脉冲发不出去，**不能**代替改 R52/R53。
++
++### 9.9 `lcd_dsi_if` burst 试验（已否定）
++
++| 配置 | 结果 |
++|---|---|
++| `lcd_dsi_if=<2>`（video burst），kernel + uboot DTS 同步 | 与 video 相同：`panel_init` 完成、`dclk real 105` / `dsi_rate 150`，**仍无图** |
++| 已恢复 | `lcd_dsi_if=<0>`（video mode） |
++
++### 9.10 当前待验证 / 下一步
++
++1. **硬件（最高优先级）：** 按 9.8 量 R52 输入端 → 必要时改 **3.3V-RESET** 档；勿外部灌 RESET。
++2. **若改档仍无图：** 示波器 CON5 **MIPI-CKP/N（pin14/15）** 是否有 HS 差分；无 HS → PHY/转接/lane；有 HS → init/屏体/极性。
++3. **软件：** 保持 `disp_init_enable=0`、无 DSI 读探针；背光已按原理图恢复 PWM0（仍须硬件 RESET 档正确）。
++4. **触摸：** GT911 I2C 失败为转接/屏线独立问题，与 LCD 无图可并行排。
++5. **镜像参考：** burst 试验打包 md5 `274a8e064e9dee08c496c3f897d0cb48`（已改回 video，重 pack 即可）。
++
++---
++
++*2026-07-20：phase1 落地；实机 MIPI 排查。*  
++*2026-07-21：软件管线确认完成；卡点收敛至转接板 RESET 电平/脉冲与 MIPI 物理层。*  
++*2026-07-22：按 s10 原理图 + 京龙 init 对齐背光（PWM0@PB12 / 50kHz / bl_open）；init 表无需改。*  
++*2026-07-22：实机完整出图；定稿笔记见 [20260722-JL_M101-板件新建与MIPI显示定稿](../20260722-JL_M101-板件新建与MIPI显示定稿/README.md)。*
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md"
+new file mode 100644
+index 000000000..ef00b5fe7
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/00-\346\200\273\350\247\210\344\270\216\345\256\232\347\250\277.md"
+@@ -0,0 +1,75 @@
++# 00 — 总览与定稿
++
++## 0.1 一句话结论
++
++从 **`p1_nor_8733` 克隆独立板级 `p1_nor_JL_M101`**，只换京龙 JD9365DA MIPI panel（独立驱动 + 厂商 init）；UI/WiFi/视频旋转对齐 8733。  
++**2026-07-22 实机已完整出图**（内核灌码 + PWM0 背光 + 转接板 RESET 电平正确）。
++
++禁止改共享的 `p1_nor` / `p1_nor_8733` / `p1_nor_JYY070` DTS 迁就本屏。
++
++## 0.2 定稿对照
++
++| 项 | `p1_nor_8733` | **本板 `p1_nor_JL_M101`** |
++|---|---|---|
++| 屏驱动 | `default_lcd`（无 JD9365 init） | **`jl_m101_jd9365da`**（京龙 init 全表） |
++| 分辨率 | 800×1280 MIPI | **同** |
++| DTS | 软链 `p1_nor` | **独立实文件** `linux-5.4/board.dts` |
++| RESET | `PB11` | **同**（`lcd_gpio_0`） |
++| 背光 | 曾作 `lcd_bl_en=PB12` GPIO | **`lcd_pwm_ch=0`（PB12=PWM0）+ 50kHz** → PT4117B EN |
++| UI `disp_rotate` | 3 | **3** |
++| 触摸 `tp_rotate` | 0 | **0**（暂 GT911；GSL3670 另开） |
++| 视频 `VIDEO_WB` | 90 | **90** |
++| WiFi | RTL8733BU | **同**（不开 AIC8800） |
++| U-Boot logo | 开 | 调屏期 **`disp_init_enable=0`**（避免 smooth 跳过内核灌码）；出图后可再开 |
++
++## 0.3 硬件要点（定稿）
++
++| 项 | 值 | 来源 |
++|---|---|---|
++| 模组 | JL-M101B196-P21WX-M402632 | 规格书 |
++| IC | JD9365DA-H3 | 规格书 / 模组 |
++| 分辨率 / 接口 | 800×1280，MIPI **4-lane** video | 规格书 + init `0x80=0x03` |
++| Reset 时序 | H 5ms → L 10ms → H 120ms，再发码 | 京龙 init txt |
++| Porch（vendor） | HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20 | init 头 |
++| Allwinner 换算 | `hspw=20 hbp=40 ht=880` / `vspw=4 vbp=24 vt=1324` | 与 8733 注释时序一致 |
++| `lcd_dclk_freq` | 70（log 常见 real 105 / dsi_rate 150，BSP `clk_tbl` 正常） | DTS |
++| RST | `PB11 = LCD-RST` → 转接板 R52 → CON5 pin6 | SoC + `s10` |
++| 背光 | `PB12 = LCD-PWM`（**PWM0**）→ PT4117B EN，**50kHz**；VLED± 为 LED 串 | `s10` LCM 页 |
++| RESET 电平档 | **3.3V-RESET：R52=0R，R53=NC**（VCC=3.3V 时 VIH≈2.31V） | `s10` 注释 |
++
++树内资料：
++
++- `H133-AI-Skills/硬件资料/四川京龙/JL-M101B196-P21WX-M402632 规格书V1.0.pdf`
++- `…/C-JD9365DA-H3_…_800x1280_…20210830 (1)(1).txt`
++- `…/s10-h133-v1_0625.pdf`（40P 转接板 CON5 / R52/R53 / PT4117）
++- `…/TP-H10_H133 V2.0 2026.6.12.pdf`（主板 GPIO）
++
++## 0.4 设计原则（必须遵守）
++
++1. **板件隔绝**：只改 `configs/p1_nor_JL_M101/`、`h133-p1_nor_JL_M101/`、本 panel 源。  
++2. **一屏一驱动**：`jl_m101_jd9365da.c`，不改 `default_panel.c`。  
++3. **拆软链**：本板 `linux-5.4/` 为实目录，避免动 8733。  
++4. **App 先不动**：复用 8733 竖屏（`disp_rotate=3`、`VIDEO_WB=90`）。  
++5. **最小公共改动**：仅 panel 注册 + 兄弟板 config `not set` + libtmedia 本 target。  
++6. **PB12 是 PWM，不是 bl_en GPIO**。
++
++## 0.5 关键路径速查
++
++| 角色 | 路径 |
++|---|---|
++| 内核 panel | `kernel/.../lcd/jl_m101_jd9365da.c` |
++| U-Boot panel | `brandy/.../lcd/jl_m101_jd9365da.c` |
++| 内核 DTS | `device/.../p1_nor_JL_M101/linux-5.4/board.dts` |
++| U-Boot DTS | `device/.../p1_nor_JL_M101/uboot-board.dts` |
++| kernel config | `…/linux-5.4/config-5.4` → `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y` |
++| OpenWrt | `openwrt/target/h133/h133-p1_nor_JL_M101/` |
++| 工厂 ini | `…/busybox-init-base-files/etc/setting.ini`（`disp_rotate=3`） |
++| 编译脚本 | `tools/build_p1_nor_JL_M101.sh` |
++
++## 0.6 出图成功镜像参考
++
++| 项 | 值 |
++|---|---|
++| 路径 | `out/h133_linux_p1_nor_JL_M101_uart0_nor.img` |
++| 定稿包 md5（2026-07-22） | `05a696f4b7672bc692c645cc3e8bb468` |
++| DTB 核对 | `lcd_pwm_used=1`，`lcd_pwm_ch=0`，`lcd_pwm_freq=50000`，`lcd_driver_name=jl_m101_jd9365da` |
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md"
+new file mode 100644
+index 000000000..28e5895b7
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/01-\346\235\277\344\273\266\346\226\260\345\273\272.md"
+@@ -0,0 +1,115 @@
++# 01 — 板件新建（从 p1_nor_8733 克隆）
++
++## 1.1 为何对齐 8733
++
++| 参照 | 适用点 | 不直接当基线的原因 |
++|---|---|---|
++| **`p1_nor_8733`** | 同 MIPI 竖屏 UI、异显、**8733BU WiFi** | —（**选定基线**） |
++| `p1_nor` | 显示链路同源 | WiFi 为 AIC8800 |
++| `p1_nor_JYY070` | 「板件隔绝 + 分阶段文档」可抄 | LVDS 横屏 + `disp_rotate=0`，显示框架不同 |
++
++**目标：** 只换屏驱动与本板 DTS；不把京龙屏硬塞进共享 `p1_nor`。
++
++## 1.2 新建目录清单
++
++### A. 板级配置（device）
++
++源：`device/config/chips/h133/configs/p1_nor_8733/`  
++目标：`device/config/chips/h133/configs/p1_nor_JL_M101/`
++
++| 项 | 处理 |
++|---|---|
++| 整树拷贝 | `cp -a p1_nor_8733 p1_nor_JL_M101` |
++| `linux-5.4/` | **必须拆软链**：从 `p1_nor`/`8733` 拷成**实目录**后再改（8733 原是软链 `p1_nor`） |
++| `board.dts` | 顶层可软链到 `linux-5.4/board.dts`（与工程习惯一致） |
++| `uboot-board.dts` | 实文件，与内核 lcd0 同步改 |
++| `bootlogo.bmp` | 可从 8733 复制；可不进补丁 |
++| `openwrt/`、`bsp/`、`env.cfg`、分区 fex | 随克隆保留；hostname 等在 OpenWrt target 改 |
++
++关键改动点（详情见 [03](./03-DTS与背光PWM.md)）：
++
++- `lcd_driver_name = "jl_m101_jd9365da"`
++- 时序 / DSI 4-lane / `lcd_gpio_0=PB11`
++- `lcd_pwm_ch=0` + `pwm0` 绑 `PB12`
++- `usbc0` **去掉**对 PB11/PB12 的占用
++- `config-5.4`：`CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y`；关无关 LVDS panel（若需）
++
++### B. OpenWrt target
++
++源：`openwrt/target/h133/h133-p1_nor_8733/`  
++目标：`openwrt/target/h133/h133-p1_nor_JL_M101/`
++
++| 项 | 处理 |
++|---|---|
++| `defconfig` | `CONFIG_TARGET_h133_p1_nor_JL_M101=y`，BOARD 名改为本板 |
++| `vendorsetup.sh` / lunch | `h133-p1_nor_JL_M101-tina` |
++| `busybox-init-base-files/etc/setting.ini` | `disp_rotate=3`，`tp_rotate=0`（随 8733） |
++| 包选型 | 继承 8733（含 `rtl8733bu-kmod`），**不开 AIC8800** |
++| hostname | 如 `TinaLinux-JL_M101`（可选） |
++
++### C. 编译脚本
++
++`tools/build_p1_nor_JL_M101.sh`（对齐 JYY070 / 8733 脚本结构）：
++
++```text
++kernel  → ./build.sh kernel bootloader + sync boot.img
++rootfs  → m + p
++full    → kernel + rootfs
++```
++
++用法：
++
++```bash
++./tools/build_p1_nor_JL_M101.sh kernel   # panel/DTS/uboot
++./tools/build_p1_nor_JL_M101.sh full     # 完整镜像
++# 产物：out/h133_linux_p1_nor_JL_M101_uart0_nor.img
++```
++
++## 1.3 公共挂钩（最小、必须）
++
++仅这些共享点；**不改其它板 DTS 业务值**。
++
++| 文件 | 内容 |
++|---|---|
++| `kernel/.../lcd/Kconfig` | `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA`（`default y`，同 JYY070 风格） |
++| `kernel/.../disp/Makefile` | `disp-$(CONFIG_…) += lcd/jl_m101_jd9365da.o` |
++| `kernel/.../lcd/panels.c` / `panels.h` | `#ifdef` 注册 `jl_m101_jd9365da_panel` |
++| U-Boot 侧同上 | 同名 Kconfig / panels |
++| `p1_nor` / `8733` / `JYY070` 的 `config-5.4` | `# CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set` |
++| 上述板 OpenWrt `defconfig` | `# CONFIG_TARGET_h133_p1_nor_JL_M101 is not set` |
++| `libtmedia/Makefile` | `CONFIG_TARGET_h133_p1_nor_JL_M101` → `VIDEO_WB_MIRROR_ROTATE=90` |
++
++**运行时选屏：** 只靠本板 DTS `lcd_driver_name`。其它板即使误编入 panel `.o`，只要不写该名字就不会用。
++
++## 1.4 板件隔绝检查清单
++
++新建或改完后自检：
++
++- [ ] `rg jl_m101 device/config/chips/h133/configs/p1_nor{,_8733,_JYY070}` → **无业务引用**（仅允许 config not-set）
++- [ ] `rg pwm0_pin_a …/p1_nor_JL_M101` → **仅本板**
++- [ ] 未改 `default_panel.c` / 共享 `sun8iw20p1.dtsi` 迁就本屏
++- [ ] lunch / `.buildconfig` 的 `LICHEE_BOARD=p1_nor_JL_M101`
++
++## 1.5 推荐克隆命令（干净树手工复现）
++
++```bash
++# 在 SDK 根目录
++BASE=device/config/chips/h133/configs
++cp -a $BASE/p1_nor_8733 $BASE/p1_nor_JL_M101
++
++# 拆 linux-5.4 软链（若 8733 的 linux-5.4 指向 p1_nor）
++rm -rf $BASE/p1_nor_JL_M101/linux-5.4
++cp -a $BASE/p1_nor/linux-5.4 $BASE/p1_nor_JL_M101/linux-5.4
++# 顶层 board.dts 指到实文件
++ln -sfn linux-5.4/board.dts $BASE/p1_nor_JL_M101/board.dts
++
++cp -a openwrt/target/h133/h133-p1_nor_8733 openwrt/target/h133/h133-p1_nor_JL_M101
++# 再改 defconfig / vendorsetup / setting.ini 中的板名
++
++# 复制并改名编译脚本
++cp tools/build_p1_nor_8733.sh tools/build_p1_nor_JL_M101.sh
++# 把脚本内 BOARD/LUNCH 改为 p1_nor_JL_M101 / h133-p1_nor_JL_M101-tina
++```
++
++随后按 [02](./02-panel与init.md)、[03](./03-DTS与背光PWM.md) 改 panel 与 DTS。  
++也可直接打 phase1 合并补丁（见 `20260720-…/patches/`），再叠定稿期的 PWM/bl 改动。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/02-panel\344\270\216init.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/02-panel\344\270\216init.md"
+new file mode 100644
+index 000000000..c92bf90a1
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/02-panel\344\270\216init.md"
+@@ -0,0 +1,79 @@
++# 02 — Panel 驱动与京龙 init
++
++## 2.1 文件与注册
++
++| 侧 | 路径 |
++|---|---|
++| 内核 | `kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jl_m101_jd9365da.c` |
++| 内核头 | 同目录 `jl_m101_jd9365da.h`（导出 `jl_m101_jd9365da_panel`） |
++| U-Boot | `brandy/.../disp/lcd/jl_m101_jd9365da.c`（init 策略与内核一致） |
++
++注册：`panels.c` / `panels.h` 在 `CONFIG_LCD_SUPPORT_JL_M101_JD9365DA` 下加入 `panel_array`。  
++**名字必须与 DTS `lcd_driver_name` 完全一致：** `"jl_m101_jd9365da"`。
++
++## 2.2 Init 来源
++
++厂商文件（树内）：
++
++`H133-AI-Skills/硬件资料/四川京龙/C-JD9365DA-H3_BOE10.1WXGA_IPS（B4TV101WXU-N91）_800x1280_FP7721BX2_column_20210830 (1)(1).txt`
++
++要点：
++
++- 表头 porch / `PLL_CLOCK=420`（MTK 口径；Allwinner 用 DTS `lcd_*` + `dclk`，不照搬 PLL）
++- `{0x80,1,{0x03}}` → 四 lane
++- `{REGFLAG_DELAY, ms, {}}` / `{REGFLAG_END_OF_TABLE,0x00,{}}`
++- Sleep Out / Display On：`{0x11,1,{0x00}}`、`{0x29,1,{0x00}}`（厂商表如此；本驱动统一 `dsi_gen_wr`，不特判 DCS）
++
++转换规则（工程内已落实）：
++
++- `REGFLAG_DELAY` / `REGFLAG_END_OF_TABLE` 按 **cmd 字段**判断（`0xFC` / `0xFD`）
++- 其余行：`dsi_gen_wr(sel, cmd, para, count)`
++- **硬 reset 后直接发页命令，无 soft reset**
++
++## 2.3 Reset 时序（vendor）
++
++```text
++LCD_nReset = 1; Delay 5ms;
++LCD_nReset = 0; Delay 10ms;
++LCD_nReset = 1; Delay 120ms;
++→ 再发 init 表（表首另有 REGFLAG_DELAY 10）
++```
++
++代码（`LCD_power_on`）：
++
++```c
++sunxi_lcd_pin_cfg(sel, 1);
++sunxi_lcd_delay_ms(50);
++panel_reset(sel, 1);  sunxi_lcd_delay_ms(5);
++panel_reset(sel, 0);  sunxi_lcd_delay_ms(10);
++panel_reset(sel, 1);  sunxi_lcd_delay_ms(120);
++```
++
++`panel_reset` → `sunxi_lcd_gpio_set_value(sel, 0, val)`，对应 DTS **`lcd_gpio_0` = PB11**。
++
++## 2.4 open_flow / close_flow（定稿）
++
++```text
++open:  power_on → panel_init → tcon_enable → bl_open
++close: bl_close → tcon_disable → panel_exit → power_off
++```
++
++- `LCD_panel_init`：`dsi_clk_enable` → delay 20ms → 扫 init 表  
++- `LCD_bl_open`：`sunxi_lcd_pwm_enable`（PWM 参数见 DTS）  
++- `LCD_panel_exit`：DCS `0x28` / `0x10` 关显示进 sleep  
++
++调通信阶段曾临时去掉 `bl_open`、用外部 VLED 供电；**出图定稿已恢复板载 PWM 背光**。
++
++## 2.5 禁止项（踩过的坑）
++
++| 禁止 | 原因 |
++|---|---|
++| 在 `panel_init` 里 `dsi_dcs_read` 探针 | 屏不回读时 DPHY 卡读态；后续 `dsi_gen_wr` 内 `while(dsi_inst_busy)` **无超时** → `panel_init` 挂死 |
++| 改 `default_panel.c` 塞京龙码 | 污染其它板 |
++| 把 `0x11/0x29` 盲改 DCS/GEN 当根因 | 实机证明非根因；根因在 RESET 电平 / 物理层 |
++
++## 2.6 内核 / U-Boot 同步
++
++- init 表、Reset、open_flow：**两侧保持一致**  
++- 当前 U-Boot：`uboot-board.dts` 中 **`disp_init_enable=<0>`**，bootGUI 不抢先开屏，避免内核 **smooth display** 跳过 `cfg_open_flow`  
++- 出图稳定后若要恢复 U-Boot logo：开 `disp_init_enable`，并确认 smooth 与灌码策略（见 [04](./04-实机调试与踩坑.md)）
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211PWM.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211PWM.md"
+new file mode 100644
+index 000000000..4d1780e87
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211PWM.md"
+@@ -0,0 +1,132 @@
++# 03 — DTS、时序与背光 PWM
++
++## 3.1 lcd0 定稿片段（内核 `linux-5.4/board.dts`）
++
++与 U-Boot `uboot-board.dts` 的 lcd0 **保持同步**（除 `disp_init_enable` 可不同）。
++
++```dts
++&lcd0 {
++	lcd_used            = <1>;
++	lcd_driver_name     = "jl_m101_jd9365da";
++	lcd_backlight       = <200>;
++	lcd_if              = <4>;          /* DSI */
++
++	lcd_x               = <800>;
++	lcd_y               = <1280>;
++	lcd_width           = <135>;
++	lcd_height          = <216>;
++	lcd_dclk_freq       = <70>;
++
++	/* s10：LCD-PWM=PB12/PWM0 → PT4117B EN，PWM_Frequence=50KHz */
++	lcd_pwm_used        = <1>;
++	lcd_pwm_ch          = <0>;
++	lcd_pwm_freq        = <50000>;
++	lcd_pwm_pol         = <1>;
++	lcd_pwm_max_limit   = <255>;
++
++	/* vendor HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20 */
++	lcd_hbp             = <40>;
++	lcd_ht              = <880>;
++	lcd_hspw            = <20>;
++	lcd_vbp             = <24>;
++	lcd_vt              = <1324>;
++	lcd_vspw            = <4>;
++
++	lcd_dsi_if          = <0>;          /* video；burst=2 已试，无图非此因 */
++	lcd_dsi_lane        = <4>;
++	lcd_dsi_format      = <0>;
++	lcd_dsi_te          = <0>;
++	lcd_dsi_eotp        = <0>;
++
++	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>; /* RESET */
++	/* 禁止：lcd_bl_en = PB12（8733 旧写法；本板 PB12 是 PWM） */
++	pinctrl-0 = <&dsi4lane_pins_a>;
++	pinctrl-1 = <&dsi4lane_pins_b>;
++};
++```
++
++Porch 换算备忘：
++
++| Vendor | Allwinner |
++|---|---|
++| HSA=20, HBP=20, HFP=40 | `hspw=20`，`hbp=HSA+HBP=40`，`ht=800+40+40=880` |
++| VSA=4, VBP=20, VFP=20 | `vspw=4`，`vbp=24`，`vt=1280+24+20=1324` |
++
++## 3.2 PWM0 @ PB12（原理图强制）
++
++`s10-h133-v1_0625.pdf` LCM 页：
++
++- `LCD-PWM` → RL≈0R → **PT4117B EN**
++- 标注 **`PWM_Frequence=50KHz`**（不是 500Hz）
++- SoC：`PB12` 复用含 **PWM0**（pinctrl `mux=0x3`）
++
++内核 DTS 增加：
++
++```dts
++pwm0_pin_a: pwm0@0 {
++	pins = "PB12";
++	function = "pwm0";
++	drive-strength = <10>;
++	bias-pull-up;
++};
++pwm0_pin_b: pwm0@1 {
++	pins = "PB12";
++	function = "gpio_in";
++	bias-disable;
++};
++
++&pwm0 {
++	pinctrl-names = "active", "sleep";
++	pinctrl-0 = <&pwm0_pin_a>;
++	pinctrl-1 = <&pwm0_pin_b>;
++	status = "okay";
++};
++```
++
++U-Boot：在 `&pio` 下同样定义 `pwm0_pin_*`（`muxsel=<3>`），`&pwm0` status okay。
++
++**注意：** 板级另有 `pwm7@PD22`（其它用途）、`pwm3@PB0`（CPU 调压等）——与 LCD 背光无关，勿把 `lcd_pwm_ch` 配成 7。
++
++## 3.3 USB 与 LCD 脚冲突（必改）
++
++8733/p1_nor 残留曾把：
++
++```dts
++usb_id_gpio       = <&pio PB 11 …>;
++usb_det_vbus_gpio = <&pio PB 12 …>;
++```
++
++配在 `usbc0`。本板 **必须注释掉**，否则：
++
++- PB11 被 USB 抢走 → RESET 脉冲发不出去，线可能浮在屏内上拉约 1.8V  
++- PB12 无法作 PWM0  
++
++本板 `usbc0` 已注释这两行，并加中文注释说明原因。
++
++## 3.4 转接板 RESET 分压（硬件，软件无法替代）
++
++CON5 旁：
++
++| 档 | R52 | R53 |
++|---|---|---|
++| **3.3V-RESET（本屏 VCC=3.3V 应用）** | **0R** | **NC** |
++| 1.8V-RESET | 1.5K | 1.8K |
++
++屏侧 RESET 静态约 1.8V 且 VCC=3.3V 时，往往 **低于 VIH≈0.7×3.3≈2.31V**，灌码无效。
++
++**禁止：** 用外部恒压 3.3V 灌 RESET——会与 PB11 对打，破坏 H→L→H 脉冲。
++
++改档前：量 **R52 靠主板 `LCD-RST` 输入端**；若已是 3.3V，则当前是分压档，改 R52/R53 即可。
++
++## 3.5 MIPI 走线（转接板）
++
++CON5：D0–D3 + CLK 差分经 2.2Ω 串阻；`lcd_if=4` + `dsi4lane` pinctrl（PD 组）。  
++无图且软件/RESET 都正常时：示波器看 CON5 **MIPI-CKP/N（pin15/16 一带）** 是否有 HS。
++
++## 3.6 U-Boot disp
++
++```dts
++disp_init_enable = <0>;   /* 调屏/定稿期：避免 smooth 跳过内核 panel_init */
++```
++
++内核侧 `&disp` 仍可 `disp_init_enable=<1>`（Linux 自己开屏）。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md"
+new file mode 100644
+index 000000000..3e8a4a370
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/04-\345\256\236\346\234\272\350\260\203\350\257\225\344\270\216\350\270\251\345\235\221.md"
+@@ -0,0 +1,80 @@
++# 04 — 实机调试与踩坑（到完整出图）
++
++## 4.1 时间线摘要
++
++| 阶段 | 现象 | 结论 / 动作 |
++|---|---|---|
++| 初烧 JL 包 | 背光亮（或外部 VLED）、**LCD 无图**；HDMI 有图；回烧 8733+原屏正常 | 问题在本板 MIPI/panel/电源，非整机 DE/UI |
++| U-Boot smooth | 内核 `smooth display`，跳过 `cfg_open_flow` | `disp_init_enable=0`；必要时 bootGUI 跳过 |
++| init GEN/DCS | 切 `0x11/0x29` 写法 | **现象不变**，非根因 |
++| DSI 读探针 | `0x0A/0xDA` 读回 0；后出现仅 pre、无 post | **删探针**（DPHY 卡死） |
++| USB 占脚 | PB11/PB12 作 usb id/vbus | **本板 DTS 注释掉** |
++| burst 试验 | `lcd_dsi_if=2` | 与 video 相同仍无图 → 改回 `0` |
++| RESET 电平 | 屏侧 RESET≈1.8V，VCC=3.3V | **改转接板 3.3V-RESET 档** |
++| 背光软件 | 调通期关 PWM；资料对齐后开 PWM0@50kHz | 定稿恢复 `LCD_bl_open` |
++| **2026-07-22** | **完整显示** | 软件管线 + 硬件 RESET + PWM 背光齐备 |
++
++## 4.2 U-Boot smooth（必知）
++
++若 U-Boot 已 `panel_init` 并写 `boot_disp`，内核可能打印 `smooth display screen:0`，**复用状态、跳过内核 open_flow** → 京龙 init 不在 Linux 侧重跑。
++
++处理（本板定稿）：
++
++- `uboot-board.dts`：`disp_init_enable = <0>`
++- 串口应见内核 `jl_m101_jd9365da: panel_init`，且**无**（或不应依赖）smooth 跳过灌码
++
++出图后再评估是否恢复 U-Boot logo。
++
++## 4.3 DSI 读探针致命坑
++
++临时加过：
++
++```c
++sunxi_lcd_dsi_dcs_read(sel, 0x0A, ...);
++sunxi_lcd_dsi_dcs_read(sel, 0xDA, ...);
++```
++
++屏不回读 → BTA/读态卡住 → 后续 `dsi_gen_wr` 死等。  
++**定稿：禁止在本 panel 灌码路径加 LP 读探针。**
++
++## 4.4 RESET 硬件排查口诀
++
++1. 量屏 FPC：**VCC、RESET 静态电压**  
++2. 量 R52 **主板侧**输入：区分「SoC 已是 1.8V」vs「板上分压成 1.8V」  
++3. 本屏 VCC=3.3V → 用 **R52=0R / R53=NC**  
++4. **不要**外部强灌 RESET 高电平  
++
++软件 Reset 脉冲再正确，电平不够 VIH 也等于没复位。
++
++## 4.5 健康 log（内核）参考
++
++出图后典型应有：
++
++```text
++jl_m101_jd9365da: panel_init
++… disp_device_attached_and_enable …
++… attached ok, mgr0<-->dev0 …
++type:1,mode:0          /* video */
++```
++
++desk / fb：`800x1280`；`disp_rotate=3` 时 UI 方向与 8733 一致。
++
++`dclk real 105` / `dsi_rate 150`：H133 BSP 时钟表行为，**单独出现不等于配错**。
++
++## 4.6 已否定的软件岔路
++
++| 尝试 | 结果 |
++|---|---|
++| 仅改 `0x11/0x29` GEN↔DCS | 无图不变 |
++| `lcd_dsi_if=2` burst | 无图不变 |
++| 外部恒压灌 RESET | **有害**（打断脉冲） |
++| 把 PB12 当 `lcd_bl_en` GPIO | 不符合 PT4117 PWM EN；定稿用 PWM0 |
++
++## 4.7 仍可后续优化（非阻塞出图）
++
++| 项 | 说明 |
++|---|---|
++| U-Boot logo | `disp_init_enable=1` + smooth 策略再评估 |
++| GSL3670 触摸 | 资料已有；现仍 GT911 配置 |
++| gamma / dclk 微调 | 有主观画质需求再动 |
++| 双板串编脚本 | 可仿 JYY070 `verify_build_8733_then_JYY070.sh` |
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+new file mode 100644
+index 000000000..774c78042
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+@@ -0,0 +1,70 @@
++# 05 — 编译与验收
++
++## 5.1 编译
++
++```bash
++# SDK 根目录；确认 .buildconfig 为 p1_nor_JL_M101
++./tools/build_p1_nor_JL_M101.sh kernel   # panel / DTS / bootloader
++./tools/build_p1_nor_JL_M101.sh full     # + rootfs + pack
++
++# 仅 pack（已有 boot/rootfs）
++source build/envsetup.sh
++./build.sh pack
++```
++
++产物：
++
++```text
++out/h133_linux_p1_nor_JL_M101_uart0_nor.img
++```
++
++定稿参考 md5（2026-07-22）：`05a696f4b7672bc692c645cc3e8bb468`（后续重编会变）。
++
++### 改动类型 → 编什么
++
++| 改动 | 命令 |
++|---|---|
++| panel `.c` / 内核 DTS / config-5.4 | `kernel`，再 `pack` |
++| uboot-board / U-Boot panel | `kernel`（含 bootloader）或单独 `./build.sh bootloader` + `pack`；必要时删旧 `u-boot-*.bin` 强制重编 |
++| `setting.ini` / rootfs 应用 | `rootfs` |
++| 全量 | `full` |
++
++### 注意
++
++- **禁止**在 WSL/x86 上对 desk/panel 源码本地 `gcc -c`（会污染 `.o`，交叉链接炸）  
++- U-Boot 增量偶发旧 `.o`：可对 uboot 目录 `make clean` 或删对应 `.o` 后重编 bootloader  
++- 改内核后若要重编 `rtl8733bu` ko：先有 `out/kernel/build` 的 `Module.symvers`，再 `rootfs`/`m`
++
++## 5.2 验收清单（出图定稿）
++
++- [x] 内核编过，含 `jl_m101_jd9365da.o`  
++- [x] DTB：`lcd_driver_name=jl_m101_jd9365da`，`lcd_pwm_ch=0`，`lcd_pwm_freq=50000`，`lcd_pwm_used=1`  
++- [x] `dmesg`：`panel_init` → attached ok  
++- [x] **LCD 完整出图**；板载背光（PWM）正常  
++- [x] 分辨率 800×1280；desk `disp_rotate=3` 方向正确  
++- [x] WiFi 仍 `rtl8733bu`  
++- [ ] （回归）串编 `p1_nor_8733` / `p1_nor_JYY070` DTS 未被本改动改坏  
++
++## 5.3 常见问题速查
++
++| 现象 | 优先查 |
++|---|---|
++| 背光亮无图 | RESET 档（R52/R53）、RESET 波形、MIPI HS；勿外部灌 RESET |
++| `panel_init` 后无后续 DISP | 是否又加了 DSI 读；是否 U-Boot smooth |
++| 完全不亮 | PWM0 是否 enable、PT4117 5V、VLED 接线 |
++| USB 异常 / RESET 浮 1.8V | `usbc0` 是否又占用 PB11/PB12 |
++| 8733bu Unknown symbol | 清 `.config` 后未按序编 ko |
++
++## 5.4 隔绝自检（改完必做）
++
++```bash
++# 其它板不应出现本板 pwm0 / jl 业务 DTS
++rg -n 'jl_m101_jd9365da|pwm0_pin_a' \
++  device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts \
++  device/config/chips/h133/configs/p1_nor_8733/linux-5.4/board.dts \
++  device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts
++# 期望：无匹配
++
++rg -n 'CONFIG_LCD_SUPPORT_JL_M101' device/config/chips/h133/configs/*/linux-5.4/config-5.4
++# 期望：仅 JL_M101=y，其余 not set
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md"
+new file mode 100644
+index 000000000..5524f26be
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/README.md"
+@@ -0,0 +1,40 @@
++# JL-M101 板件新建与 MIPI 显示定稿 — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-07-20 起；**定稿 2026-07-22（实机已完整出图）** |
++| 板型 | **`p1_nor_JL_M101`** |
++| 基线 | **`p1_nor_8733`**（MIPI 竖屏 UI + RTL8733BU） |
++| 屏 | JL-M101B196-P21WX-M402632，10.1" **800×1280 MIPI 4-lane**，IC **JD9365DA-H3** |
++| panel | `jl_m101_jd9365da` |
++| 板级档案 | [board-profile-p1_nor_JL_M101.md](../../../skills/h133-display/board-profile-p1_nor_JL_M101.md) |
++| 镜像 | `out/h133_linux_p1_nor_JL_M101_uart0_nor.img` |
++| 阶段 1 补丁（初版落地） | [../20260720-JL_M101-JD9365DA-MIPI适配/](../20260720-JL_M101-JD9365DA-MIPI适配/) |
++
++---
++
++## 阅读顺序
++
++| 步骤 | 文档 | 内容 |
++|---|---|---|
++| 0 | [00-总览与定稿.md](./00-总览与定稿.md) | 结论、对照表、硬件要点、与其它板隔离 |
++| 1 | [01-板件新建.md](./01-板件新建.md) | 从 8733 克隆板级 / OpenWrt / 编译脚本 / 公共挂钩 |
++| 2 | [02-panel与init.md](./02-panel与init.md) | `jl_m101_jd9365da`、京龙 init、Reset 时序、open_flow |
++| 3 | [03-DTS与背光PWM.md](./03-DTS与背光PWM.md) | lcd0 时序、PB11/PB12、PWM0@50kHz、USB 脚冲突 |
++| 4 | [04-实机调试与踩坑.md](./04-实机调试与踩坑.md) | smooth、DSI 读探针、RESET 分压、出图路径 |
++| 5 | [05-编译与验收.md](./05-编译与验收.md) | 编译命令、验收清单、回归 |
++
++**建议：** 复盘或新开类似屏 → 先读 **00**；从零克隆新板 → **01**；只查 init/PWM → **02/03**；排无图 → **04**。
++
++---
++
++## 与 20260720 目录的关系
++
++| 目录 | 角色 |
++|---|---|
++| `20260720-…-MIPI适配/` | phase1 补丁与调试流水（历史过程） |
++| **本目录 `20260722-…定稿/`** | **出图后定稿**：板件新建步骤 + 显示开发结论 |
++
++---
++
++*2026-07-22：实机完整显示；文档定稿。*
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-jl-m101-display-final.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-jl-m101-display-final.sh"
+new file mode 100755
+index 000000000..7452e1c43
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/apply-jl-m101-display-final.sh"
+@@ -0,0 +1,77 @@
++#!/bin/bash
++# JL-M101 MIPI 显示定稿补丁应用（已出图树）
++# 在 H133 SDK 根目录执行，或设置 H133_SDK_ROOT
++#
++# Usage:
++#   bash apply-jl-m101-display-final.sh          # 打合并补丁
++#   bash apply-jl-m101-display-final.sh --check  # dry-run
++#   bash apply-jl-m101-display-final.sh 01       # 只打 panel
++#   bash apply-jl-m101-display-final.sh 02|03|04
++set -e
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../.." && pwd)}"
++
++if [ ! -f "$ROOT/build/envsetup.sh" ]; then
++	echo "error: 请在 SDK 根目录执行，或设置 H133_SDK_ROOT" >&2
++	echo "  当前 ROOT=$ROOT" >&2
++	exit 1
++fi
++
++cd "$ROOT"
++
++pick_patch() {
++	case "${1:-all}" in
++	01) echo "$SCRIPT_DIR/01-kernel-uboot-panel.patch" ;;
++	02) echo "$SCRIPT_DIR/02-board-tree.patch" ;;
++	03) echo "$SCRIPT_DIR/03-shared-hooks.patch" ;;
++	04) echo "$SCRIPT_DIR/04-docs.patch" ;;
++	all|"") echo "$SCRIPT_DIR/jl-m101-display-final.patch" ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++}
++
++MODE=apply
++ARG=all
++for a in "$@"; do
++	case "$a" in
++	--check) MODE=check ;;
++	all|01|02|03|04) ARG=$a ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03|04]" >&2
++		exit 1
++		;;
++	esac
++done
++
++PATCH="$(pick_patch "$ARG")"
++if [ ! -f "$PATCH" ]; then
++	echo "error: missing $PATCH — 先跑 gen-jl-m101-display-final-patch.sh" >&2
++	exit 1
++fi
++
++ensure_bootlogo() {
++	local dst="device/config/chips/h133/configs/p1_nor_JL_M101/bootlogo.bmp"
++	local src="device/config/chips/h133/configs/p1_nor_8733/bootlogo.bmp"
++	if [ -d "device/config/chips/h133/configs/p1_nor_JL_M101" ] && [ ! -f "$dst" ] && [ -f "$src" ]; then
++		cp -a "$src" "$dst"
++		echo "==> copied bootlogo.bmp from p1_nor_8733"
++	fi
++}
++
++if [ "$MODE" = check ]; then
++	echo "==> dry-run: $PATCH"
++	git apply --check "$PATCH"
++	echo "==> OK (check)"
++	exit 0
++fi
++
++echo "==> apply: $PATCH"
++git apply "$PATCH"
++ensure_bootlogo
++echo "==> done"
++echo "    编译: ./tools/build_p1_nor_JL_M101.sh full"
++echo "    文档: H133-AI-Skills/开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿/README.md"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-jl-m101-display-final-patch.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-jl-m101-display-final-patch.sh"
+new file mode 100755
+index 000000000..fd75a20de
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/20260722-JL_M101-\346\235\277\344\273\266\346\226\260\345\273\272\344\270\216MIPI\346\230\276\347\244\272\345\256\232\347\250\277/patches/gen-jl-m101-display-final-patch.sh"
+@@ -0,0 +1,122 @@
++#!/bin/bash
++# 重新生成 JL-M101 MIPI 显示定稿补丁（当前已出图树）
++# 在 SDK 根执行，或设置 H133_SDK_ROOT
++set -euo pipefail
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++# patches → 定稿目录 → JL_M101 → 开发记录 → H133-AI-Skills → SDK（5 级）
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../.." && pwd)}"
++OUT_DIR="$SCRIPT_DIR"
++
++cd "$ROOT"
++if [ ! -f build/envsetup.sh ]; then
++	echo "error: not SDK root: $ROOT" >&2
++	exit 1
++fi
++
++stage_list() {
++	local f
++	while IFS= read -r f; do
++		[ -z "$f" ] && continue
++		[ -e "$f" ] || { echo "warn: missing $f" >&2; continue; }
++		git add -f -- "$f"
++	done
++}
++
++# --- stage code ---
++stage_list <<'EOF'
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jl_m101_jd9365da.c
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jl_m101_jd9365da.h
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
++kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jl_m101_jd9365da.c
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jl_m101_jd9365da.h
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
++brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
++openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++openwrt/target/h133/h133-p1_nor/defconfig
++openwrt/target/h133/h133-p1_nor_8733/defconfig
++openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4
++device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4
++tools/build_p1_nor_JL_M101.sh
++EOF
++
++# 板级整树（再踢掉 bootlogo）
++git add -f -- device/config/chips/h133/configs/p1_nor_JL_M101/
++git add -f -- openwrt/target/h133/h133-p1_nor_JL_M101/
++git restore --staged device/config/chips/h133/configs/p1_nor_JL_M101/bootlogo.bmp 2>/dev/null || true
++
++# 文档（H133-AI-Skills 被 gitignore，必须 -f）
++DOC_DIR1="H133-AI-Skills/开发记录/JL_M101/20260722-JL_M101-板件新建与MIPI显示定稿"
++DOC_DIR2="H133-AI-Skills/开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配"
++git add -f -- \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JL_M101.md" \
++	"H133-AI-Skills/开发记录/README.md" \
++	"H133-AI-Skills/开发记录/JL_M101/README.md" \
++	"$DOC_DIR1/README.md" \
++	"$DOC_DIR1/00-总览与定稿.md" \
++	"$DOC_DIR1/01-板件新建.md" \
++	"$DOC_DIR1/02-panel与init.md" \
++	"$DOC_DIR1/03-DTS与背光PWM.md" \
++	"$DOC_DIR1/04-实机调试与踩坑.md" \
++	"$DOC_DIR1/05-编译与验收.md" \
++	"$DOC_DIR1/patches/apply-jl-m101-display-final.sh" \
++	"$DOC_DIR1/patches/gen-jl-m101-display-final-patch.sh" \
++	"$DOC_DIR2/开发记录.md"
++
++git diff --cached -- \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jl_m101_jd9365da.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/jl_m101_jd9365da.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h \
++	kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jl_m101_jd9365da.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/jl_m101_jd9365da.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h \
++	brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile \
++	> "$OUT_DIR/01-kernel-uboot-panel.patch"
++
++git diff --cached -- \
++	device/config/chips/h133/configs/p1_nor_JL_M101/ \
++	openwrt/target/h133/h133-p1_nor_JL_M101/ \
++	tools/build_p1_nor_JL_M101.sh \
++	> "$OUT_DIR/02-board-tree.patch"
++
++git diff --cached -- \
++	openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile \
++	openwrt/target/h133/h133-p1_nor/defconfig \
++	openwrt/target/h133/h133-p1_nor_8733/defconfig \
++	openwrt/target/h133/h133-p1_nor_JYY070/defconfig \
++	device/config/chips/h133/configs/p1_nor/linux-5.4/config-5.4 \
++	device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/config-5.4 \
++	> "$OUT_DIR/03-shared-hooks.patch"
++
++git diff --cached -- \
++	H133-AI-Skills/skills/h133-display/board-profile-p1_nor_JL_M101.md \
++	H133-AI-Skills/开发记录/README.md \
++	H133-AI-Skills/开发记录/JL_M101/ \
++	> "$OUT_DIR/04-docs.patch"
++
++cat "$OUT_DIR/01-kernel-uboot-panel.patch" \
++	"$OUT_DIR/02-board-tree.patch" \
++	"$OUT_DIR/03-shared-hooks.patch" \
++	"$OUT_DIR/04-docs.patch" \
++	> "$OUT_DIR/jl-m101-display-final.patch"
++
++git reset HEAD >/dev/null 2>&1 || true
++
++echo "==> $OUT_DIR/01-kernel-uboot-panel.patch ($(grep -c '^diff --git' "$OUT_DIR/01-kernel-uboot-panel.patch" || true) diffs)"
++echo "==> $OUT_DIR/02-board-tree.patch ($(grep -c '^diff --git' "$OUT_DIR/02-board-tree.patch" || true) diffs)"
++echo "==> $OUT_DIR/03-shared-hooks.patch ($(grep -c '^diff --git' "$OUT_DIR/03-shared-hooks.patch" || true) diffs)"
++echo "==> $OUT_DIR/04-docs.patch ($(grep -c '^diff --git' "$OUT_DIR/04-docs.patch" || true) diffs)"
++echo "==> $OUT_DIR/jl-m101-display-final.patch ($(grep -c '^diff --git' "$OUT_DIR/jl-m101-display-final.patch" || true) diffs, $(wc -l < "$OUT_DIR/jl-m101-display-final.patch") lines)"
++echo "    note: bootlogo.bmp 不在补丁内，apply 时从 p1_nor_8733 复制"
++echo "    note: 相对干净基线；含 PWM0/bl_open 出图定稿"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/README.md"
+new file mode 100644
+index 000000000..1ecd251aa
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/JL_M101/README.md"
+@@ -0,0 +1,39 @@
++# JL-M101 JD9365DA MIPI — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 板型 | `p1_nor_JL_M101`（从 `p1_nor_8733` 克隆） |
++| 屏 | JL-M101B196-P21WX-M402632，10.1" **800×1280 MIPI**，IC **JD9365DA-H3** |
++| 状态 | **2026-07-22 实机已完整出图（定稿）** |
++| 板级档案 | [board-profile-p1_nor_JL_M101.md](../../skills/h133-display/board-profile-p1_nor_JL_M101.md) |
++
++---
++
++## 阅读顺序（推荐）
++
++| 优先级 | 文档 | 内容 |
++|---|---|---|
++| **主** | [20260722-板件新建与MIPI显示定稿/](./20260722-JL_M101-板件新建与MIPI显示定稿/README.md) | **板件新建 + 显示开发定稿**（分步 00～05） |
++| 辅 | [20260720-MIPI适配/开发记录.md](./20260720-JL_M101-JD9365DA-MIPI适配/开发记录.md) | phase1 补丁、早期调试流水 |
++| 辅 | [20260720-…/patches/](./20260720-JL_M101-JD9365DA-MIPI适配/patches/) | 干净树一键落地补丁 |
++
++定稿目录内顺序：`00 总览` → `01 板件新建` → `02 panel/init` → `03 DTS/PWM` → `04 踩坑` → `05 编译验收`。
++
++---
++
++## 硬件资料（树内）
++
++- `H133-AI-Skills/硬件资料/四川京龙/JL-M101B196-P21WX-M402632 规格书V1.0.pdf`
++- `…/C-JD9365DA-H3_…_800x1280_…20210830 (1)(1).txt`
++- `…/s10-h133-v1_0625.pdf`（转接板 CON5 / RESET 档 / PT4117）
++- `…/TP-H10_H133 V2.0 2026.6.12.pdf`
++
++---
++
++## 编译
++
++```bash
++./tools/build_p1_nor_JL_M101.sh kernel
++./tools/build_p1_nor_JL_M101.sh full
++# 产物：out/h133_linux_p1_nor_JL_M101_uart0_nor.img
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+new file mode 100644
+index 000000000..d0e406e79
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/README.md"
+@@ -0,0 +1,8 @@
++# 开发记录（按板型分目录）
++
++| 目录 | 板型 |
++|------|------|
++| [JYY070/](./JYY070/README.md) | `p1_nor_JYY070`（7" LVDS 横屏） |
++| [JL_M101/](./JL_M101/README.md) | `p1_nor_JL_M101`（京龙 10.1" MIPI，**已出图定稿**） |
++
++新记录请放进对应板型目录，勿再平铺在本层。

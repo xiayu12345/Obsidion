@@ -1,0 +1,30 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts
+@@ -645,21 +645,21 @@
+ 	dma-names = "tx", "rx";
+ 	status = "okay";
+ 
+-	/* 乐大海 TPC3386 / GT911 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x5d */
++	/* LQ140 GT9110H：ctp_name→GROUP8；screen_max=fb0 1920×1080；脚位同 8733 TWI1 */
+ 	ctp@5d {
+ 		compatible = "allwinner,goodix";
+ 		device_type = "ctp";
+ 		reg = <0x5d>;
+ 		status = "okay";
+-		ctp_name = "gt911_tpc3386";
++		ctp_name = "gt9110h_lq140";
+ 		ctp_twi_id = <0x1>;
+ 		ctp_twi_addr = <0x5d>;
+-		/* 与 fb0 横屏 UI 一致：1280×800（勿用旧竖屏 800×1280） */
+-		ctp_screen_max_x = <0x500>;
+-		ctp_screen_max_y = <0x320>;
++		/* 本板 fb0 1920×1080；8733 为 800×1280，勿照搬 */
++		ctp_screen_max_x = <1920>;
++		ctp_screen_max_y = <1080>;
+ 		ctp_revert_x_flag = <0x0>;
+ 		ctp_revert_y_flag = <0x0>;
+ 		ctp_exchange_x_y_flag = <0x0>;
+ 		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+ 		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
+ 	};

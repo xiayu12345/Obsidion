@@ -1,0 +1,452 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: xiayu <xiayu@local>
+Date: Tue, 1 Sep 2026 16:08:43 +0800
+Subject: [PATCH] fix: sunxifb 对齐原厂双页 FBIOPAN 翻页
+
+去掉 split_fb，帧末写后台页再 FBIOPAN，开 DIRECT_MODE。
+不含 G2D 旋转开关与 dmabuf fd。
+
+---
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+index e1d655e66..c14090b42 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.c
+@@ -97,15 +97,8 @@ static int sunxifb_launched_by_desk(void)
+ #define FBIO_ENABLE_CACHE       0x4631
+ #define FBIO_GET_IONFD          0x4632
+ #define FBIO_GET_PHY_ADDR       0x4633
+-#define FBIO_HDMI_SRC_FB0       0x4634
+-#define FBIOGET_DMABUF          _IOR('F', 0x21, struct fb_dmabuf_export)
+ #define SUNXIFB_NUM_MAX         12
+ 
+-struct fb_dmabuf_export {
+-    int fd;
+-    __u32 flags;
+-};
+-
+ static void* sunxi_fb_task_do_render(void *arg);
+ static void sunxifb_show_fps(void);
+ 
+@@ -121,22 +114,14 @@ struct sunxifb_info {
+     uint32_t render_run;
+     uint32_t render_end;
+     uint32_t dispindex;
+-#ifdef USE_SUNXIFB_G2D
+-    uintptr_t fb_paddr;
+-    int fb_dma_fd;
+-    bool g2d_dbuf_blit_ok;
+-#endif /* USE_SUNXIFB_G2D */
+ #ifdef SUNXIFB_ROTATE_EN
+     uint32_t rotated;
+     char *rotatefbp;
+     uint32_t rotatefbp_w;
+     uint32_t rotatefbp_h;
+-    bool split_fb_en;
+     bool lv_logical_override;
+     uint32_t mipi_landscape_w;
+     uint32_t mipi_landscape_h;
+-    uint32_t hdmi_fbindex;
+-    uint32_t mipi_fbindex;
+ #ifdef USE_SUNXIFB_G2D_ROTATE
+     uintptr_t rotatefbp_phy;
+ #endif /* USE_SUNXIFB_G2D_ROTATE */
+@@ -158,54 +143,12 @@ static void sunxifb_detach_fbcon(void)
+     }
+ }
+ 
+-#if defined(USE_SUNXIFB_G2D) && defined(USE_SUNXIFB_DOUBLE_BUFFER)
+-static bool sunxifb_g2d_fb_ready(void)
+-{
+-    return sinfo.fb_paddr != 0 || sinfo.fb_dma_fd >= 0;
+-}
+-
+-static void sunxifb_g2d_init_fb_resource(void)
+-{
+-    unsigned long fb_phy_arg = 0;
+-
+-    sinfo.fb_paddr = finfo.smem_start;
+-    sinfo.fb_dma_fd = -1;
+-    sinfo.g2d_dbuf_blit_ok = true;
+-
+-    if (sinfo.fb_paddr == 0) {
+-        struct fb_dmabuf_export dmabuf_exp = { -1, 0 };
+-
+-        if (ioctl(fbfd, FBIOGET_DMABUF, &dmabuf_exp) == 0 && dmabuf_exp.fd >= 0) {
+-            sinfo.fb_dma_fd = dmabuf_exp.fd;
+-            printf("fb G2D uses dmabuf, fd=%d\n", sinfo.fb_dma_fd);
+-        } else if (ioctl(fbfd, FBIO_GET_PHY_ADDR, &fb_phy_arg) == 0 &&
+-                   fb_phy_arg != 0) {
+-            sinfo.fb_paddr = (uintptr_t) fb_phy_arg;
+-            printf("fb G2D phy=0x%lx (via FBIO_GET_PHY_ADDR)\n",
+-                   (unsigned long) sinfo.fb_paddr);
+-        } else {
+-            sinfo.g2d_dbuf_blit_ok = false;
+-            printf("Warning: fb G2D unavailable (smem_start=0, dmabuf/phy ioctl fail), use memcpy for dbuf\n");
+-        }
+-    } else {
+-        printf("fb G2D phy=0x%lx (smem_start)\n", (unsigned long) sinfo.fb_paddr);
+-    }
+-
+-    sunxifb_g2d_set_fb_resource(sinfo.fb_paddr, sinfo.fb_dma_fd);
+-    printf("%s: fb_paddr=0x%lx fb_dma_fd=%d dbuf_g2d=%d\n",
+-           SUNXIFB_G2D_DRIVER_TAG, (unsigned long) sinfo.fb_paddr,
+-           sinfo.fb_dma_fd, sunxifb_g2d_fb_ready() ? 1 : 0);
+-}
+-#endif /* USE_SUNXIFB_G2D && USE_SUNXIFB_DOUBLE_BUFFER */
+-
+ #ifdef SUNXIFB_ROTATE_EN
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+ static void sunxifb_soft_rotate(char *dst);
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+ static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
+         int32_t y2);
+-static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+-        int32_t y2);
+ static void sunxifb_soft_rotate_area(char *dst, int32_t x1, int32_t y1,
+         int32_t x2, int32_t y2);
+ #endif /* USE_SUNXIFB_SOFT_ROTATE */
+@@ -332,11 +275,10 @@ void sunxifb_init(uint32_t rotated) {
+         sunxifb_g2d_init(vinfo.bits_per_pixel);
+ 
+         sunxifb_mem_init();
+-        sunxifb_g2d_init_fb_resource();
+ #endif /* USE_SUNXIFB_G2D */
+ 
+ #ifdef SUNXIFB_ROTATE_EN
+-        /* 统一 rotatefbp + split_fb；rot=0 时 SUNXIFB_ROT_0 直拷贝 MIPI 页，不做旋转变换 */
++        /* 对齐原厂 G2D_ROTATE：LVGL 画 rotatefbp，帧末软旋到后台 fb 页再 pan */
+         {
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+             size_t rotate_buf_size;
+@@ -457,30 +399,6 @@ void sunxifb_init(uint32_t rotated) {
+             } else {
+                 sinfo.lv_logical_override = false;
+             }
+-
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-            if (sinfo.fbnum > 1) {
+-                sinfo.split_fb_en = true;
+-                sinfo.hdmi_fbindex = 0;
+-                sinfo.mipi_fbindex = 1;
+-                {
+-                    uintptr_t hdmi_args[3] = { 1, sinfo.rotatefbp_w,
+-                            sinfo.rotatefbp_h };
+-                    if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0)
+-                        perror("Error: FBIO_HDMI_SRC_FB0 fail");
+-                }
+-                /* desk fork 子 app：保留 desk 最后一帧，避免切屏黑一下 */
+-                if (!sunxifb_launched_by_desk()) {
+-                    memset(sinfo.screenfbp[sinfo.hdmi_fbindex], 0,
+-                            (size_t) finfo.line_length * vinfo.yres);
+-                    memset(sinfo.screenfbp[sinfo.mipi_fbindex], 0,
+-                            (size_t) finfo.line_length * vinfo.yres);
+-                }
+-                SUNXIFB_DBG("Split fb: dirty sync HDMI page0 %ux%u, MIPI page1 %s\n",
+-                        sinfo.rotatefbp_w, sinfo.rotatefbp_h,
+-                        sinfo.rotated == SUNXIFB_ROT_0 ? "copy" : "rotate");
+-            }
+-#endif /* USE_SUNXIFB_SOFT_ROTATE */
+         }
+ #endif /* SUNXIFB_ROTATE_EN */
+     }
+@@ -500,23 +418,7 @@ void sunxifb_init(uint32_t rotated) {
+ 
+ void sunxifb_hdmi_rotate_restore(void)
+ {
+-#if defined(USE_SUNXIFB_DOUBLE_BUFFER) && defined(SUNXIFB_ROTATE_EN) && defined(USE_SUNXIFB_SOFT_ROTATE)
+-    if (fbfd <= 0 || !sinfo.split_fb_en) {
+-        return;
+-    }
+-
+-    {
+-        uintptr_t hdmi_args[3] = { 1, sinfo.rotatefbp_w, sinfo.rotatefbp_h };
+-        if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0) {
+-            perror("Error: FBIO_HDMI_SRC_FB0 restore fail");
+-        } else {
+-            printf("sunxifb: HDMI rotate restored %ux%u\n",
+-                   sinfo.rotatefbp_w, sinfo.rotatefbp_h);
+-        }
+-    }
+-#else
+-    (void)0;
+-#endif
++    /* 原厂双页乒乓无 FBIO_HDMI_SRC_FB0；desk 仍调此符号 */
+ }
+ 
+ void sunxifb_exit(void) {
+@@ -545,11 +447,6 @@ void sunxifb_exit(void) {
+ #endif /* USE_SUNXIFB_G2D */
+ #ifdef SUNXIFB_ROTATE_EN
+     if (sinfo.rotatefbp != NULL) {
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-        uintptr_t hdmi_args[3] = { 0, 0, 0 };
+-        if (ioctl(fbfd, FBIO_HDMI_SRC_FB0, hdmi_args) < 0)
+-            perror("Error: FBIO_HDMI_SRC_FB0 disable fail");
+-#endif /* USE_SUNXIFB_SOFT_ROTATE */
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+         free(sinfo.rotatefbp);
+         sinfo.rotatefbp = NULL;
+@@ -669,15 +566,6 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+         /*Not supported bit per pixel*/
+     }
+ 
+-#if defined(USE_SUNXIFB_SOFT_ROTATE) && defined(SUNXIFB_ROTATE_EN)
+-    /* 异显：脏区写入 rotatefbp 后，同步到 HDMI page0 与 MIPI page1 */
+-    if (sinfo.split_fb_en && sinfo.rotatefbp != NULL) {
+-        sunxifb_copy_area_to_hdmi(act_x1, act_y1, act_x2, act_y2);
+-        sunxifb_soft_rotate_area(sinfo.screenfbp[sinfo.mipi_fbindex], act_x1,
+-                act_y1, act_x2, act_y2);
+-    }
+-#endif
+-
+     //May be some direct update command is required
+     //ret = ioctl(state->fd, FBIO_UPDATE, (unsigned long)((uintptr_t)rect));
+ #endif
+@@ -685,35 +573,18 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+ #ifdef USE_SUNXIFB_DOUBLE_BUFFER
+     if (sinfo.fbnum > 1 && sinfo.dbuf_en && lv_disp_flush_is_last(drv)) {
+         int nextindex;
+-#ifdef USE_SUNXIFB_CACHE
+-        uintptr_t args[2];
+-        args[1] = finfo.line_length * vinfo.yres;
+-        if (sinfo.split_fb_en) {
+-            args[0] = (uintptr_t) sinfo.screenfbp[sinfo.hdmi_fbindex];
+-            if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0)
+-                perror("Error: FBIO_CACHE_SYNC hdmi fail");
+-        }
+-        args[0] = (uintptr_t) sinfo.screenfbp[sinfo.split_fb_en ?
+-                sinfo.mipi_fbindex : sinfo.fbindex];
+-        if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0) {
+-            perror("Error: FBIO_CACHE_SYNC fail");
+-        }
+-#endif /* USE_SUNXIFB_CACHE */
+-
+ #ifdef SUNXIFB_ROTATE_EN
+         if (sinfo.rotatefbp != NULL) {
+ #ifdef USE_SUNXIFB_SOFT_ROTATE
+-            if (!sinfo.split_fb_en) {
+-                sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+-            }
+-            /* split_fb：脏区已在 flush 中同步，帧末仅 pan/cache */
++            sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+ #else
+             sunxifb_mem_flush_cache(sinfo.rotatefbp,
+                     finfo.line_length * vinfo.yres);
+             if (sunxifb_g2d_blit_to_fb(sinfo.rotatefbp_phy, sinfo.rotatefbp_w,
+                     sinfo.rotatefbp_h, 0, 0, sinfo.rotatefbp_w, sinfo.rotatefbp_h,
+-                    0, vinfo.xres_virtual, vinfo.yres_virtual, 0,
+-                    sinfo.fbindex * vinfo.yres, vinfo.xres, vinfo.yres,
++                    (uintptr_t) finfo.smem_start, vinfo.xres,
++                    vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                    vinfo.xres, vinfo.yres,
+                     (g2d_blt_flags_h) sinfo.rotated) < 0) {
+                 sunxifb_soft_rotate(sinfo.screenfbp[sinfo.fbindex]);
+             }
+@@ -721,6 +592,17 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+         }
+ #endif /* SUNXIFB_ROTATE_EN */
+ 
++#ifdef USE_SUNXIFB_CACHE
++        {
++            uintptr_t args[2];
++
++            args[0] = (uintptr_t) sinfo.screenfbp[sinfo.fbindex];
++            args[1] = finfo.line_length * vinfo.yres;
++            if (ioctl(fbfd, FBIO_CACHE_SYNC, args) < 0)
++                perror("Error: FBIO_CACHE_SYNC fail");
++        }
++#endif /* USE_SUNXIFB_CACHE */
++
+         if (sinfo.fbnum > 2) {
+             int tmpindex = sinfo.fbindex + 1;
+             if (tmpindex > sinfo.fbnum - 1)
+@@ -730,12 +612,6 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+                 pthread_cond_wait(&sinfo.render_cond, &sinfo.render_lock);
+ 
+             nextindex = tmpindex;
+-        } else if (sinfo.split_fb_en) {
+-            vinfo.yoffset = sinfo.mipi_fbindex * vinfo.yres;
+-            if (ioctl(fbfd, FBIOPAN_DISPLAY, &vinfo) < 0) {
+-                perror("Error: FBIOPAN_DISPLAY fail");
+-            }
+-            nextindex = sinfo.mipi_fbindex;
+         } else {
+             vinfo.yoffset = sinfo.fbindex * vinfo.yres;
+             if (ioctl(fbfd, FBIOPAN_DISPLAY, &vinfo) < 0) {
+@@ -752,19 +628,12 @@ void sunxifb_flush(lv_disp_drv_t *drv, const lv_area_t *area,
+          */
+         if (!drv->full_refresh && sinfo.rotatefbp == NULL) {
+ #if defined(USE_SUNXIFB_G2D) && !defined(SUNXIFB_ROTATE_EN)
+-            if (sinfo.g2d_dbuf_blit_ok && sunxifb_g2d_fb_ready() &&
+-                sunxifb_g2d_blit_to_fb(0, vinfo.xres_virtual,
+-                    vinfo.yres_virtual, 0, sinfo.fbindex * vinfo.yres,
+-                    vinfo.xres, vinfo.yres, 0,
+-                    vinfo.xres_virtual, vinfo.yres_virtual, 0,
++            if (sunxifb_g2d_blit_to_fb((uintptr_t) finfo.smem_start, vinfo.xres,
++                    vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                    vinfo.xres, vinfo.yres, (uintptr_t) finfo.smem_start,
++                    vinfo.xres, vinfo.yres * sinfo.fbnum, 0,
+                     nextindex * vinfo.yres, vinfo.xres, vinfo.yres, G2D_ROT_0)
+                     < 0) {
+-                sinfo.g2d_dbuf_blit_ok = false;
+-                printf("G2D dbuf blit disabled, fallback to memcpy\n");
+-                memcpy(sinfo.screenfbp[nextindex],
+-                        sinfo.screenfbp[sinfo.fbindex],
+-                        finfo.line_length * vinfo.yres);
+-            } else if (!sinfo.g2d_dbuf_blit_ok || !sunxifb_g2d_fb_ready()) {
+                 memcpy(sinfo.screenfbp[nextindex],
+                         sinfo.screenfbp[sinfo.fbindex],
+                         finfo.line_length * vinfo.yres);
+@@ -885,13 +754,12 @@ int sunxifb_set_dbuf_en(lv_disp_drv_t *drv, bool dbuf_en) {
+         }
+ 
+ #ifdef USE_SUNXIFB_G2D
+-        if (sinfo.g2d_dbuf_blit_ok && sunxifb_g2d_fb_ready())
+-            sunxifb_g2d_blit_to_fb(0, vinfo.xres_virtual,
+-                vinfo.yres_virtual, 0, sinfo.fbindex * vinfo.yres, vinfo.xres,
+-                vinfo.yres, 0, vinfo.xres_virtual,
+-                vinfo.yres_virtual, 0, !sinfo.fbindex * vinfo.yres, vinfo.xres,
+-                vinfo.yres, G2D_ROT_0);
+-        else
++        if (sunxifb_g2d_blit_to_fb((uintptr_t) finfo.smem_start, vinfo.xres,
++                vinfo.yres * sinfo.fbnum, 0, sinfo.fbindex * vinfo.yres,
++                vinfo.xres, vinfo.yres, (uintptr_t) finfo.smem_start,
++                vinfo.xres, vinfo.yres * sinfo.fbnum, 0,
++                !sinfo.fbindex * vinfo.yres, vinfo.xres, vinfo.yres,
++                G2D_ROT_0) < 0)
+ #endif /* USE_SUNXIFB_G2D */
+             memcpy(sinfo.screenfbp[!sinfo.fbindex], sinfo.screenfbp[sinfo.fbindex],
+                     finfo.line_length * vinfo.yres);
+@@ -994,12 +862,6 @@ static void sunxifb_copy_area(char *dst, int32_t x1, int32_t y1, int32_t x2,
+     }
+ }
+ 
+-static void sunxifb_copy_area_to_hdmi(int32_t x1, int32_t y1, int32_t x2,
+-        int32_t y2)
+-{
+-    sunxifb_copy_area(sinfo.screenfbp[sinfo.hdmi_fbindex], x1, y1, x2, y2);
+-}
+-
+ /* 1920×1080 等逻辑分辨率：缩放后软转到 MIPI 有效 1280×800 区域 */
+ static void sunxifb_soft_rotate_area_scaled(char *dst, int32_t x1, int32_t y1,
+         int32_t x2, int32_t y2)
+@@ -1145,6 +1007,15 @@ static void sunxifb_soft_rotate(char *dst)
+             vinfo.xres, desH = vinfo.yres, srcW = sinfo.rotatefbp_w, srcH =
+             sinfo.rotatefbp_h;
+ 
++#ifdef USE_SUNXIFB_SOFT_ROTATE
++    if (sinfo.lv_logical_override) {
++        sunxifb_soft_rotate_area(dst, 0, 0,
++                (int32_t) sinfo.rotatefbp_w - 1,
++                (int32_t) sinfo.rotatefbp_h - 1);
++        return;
++    }
++#endif /* USE_SUNXIFB_SOFT_ROTATE */
++
+     switch (sinfo.rotated) {
+     case SUNXIFB_ROT_90:
+         for (i = 0; i < desH; i++) {
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
+index 4e449f53a..69358493b 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/display/sunxifb.h
+@@ -29,11 +29,6 @@ extern "C" {
+ #include "lvgl/lvgl.h"
+ #endif
+ 
+-/* G2D 暂不可用时由 sunxifb 做整帧 CPU 旋转；恢复 G2D 后在 menuconfig 开 LVGL8_USE_SUNXIFB_G2D_ROTATE */
+-#ifndef USE_SUNXIFB_G2D_ROTATE
+-#define USE_SUNXIFB_SOFT_ROTATE
+-#endif
+-
+ /*********************
+  *      DEFINES
+  *********************/
+@@ -48,7 +43,6 @@ extern "C" {
+ void sunxifb_set_lv_resolution(uint32_t w, uint32_t h);
+ void sunxifb_init(uint32_t rotated);
+ void sunxifb_exit(void);
+-/* desk 子进程退出后恢复 FBIO_HDMI_SRC_FB0（子进程 sunxifb_exit 可能关掉旋转） */
+ void sunxifb_hdmi_rotate_restore(void);
+ void sunxifb_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
+ void sunxifb_get_sizes(uint32_t *width, uint32_t *height);
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
+index d93af3b40..d902b8896 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.c
+@@ -30,8 +30,9 @@ void lv_port_disp_apply_rotate(lv_disp_drv_t *drv, uint32_t sunxi_rot)
+         drv->sw_rotate = 1;
+ #endif
+ 
+-#ifdef USE_SUNXIFB_SOFT_ROTATE
+-    /* 旋转仅 sunxifb 负责，避免 LVGL 再变换触摸坐标 */
++#if defined(USE_SUNXIFB_G2D_ROTATE) || defined(USE_SUNXIFB_SOFT_ROTATE)
++    /* G2D/软转：logical_size 已按旋转换宽高，rotated 必须 NONE。
++     * 原厂 demo 设 90/270 是因为 hor_res 仍是 fb 物理尺寸；两边叠一起会半屏。 */
+     drv->rotated = LV_DISP_ROT_NONE;
+ #else
+     if (sunxi_rot > 3)
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
+index 0eed02ff2..31fa3059f 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_port_disp.h
+@@ -23,7 +23,7 @@ void lv_port_disp_logical_size_from_fb(uint32_t fb_w, uint32_t fb_h,
+ 
+ /**
+  * 配置 disp_drv 旋转字段（须在 lv_disp_drv_register 之前调用）。
+- * USE_SUNXIFB_SOFT_ROTATE 时 rotated=NONE，旋转仅由 sunxifb 完成，触摸不再被 LVGL 二次变换。
++ * G2D/软转时 rotated=NONE（logical_size 已换宽高）；未硬件转时才把 rotated 交给 LVGL。
+  */
+ void lv_port_disp_apply_rotate(lv_disp_drv_t *drv, uint32_t sunxi_rot);
+ 
+
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
+index 4f0fa2120..89072c0ec 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
++++ b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Config.in
+@@ -37,7 +37,7 @@ config LVGL8_USE_FREETYPE
+ config LVGL8_USE_SUNXIFB_DIRECT_MODE
+ 	bool "use sunxifb direct mode"
+ 	depends on LVGL8_USE_SUNXIFB_DOUBLE_BUFFER
+-	default n
++	default y
+ 	help
+ 		Whether use sunxifb direct mode (requires double buffer)
+ 
+
+diff --git a/openwrt/target/h133/h133-p1_nor/defconfig b/openwrt/target/h133/h133-p1_nor/defconfig
+--- a/openwrt/target/h133/h133-p1_nor/defconfig
++++ b/openwrt/target/h133/h133-p1_nor/defconfig
+@@ -3333,7 +3333,7 @@
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
+diff --git a/openwrt/target/h133/h133-p1_nor_8733/defconfig b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+--- a/openwrt/target/h133/h133-p1_nor_8733/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_8733/defconfig
+@@ -3333,7 +3333,7 @@
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
+diff --git a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+--- a/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
++++ b/openwrt/target/h133/h133-p1_nor_JYY070/defconfig
+@@ -3333,7 +3333,7 @@
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D is not set
+ # CONFIG_LVGL8_USE_SUNXIFB_G2D_ROTATE is not set
+ CONFIG_LVGL8_USE_FREETYPE=y
+-# CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE is not set
++CONFIG_LVGL8_USE_SUNXIFB_DIRECT_MODE=y
+ # CONFIG_LVGL8_USE_WIFI2_BT4 is not set
+ CONFIG_LVGL8_USE_HARDWARE_JPEGDECODER=y
+ CONFIG_LVGL8_USE_RESOLUTION_DEFAULT=y
