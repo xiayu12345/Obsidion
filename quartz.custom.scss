@@ -137,9 +137,9 @@
 
 // Clean folder caret (more visible)
 .sidebar.left .folder-icon {
-  width: 14px;
-  height: 14px;
-  margin-right: 0.4rem;
+  width: 18px;
+  height: 18px;
+  margin-right: 0.35rem;
   color: var(--secondary);
   opacity: 1;
   flex-shrink: 0;
@@ -149,8 +149,8 @@
   opacity: 1;
 }
 .sidebar.left .explorer .fold {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   opacity: 0.9;
   color: var(--secondary);
 }
