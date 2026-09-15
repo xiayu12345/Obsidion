@@ -6,7 +6,7 @@ configuration:
   enablePopovers: true
   analytics: null
   locale: zh-CN
-  baseUrl: REPLACE_BASE_URL
+  baseUrl: xiayu12345.github.io/Obsidion
   ignorePatterns:
     - 日记
     - 模板
@@ -112,6 +112,10 @@ plugins:
     enabled: true
   - source: "@quartz-community/explorer"
     enabled: true
+    options:
+      folderClickBehavior: collapse
+      folderDefaultState: collapsed
+      useSavedState: true
     layout:
       position: left
       priority: 50
