@@ -15,6 +15,3 @@ start: 2026-09-14
 - 交付：`p1_nor_SCRTEST` → `out/h133_linux_p1_nor_SCRTEST_uart0_nor.img`
 - 遗留：
   - [ ] 触摸适配
-
-## 本板事项
-![[视图/项目子页.base]]
