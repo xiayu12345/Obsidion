@@ -1,3 +1,5 @@
+// Explorer perf: inline script in @quartz-community/explorer dist must stay patched
+// (trie cache + skip full DOM rebuild on nav). Re-apply from scripts/explorer-inline-perf.js
 import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
 
 // Prefer TS override when plugin index is available.
