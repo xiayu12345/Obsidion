@@ -77,10 +77,9 @@
   margin-top: 0.35rem;
 }
 
+// Hide Explorer section title「探索」on desktop; keep the file tree
 .sidebar.left .explorer .title-button.desktop-explorer {
-  padding: 0.35rem 0.55rem;
-  border-radius: 0.55rem;
-  margin-bottom: 0.15rem;
+  display: none !important;
 }
 
 .sidebar.left .explorer-content {
