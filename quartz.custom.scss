@@ -136,21 +136,24 @@
   font-size: 0.92rem;
 }
 
-// Clean folder caret
+// Clean folder caret (more visible)
 .sidebar.left .folder-icon {
-  width: 10px;
-  height: 10px;
-  margin-right: 0.45rem;
-  color: var(--gray);
-  opacity: 0.85;
+  width: 14px;
+  height: 14px;
+  margin-right: 0.4rem;
+  color: var(--secondary);
+  opacity: 1;
   flex-shrink: 0;
 }
 .sidebar.left .folder-icon:hover {
-  color: var(--secondary);
+  color: var(--tertiary);
   opacity: 1;
 }
 .sidebar.left .explorer .fold {
-  opacity: 0.55;
+  width: 12px;
+  height: 12px;
+  opacity: 0.9;
+  color: var(--secondary);
 }
 
 
