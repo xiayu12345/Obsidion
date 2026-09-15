@@ -215,3 +215,32 @@ a.download-btn::before {
   content: "↓";
   font-weight: 700;
 }
+
+// Right TOC: no「目录」chrome — just current-page heading anchors
+.sidebar.right .toc > .toc-header {
+  display: none !important;
+}
+.sidebar.right .toc {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+.sidebar.right .toc .toc-content {
+  margin-top: 0.25rem;
+  max-height: none;
+}
+.sidebar.right .toc .toc-content.collapsed {
+  display: block !important; // never collapse without header
+}
+.sidebar.right .toc .toc-content > li > a {
+  opacity: 0.7;
+  display: block;
+  padding: 0.2rem 0;
+  line-height: 1.35;
+}
+.sidebar.right .toc .toc-content > li > a:hover,
+.sidebar.right .toc .toc-content > li > a.in-view {
+  opacity: 1;
+  color: var(--secondary);
+}
+
