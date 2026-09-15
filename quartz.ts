@@ -1,0 +1,27 @@
+import { loadQuartzConfig, loadQuartzLayout } from "./quartz/plugins/loader/config-loader"
+
+// Prefer TS override when plugin index is available.
+try {
+  const ExternalPlugin = await import("./.quartz/plugins/index.js")
+  if (ExternalPlugin?.Explorer) {
+    ExternalPlugin.Explorer({
+      mapFn: (node: { slugSegments?: string[]; displayName: string }) => {
+        const segs = node.slugSegments || []
+        const i = segs.indexOf("开发记录")
+        if (i >= 0 && i < segs.length - 1) {
+          const name = node.displayName
+          if (typeof name === "string" && /^\d{8}-/.test(name)) {
+            node.displayName = name.replace(/^\d{8}-/, "")
+          }
+        }
+        return node
+      },
+    })
+  }
+} catch {
+  // Plugin index may be empty; mapFn is also patched into @quartz-community/explorer defaults.
+}
+
+const config = await loadQuartzConfig()
+export default config
+export const layout = await loadQuartzLayout()

@@ -139,3 +139,26 @@
 .sidebar.left .folder-icon {
   margin-right: 0.35rem;
 }
+
+
+// Full-row folder hit target (not just the text glyphs)
+.sidebar.left .folder-container {
+  width: 100%;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.sidebar.left .folder-container > div {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.sidebar.left .folder-container .folder-button {
+  width: 100%;
+  justify-content: flex-start;
+  box-sizing: border-box;
+  padding: 0.25rem 0.45rem 0.25rem 0.1rem;
+  min-height: 1.7rem;
+}
