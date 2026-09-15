@@ -5,4 +5,4 @@ kind: docs
 
 # p1_nor_ZS101主板测试报告
 
-[打开文件](项目/ZS101/资料/p1_nor_ZS101主板测试报告.xlsx)
+<p class="doc-download"><a class="download-btn" data-router-ignore href="./p1_nor_ZS101主板测试报告.xlsx" download>下载原件（XLSX）</a></p>

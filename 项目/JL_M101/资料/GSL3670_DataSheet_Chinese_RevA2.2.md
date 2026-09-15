@@ -5,4 +5,4 @@ kind: docs
 
 # GSL3670_DataSheet_Chinese_RevA2.2
 
-[打开文件](项目/JL_M101/资料/GSL3670_DataSheet_Chinese_RevA2.2.pdf)
+<p class="doc-download"><a class="download-btn" data-router-ignore href="./GSL3670_DataSheet_Chinese_RevA2.2.pdf" download>下载原件（PDF）</a></p>

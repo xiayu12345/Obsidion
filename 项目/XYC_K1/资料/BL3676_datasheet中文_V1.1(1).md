@@ -5,4 +5,4 @@ kind: docs
 
 # BL3676_datasheet中文_V1.1(1)
 
-[打开文件](项目/XYC_K1/资料/BL3676_datasheet中文_V1.1(1).pdf)
+<p class="doc-download"><a class="download-btn" data-router-ignore href="./BL3676_datasheet中文_V1.1(1).pdf" download>下载原件（PDF）</a></p>

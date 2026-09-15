@@ -185,3 +185,31 @@
 .sidebar.left .explorer .fold {
   transition: transform 0.08s ease;
 }
+
+// 资料 download button
+.doc-download {
+  margin: 0.75rem 0 1.25rem;
+}
+a.download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.95rem;
+  border-radius: 999px;
+  background: var(--secondary);
+  color: var(--light) !important;
+  font-weight: 600;
+  font-size: 0.92rem;
+  text-decoration: none !important;
+  border: none;
+  box-shadow: none;
+  opacity: 1 !important;
+}
+a.download-btn:hover {
+  background: var(--tertiary);
+  color: var(--light) !important;
+}
+a.download-btn::before {
+  content: "↓";
+  font-weight: 700;
+}

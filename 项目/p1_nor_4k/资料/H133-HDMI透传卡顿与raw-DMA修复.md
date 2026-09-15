@@ -5,4 +5,4 @@ kind: docs
 
 # H133-HDMI透传卡顿与raw-DMA修复
 
-[打开文件](项目/p1_nor_4k/资料/H133-HDMI透传卡顿与raw-DMA修复.patch)
+<p class="doc-download"><a class="download-btn" data-router-ignore href="./H133-HDMI透传卡顿与raw-DMA修复.patch" download>下载原件（PATCH）</a></p>

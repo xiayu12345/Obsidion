@@ -5,4 +5,4 @@ kind: docs
 
 # GM8775C_SBOARD_1V3
 
-[打开文件](项目/LQ190/资料/GM8775C_SBOARD_1V3.pdf)
+<p class="doc-download"><a class="download-btn" data-router-ignore href="./GM8775C_SBOARD_1V3.pdf" download>下载原件（PDF）</a></p>
