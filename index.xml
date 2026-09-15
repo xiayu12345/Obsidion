@@ -6,65 +6,65 @@
       <description>Last 10 notes on H133 板件</description>
       <generator>Quartz -- quartz.jzhao.xyz</generator>
       <item>
-    <title>G2D旋转</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/g2d%E6%97%8B%E8%BD%AC/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/g2d%E6%97%8B%E8%BD%AC/</guid>
+    <title>20260730-HDMI同显-DE1-linebuf超宽1比1黑边</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/20260730-hdmi%E5%90%8C%E6%98%BE-de1-linebuf%E8%B6%85%E5%AE%BD1%E6%AF%941%E9%BB%91%E8%BE%B9/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/20260730-hdmi%E5%90%8C%E6%98%BE-de1-linebuf%E8%B6%85%E5%AE%BD1%E6%AF%941%E9%BB%91%E8%BE%B9/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
   </item><item>
-    <title>专题</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/</guid>
+    <title>系统BUG修复</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
-  </item><item>
-    <title>patches</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/g2d%E6%97%8B%E8%BD%AC/patches/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/g2d%E6%97%8B%E8%BD%AC/patches/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
-  </item><item>
-    <title>20260831-三键识别</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/gpadc%E7%94%B5%E9%98%BB%E6%8C%89%E9%94%AE/20260831-%E4%B8%89%E9%94%AE%E8%AF%86%E5%88%AB/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/gpadc%E7%94%B5%E9%98%BB%E6%8C%89%E9%94%AE/20260831-%E4%B8%89%E9%94%AE%E8%AF%86%E5%88%AB/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
-  </item><item>
-    <title>GPADC电阻按键</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/gpadc%E7%94%B5%E9%98%BB%E6%8C%89%E9%94%AE/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/gpadc%E7%94%B5%E9%98%BB%E6%8C%89%E9%94%AE/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
-  </item><item>
-    <title>NOR安全存储SN</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
-  </item><item>
-    <title>libkey</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/libkey/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/libkey/</guid>
-    <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
   </item><item>
     <title>patches</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/patches/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/patches/</guid>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/20260730-hdmi%E5%90%8C%E6%98%BE-de1-linebuf%E8%B6%85%E5%AE%BD1%E6%AF%941%E9%BB%91%E8%BE%B9/patches/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/%E7%B3%BB%E7%BB%9Fbug%E4%BF%AE%E5%A4%8D/20260730-hdmi%E5%90%8C%E6%98%BE-de1-linebuf%E8%B6%85%E5%AE%BD1%E6%AF%941%E9%BB%91%E8%BE%B9/patches/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
   </item><item>
-    <title>sst_test</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/sst_test/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/nor%E5%AE%89%E5%85%A8%E5%AD%98%E5%82%A8sn/sst_test/</guid>
+    <title>资料</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E8%B5%84%E6%96%99/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jl_m101/%E8%B5%84%E6%96%99/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
   </item><item>
-    <title>TP驱动与触摸</title>
-    <link>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/tp%E9%A9%B1%E5%8A%A8%E4%B8%8E%E8%A7%A6%E6%91%B8/</link>
-    <guid>https://xiayu12345.github.io/Obsidion/%E4%B8%93%E9%A2%98/tp%E9%A9%B1%E5%8A%A8%E4%B8%8E%E8%A7%A6%E6%91%B8/</guid>
+    <title>JYY070</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/</guid>
     <description><![CDATA[  ]]></description>
-    <pubDate>Tue, 15 Sep 2026 10:23:06 GMT</pubDate>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
+  </item><item>
+    <title>20260708-JYY070-LVDS显示开发</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260708-jyy070-lvds%E6%98%BE%E7%A4%BA%E5%BC%80%E5%8F%91/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260708-jyy070-lvds%E6%98%BE%E7%A4%BA%E5%BC%80%E5%8F%91/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
+  </item><item>
+    <title>开发记录</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
+  </item><item>
+    <title>20260708-JYY070-LVGL显示不旋转</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260708-jyy070-lvgl%E6%98%BE%E7%A4%BA%E4%B8%8D%E6%97%8B%E8%BD%AC/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260708-jyy070-lvgl%E6%98%BE%E7%A4%BA%E4%B8%8D%E6%97%8B%E8%BD%AC/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
+  </item><item>
+    <title>20260710-JYY070-GSL1680触摸坐标内核映射</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260710-jyy070-gsl1680%E8%A7%A6%E6%91%B8%E5%9D%90%E6%A0%87%E5%86%85%E6%A0%B8%E6%98%A0%E5%B0%84/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260710-jyy070-gsl1680%E8%A7%A6%E6%91%B8%E5%9D%90%E6%A0%87%E5%86%85%E6%A0%B8%E6%98%A0%E5%B0%84/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
+  </item><item>
+    <title>20260713-JYY070-8733BU-WiFi适配</title>
+    <link>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260713-jyy070-8733bu-wifi%E9%80%82%E9%85%8D/</link>
+    <guid>https://xiayu12345.github.io/Obsidion/%E9%A1%B9%E7%9B%AE/jyy070/%E5%BC%80%E5%8F%91%E8%AE%B0%E5%BD%95/20260713-jyy070-8733bu-wifi%E9%80%82%E9%85%8D/</guid>
+    <description><![CDATA[  ]]></description>
+    <pubDate>Tue, 15 Sep 2026 10:24:16 GMT</pubDate>
   </item>
     </channel>
   </rss>
