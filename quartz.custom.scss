@@ -136,8 +136,21 @@
   font-size: 0.92rem;
 }
 
+// Clean folder caret
 .sidebar.left .folder-icon {
-  margin-right: 0.35rem;
+  width: 10px;
+  height: 10px;
+  margin-right: 0.45rem;
+  color: var(--gray);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+.sidebar.left .folder-icon:hover {
+  color: var(--secondary);
+  opacity: 1;
+}
+.sidebar.left .explorer .fold {
+  opacity: 0.55;
 }
 
 
