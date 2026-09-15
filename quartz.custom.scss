@@ -1,18 +1,135 @@
 @use "./variables.scss" as *;
 
-// Give left explorer breathing room from main content (default columnGap is 5px).
+// A+C+D hybrid: flush-left minimal chrome + clear tree hierarchy + rounded hit targets.
+// Colors stay on Quartz theme tokens.
+
+// --- A: flush left (kill centered page gutters) ---
+.page {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
 .page > #quartz-body {
-  column-gap: 2rem;
+  column-gap: 1.75rem;
+  padding-left: 0;
+  padding-right: 1rem;
 
   @media all and ($tablet) {
-    column-gap: 1.5rem;
+    column-gap: 1.25rem;
+  }
+
+  @media all and ($mobile) {
+    padding-left: 1rem;
   }
 
   & > .sidebar.left {
-    padding-right: 1.25rem;
+    padding: $topSpacing 0.65rem 1.5rem 0.85rem;
+    background: transparent;
+    border-right: none;
   }
 
   & > #center {
-    padding-left: 0.75rem;
+    padding-left: 0.5rem;
+    min-width: 0;
   }
+
+  & > .sidebar.right {
+    padding-right: 0.75rem;
+  }
+}
+
+// --- D: pill search + roomier title ---
+.sidebar.left {
+  .page-title {
+    font-size: 1.05rem;
+    letter-spacing: 0.01em;
+    margin-bottom: 0.35rem;
+    padding-left: 0.15rem;
+  }
+
+  .search .search-button {
+    border-radius: 999px;
+    border: 1px solid var(--lightgray);
+    background: color-mix(in srgb, var(--lightgray) 35%, transparent);
+    padding: 0.45rem 0.85rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .search .search-button:hover {
+    border-color: var(--secondary);
+  }
+
+  .darkmode {
+    border-radius: 999px;
+  }
+}
+
+// --- D + C: soft explorer panel + hierarchy ---
+.sidebar.left .explorer {
+  margin-top: 0.35rem;
+}
+
+.sidebar.left .explorer .title-button.desktop-explorer {
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.55rem;
+  margin-bottom: 0.15rem;
+}
+
+.sidebar.left .explorer-content {
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.35rem 0.65rem;
+  border-radius: 0.85rem;
+  background: color-mix(in srgb, var(--lightgray) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+}
+
+.sidebar.left .explorer-content ul li > a {
+  display: block;
+  border-radius: 0.5rem;
+  padding: 0.28rem 0.55rem 0.28rem 0.6rem;
+  border-left: 2px solid transparent;
+  line-height: 1.35;
+  transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+}
+
+.sidebar.left .explorer-content ul li > a:hover {
+  background: color-mix(in srgb, var(--highlight) 80%, transparent);
+  opacity: 1;
+}
+
+// C: active leaf accent bar
+.sidebar.left .explorer-content ul li > a.active {
+  opacity: 1;
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--highlight) 90%, transparent);
+  border-left-color: var(--secondary);
+  font-weight: 600;
+}
+
+// C: clearer folder nesting rail
+.sidebar.left .explorer-content .folder-outer > ul {
+  border-left: 1px solid color-mix(in srgb, var(--lightgray) 80%, var(--secondary));
+  margin-left: 0.45rem;
+  padding-left: 0.7rem;
+}
+
+.sidebar.left .folder-container {
+  border-radius: 0.5rem;
+  padding: 0.15rem 0.25rem;
+  margin: 0.05rem 0;
+}
+
+.sidebar.left .folder-container:hover {
+  background: color-mix(in srgb, var(--highlight) 55%, transparent);
+}
+
+.sidebar.left .folder-container div > a,
+.sidebar.left .folder-container div > button span {
+  font-size: 0.92rem;
+}
+
+.sidebar.left .folder-icon {
+  margin-right: 0.35rem;
 }
