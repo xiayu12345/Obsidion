@@ -24,9 +24,15 @@
   }
 
   & > .sidebar.left {
-    padding: $topSpacing 0.65rem 1.5rem 0.85rem;
+    // Was $topSpacing (6rem) — too much empty space above title.
+    padding: 1.25rem 0.65rem 1.5rem 0.85rem;
     background: transparent;
     border-right: none;
+  }
+
+  // Keep main header from sitting too high relative to tightened sidebar.
+  & > .page-header {
+    margin-top: 1.25rem;
   }
 
   & > #center {
