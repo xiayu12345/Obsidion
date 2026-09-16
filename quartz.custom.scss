@@ -1,18 +1,19 @@
 @use "./variables.scss" as *;
 
-// A+C+D hybrid: flush-left minimal chrome + clear tree hierarchy + rounded hit targets.
+// A+C+D hybrid: centered page shell + clear tree hierarchy + rounded hit targets.
 // Colors stay on Quartz theme tokens.
 
-// --- A: flush left (kill centered page gutters) ---
+// --- A: centered page shell (keep sidebars; don't flush full-bleed) ---
 .page {
-  max-width: none;
-  margin: 0;
+  max-width: 1500px;
+  margin: 0 auto;
   width: 100%;
 }
 
 .page > #quartz-body {
   column-gap: 1.75rem;
-  padding-left: 0;
+  // restore normal horizontal padding vs flush-left 0
+  padding-left: 1rem;
   padding-right: 1rem;
 
   @media all and ($tablet) {
