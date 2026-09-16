@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/jackyzha0/quartz/v5/quartz/plugins/quartz-plugins.schema.json
 configuration:
-  pageTitle: H133 板件
+  pageTitle: 全志
   pageTitleSuffix: ""
   enableSPA: true
   enablePopovers: true
