@@ -3,8 +3,8 @@
 // A+C+D hybrid: centered page shell + clear tree hierarchy + rounded hit targets.
 // Colors stay on Quartz theme tokens.
 
-// Layout: left sidebar flush to viewport left; center article centered;
-// right sidebar on the right with TOC centered in that column.
+// Layout: left sidebar flush left; center fills middle grid column;
+// right sidebar on the right with TOC using full right column width.
 .page {
   max-width: none;
   margin: 0;
@@ -12,12 +12,12 @@
 }
 
 .page > #quartz-body {
-  column-gap: 1.75rem;
+  column-gap: 1rem; // was ~1.75rem
   padding-left: 0;
   padding-right: 0;
 
   @media all and ($tablet) {
-    column-gap: 1.25rem;
+    column-gap: 1rem;
   }
 
   @media all and ($mobile) {
@@ -36,7 +36,7 @@
     margin-top: 1.25rem;
   }
 
-  // Center column: readable measure; avoid flex on whole .center (tables)
+  // Center column: fill grid middle — avoid flex on whole .center (tables)
   & > .center,
   & > #center {
     min-width: 0;
@@ -48,11 +48,13 @@
   & > #center > .page-header,
   & > #center > article,
   & > #center > .page-footer {
-    max-width: 48rem;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: none; // fill center grid column — kills big gutters
+    margin-left: 0;
+    margin-right: 0;
     width: 100%;
     box-sizing: border-box;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
   }
 
   & > .sidebar.right {
@@ -64,10 +66,10 @@
   }
 
   & > .sidebar.right > .toc {
-    margin-left: auto;
-    margin-right: auto;
+    max-width: none;
     width: 100%;
-    max-width: 16rem;
+    margin-left: 0;
+    margin-right: 0;
   }
 }
 
