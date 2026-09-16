@@ -117,6 +117,7 @@ plugins:
       folderClickBehavior: collapse
       folderDefaultState: collapsed
       useSavedState: true
+      # mapFn (H133 label + 开发记录 date strip) lives in quartz.ts + explorer defaults (YAML cannot hold JS callbacks)
     layout:
       position: left
       priority: 50

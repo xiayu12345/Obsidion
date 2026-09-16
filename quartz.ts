@@ -9,6 +9,9 @@ try {
     ExternalPlugin.Explorer({
       mapFn: (node: { slugSegments?: string[]; displayName: string }) => {
         const segs = node.slugSegments || []
+        if (segs.length === 1 && (segs[0] === "h133" || segs[0] === "H133")) {
+          node.displayName = "H133"
+        }
         const i = segs.indexOf("开发记录")
         if (i >= 0 && i < segs.length - 1) {
           const name = node.displayName
