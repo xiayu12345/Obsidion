@@ -1,7 +1,7 @@
 @use "./variables.scss" as *;
 
-// Layout: three columns with outer side breathing room (not viewport-flush).
-// Keep middle as 1fr and tight column-gap; avoid old 1500px huge gutters.
+// Layout: left flush to viewport; larger gaps BETWEEN columns;
+// right TOC centered in its column. No centered outer shell.
 html, body {
   width: 100%;
   max-width: none;
@@ -12,10 +12,10 @@ html, body {
 .page {
   box-sizing: border-box;
   width: 100% !important;
-  max-width: 1680px !important; // slightly wider than old 1500; centers on ultrawide
-  margin: 0 auto !important;
-  padding-left: 1.75rem;
-  padding-right: 1.75rem;
+  max-width: none !important;
+  margin: 0 !important;
+  padding-left: 0;
+  padding-right: 0;
 }
 
 .page > #quartz-body {
@@ -23,19 +23,20 @@ html, body {
   max-width: none;
   box-sizing: border-box;
   grid-template-columns: 280px minmax(0, 1fr) 240px !important;
-  column-gap: 1rem;
+  column-gap: 2.25rem; // space between middle and sidebars
   padding-left: 0;
-  padding-right: 0;
+  padding-right: 0.75rem; // tiny right inset so TOC not flush to window edge
 
   @media all and ($tablet) {
     grid-template-columns: 280px minmax(0, 1fr) !important;
-    column-gap: 1rem;
+    column-gap: 2rem;
   }
 
   @media all and ($mobile) {
     grid-template-columns: auto !important;
-    padding-left: 0;
-    padding-right: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    column-gap: 1rem;
   }
 
   & > .sidebar.left {
@@ -66,23 +67,24 @@ html, body {
     margin-right: 0 !important;
     width: 100% !important;
     box-sizing: border-box;
-    padding-left: 0.75rem;
-    padding-right: 0.75rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 
   & > .sidebar.right {
-    padding-right: 0.85rem;
+    padding-right: 0.5rem;
     padding-left: 0.5rem;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center; // 右边居中
   }
 
   & > .sidebar.right > .toc {
-    max-width: none;
-    width: 100%;
-    margin-left: 0;
-    margin-right: 0;
+    max-width: 100%;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left; // links themselves left-aligned within centered block
   }
 }
 
