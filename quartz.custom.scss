@@ -23,13 +23,13 @@ html, body {
   max-width: none;
   box-sizing: border-box;
   grid-template-columns: 280px minmax(0, 1fr) 240px !important;
-  column-gap: 2.25rem; // space between middle and sidebars
+  column-gap: 3.25rem; // space between middle and sidebars
   padding-left: 0;
   padding-right: 0.75rem; // tiny right inset so TOC not flush to window edge
 
   @media all and ($tablet) {
     grid-template-columns: 280px minmax(0, 1fr) !important;
-    column-gap: 2rem;
+    column-gap: 2.75rem;
   }
 
   @media all and ($mobile) {
