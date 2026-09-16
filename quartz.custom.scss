@@ -295,3 +295,174 @@ a.download-btn::before {
   color: var(--secondary);
 }
 
+
+// --- Homepage / content polish ---
+article .lead {
+  color: var(--gray);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0.35rem 0 1.25rem;
+}
+
+article .home-panel {
+  border-radius: 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 18%, transparent);
+  padding: 0.35rem 0.5rem 0.15rem;
+  margin: 0.75rem 0 1rem;
+  overflow: hidden;
+}
+
+article .home-panel .table-container {
+  margin: 0;
+}
+
+article .home-panel .table-container > table {
+  margin: 0.5rem 0.35rem 0.75rem;
+  width: calc(100% - 0.7rem);
+}
+
+article .table-container > table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: 0.65rem;
+  overflow: hidden;
+}
+
+article .table-container > table th {
+  background: color-mix(in srgb, var(--lightgray) 45%, transparent);
+  font-weight: 600;
+  font-size: 0.86rem;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 0.65rem 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 80%, transparent);
+}
+
+article .table-container > table td {
+  padding: 0.62rem 0.85rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+  vertical-align: middle;
+  font-size: 0.94rem;
+}
+
+article .table-container > table tr:last-child td {
+  border-bottom: none;
+}
+
+article .table-container > table tbody tr:hover td {
+  background: color-mix(in srgb, var(--highlight) 70%, transparent);
+}
+
+article .table-container > table code {
+  font-size: 0.82rem;
+  padding: 0.12rem 0.4rem;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--lightgray) 40%, transparent);
+}
+
+.st {
+  display: inline-block;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: nowrap;
+  border: 1px solid transparent;
+}
+.st-idea {
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  border-color: color-mix(in srgb, var(--secondary) 35%, transparent);
+}
+.st-design {
+  color: var(--tertiary);
+  background: color-mix(in srgb, var(--tertiary) 16%, transparent);
+  border-color: color-mix(in srgb, var(--tertiary) 32%, transparent);
+}
+.st-build, .st-doing {
+  color: #7dd3fc;
+  background: color-mix(in srgb, #38bdf8 18%, transparent);
+  border-color: color-mix(in srgb, #38bdf8 35%, transparent);
+}
+.st-verify {
+  color: #86efac;
+  background: color-mix(in srgb, #22c55e 16%, transparent);
+  border-color: color-mix(in srgb, #22c55e 32%, transparent);
+}
+.st-done {
+  color: var(--gray);
+  background: color-mix(in srgb, var(--lightgray) 35%, transparent);
+  border-color: color-mix(in srgb, var(--lightgray) 70%, transparent);
+}
+
+.status-flow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.35rem;
+  padding: 0.85rem 1rem;
+  margin: 0.5rem 0 1.1rem;
+  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 65%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 14%, transparent);
+}
+.flow-arrow {
+  color: var(--gray);
+  opacity: 0.7;
+  padding: 0 0.15rem;
+}
+
+article .home-cards {
+  padding: 0.35rem 0.25rem 0.5rem;
+}
+article .home-cards ol {
+  margin: 0.4rem 0 0.8rem;
+  padding-left: 1.25rem;
+}
+article .home-cards li {
+  margin: 0.45rem 0;
+  line-height: 1.5;
+}
+
+article .topic-grid > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0.5rem 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr));
+  gap: 0.65rem;
+}
+article .topic-grid > ul > li > a {
+  display: block;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 16%, transparent);
+  text-decoration: none;
+  font-weight: 560;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+article .topic-grid > ul > li > a:hover {
+  border-color: color-mix(in srgb, var(--secondary) 55%, transparent);
+  background: color-mix(in srgb, var(--highlight) 75%, transparent);
+  transform: translateY(-1px);
+}
+
+article .home-more {
+  color: var(--gray);
+  font-size: 0.92rem;
+  margin: 0.25rem 0 1.25rem;
+}
+
+// Article headings a bit clearer
+article h1 {
+  letter-spacing: -0.01em;
+}
+article h2 {
+  margin-top: 1.75rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
+  font-size: 1.15rem;
+}
