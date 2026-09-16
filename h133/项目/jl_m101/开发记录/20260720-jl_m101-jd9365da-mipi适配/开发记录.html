@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>开发记录</title><meta charset="utf-8"/><link rel="preload" href="../../../../../index-977b9dfe.css" as="style"/><link rel="preload" href="../../../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="开发记录"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="开发记录"/><meta name="twitter:description" content="JL-M101 JD9365DA MIPI 适配 — 开发记录 状态更新（2026-07-22）：实机已完整出图。 定稿笔记（板件新建 + 显示开发）请读： ../20260722-JL_M101-板件新建与MIPI显示定稿/README.md 本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。 项内容日期2026-07-20（实机调试至 2026-07-21；出图定稿 2026-07-22）板型p1_nor_JL_M101参照板型p1_nor_8733（显示链路 + RTL8733BU；DTS 原软链 p1_nor）屏型号JL-M101B196-P21WX-M4026..."/><meta property="og:description" content="JL-M101 JD9365DA MIPI 适配 — 开发记录 状态更新（2026-07-22）：实机已完整出图。 定稿笔记（板件新建 + 显示开发）请读： ../20260722-JL_M101-板件新建与MIPI显示定稿/README.md 本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。 项内容日期2026-07-20（实机调试至 2026-07-21；出图定稿 2026-07-22）板型p1_nor_JL_M101参照板型p1_nor_8733（显示链路 + RTL8733BU；DTS 原软链 p1_nor）屏型号JL-M101B196-P21WX-M4026..."/><meta property="og:image:alt" content="JL-M101 JD9365DA MIPI 适配 — 开发记录 状态更新（2026-07-22）：实机已完整出图。 定稿笔记（板件新建 + 显示开发）请读： ../20260722-JL_M101-板件新建与MIPI显示定稿/README.md 本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。 项内容日期2026-07-20（实机调试至 2026-07-21；出图定稿 2026-07-22）板型p1_nor_JL_M101参照板型p1_nor_8733（显示链路 + RTL8733BU；DTS 原软链 p1_nor）屏型号JL-M101B196-P21WX-M4026..."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录"/><link rel="icon" href="../../../../../static/icon.png"/><meta name="description" content="JL-M101 JD9365DA MIPI 适配 — 开发记录 状态更新（2026-07-22）：实机已完整出图。 定稿笔记（板件新建 + 显示开发）请读： ../20260722-JL_M101-板件新建与MIPI显示定稿/README.md 本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。 项内容日期2026-07-20（实机调试至 2026-07-21；出图定稿 2026-07-22）板型p1_nor_JL_M101参照板型p1_nor_8733（显示链路 + RTL8733BU；DTS 原软链 p1_nor）屏型号JL-M101B196-P21WX-M4026..."/><meta name="generator" content="Quartz"/><link href="../../../../../index-977b9dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/开发记录" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    const segs = node.slugSegments || [];\n    const i = segs.indexOf(\&quot;开发记录\&quot;);\n    if (i >= 0 &amp;&amp; i &lt; segs.length - 1) {\n      const name = node.displayName;\n      if (typeof name === \&quot;string\&quot; &amp;&amp; /^\\d{8}-/.test(name)) {\n        node.displayName = name.replace(/^\\d{8}-/, \&quot;\&quot;);\n      }\n    }\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-67" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="fold"><path d="M7.5 9.5h9L12 16.5 7.5 9.5z"></path></svg></button><div id="explorer-67" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="folder-icon nav-folder-collapse-indicator collapse-icon"><path d="M7.5 9.5h9L12 16.5 7.5 9.5z"></path></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../h133/">H133</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../h133/项目/">项目</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../h133/项目/jl_m101/">四川京龙 · JL_M101</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../h133/项目/jl_m101/开发记录/">开发记录</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../../../h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/">20260720-JL_M101-JD9365DA-MIPI适配</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>开发记录</a></div></nav><h1 class="article-title">开发记录</h1><details class="note-properties metadata-container" open data-collapsed="false"><summary class="note-properties-header"><span class="note-properties-title">Properties</span><span class="note-properties-count">1</span></summary><table class="note-properties-table"><tbody><tr class="note-properties-row metadata-property"><td class="note-properties-key metadata-property-key">kind</td><td class="note-properties-value metadata-property-value"><span class="note-properties-text">log</span></td></tr></tbody></table></details><p show-comma="true" class="content-meta"><time datetime="2026-07-20T00:00:00.000Z">2026年7月20日</time><span>15分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="jl-m101-jd9365da-mipi-适配--开发记录">JL-M101 JD9365DA MIPI 适配 — 开发记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#jl-m101-jd9365da-mipi-适配--开发记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<blockquote>
+<p><strong>状态更新（2026-07-22）：实机已完整出图。</strong><br/>
+定稿笔记（板件新建 + 显示开发）请读：<br/>
+<a href="../../../../.././20260722-jl_m101-板件新建与mipi显示定稿/readme" class="internal internal-link alias" data-slug="20260722-jl_m101-板件新建与mipi显示定稿/readme">../20260722-JL_M101-板件新建与MIPI显示定稿/README.md</a><br/>
+本文保留 phase1 落地与 07-20～21 调试流水，便于对照补丁。</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>内容</th></tr></thead><tbody><tr><td>日期</td><td>2026-07-20（实机调试至 2026-07-21；<strong>出图定稿 2026-07-22</strong>）</td></tr><tr><td>板型</td><td><strong><code>p1_nor_JL_M101</code></strong></td></tr><tr><td>参照板型</td><td><strong><code>p1_nor_8733</code></strong>（显示链路 + RTL8733BU；DTS 原软链 <code>p1_nor</code>）</td></tr><tr><td>屏型号</td><td>JL-M101B196-P21WX-M402632</td></tr><tr><td>驱动 IC</td><td>JD9365DA-H3</td></tr><tr><td>分辨率 / 接口</td><td>800×1280，MIPI DSI <strong>4-lane</strong>，video mode</td></tr><tr><td>panel 名</td><td><code>jl_m101_jd9365da</code></td></tr><tr><td>合并补丁</td><td><a href="../../../../../h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/jl-m101-mipi-phase1.patch" class="internal internal-link alias" data-slug="h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/jl-m101-mipi-phase1.patch">patches/jl-m101-mipi-phase1.patch</a></td></tr><tr><td>板级档案</td><td><a href="../../../../.././../../../../skills/h133-display/board-profile-p1_nor_jl_m101" class="internal internal-link alias" data-slug="skills/h133-display/board-profile-p1_nor_jl_m101">board-profile-p1_nor_JL_M101.md</a></td></tr><tr><td>定稿文档</td><td><a href="../../../../.././20260722-jl_m101-板件新建与mipi显示定稿/readme" class="internal internal-link alias" data-slug="20260722-jl_m101-板件新建与mipi显示定稿/readme">20260722-…定稿</a></td></tr><tr><td>索引</td><td><a href="../../../../.././readme" class="internal internal-link" data-slug="readme">README.md</a></td></tr></tbody></table></div>
+<hr/>
+<h2 id="0-当前结论先看这个">0. 当前结论（先看这个）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#0-当前结论先看这个" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p><strong>从 <code>p1_nor_8733</code> 克隆独立板级，只换 MIPI panel（京龙 init），UI/WiFi/视频旋转保持 8733 不变。</strong><br/>
+禁止改共享的 <code>p1_nor</code> / <code>p1_nor_8733</code> DTS 迁就本屏。</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 应用补丁（干净树）</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> H133-AI-Skills/开发记录/板件开发记录/JL_M101/20260720-JL_M101-JD9365DA-MIPI适配/patches/apply-jl-m101-mipi.sh</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 编译（与 JYY070 脚本同结构）</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_JL_M101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> kernel</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   # 先验证 panel</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_JL_M101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> full</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">     # 完整镜像</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 产物：out/h133_linux_p1_nor_JL_M101_uart0_nor.img</span></span></code></pre></figure>
+<p><strong>实机进度（定稿）：</strong> WiFi 8733bu 正常；内核 <code>panel_init</code> + PWM0@50kHz 背光；转接板 <strong>3.3V-RESET</strong>；<strong>LCD 已完整出图</strong>。<br/>
+历史卡点（已闭环）：U-Boot smooth、DSI 读探针、USB 占 PB11/PB12、RESET 分压档、PB12 须为 PWM0 而非 <code>lcd_bl_en</code>。详见 <a href="../../../../.././20260722-jl_m101-板件新建与mipi显示定稿/04-实机调试与踩坑" class="internal internal-link alias" data-slug="20260722-jl_m101-板件新建与mipi显示定稿/04-实机调试与踩坑">定稿 04-踩坑</a>。</p>
+<p><strong>Panel 编入方式（与工程一致）：</strong> <code>Kconfig</code> 中 <code>CONFIG_LCD_SUPPORT_JL_M101_JD9365DA</code> <strong><code>default y</code></strong>（同 JYY070）；多 panel 可同时编进内核，运行时靠 DTS <code>lcd_driver_name</code> 选择。<strong>不需要</strong>独立 fragment。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th><code>p1_nor_8733</code></th><th><strong>本板 <code>p1_nor_JL_M101</code></strong></th></tr></thead><tbody><tr><td>屏驱动</td><td><code>default_lcd</code>（无 JD9365 init）</td><td><strong><code>jl_m101_jd9365da</code></strong>（京龙 init）</td></tr><tr><td>分辨率</td><td>800×1280 MIPI</td><td><strong>同</strong></td></tr><tr><td>DTS</td><td>软链 <code>p1_nor</code></td><td><strong>独立</strong> <code>linux-5.4/board.dts</code></td></tr><tr><td>UI <code>disp_rotate</code></td><td>3</td><td><strong>3</strong></td></tr><tr><td>视频 <code>VIDEO_WB</code></td><td>90</td><td><strong>90</strong></td></tr><tr><td>WiFi</td><td>RTL8733BU</td><td><strong>同</strong>（不开 AIC8800）</td></tr><tr><td>背光</td><td>（旧）<code>lcd_bl_en</code> GPIO</td><td><strong>PWM0@PB12 / 50kHz</strong></td></tr></tbody></table></div>
+<hr/>
+<h2 id="1-背景与目标">1. 背景与目标<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-背景与目标" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="11-为何对齐-8733-而不是裸-p1_nor--jyy070">1.1 为何对齐 8733 而不是裸 p1_nor / JYY070<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-为何对齐-8733-而不是裸-p1_nor--jyy070" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>参照</th><th>适用点</th><th>不直接当基线的原因</th></tr></thead><tbody><tr><td><strong><code>p1_nor_8733</code></strong></td><td>同 MIPI 竖屏 UI、异显、<strong>8733BU WiFi</strong></td><td>—（<strong>选定基线</strong>）</td></tr><tr><td><code>p1_nor</code></td><td>显示链路同源</td><td>WiFi 为 AIC8800，与目标板不符</td></tr><tr><td><code>p1_nor_JYY070</code></td><td>板件隔绝 / 分阶段文档可抄</td><td>LVDS 横屏 + <code>disp_rotate=0</code>，显示框架不同</td></tr></tbody></table></div>
+<h3 id="12-硬件要点规格书--init--主板">1.2 硬件要点（规格书 + init + 主板）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-硬件要点规格书--init--主板" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>值</th><th>来源</th></tr></thead><tbody><tr><td>模组</td><td>JL-M101B196-P21WX-M402632</td><td>规格书</td></tr><tr><td>IC</td><td>JD9365DA-H3</td><td>规格书 / 模组说明</td></tr><tr><td>分辨率</td><td>800(H)×1280(V)</td><td>规格书</td></tr><tr><td>接口</td><td>MIPI 4-lane（D0–D3 + CLK）</td><td>规格书 Pin</td></tr><tr><td>Reset 时序</td><td>H 5ms → L 10ms → H 120ms，再发码</td><td>init txt</td></tr><tr><td>Porch（vendor）</td><td>HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20</td><td>init 头</td></tr><tr><td>Allwinner 换算</td><td><code>hspw=20 hbp=40 ht=880</code> / <code>vspw=4 vbp=24 vt=1324</code></td><td>与现 p1_nor 注释时序一致</td></tr><tr><td>RST / PWM</td><td><code>PB11 = LCD-RST</code> / <code>PB12 = LCD-PWM(=PWM0)</code></td><td>SoC GPIO 页 + <code>s10</code> LCM 页</td></tr><tr><td>背光 PWM</td><td><code>LCD-PWM → PT4117B EN</code>，<strong>50kHz</strong></td><td><code>s10-h133-v1_0625.pdf</code>：<code>PWM_Frequence=50KHz</code></td></tr><tr><td>转接板 RESET</td><td><code>LCD-RST → R52 → LCD_RST → CON5 pin6 RESET</code>；<strong>R52/R53 选 3.3V 或 1.8V 分压</strong></td><td><code>s10-h133-v1_0625.pdf</code>：<code>3.3V-RESET: R52=0R,R53=NC</code> / <code>1.8V-RESET: R52=1.5K,R53=1.8K</code></td></tr><tr><td>RESET 输入高</td><td>VIH ≥ 0.7×IOVCC（VCC=3.3V 时约 <strong>2.31V</strong>）</td><td>JL 规格书</td></tr><tr><td>LCD 供电使能</td><td><code>LCD-EN</code></td><td>第 14/15 页；控制 LCD 偏压/模拟电源，不是背光 LED 电源</td></tr><tr><td>背光 LED</td><td><code>VLED+ / VLED-</code></td><td>第 14 页；外部背光接口，规格书典型约 12V/160mA</td></tr><tr><td>主板显示历史</td><td><strong>JYY070 为 LVDS</strong>，非 MIPI 参考</td><td>本主板 MIPI 走 PD 组 + 转接板 CON5，<strong>未在实机验证过 DSI 出图</strong></td></tr><tr><td><code>0x80=0x03</code></td><td>四 lane</td><td>init</td></tr></tbody></table></div>
+<p><strong>关键差：</strong> 8733 共用的 <code>default_lcd</code> <strong>不发</strong> JD9365 init；京龙屏必须独立 panel 灌码。<code>PB12</code> 不是普通 <code>lcd_bl_en</code> GPIO，而是 <code>LCD-PWM</code>，不能继续当背光 enable GPIO 使用。</p>
+<p>树内资料：</p>
+<ul>
+<li><code>H133-AI-Skills/硬件资料/四川京龙/JL-M101B196-P21WX-M402632 规格书V1.0.pdf</code></li>
+<li><code>…/C-JD9365DA-H3_…_800x1280_…20210830 (1)(1).txt</code></li>
+<li><code>H133-AI-Skills/硬件资料/TP-H10_H133 V2.0 2026.6.12.pdf</code></li>
+<li><code>H133-AI-Skills/硬件资料/四川京龙/s10-h133-v1_0625.pdf</code>（主板↔屏 <strong>40P 转接板</strong>，含 R52/R53 RESET 档）</li>
+<li>TP（后续）：<code>GSL3670_DataSheet_Chinese_RevA2.2.pdf</code></li>
+</ul>
+<hr/>
+<h2 id="2-设计原则">2. 设计原则<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-设计原则" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ol>
+<li><strong>板件隔绝</strong>：新板 <code>p1_nor_JL_M101</code>；只改本板 <code>configs/</code> 与 <code>h133-p1_nor_JL_M101/</code>。</li>
+<li><strong>一屏一驱动</strong>：<code>jl_m101_jd9365da.c</code>，不改 <code>default_panel.c</code>。</li>
+<li><strong>拆软链</strong>：本板 <code>linux-5.4/</code> 为实文件（从 <code>p1_nor</code> 拷贝后再改），避免动 8733。</li>
+<li><strong>App 先不动</strong>：<code>disp_rotate=3</code>、<code>VIDEO_WB_MIRROR_ROTATE=90</code>，复用 8733 竖屏路径。</li>
+<li><strong>最小公共改动</strong>：仅 panel 注册、兄弟板 Kconfig/defconfig 的 <code>not set</code>、libtmedia 增加本 target。</li>
+</ol>
+<hr/>
+<h2 id="3-补丁分段">3. 补丁分段<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-补丁分段" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>段</th><th>文件</th><th>内容</th></tr></thead><tbody><tr><td><strong>01</strong></td><td><a href="../../../../../h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/01-kernel-panel.patch" class="internal internal-link alias" data-slug="h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/01-kernel-panel.patch">01-kernel-panel.patch</a></td><td><code>jl_m101_jd9365da.c/.h</code>；<code>Kconfig</code> / <code>Makefile</code> / <code>panels.c</code> / <code>panels.h</code></td></tr><tr><td><strong>02</strong></td><td><a href="../../../../../patches/02-board-tree.patch" class="internal internal-link alias" data-slug="patches/02-board-tree.patch">02-board-tree.patch</a></td><td><code>device/.../p1_nor_JL_M101/</code>（无 bootlogo）；<code>openwrt/.../h133-p1_nor_JL_M101/</code>；<code>tools/build_p1_nor_JL_M101.sh</code></td></tr><tr><td><strong>03</strong></td><td><a href="../../../../../patches/03-shared-hooks.patch" class="internal internal-link alias" data-slug="patches/03-shared-hooks.patch">03-shared-hooks.patch</a></td><td>libtmedia <code>VIDEO_WB=90</code> 含本板；<code>p1_nor</code>/<code>8733</code>/<code>JYY070</code> defconfig 与 kernel config 的 JL not-set</td></tr><tr><td><strong>合并</strong></td><td><a href="../../../../../h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/jl-m101-mipi-phase1.patch" class="internal internal-link alias" data-slug="h133/项目/jl_m101/开发记录/20260720-jl_m101-jd9365da-mipi适配/patches/jl-m101-mipi-phase1.patch">jl-m101-mipi-phase1.patch</a></td><td>01+02+03</td></tr></tbody></table></div>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> patches/apply-jl-m101-mipi.sh</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          # 打合并补丁</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> patches/apply-jl-m101-mipi.sh</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> --check</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> patches/apply-jl-m101-mipi.sh</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 01</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">       # 只打 kernel panel</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> patches/gen-jl-m101-mipi-patch.sh</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">      # 从当前树重生成</span></span></code></pre></figure>
+<p><code>bootlogo.bmp</code>：不进补丁；apply 时若缺失则从 <code>p1_nor_8733</code> 复制。</p>
+<hr/>
+<h2 id="4-变更文件明细">4. 变更文件明细<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-变更文件明细" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="41-kernel-panel01">4.1 Kernel panel（01）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-kernel-panel01" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>说明</th></tr></thead><tbody><tr><td><code>kernel/.../lcd/jl_m101_jd9365da.c</code></td><td>Reset 序列 + 京龙 init 全表 <code>dsi_gen_wr</code>；<strong>无 DSI 读探针</strong>；调通信阶段 <strong>不拉背光</strong>（<code>LCD_bl_*</code> 已从 open_flow 去掉）</td></tr><tr><td><code>brandy/.../jl_m101_jd9365da.c</code></td><td>与内核同 init 策略；U-Boot 侧同样去掉背光</td></tr><tr><td><code>brandy/.../bootGUI/boot_gui.c</code></td><td><code>disp_init_enable=0</code> 时 skip，避免 smooth</td></tr><tr><td><code>kernel/.../lcd/jl_m101_jd9365da.h</code></td><td>导出 <code>jl_m101_jd9365da_panel</code></td></tr><tr><td><code>kernel/.../lcd/Kconfig</code></td><td><code>CONFIG_LCD_SUPPORT_JL_M101_JD9365DA</code></td></tr><tr><td><code>kernel/.../disp/Makefile</code></td><td>编译 <code>jl_m101_jd9365da.o</code></td></tr><tr><td><code>kernel/.../lcd/panels.c</code> / <code>panels.h</code></td><td>注册到 <code>panel_array</code></td></tr></tbody></table></div>
+<p><strong>open_flow：</strong> power_on（含 Reset：H 5ms → L 10ms → H 120ms）→ panel_init → tcon_enable；（调屏阶段无 bl_open）。<br/>
+<strong>init 表：</strong> 由京龙 txt 机械转换；<code>REGFLAG_DELAY</code> / <code>REGFLAG_END_OF_TABLE</code> 按 <strong>cmd</strong> 字段判断（与 vendor <code>{REGFLAG_DELAY, ms, {}}</code> 一致）。</p>
+<h3 id="42-板级树02">4.2 板级树（02）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-板级树02" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>路径</th><th>说明</th></tr></thead><tbody><tr><td><code>device/config/chips/h133/configs/p1_nor_JL_M101/</code></td><td>从 8733 克隆；<code>linux-5.4</code> <strong>实目录</strong>（非软链）</td></tr><tr><td><code>…/linux-5.4/board.dts</code></td><td><code>lcd_driver_name = &quot;jl_m101_jd9365da&quot;</code>；时序见上表；<code>PB11=LCD-RST</code>，<code>PB12=LCD-PWM</code></td></tr><tr><td><code>…/linux-5.4/config-5.4</code></td><td><code>CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y</code>；JYY070 LVDS 关闭</td></tr><tr><td><code>openwrt/target/h133/h133-p1_nor_JL_M101/</code></td><td>lunch <code>h133-p1_nor_JL_M101-tina</code>；hostname <code>TinaLinux-JL_M101</code>；继承 8733 包选型（含 <code>rtl8733bu-kmod</code>）</td></tr><tr><td><code>…/busybox-init-base-files/etc/setting.ini</code></td><td><code>disp_rotate=3</code>，<code>tp_rotate=0</code>（随 8733）</td></tr><tr><td><code>tools/build_p1_nor_JL_M101.sh</code></td><td>对齐 JYY070 编译脚本：<code>autoconfig</code> + kernel/bootloader + <code>m</code> + <code>p</code></td></tr></tbody></table></div>
+<h3 id="43-公共挂钩03">4.3 公共挂钩（03）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-公共挂钩03" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>说明</th></tr></thead><tbody><tr><td><code>openwrt/.../libtmedia/Makefile</code></td><td><code>CONFIG_TARGET_h133_p1_nor_JL_M101</code> → <code>VIDEO_WB_MIRROR_ROTATE=90</code></td></tr><tr><td><code>openwrt/target/h133/h133-p1_nor{,_8733,_JYY070}/defconfig</code></td><td><code># CONFIG_TARGET_h133_p1_nor_JL_M101 is not set</code></td></tr><tr><td><code>device/.../p1_nor/.../config-5.4</code>、<code>p1_nor_JYY070/.../config-5.4</code></td><td><code># CONFIG_LCD_SUPPORT_JL_M101_JD9365DA is not set</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="5-dts-lcd0-要点本板已按-s10-原理图对齐">5. DTS lcd0 要点（本板，已按 s10 原理图对齐）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-dts-lcd0-要点本板已按-s10-原理图对齐" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>下面是按当前原理图结论应采用的方向；实际 DTS 仍需逐项核对 <code>lcd_pwm_ch</code> / <code>LCD-EN</code> 绑定，不能只把 <code>PB12</code> 当普通 GPIO 拉高。</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>lcd_driver_name     = &quot;jl_m101_jd9365da&quot;;</span></span>
+<span data-line><span>lcd_if              = &lt;4>;          /* DSI */</span></span>
+<span data-line><span>lcd_x / lcd_y       = &lt;800> / &lt;1280>;</span></span>
+<span data-line><span>lcd_dclk_freq       = &lt;70>;         /* 实机可再调；vendor PLL_CLOCK=420 为 MTK 口径 */</span></span>
+<span data-line><span>lcd_hbp/ht/hspw     = &lt;40>/&lt;880>/&lt;20>;</span></span>
+<span data-line><span>lcd_vbp/vt/vspw     = &lt;24>/&lt;1324>/&lt;4>;</span></span>
+<span data-line><span>lcd_dsi_lane        = &lt;4>;</span></span>
+<span data-line><span>lcd_gpio_0          = &lt;&amp;pio PB 11 …>;  /* RESET */</span></span>
+<span data-line><span>/* s10 原理图：PB12=LCD-PWM → PT4117B EN，禁止当普通 lcd_bl_en GPIO */</span></span>
+<span data-line><span>lcd_pwm_used        = &lt;1>;</span></span>
+<span data-line><span>lcd_pwm_ch          = &lt;0>;             /* PB12 复用 PWM0（mux 0x3） */</span></span>
+<span data-line><span>lcd_pwm_freq        = &lt;50000>;         /* 原理图标注 PWM_Frequence=50KHz（非 500Hz） */</span></span></code></pre></figure>
+<p>备注：</p>
+<ul>
+<li>2026-07-22：已按 <code>s10-h133-v1_0625</code> + 京龙 init 对齐——开 <code>pwm0@PB12</code>、<code>LCD_bl_open</code>；init/porch 本就与 vendor txt 一致。</li>
+<li><code>VLED+ / VLED-</code> 是屏背光 LED 供电输出/接口；板载由 PT4117B 从 5V 升压驱动。</li>
+<li><code>LCD-PWM</code> 进 PT4117B 的 EN；勿把 PB12 配成 <code>lcd_bl_en</code> 纯 GPIO。</li>
+<li><code>usbc0</code> 里曾残留 <code>usb_id_gpio=PB11</code>、<code>usb_det_vbus_gpio=PB12</code>，会和 LCD RST/PWM 冲突，已从本板 DTS 移除。</li>
+</ul>
+<hr/>
+<h2 id="6-编译与验收">6. 编译与验收<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-编译与验收" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="61-编译">6.1 编译<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#61-编译" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_JL_M101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> kernel</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_JL_M101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> full</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># 或 lunch 后：./build.sh autoconfig -o openwrt -i h133 -b p1_nor_JL_M101 -n nor</span></span></code></pre></figure>
+<p>注意：改 panel 后需重编内核；<code>m</code> 前建议已有 Tina <code>out/kernel/build</code>（8733BU 包依赖 <code>Module.symvers</code>）。</p>
+<h3 id="62-验收清单">6.2 验收清单<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#62-验收清单" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul class="contains-task-list">
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 内核编过，无 <code>jl_m101_jd9365da</code> 相关 link/compile error</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>dmesg</code> 可见 panel / DSI / lcd 打开</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 背光亮；无花屏 / 闪屏；分辨率 800×1280</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> desk：<code>disp_rotate=3</code>，方向与 8733 一致</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> WiFi 仍 <code>rtl8733bu</code>，bsp <strong>未</strong>开 AIC8800</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 串编回归：<code>p1_nor_8733</code> / <code>p1_nor_JYY070</code> DTS 未被本改动改坏</li>
+</ul>
+<h3 id="63-常见问题">6.3 常见问题<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#63-常见问题" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象</th><th>优先查</th></tr></thead><tbody><tr><td>背光亮但无图</td><td>若已有 <code>panel_init</code> + <code>attached ok</code>：查 <strong>转接板 RESET 分压（R52/R53）</strong>、RESET 波形、MIPI CLK/HS；勿对 RESET 外部恒压灌 3.3V</td></tr><tr><td><code>panel_init</code> 后无后续 DISP log</td><td>曾由 <strong>DSI LP 读探针</strong> 引起 DPHY 卡读态 + <code>dsi_gen_wr</code> 死等；已删探针</td></tr><tr><td><code>dclk</code> 配置 70 但 log 显示 <code>dclk real 105</code>、<code>dsi_rate 150</code></td><td>H133 BSP <code>clk_tbl</code> + <code>dsi_div=bitwidth/lane</code> <strong>正常</strong>，非本板独有配错</td></tr><tr><td>完全不亮</td><td>背光外部电源/恒流源、<code>LCD-PWM</code>、<code>LCD-EN</code>、内核 <code>lcd_used</code>、panel 名是否匹配</td></tr><tr><td><code>8733bu: Unknown symbol mutex_destroy</code></td><td>内核 <code>.config</code> 变过 / 清过 <code>.config</code> 后未重编 ko：<code>./tools/build_p1_nor_JL_M101.sh rootfs</code></td></tr><tr><td>打补丁失败</td><td>是否已存在板级目录；用 <code>--check</code>；或分段打 01→02→03</td></tr><tr><td>WiFi Oops</td><td>先 <code>kernel</code> 再 <code>m</code>（与 JYY070 8733BU 记录相同）</td></tr></tbody></table></div>
+<hr/>
+<h2 id="7-未做后续">7. 未做（后续）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-未做后续" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>说明</th></tr></thead><tbody><tr><td>U-Boot logo</td><td>目前 <code>boot_gui_init</code> 按 <code>disp_init_enable=0</code> 跳过，避免内核 smooth 跳过灌码；调屏完成后再决定是否恢复 U-Boot logo</td></tr><tr><td>GSL3670 触摸</td><td>资料已有；现仍沿用 8733 GT911 配置</td></tr><tr><td>实机微调</td><td>RESET 硬件档确认后：<code>LCD-PWM</code>、<code>LCD-EN</code>、MIPI 示波器、gamma</td></tr><tr><td>背光软件</td><td><strong>已恢复</strong>（2026-07-22）：<code>lcd_pwm_ch=0</code> / 50kHz / <code>LCD_bl_open</code></td></tr><tr><td>双板串编脚本</td><td>可仿 <code>verify_build_8733_then_JYY070.sh</code> 加 JL_M101</td></tr></tbody></table></div>
+<hr/>
+<h2 id="8-与-jyy070-显示文档的关系">8. 与 JYY070 显示文档的关系<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-与-jyy070-显示文档的关系" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>本目录</th><th>JYY070 LVDS 文档</th></tr></thead><tbody><tr><td>板件隔绝、分阶段补丁、board-profile</td><td>流程模板可抄</td></tr><tr><td>MIPI + JD9365 init</td><td>对应 JYY070 的「LVDS 时序 panel」，接口不同</td></tr><tr><td>UI 对齐 <strong>8733（rot=3）</strong></td><td>JYY070 对齐的是「异显框架 + rot=0」</td></tr></tbody></table></div>
+<hr/>
+<h2 id="9-2026-07-20-实机调试流水">9. 2026-07-20 实机调试流水<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-2026-07-20-实机调试流水" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="91-初始现象">9.1 初始现象<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#91-初始现象" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>现象：背光亮，但 LCD 无图；HDMI 有图；烧回 <code>p1_nor_8733</code> + 原配屏可出图。</li>
+<li>结论：主系统、DE/HDMI、rootfs/UI 不是首要问题；问题集中在 JL_M101 的 LCD MIPI/panel/电源控制。</li>
+</ul>
+<h3 id="92-u-boot-smooth-display-问题">9.2 U-Boot smooth display 问题<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#92-u-boot-smooth-display-问题" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象 / log</th><th>判断</th><th>处理</th></tr></thead><tbody><tr><td>U-Boot 出现 <code>boot_gui_init:start</code>、<code>jl_m101_jd9365da: panel_init</code>，内核出现 <code>smooth display screen:0</code></td><td>U-Boot 已开屏并写 <code>boot_disp</code>，内核 smooth 复用状态，跳过内核 <code>cfg_open_flow</code></td><td><code>boot_gui.c</code> 读取 <code>disp_init_enable</code>，为 0 时直接 <code>boot_gui_init:skip (disp_init_enable=0)</code>；<code>uboot-board.dts</code> 设 <code>disp_init_enable=&lt;0></code></td></tr><tr><td>新 log 出现 <code>boot_gui_init:skip</code>，内核不再 <code>smooth display</code>，并出现 <code>jl_m101_jd9365da: panel_init</code></td><td>smooth 问题排除，内核确实开始灌 JD9365 init</td><td>进入 MIPI/panel 层排查</td></tr></tbody></table></div>
+<p>构建注意：一次 <code>uboot_force</code> 触发 OpenWrt rootfs 目标失败，但日志显示 <code>boot_gui.o</code> 和 <code>u-boot.bin</code> 已重新生成；后续用 <code>./build.sh pack</code> 出包。另一次 U-Boot 增量编译遇到旧 <code>.o</code> 截断，使用 <code>make clean</code> 清理 U-Boot 后恢复。</p>
+<h3 id="93-init-写法试探">9.3 init 写法试探<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#93-init-写法试探" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>改动</th><th>镜像 md5</th><th>结果</th></tr></thead><tbody><tr><td>去掉额外 soft reset，保留 <code>0x11/0x29</code> 特判为 DCS 0 参数</td><td><code>d0d7f6a699bcd71ce2a1cef0c45a24f6</code> / 后续修正包 <code>cb7a5b1dd4aef881850edc2750666c91</code></td><td>U-Boot skip 生效，内核执行 panel_init，但 LCD 仍无图</td></tr><tr><td>全表按同系 <code>jd9366ab_3</code> 方式走 <code>dsi_gen_wr()</code>，不再特判 <code>0x11/0x29</code></td><td><code>46f80d6df6d17389b058c556a18ac8bf</code></td><td>现象不变</td></tr></tbody></table></div>
+<p>结论：单纯在 GEN/DCS 之间切 <code>0x11/0x29</code> 没有命中根因。</p>
+<h3 id="94-dsi-读探针">9.4 DSI 读探针<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#94-dsi-读探针" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>临时在 <code>kernel/.../jl_m101_jd9365da.c</code> 里加入 probe：</p>
+<ul>
+<li><code>sunxi_lcd_dsi_dcs_read(sel, 0x0A, ...)</code></li>
+<li><code>sunxi_lcd_dsi_dcs_read(sel, 0xDA, ...)</code></li>
+</ul>
+<p>诊断包：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>镜像 md5</th><th>关键 log</th><th>判断</th></tr></thead><tbody><tr><td><code>eaa4edf2d33ba6414600f8774d7eacad</code></td><td><code>probe pre 0x0A ret=0 num=0 val=00 00 00 00</code>，<code>probe pre 0xDA ret=0 num=0 val=00 00 00 00</code></td><td>屏当前没有回读命令；继续盲改 init 表意义不大，应查 RESET/电源/MIPI LP 命令通道</td></tr></tbody></table></div>
+<p>注意：曾只看到 <code>pre</code> probe、无 <code>post</code>，根因见 <strong>§9.6</strong>（探针已删）。</p>
+<h3 id="95-gpio--原理图核对">9.5 GPIO / 原理图核对<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#95-gpio--原理图核对" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>原理图 <code>TP-H10_H133 V2.0 2026.6.12.pdf</code>：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>网络</th><th>H133 管脚 / 说明</th><th>结论</th></tr></thead><tbody><tr><td><code>LCD-RST</code></td><td><code>PB11</code></td><td>panel reset 脚</td></tr><tr><td><code>LCD-PWM</code></td><td><code>PB12</code></td><td>背光升压芯片 EN/调光输入，原理图标注 <code>PWM_Frequency=500Hz</code></td></tr><tr><td><code>LCD-EN</code></td><td>第 14/15 页电源使能</td><td>LCD 偏压/模拟电源使能，不是背光 LED 电源</td></tr><tr><td><code>VLED+ / VLED-</code></td><td>背光接口</td><td>规格书典型约 12V/160mA；可用外部恒流背光源临时验证亮度</td></tr></tbody></table></div>
+<p>曾发现本板 DTS <code>usbc0</code> 残留：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>usb_id_gpio = &lt;&amp;pio PB 11 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>usb_det_vbus_gpio = &lt;&amp;pio PB 12 GPIO_ACTIVE_HIGH>;</span></span></code></pre></figure>
+<p>这与 <code>LCD-RST/LCD-PWM</code> 冲突，已从 <code>p1_nor_JL_M101</code> 的 <code>board.dts</code> / <code>linux-5.4/board.dts</code> 移除。修正包：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>镜像 md5</th><th>内容</th></tr></thead><tbody><tr><td><code>c5132015ca06bfc4ff4ba35b5aeeb7db</code></td><td>移除 USB 对 PB11/PB12 的占用，保留 probe 日志</td></tr></tbody></table></div>
+<h3 id="96-dsi-读探针导致-panel_init-挂死已修复">9.6 DSI 读探针导致 panel_init 挂死（已修复）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#96-dsi-读探针导致-panel_init-挂死已修复" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象</th><th>根因</th><th>处理</th></tr></thead><tbody><tr><td>log 仅有 <code>probe pre 0x0A/0xDA num=0</code>，无 <code>post</code>、后续 DISP 停</td><td>LP 读触发 BTA，屏不回读时 DPHY 卡在读态；后续 <code>dsi_gen_wr</code> 内 <code>while(dsi_inst_busy)</code> <strong>无超时</strong></td><td>删除 <code>LCD_panel_probe</code> 及全部 <code>sunxi_lcd_dsi_dcs_read</code></td></tr></tbody></table></div>
+<p>修复后典型 log：<code>jl_m101_jd9365da: panel_init</code> → <code>attached ok, mgr0&lt;-->dev0</code> → <code>type:1,mode:0</code>（video）。</p>
+<h3 id="97-调通信阶段背光与-dts">9.7 调通信阶段：背光与 DTS<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#97-调通信阶段背光与-dts" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>曾临时：外部电源供 <code>VLED+</code> + <code>lcd_pwm_used=0</code>，open_flow 不含 <code>LCD_bl_open</code>。</li>
+<li><strong>2026-07-22 已恢复板载背光软件路径</strong>（见 §5）：<code>pwm0@PB12</code> / 50kHz / <code>LCD_bl_open</code>。</li>
+<li><code>usbc0</code> 对 PB11/PB12 的占用保持注释掉。</li>
+</ul>
+<h3 id="98-屏侧电压与转接板-reset2026-07-21">9.8 屏侧电压与转接板 RESET（2026-07-21）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#98-屏侧电压与转接板-reset2026-07-21" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>测量点（用户：屏 FPC 侧）</th><th>值</th><th>含义</th></tr></thead><tbody><tr><td>VCC</td><td>3.3V</td><td>数字供电正常</td></tr><tr><td>RESET</td><td>1.8V（静态）</td><td>低于 VIH≈2.31V（按 3.3V IO 计）时，屏可能<strong>无法可靠退出复位/识别高电平</strong></td></tr></tbody></table></div>
+<p>转接板 <code>s10-h133-v1_0625.pdf</code>（CON5 40P 座旁）：</p>
+<ul>
+<li><strong>R52</strong>（0402）：串在 <code>LCD-RST</code>（主板）与 <code>LCD_RST</code>（座子 pin5/6 链路）之间；丝印 <strong>R52</strong>，靠 CON5 <strong>LCD-RST / RESET</strong> 网络。</li>
+<li><strong>R53</strong>（0402）：分压到 GND，标 <strong>1.8K/NC</strong>。</li>
+<li>注释：<code>3.3V-RESET: R52=0R,R53=NC</code>；<code>1.8V-RESET: R52=1.5K,R53=1.8K</code>。</li>
+</ul>
+<p><strong>必做区分（改电阻前）：</strong> 万用表量 <strong>R52 靠主板 <code>LCD-RST</code> 输入端</strong>对地：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>R52 输入端电压</th><th>结论</th><th>动作</th></tr></thead><tbody><tr><td><strong>3.3V</strong></td><td>当前为 1.8V <strong>分压档</strong></td><td>改 R52=0R、R53=NC，撤外部灌 RESET，用现镜像重试</td></tr><tr><td><strong>1.8V</strong></td><td>SoC PB 域或上游即 1.8V</td><td>换 R52/R53 <strong>无效</strong>，需电平转换或确认屏 IOVCC/逻辑电平</td></tr></tbody></table></div>
+<p><strong>无效操作：</strong> 对 RESET <strong>外部恒压 3.3V</strong> — 驱动需 <strong>H→L 10ms→H</strong> 硬件复位脉冲，外部强灌高电平会<strong>与 PB11 对打</strong>，脉冲发不出去，<strong>不能</strong>代替改 R52/R53。</p>
+<h3 id="99-lcd_dsi_if-burst-试验已否定">9.9 <code>lcd_dsi_if</code> burst 试验（已否定）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#99-lcd_dsi_if-burst-试验已否定" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>配置</th><th>结果</th></tr></thead><tbody><tr><td><code>lcd_dsi_if=&lt;2></code>（video burst），kernel + uboot DTS 同步</td><td>与 video 相同：<code>panel_init</code> 完成、<code>dclk real 105</code> / <code>dsi_rate 150</code>，<strong>仍无图</strong></td></tr><tr><td>已恢复</td><td><code>lcd_dsi_if=&lt;0></code>（video mode）</td></tr></tbody></table></div>
+<h3 id="910-当前待验证--下一步">9.10 当前待验证 / 下一步<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#910-当前待验证--下一步" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li><strong>硬件（最高优先级）：</strong> 按 9.8 量 R52 输入端 → 必要时改 <strong>3.3V-RESET</strong> 档；勿外部灌 RESET。</li>
+<li><strong>若改档仍无图：</strong> 示波器 CON5 <strong>MIPI-CKP/N（pin14/15）</strong> 是否有 HS 差分；无 HS → PHY/转接/lane；有 HS → init/屏体/极性。</li>
+<li><strong>软件：</strong> 保持 <code>disp_init_enable=0</code>、无 DSI 读探针；背光已按原理图恢复 PWM0（仍须硬件 RESET 档正确）。</li>
+<li><strong>触摸：</strong> GT911 I2C 失败为转接/屏线独立问题，与 LCD 无图可并行排。</li>
+<li><strong>镜像参考：</strong> burst 试验打包 md5 <code>274a8e064e9dee08c496c3f897d0cb48</code>（已改回 video，重 pack 即可）。</li>
+</ol>
+<hr/>
+<p><em>2026-07-20：phase1 落地；实机 MIPI 排查。</em><br/>
+<em>2026-07-21：软件管线确认完成；卡点收敛至转接板 RESET 电平/脉冲与 MIPI 物理层。</em><br/>
+<em>2026-07-22：按 s10 原理图 + 京龙 init 对齐背光（PWM0@PB12 / 50kHz / bl_open）；init 表无需改。</em><br/>
+<em>2026-07-22：实机完整出图；定稿笔记见 <a href="../../../../.././20260722-jl_m101-板件新建与mipi显示定稿/readme" class="internal internal-link alias" data-slug="20260722-jl_m101-板件新建与mipi显示定稿/readme">20260722-JL_M101-板件新建与MIPI显示定稿</a>。</em></p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-49" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#jl-m101-jd9365da-mipi-适配--开发记录" data-for="jl-m101-jd9365da-mipi-适配--开发记录">JL-M101 JD9365DA MIPI 适配 — 开发记录</a></li><li class="depth-1"><a href="#0-当前结论先看这个" data-for="0-当前结论先看这个">0. 当前结论（先看这个）</a></li><li class="depth-1"><a href="#1-背景与目标" data-for="1-背景与目标">1. 背景与目标</a></li><li class="depth-2"><a href="#11-为何对齐-8733-而不是裸-p1_nor--jyy070" data-for="11-为何对齐-8733-而不是裸-p1_nor--jyy070">1.1 为何对齐 8733 而不是裸 p1_nor / JYY070</a></li><li class="depth-2"><a href="#12-硬件要点规格书--init--主板" data-for="12-硬件要点规格书--init--主板">1.2 硬件要点（规格书 + init + 主板）</a></li><li class="depth-1"><a href="#2-设计原则" data-for="2-设计原则">2. 设计原则</a></li><li class="depth-1"><a href="#3-补丁分段" data-for="3-补丁分段">3. 补丁分段</a></li><li class="depth-1"><a href="#4-变更文件明细" data-for="4-变更文件明细">4. 变更文件明细</a></li><li class="depth-2"><a href="#41-kernel-panel01" data-for="41-kernel-panel01">4.1 Kernel panel（01）</a></li><li class="depth-2"><a href="#42-板级树02" data-for="42-板级树02">4.2 板级树（02）</a></li><li class="depth-2"><a href="#43-公共挂钩03" data-for="43-公共挂钩03">4.3 公共挂钩（03）</a></li><li class="depth-1"><a href="#5-dts-lcd0-要点本板已按-s10-原理图对齐" data-for="5-dts-lcd0-要点本板已按-s10-原理图对齐">5. DTS lcd0 要点（本板，已按 s10 原理图对齐）</a></li><li class="depth-1"><a href="#6-编译与验收" data-for="6-编译与验收">6. 编译与验收</a></li><li class="depth-2"><a href="#61-编译" data-for="61-编译">6.1 编译</a></li><li class="depth-2"><a href="#62-验收清单" data-for="62-验收清单">6.2 验收清单</a></li><li class="depth-2"><a href="#63-常见问题" data-for="63-常见问题">6.3 常见问题</a></li><li class="depth-1"><a href="#7-未做后续" data-for="7-未做后续">7. 未做（后续）</a></li><li class="depth-1"><a href="#8-与-jyy070-显示文档的关系" data-for="8-与-jyy070-显示文档的关系">8. 与 JYY070 显示文档的关系</a></li><li class="depth-1"><a href="#9-2026-07-20-实机调试流水" data-for="9-2026-07-20-实机调试流水">9. 2026-07-20 实机调试流水</a></li><li class="depth-2"><a href="#91-初始现象" data-for="91-初始现象">9.1 初始现象</a></li><li class="depth-2"><a href="#92-u-boot-smooth-display-问题" data-for="92-u-boot-smooth-display-问题">9.2 U-Boot smooth display 问题</a></li><li class="depth-2"><a href="#93-init-写法试探" data-for="93-init-写法试探">9.3 init 写法试探</a></li><li class="depth-2"><a href="#94-dsi-读探针" data-for="94-dsi-读探针">9.4 DSI 读探针</a></li><li class="depth-2"><a href="#95-gpio--原理图核对" data-for="95-gpio--原理图核对">9.5 GPIO / 原理图核对</a></li><li class="depth-2"><a href="#96-dsi-读探针导致-panel_init-挂死已修复" data-for="96-dsi-读探针导致-panel_init-挂死已修复">9.6 DSI 读探针导致 panel_init 挂死（已修复）</a></li><li class="depth-2"><a href="#97-调通信阶段背光与-dts" data-for="97-调通信阶段背光与-dts">9.7 调通信阶段：背光与 DTS</a></li><li class="depth-2"><a href="#98-屏侧电压与转接板-reset2026-07-21" data-for="98-屏侧电压与转接板-reset2026-07-21">9.8 屏侧电压与转接板 RESET（2026-07-21）</a></li><li class="depth-2"><a href="#99-lcd_dsi_if-burst-试验已否定" data-for="99-lcd_dsi_if-burst-试验已否定">9.9 lcd_dsi_if burst 试验（已否定）</a></li><li class="depth-2"><a href="#910-当前待验证--下一步" data-for="910-当前待验证--下一步">9.10 当前待验证 / 下一步</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../../postscript-ede79cfd.js" type="module" data-persist="true"></script></html>

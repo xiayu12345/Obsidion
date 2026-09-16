@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>lvds-uboot-kernel-smooth-logo</title><meta charset="utf-8"/><link rel="preload" href="../../../index-977b9dfe.css" as="style"/><link rel="preload" href="../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="lvds-uboot-kernel-smooth-logo"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="lvds-uboot-kernel-smooth-logo"/><meta name="twitter:description" content="全志 H133 LVDS 开机 Logo 无缝显示机制 本文基于本仓库官方 disp2 / BootGUI 代码，说明：U-Boot 已经把 LVDS 屏幕点亮并显示 logo 后，内核如何避免“先闪一下黑屏，再重新出 logo”。 适用平台：全志 H133（sunxi disp2 + brandy-2.0 U-Boot 2018）。 LVDS 在 disp 框架里走 LCD 设备（DISP_OUTPUT_TYPE_LCD），面板接口类型为 LCD_IF_LVDS。 1."/><meta property="og:description" content="全志 H133 LVDS 开机 Logo 无缝显示机制 本文基于本仓库官方 disp2 / BootGUI 代码，说明：U-Boot 已经把 LVDS 屏幕点亮并显示 logo 后，内核如何避免“先闪一下黑屏，再重新出 logo”。 适用平台：全志 H133（sunxi disp2 + brandy-2.0 U-Boot 2018）。 LVDS 在 disp 框架里走 LCD 设备（DISP_OUTPUT_TYPE_LCD），面板接口类型为 LCD_IF_LVDS。 1."/><meta property="og:image:alt" content="全志 H133 LVDS 开机 Logo 无缝显示机制 本文基于本仓库官方 disp2 / BootGUI 代码，说明：U-Boot 已经把 LVDS 屏幕点亮并显示 logo 后，内核如何避免“先闪一下黑屏，再重新出 logo”。 适用平台：全志 H133（sunxi disp2 + brandy-2.0 U-Boot 2018）。 LVDS 在 disp 框架里走 LCD 设备（DISP_OUTPUT_TYPE_LCD），面板接口类型为 LCD_IF_LVDS。 1."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/启动logo/lvds-uboot-kernel-smooth-logo"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/启动logo/lvds-uboot-kernel-smooth-logo"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="全志 H133 LVDS 开机 Logo 无缝显示机制 本文基于本仓库官方 disp2 / BootGUI 代码，说明：U-Boot 已经把 LVDS 屏幕点亮并显示 logo 后，内核如何避免“先闪一下黑屏，再重新出 logo”。 适用平台：全志 H133（sunxi disp2 + brandy-2.0 U-Boot 2018）。 LVDS 在 disp 框架里走 LCD 设备（DISP_OUTPUT_TYPE_LCD），面板接口类型为 LCD_IF_LVDS。 1."/><meta name="generator" content="Quartz"/><link href="../../../index-977b9dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-735924e0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/启动logo/lvds-uboot-kernel-smooth-logo-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/启动logo/lvds-uboot-kernel-smooth-logo-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/启动logo/lvds-uboot-kernel-smooth-logo-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/专题/启动logo/lvds-uboot-kernel-smooth-logo" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    const segs = node.slugSegments || [];\n    const i = segs.indexOf(\&quot;开发记录\&quot;);\n    if (i >= 0 &amp;&amp; i &lt; segs.length - 1) {\n      const name = node.displayName;\n      if (typeof name === \&quot;string\&quot; &amp;&amp; /^\\d{8}-/.test(name)) {\n        node.displayName = name.replace(/^\\d{8}-/, \&quot;\&quot;);\n      }\n    }\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-32" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="fold"><path d="M7.5 9.5h9L12 16.5 7.5 9.5z"></path></svg></button><div id="explorer-32" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="folder-icon nav-folder-collapse-indicator collapse-icon"><path d="M7.5 9.5h9L12 16.5 7.5 9.5z"></path></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><nav class="breadcrumb-container" aria-label="breadcrumbs"><div class="breadcrumb-element"><a href="../../../">Home</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../h133/">H133</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../h133/专题/">专题</a><p> ❯ </p></div><div class="breadcrumb-element"><a href="../../../h133/专题/启动logo/">启动Logo</a><p> ❯ </p></div><div class="breadcrumb-element"><a href>lvds-uboot-kernel-smooth-logo</a></div></nav><h1 class="article-title">lvds-uboot-kernel-smooth-logo</h1><p show-comma="true" class="content-meta"><time datetime="2026-09-08T12:39:08.000Z">2026年9月08日</time><span>15分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="全志-h133-lvds-开机-logo-无缝显示机制">全志 H133 LVDS 开机 Logo 无缝显示机制<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#全志-h133-lvds-开机-logo-无缝显示机制" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>本文基于本仓库官方 disp2 / BootGUI 代码，说明：U-Boot 已经把 LVDS 屏幕点亮并显示 logo 后，内核如何避免“先闪一下黑屏，再重新出 logo”。</p>
+<p>适用平台：全志 H133（sunxi disp2 + brandy-2.0 U-Boot 2018）。<br/>
+LVDS 在 disp 框架里走 <strong>LCD 设备</strong>（<code>DISP_OUTPUT_TYPE_LCD</code>），面板接口类型为 <code>LCD_IF_LVDS</code>。</p>
+<hr/>
+<h2 id="1-问题现象">1. 问题现象<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-问题现象" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>正常期望：</p>
+<pre><code>上电 → U-Boot 显示 logo → 跳内核 → logo 一直在 → 应用接管 UI
+</code></pre>
+<p>异常现象：</p>
+<pre><code>U-Boot 显示 logo
+        ↓
+跳内核后 logo 消失 / 黑一下
+        ↓
+内核重新开屏，logo 再出来一次
+</code></pre>
+<p>根因不是“logo 画了两次”，而是 <strong>硬件链路被内核重新初始化了一遍</strong>：</p>
+<ol>
+<li>U-Boot 已经打开 DE / TCON / LVDS PHY / 背光，并持续出图。</li>
+<li>内核如果走完整 <code>disp_lcd_enable()</code>，会再跑一遍 panel <code>open_flow</code>：
+<ul>
+<li>重新上电</li>
+<li>复位面板</li>
+<li><code>sunxi_lcd_tcon_enable()</code> 重配 TCON/LVDS</li>
+<li>关背光再开背光</li>
+</ul>
+</li>
+<li>或者内核先把 DE layer 切到一块还没画 logo 的空 framebuffer，画面会先黑一下。</li>
+</ol>
+<p>官方解决办法叫 <strong>smooth display（无缝显示）</strong>：<br/>
+<strong>硬件不断电、不关 TCON、不重开 LVDS；内核只接管软件状态，并在切 layer 前把 logo 拷进自己的 FB。</strong></p>
+<hr/>
+<h2 id="2-总体思路">2. 总体思路<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-总体思路" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>阶段</th><th>做什么</th><th>不做什么</th></tr></thead><tbody><tr><td>U-Boot 显示 logo</td><td>正常开 LVDS、画 logo</td><td>跳内核前 <strong>不要</strong> <code>lcd_disable</code> / <code>tcon_disable</code> / 关背光</td></tr><tr><td>跳内核前</td><td>把显示状态和 FB 地址写进 DTB / cmdline</td><td>不要释放 DE 时钟和 logo 内存</td></tr><tr><td>内核 disp 探测</td><td>解析 <code>boot_disp</code>，置 <code>boot_info.sync = 1</code></td><td>不要当冷启动重新 <code>open_flow</code></td></tr><tr><td>内核 FB 初始化</td><td>先把 U-Boot logo 拷到内核 FB，再切 DE layer</td><td>不要先 <code>set_layer_config</code> 再拷图</td></tr><tr><td>内核软件接管</td><td><code>disp_lcd_sw_enable()</code> 认领时钟/regulator/GPIO/PWM</td><td>不要 <code>disp_lcd_enable()</code></td></tr></tbody></table></div>
+<p>时序：</p>
+<pre><code>U-Boot
+  boot_gui_init()
+    disp_devices_open()     // 开 DE + TCON + LVDS + 背光
+    fb_init()               // 画 bootlogo
+        │
+        │  跳内核前硬件保持运行
+        │  save_disp_cmd()      → boot_disp / boot_fb0
+        │  save_disp_cmdline()  → disp_reserve
+        ▼
+Kernel disp probe
+  解析 boot_disp → boot_info.sync = 1
+  bsp_disp_init()
+  lcd_init()
+  fb_init()
+      Fb_map_kernel_logo() / Fb_copy_boot_fb()   // 先拷 logo
+      mgr->set_layer_config()                    // 再切 layer
+  start_process()
+      start_work()
+        bsp_disp_sync_with_hw()
+          disp_lcd_sw_enable()                   // 只接管，不重开屏
+</code></pre>
+<hr/>
+<h2 id="3-u-boot-侧保持出图只传递状态">3. U-Boot 侧：保持出图，只传递状态<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-u-boot-侧保持出图只传递状态" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="31-入口">3.1 入口<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#31-入口" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>作用</th></tr></thead><tbody><tr><td><code>brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/bootGUI/boot_gui.c</code></td><td>BootGUI 初始化、保存显示参数</td></tr><tr><td><code>brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/bootGUI/fb_con.c</code></td><td>写 <code>boot_fb0</code>、<code>disp_reserve</code></td></tr><tr><td><code>brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/bootGUI/video_hal.c</code></td><td>写 <code>boot_disp</code> / <code>boot_disp1</code> / <code>boot_disp2</code></td></tr><tr><td><code>brandy/brandy-2.0/u-boot-2018/board/sunxi/board_helper.c</code></td><td>更新 DTS 时调用 <code>save_disp_cmd()</code></td></tr><tr><td><code>brandy/brandy-2.0/u-boot-2018/board/sunxi/sunxi_bootargs.c</code></td><td>cmdline 追加 <code>disp_reserve=</code></td></tr></tbody></table></div>
+<p><code>boot_gui.c</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> save_disp_cmd</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">void</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> FB_ID_0; i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> FRAMEBUFFER_NUM; </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">++</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">i)</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">        fb_save_para</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(i);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> save_disp_cmdline</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">void</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> FB_ID_0; i </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> FRAMEBUFFER_NUM; </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">++</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">i)</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">        fb_update_cmdline</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(i);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">int</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> boot_gui_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">void</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_devices_open</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   // 开显示设备</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    fb_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">             // 显示 logo</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p>跳内核前必须保证：</p>
+<ol>
+<li>DE / TCON / LVDS / 背光仍然使能。</li>
+<li>logo 所在物理内存没有被覆盖。</li>
+<li>上述三个参数已经写进 DTB / cmdline。</li>
+</ol>
+<h3 id="32-boot_disp-编码">3.2 <code>boot_disp</code> 编码<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#32-boot_disp-编码" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>hal_save_boot_disp()</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">disp_para0 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (((type </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;&lt;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> mode) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;&lt;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (screen_id </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 16</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">));</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">disp_para1 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (cs </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;&lt;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 16</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (bits </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&lt;&lt;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">|</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> format;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">disp_para2 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> eotf;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hal_save_int_to_kernel</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,  disp_para0);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hal_save_int_to_kernel</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp1&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, disp_para1);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hal_save_int_to_kernel</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp2&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, disp_para2);</span></span></code></pre></figure>
+<p><code>boot_disp</code> 位域：</p>
+<pre><code>screen0:
+  [7:0]   mode
+  [15:8]  type     // LVDS 为 DISP_OUTPUT_TYPE_LCD = 1
+
+screen1:
+  [23:16] mode
+  [31:24] type
+</code></pre>
+<p><code>boot_disp1</code> 位域：</p>
+<pre><code>[7:0]   format
+[15:8]  bits
+[31:16] cs
+</code></pre>
+<p>内核看到 <code>type != DISP_OUTPUT_TYPE_NONE</code> 就会置 <code>boot_info.sync = 1</code>。<br/>
+<strong>如果 U-Boot 没写 <code>boot_disp</code>，内核会当成冷启动，重新跑完整开屏，必然闪一下。</strong></p>
+<h3 id="33-boot_fb0u-boot-framebuffer-描述">3.3 <code>boot_fb0</code>：U-Boot framebuffer 描述<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#33-boot_fb0u-boot-framebuffer-描述" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>fb_save_para()</code> 写成字符串：</p>
+<pre><code>boot_fb0 = &quot;&lt;addr>,&lt;width>,&lt;height>,&lt;bpp>,&lt;stride>,&lt;crop_l>,&lt;crop_t>,&lt;crop_r>,&lt;crop_b>&quot;
+</code></pre>
+<p>对应 <code>fb_con.c</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sprintf</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(fb_paras, </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%p</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%x</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">base</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">width</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">height</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">bpp</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">stride</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    interest_rect</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">left</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, interest_rect</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">top</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">,</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    interest_rect</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">right</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, interest_rect</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">bottom</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hal_save_string_to_kernel</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_fb0&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, fb_paras);</span></span></code></pre></figure>
+<p>内核 <code>Fb_copy_boot_fb()</code> 按这个格式解析，把 U-Boot FB 逐行拷到内核 FB。</p>
+<h3 id="34-disp_reserve保护-logo-内存">3.4 <code>disp_reserve</code>：保护 logo 内存<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#34-disp_reserve保护-logo-内存" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>fb_update_cmdline()</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">size </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> align</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(width </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> bpp </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">/</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> height;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">snprintf</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(disp_reserve, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">80</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%d</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">,0x</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%p</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, size, fb</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">cv</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">base</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">hal_reserve_logo_mem</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(addr, size);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">env_set</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;disp_reserve&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, disp_reserve);</span></span></code></pre></figure>
+<p><code>sunxi_bootargs.c</code> 再拼进内核 cmdline：</p>
+<pre><code>disp_reserve=&lt;size>,0x&lt;addr>
+</code></pre>
+<p>作用：</p>
+<ul>
+<li>内核 memblock 把这块 RAM 保留下来。</li>
+<li>内核在拷贝完成前不能把这块内存当普通内存分配。</li>
+<li>否则会出现：U-Boot logo 还在 DE 上显示，但内容已经被内核踩掉，表现为花屏或闪一下。</li>
+</ul>
+<h3 id="35-可选fb_basebmp-原图">3.5 可选：<code>fb_base</code>（BMP 原图）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#35-可选fb_basebmp-原图" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>如果 U-Boot 把 BMP 原图地址写到 disp 节点的 <code>fb_base</code>，内核会走 <code>Fb_map_kernel_logo()</code> 重新解码 BMP。<br/>
+没有 <code>fb_base</code> 时，退回到 <code>Fb_copy_boot_fb()</code> 直接拷 <code>boot_fb0</code> 对应的像素缓冲。</p>
+<hr/>
+<h2 id="4-内核侧smooth-display">4. 内核侧：smooth display<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-内核侧smooth-display" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="41-解析-boot_disp">4.1 解析 <code>boot_disp</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-解析-boot_disp" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>文件：<code>kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c</code></p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">value  </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> disp_boot_para_parse</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">value1 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> disp_boot_para_parse</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp1&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">value2 </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> disp_boot_para_parse</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;boot_disp2&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">output_type </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (value </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">>></span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 8</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> 0x</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">ff</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   // disp0</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">output_mode </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">  value        </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> 0x</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">ff</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (output_type </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> DISP_OUTPUT_TYPE_NONE) {</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    para->boot_info.sync </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    para->boot_info.disp </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    para->boot_info.type </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> output_type;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    para->boot_info.mode </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> output_mode;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    ...</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (para</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">boot_info.sync </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    __wrn</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;smooth display screen:</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%d</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> type:</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%d</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> mode:</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">%d\n</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, ...);</span></span></code></pre></figure>
+<p><code>disp_bootloader_info</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">struct</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> disp_bootloader_info {</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> sync;</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   /* 1: 与 bootloader 无缝衔接 */</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> disp;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> type;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> mode;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> format;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> bits;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> eotf;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    int</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> cs;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    ...</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">};</span></span></code></pre></figure>
+<p>调试时内核 log 必须能看到：</p>
+<pre><code>smooth display screen:0 type:1 mode:x
+</code></pre>
+<p><code>type:1</code> 就是 <code>DISP_OUTPUT_TYPE_LCD</code>（含 LVDS）。</p>
+<h3 id="42-探测顺序非常关键">4.2 探测顺序（非常关键）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-探测顺序非常关键" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>同一函数里的顺序是：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bsp_disp_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(para);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">lcd_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bsp_disp_open</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          // 空操作，直接 return</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">fb_init</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(pdev);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">            // ① 先拷 logo，再切 layer</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">g_disp_drv.inited </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">start_process</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          // ② 再 schedule start_work → sw_enable</span></span></code></pre></figure>
+<p>含义：</p>
+<ol>
+<li><strong>硬件此时仍是 U-Boot 留下的状态</strong>（TCON/LVDS 仍在出图）。</li>
+<li><code>fb_init()</code> 先把 logo 画进内核 FB，再把 DE layer 指过去。切过去时画面已经是同一张图。</li>
+<li><code>start_work()</code> 再调用 <code>bsp_disp_sync_with_hw()</code>，用 <code>sw_enable</code> 把软件状态标记为“已打开”。</li>
+</ol>
+<p>如果把这两步反过来，或者 <code>fb_init</code> 时 FB 还是空的，就会闪黑。</p>
+<h3 id="43-start_work冷启动-vs-无缝">4.3 <code>start_work()</code>：冷启动 vs 无缝<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-start_work冷启动-vs-无缝" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (g_disp_drv.para.boot_info.sync </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">) {</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    /* 冷启动：完整 enable，会跑 open_flow，会闪 */</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_device_set_config</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">} </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">else</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> {</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    /* 无缝：只做软件接管 */</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bsp_disp_get_output_type</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...) </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">!=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> boot_info.type)</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">        bsp_disp_sync_with_hw</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">g_disp_drv.para);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><code>bsp_disp_sync_with_hw()</code>：</p>
+<ol>
+<li><code>disp_device_attached()</code> 把 LCD 绑到 manager。</li>
+<li>调用 <code>mgr->device->sw_enable()</code>，即 <code>disp_lcd_sw_enable()</code>。</li>
+<li><strong>不调用</strong> <code>disp_lcd_enable()</code>。</li>
+</ol>
+<h3 id="44-disp_lcd_enable-vs-disp_lcd_sw_enable">4.4 <code>disp_lcd_enable()</code> vs <code>disp_lcd_sw_enable()</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#44-disp_lcd_enable-vs-disp_lcd_sw_enable" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>这是防闪的核心。</p>
+<h4 id="完整开屏会闪">完整开屏（会闪）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#完整开屏会闪" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p>文件：<code>disp_lcd.c</code> → <code>disp_lcd_enable()</code></p>
+<p>典型 panel <code>open_flow</code>（<code>default_panel.c</code>，LVDS 也走这条）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">LCD_OPEN_FUNC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(sel, LCD_power_on, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">30</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">LCD_OPEN_FUNC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(sel, LCD_panel_init, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">50</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">LCD_OPEN_FUNC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(sel, sunxi_lcd_tcon_enable, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">100</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">LCD_OPEN_FUNC</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(sel, LCD_bl_open, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span></code></pre></figure>
+<p>对应硬件动作：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>步骤</th><th>函数</th><th>后果</th></tr></thead><tbody><tr><td>上电</td><td><code>LCD_power_on</code> / <code>sunxi_lcd_pin_cfg</code></td><td>电源和 pinmux 再配一遍</td></tr><tr><td>面板初始化</td><td><code>LCD_panel_init</code></td><td>部分屏会复位</td></tr><tr><td>开 TCON</td><td><code>sunxi_lcd_tcon_enable</code></td><td><strong>重配 TCON 时序和 LVDS PHY，画面中断</strong></td></tr><tr><td>开背光</td><td><code>LCD_bl_open</code></td><td>若前面关过背光，就会先黑再亮</td></tr></tbody></table></div>
+<p><code>disp_lcd_enable()</code> 还会：</p>
+<ul>
+<li><code>mgr->enable()</code> 重新初始化 DE</li>
+<li><code>lcd_clk_enable()</code> 配时钟</li>
+<li><code>disp_al_lcd_cfg()</code> 重写 TCON 寄存器</li>
+<li>逐条执行 <code>open_flow</code></li>
+</ul>
+<p>这就是“logo 先出来，闪一下，再出来”的直接原因。</p>
+<h4 id="无缝接管不闪">无缝接管（不闪）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#无缝接管不闪" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h4>
+<p><code>disp_lcd_sw_enable()</code> <strong>故意不跑</strong> <code>cfg_open_flow</code>，也不 <code>disp_al_lcd_cfg()</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">static</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> s32 </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">disp_lcd_sw_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">struct</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> disp_device </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">*</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">lcd</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">{</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    mgr-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sw_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(mgr);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          // DE 只做软件 enable，不复位流水线</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="punctuation">#if</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> !defined</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">CONFIG_COMMON_CLK_ENABLE_SYNCBOOT</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">)</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    lcd_clk_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(lcd);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">         // 仅增加 clk 引用计数 / deassert reset</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="punctuation">#endif</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    /* 认领 regulator / gpio / pwm，不重新做 panel 时序 */</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_sys_power_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_sys_pwm_config</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_sys_pwm_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...);</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    lcdp->enabled </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    lcdp->bl_need_enabled </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">    lcdp->bl_enabled </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> true</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    /* 只注册 IRQ，不重配 TCON */</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    disp_sys_register_irq</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(...);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p>对比：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>动作</th><th><code>disp_lcd_enable</code></th><th><code>disp_lcd_sw_enable</code></th></tr></thead><tbody><tr><td><code>mgr->enable()</code></td><td>是</td><td>否，改 <code>mgr->sw_enable()</code></td></tr><tr><td><code>disp_al_lcd_cfg()</code></td><td>是</td><td><strong>否</strong></td></tr><tr><td><code>cfg_open_flow</code></td><td>是</td><td><strong>否</strong></td></tr><tr><td><code>sunxi_lcd_tcon_enable</code></td><td>是</td><td><strong>否</strong></td></tr><tr><td>背光关再开</td><td>是</td><td>否，只把 <code>bl_enabled</code> 置 true</td></tr><tr><td><code>lcdp->enabled = 1</code></td><td>是</td><td>是</td></tr></tbody></table></div>
+<p><code>mgr->sw_enable()</code>（<code>disp_mgr_sw_enable</code>）同样：</p>
+<ul>
+<li>不复位 DE 模块</li>
+<li>在没有 <code>CONFIG_COMMON_CLK_ENABLE_SYNCBOOT</code> 时只 <code>clk_prepare_enable</code></li>
+<li>注册 vsync IRQ、同步软件配置，让 DE 继续扫 U-Boot 已经配好的 layer</li>
+</ul>
+<h3 id="45-为什么要把-enabled-置-1">4.5 为什么要把 <code>enabled</code> 置 1<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#45-为什么要把-enabled-置-1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>disp_lcd_check_config_dirty()</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (lcdp</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">enabled </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">==</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 0</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> ||</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> mode_dirty)</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">    return</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> DISP_NORMAL_UPDATE;</span></span></code></pre></figure>
+<p><code>DISP_NORMAL_UPDATE</code> 时上层会：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">device</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">is_enabled</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">device</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">))</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">    mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">device</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">disable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">device</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   // 关 TCON / 关背光</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">device</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">device</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">        // 再完整 open_flow</span></span></code></pre></figure>
+<p>所以 <code>sw_enable</code> 必须先把 <code>lcdp->enabled = 1</code>。<br/>
+否则后续任何 <code>set_config</code> 都会走“先关再开”，logo 必然闪。</p>
+<p>LCD 没有 <code>DISP_SMOOTH_UPDATE</code> 路径（HDMI 才有 <code>smooth_enable</code>）。<br/>
+LCD/LVDS 的无缝完全依赖 <strong><code>sync=1</code> + <code>sw_enable</code></strong>。</p>
+<hr/>
+<h2 id="5-logo-如何从-u-boot-fb-接到内核-fb">5. Logo 如何从 U-Boot FB 接到内核 FB<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-logo-如何从-u-boot-fb-接到内核-fb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>文件：<code>kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_fb.c</code></p>
+<h3 id="51-调用点">5.1 调用点<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#51-调用点" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>display_fb_request()</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">config.enable </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> 1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">Fb_map_kernel_logo</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(sel, info);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">     // 必须在 set_layer_config 之前</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">...</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">config.info.fb.</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="normal">addr</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">[</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">0</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">] </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> info</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">fix.smem_start;</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">mgr</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">set_layer_config</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(mgr, </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">config</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">, </span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span></code></pre></figure>
+<p>顺序不能改：<strong>先拷图，再切 layer。</strong></p>
+<h3 id="52-fb_map_kernel_logo">5.2 <code>Fb_map_kernel_logo()</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#52-fb_map_kernel_logo" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ol>
+<li>读 <code>fb_base</code>（BMP 物理地址）。</li>
+<li>若地址为 0，转 <code>Fb_copy_boot_fb()</code>。</li>
+<li>校验 BMP 头 <code>'BM'</code>。</li>
+<li>把像素居中拷到内核 <code>info->screen_base</code>。</li>
+</ol>
+<h3 id="53-fb_copy_boot_fb">5.3 <code>Fb_copy_boot_fb()</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#53-fb_copy_boot_fb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>解析 <code>boot_fb0</code>：</p>
+<pre><code>addr, width, height, bpp, stride, crop_l, crop_t, crop_r, crop_b
+</code></pre>
+<p>然后：</p>
+<ol>
+<li><code>Fb_map_kernel_cache()</code> 映射 U-Boot FB。</li>
+<li>按 crop 裁剪。</li>
+<li>按 stride 逐行 memcpy 到内核 FB。</li>
+<li><strong>要求 src_bpp == dst_bpp</strong>，否则直接失败，内核 FB 保持空白，切 layer 就会闪黑。</li>
+</ol>
+<h3 id="54-切-layer-时硬件仍在出-u-boot-那层">5.4 切 layer 时硬件仍在出 U-Boot 那层<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#54-切-layer-时硬件仍在出-u-boot-那层" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>此时：</p>
+<ul>
+<li>TCON / LVDS 还在按 U-Boot 时序出图。</li>
+<li>DE 的 layer 地址从 U-Boot FB 换成内核 FB。</li>
+<li>两块 buffer 内容已经是同一张 logo。</li>
+</ul>
+<p>只要 DE 在 vsync 附近更新 shadow 寄存器，肉眼就是连续的。<br/>
+如果内核 FB 是全 0，就会看到“logo → 黑一下 → logo”。</p>
+<hr/>
+<h2 id="6-lvds-相关注意点">6. LVDS 相关注意点<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-lvds-相关注意点" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>LVDS 没有单独的 output type，走 LCD：</p>
+<pre><code>boot_disp.type = DISP_OUTPUT_TYPE_LCD (1)
+panel_info.lcd_if = LCD_IF_LVDS
+</code></pre>
+<p><code>lcd_clk_enable()</code> 对 LVDS 额外处理：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">if</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> (lcdp</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">-></span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;">panel_info.lcd_if </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">==</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> LCD_IF_LVDS) {</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    reset_control_deassert</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(lcdp->rst_bus_lvds);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">    clk_prepare_enable</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(lcdp->clk_lvds);</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">}</span></span></code></pre></figure>
+<p><code>sw_enable</code> 在未定义 <code>CONFIG_COMMON_CLK_ENABLE_SYNCBOOT</code> 时仍会调用 <code>lcd_clk_enable()</code>。</p>
+<p>通常：</p>
+<ul>
+<li><code>clk_prepare_enable()</code> 对已经打开的时钟只增加引用计数。</li>
+<li><code>reset_control_deassert()</code> 若已经 deassert，一般是空操作。</li>
+</ul>
+<p>但仍有两个风险：</p>
+<ol>
+<li>内核 CCF 在 disp 驱动 probe 前把 U-Boot 留下的时钟当 unused 关掉，logo 会先灭。</li>
+<li><code>lcd_clk_config()</code> 若重新配 PLL/分频，TCON 像素时钟会抖一下。</li>
+</ol>
+<p>官方更稳的做法是打开 <code>CONFIG_COMMON_CLK_ENABLE_SYNCBOOT</code>，让 <code>sw_enable</code> 完全跳过 <code>lcd_clk_enable()</code> / <code>disp_mgr_clk_enable()</code>。<br/>
+本仓库当前配置里 <strong>没有看到这个宏被打开</strong>，因此 LVDS 无缝路径仍会走一遍 <code>clk_prepare_enable</code>。只要时钟框架没有先关掉这些时钟，一般不会闪。</p>
+<hr/>
+<h2 id="7-关键代码索引">7. 关键代码索引<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-关键代码索引" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="u-boot">U-Boot<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#u-boot" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>路径</th><th>说明</th></tr></thead><tbody><tr><td><code>brandy/.../bootGUI/boot_gui.c</code></td><td><code>save_disp_cmd</code> / <code>save_disp_cmdline</code> / <code>boot_gui_init</code></td></tr><tr><td><code>brandy/.../bootGUI/fb_con.c</code></td><td><code>fb_save_para</code>、<code>fb_update_cmdline</code></td></tr><tr><td><code>brandy/.../bootGUI/video_hal.c</code></td><td><code>hal_save_boot_disp</code></td></tr><tr><td><code>brandy/.../board/sunxi/board_helper.c</code></td><td>更新 DTS 时保存 boot_disp</td></tr><tr><td><code>brandy/.../board/sunxi/sunxi_bootargs.c</code></td><td>cmdline 追加 <code>disp_reserve</code></td></tr><tr><td><code>brandy/.../logo_display/cmd_sunxi_bmp.c</code></td><td><code>sunxi_bmp_display(&quot;bootlogo.bmp&quot;)</code></td></tr></tbody></table></div>
+<h3 id="kernel">Kernel<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#kernel" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>路径</th><th>说明</th></tr></thead><tbody><tr><td><code>disp2/disp/dev_disp.c</code></td><td>解析 <code>boot_disp</code>，<code>start_work</code>，探测顺序</td></tr><tr><td><code>disp2/disp/de/disp_display.c</code></td><td><code>bsp_disp_sync_with_hw</code></td></tr><tr><td><code>disp2/disp/de/disp_lcd.c</code></td><td><code>disp_lcd_enable</code> / <code>disp_lcd_sw_enable</code> / <code>check_config_dirty</code></td></tr><tr><td><code>disp2/disp/de/disp_manager.c</code></td><td><code>disp_mgr_sw_enable</code></td></tr><tr><td><code>disp2/disp/dev_fb.c</code></td><td><code>Fb_map_kernel_logo</code> / <code>Fb_copy_boot_fb</code></td></tr><tr><td><code>disp2/disp/lcd/default_panel.c</code></td><td>默认 <code>open_flow</code>（含 LVDS）</td></tr><tr><td><code>disp2/disp/de/include.h</code></td><td><code>disp_bootloader_info</code>、<code>DISP_SMOOTH_UPDATE</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="8-参数清单">8. 参数清单<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-参数清单" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>参数</th><th>存放位置</th><th>用途</th></tr></thead><tbody><tr><td><code>boot_disp</code></td><td>disp 设备树节点 u32</td><td>无缝开关 + 屏号/类型/mode</td></tr><tr><td><code>boot_disp1</code></td><td>同上</td><td>format / bits / cs</td></tr><tr><td><code>boot_disp2</code></td><td>同上</td><td>eotf</td></tr><tr><td><code>boot_fb0</code></td><td>同上，字符串</td><td>U-Boot FB 地址和几何</td></tr><tr><td><code>fb_base</code></td><td>同上，u32</td><td>BMP 原图地址（可选）</td></tr><tr><td><code>disp_reserve</code></td><td>cmdline</td><td>保留 logo 内存</td></tr></tbody></table></div>
+<p><code>boot_info.sync</code> 判定：</p>
+<pre><code>boot_disp 的 type 字节 != 0  → sync = 1  → 无缝
+boot_disp 为 0 或不存在     → sync = 0  → 完整开屏，会闪
+</code></pre>
+<hr/>
+<h2 id="9-排障清单">9. 排障清单<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-排障清单" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>按顺序核对。</p>
+<h3 id="91-内核有没有进入无缝">9.1 内核有没有进入无缝<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#91-内核有没有进入无缝" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<pre><code>dmesg | grep -i &quot;smooth display&quot;
+</code></pre>
+<p>期望：</p>
+<pre><code>smooth display screen:0 type:1 mode:xxx
+</code></pre>
+<p>没有这行：<code>boot_disp</code> 没传到 disp 节点，内核走冷启动。</p>
+<p>检查：</p>
+<ul>
+<li>U-Boot 是否 <code>CONFIG_BOOT_GUI</code></li>
+<li><code>save_disp_cmd()</code> 是否被调用</li>
+<li>内核 <code>/proc/device-tree</code> 里 disp 节点是否有 <code>boot_disp</code></li>
+</ul>
+<h3 id="92-boot_fb0--disp_reserve-是否有效">9.2 <code>boot_fb0</code> / <code>disp_reserve</code> 是否有效<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#92-boot_fb0--disp_reserve-是否有效" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>内核若打印：</p>
+<pre><code>no boot_fb0
+Fb_map_kernel_logo failed
+wrong para: src[...]
+</code></pre>
+<p>说明 logo 没拷成功。随后 <code>set_layer_config</code> 会把空 FB 送上 DE，表现为闪黑。</p>
+<p>要求：</p>
+<ul>
+<li><code>boot_fb0</code> 地址与 <code>disp_reserve</code> 地址一致</li>
+<li>bpp 与内核 FB 一致（常见 32bit）</li>
+<li><code>disp_reserve</code> 大小覆盖整帧</li>
+</ul>
+<h3 id="93-是否误走了完整-open_flow">9.3 是否误走了完整 <code>open_flow</code><a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#93-是否误走了完整-open_flow" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>无缝时 <strong>不应</strong> 再看到 panel 的 power_on / tcon_enable / backlight 完整时序 delay。<br/>
+若 <code>disp_lcd_enable()</code> 被调用，说明：</p>
+<ul>
+<li><code>boot_info.sync == 0</code>，或</li>
+<li><code>lcdp->enabled</code> 仍为 0，<code>check_config_dirty</code> 返回 <code>DISP_NORMAL_UPDATE</code></li>
+</ul>
+<h3 id="94-时钟是否被-ccf-关掉">9.4 时钟是否被 CCF 关掉<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#94-时钟是否被-ccf-关掉" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>跳内核后、disp probe 前，如果 DE/TCON/LVDS 时钟被 unused-clk 关掉，logo 会先灭。<br/>
+处理：</p>
+<ul>
+<li>打开 <code>CONFIG_COMMON_CLK_ENABLE_SYNCBOOT</code>，或</li>
+<li>保证这些时钟在 disp 驱动认领前不被 disable</li>
+</ul>
+<h3 id="95-不要在内核里再开一次屏">9.5 不要在内核里再开一次屏<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#95-不要在内核里再开一次屏" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>应用或 init 脚本不要在 logo 阶段调用：</p>
+<ul>
+<li><code>DISP_LCD_ENABLE</code></li>
+<li>panel <code>open_flow</code></li>
+<li>关背光再开背光</li>
+</ul>
+<p>应用应等 UI 第一帧准备好后，再替换 layer 内容，而不是重新 enable LCD。</p>
+<h3 id="96-pwm-背光">9.6 PWM 背光<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#96-pwm-背光" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>sw_enable</code> 会对 PWM 再 <code>config + set_polarity + enable</code>。<br/>
+若极性配反，会闪一下或常黑。无缝时 PWM 参数必须与 U-Boot 完全一致。</p>
+<hr/>
+<h2 id="10-和闪一下对应的代码路径对照">10. 和“闪一下”对应的代码路径对照<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-和闪一下对应的代码路径对照" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>现象</th><th>路径</th><th>修复方向</th></tr></thead><tbody><tr><td>logo 灭一下再亮，伴随背光闪</td><td>走了 <code>disp_lcd_enable</code> → <code>LCD_bl_open</code></td><td>保证 <code>boot_disp.sync=1</code>，走 <code>sw_enable</code></td></tr><tr><td>logo 灭一下再亮，无背光动作</td><td><code>sunxi_lcd_tcon_enable</code> 重配 LVDS</td><td>同上，禁止 <code>open_flow</code></td></tr><tr><td>先黑一下，再出同一张 logo</td><td>先 <code>set_layer_config</code> 后拷图，或拷图失败</td><td>保持“先 <code>Fb_map_kernel_logo</code> 再切 layer”</td></tr><tr><td>花屏一下再恢复</td><td><code>disp_reserve</code> 没生效，U-Boot FB 被踩</td><td>检查 cmdline <code>disp_reserve</code></td></tr><tr><td>U-Boot logo 正常，进内核永久黑</td><td><code>sw_enable</code> 失败，或时钟被关掉且没再开</td><td>查 <code>lcd_clk_enable</code> / regulator</td></tr><tr><td>进内核后又完整复位屏</td><td><code>check_config_dirty</code> 看到 <code>enabled==0</code></td><td><code>sw_enable</code> 必须成功置 <code>enabled=1</code></td></tr></tbody></table></div>
+<hr/>
+<h2 id="11-实现检查表">11. 实现检查表<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-实现检查表" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>U-Boot：</p>
+<ul class="contains-task-list">
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> BootGUI 已打开，开机能显示 logo</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 跳内核前不调用 LCD close_flow</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> DTB disp 节点有 <code>boot_disp</code> / <code>boot_fb0</code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> cmdline 有 <code>disp_reserve=&lt;size>,0x&lt;addr></code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> logo 内存在 <code>disp_reserve</code> 范围内</li>
+</ul>
+<p>Kernel：</p>
+<ul class="contains-task-list">
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 启动 log 有 <code>smooth display screen:0 type:1</code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>start_work</code> 走 <code>bsp_disp_sync_with_hw</code>，不走 <code>disp_device_set_config</code> 完整 enable</li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> <code>fb_init</code> 中先拷 logo 再 <code>set_layer_config</code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> 未再次执行 panel <code>open_flow</code></li>
+<li class="task-list-item" data-task=" "><input type="checkbox" class="checkbox-toggle"/> LVDS 时钟在 probe 前未被 CCF 关闭</li>
+</ul>
+<hr/>
+<h2 id="12-一句话总结">12. 一句话总结<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#12-一句话总结" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>官方防闪策略不是“内核再画一次 logo”，而是：</p>
+<ol>
+<li><strong>U-Boot 把 LVDS 硬件链路一直开着</strong>；</li>
+<li><strong>用 <code>boot_disp</code> 告诉内核“屏已经在显示”</strong>；</li>
+<li><strong>内核用 <code>disp_lcd_sw_enable()</code> 只接管软件状态，绝不重跑 TCON/LVDS <code>open_flow</code></strong>；</li>
+<li><strong>先把 U-Boot logo 拷进内核 FB，再切 DE layer</strong>。</li>
+</ol>
+<p>只要这四步不断，LVDS 从 U-Boot 到内核就不会出现“logo 出来 → 闪一下 → logo 再出来”。</p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-26" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#全志-h133-lvds-开机-logo-无缝显示机制" data-for="全志-h133-lvds-开机-logo-无缝显示机制">全志 H133 LVDS 开机 Logo 无缝显示机制</a></li><li class="depth-1"><a href="#1-问题现象" data-for="1-问题现象">1. 问题现象</a></li><li class="depth-1"><a href="#2-总体思路" data-for="2-总体思路">2. 总体思路</a></li><li class="depth-1"><a href="#3-u-boot-侧保持出图只传递状态" data-for="3-u-boot-侧保持出图只传递状态">3. U-Boot 侧：保持出图，只传递状态</a></li><li class="depth-2"><a href="#31-入口" data-for="31-入口">3.1 入口</a></li><li class="depth-2"><a href="#32-boot_disp-编码" data-for="32-boot_disp-编码">3.2 boot_disp 编码</a></li><li class="depth-2"><a href="#33-boot_fb0u-boot-framebuffer-描述" data-for="33-boot_fb0u-boot-framebuffer-描述">3.3 boot_fb0：U-Boot framebuffer 描述</a></li><li class="depth-2"><a href="#34-disp_reserve保护-logo-内存" data-for="34-disp_reserve保护-logo-内存">3.4 disp_reserve：保护 logo 内存</a></li><li class="depth-2"><a href="#35-可选fb_basebmp-原图" data-for="35-可选fb_basebmp-原图">3.5 可选：fb_base（BMP 原图）</a></li><li class="depth-1"><a href="#4-内核侧smooth-display" data-for="4-内核侧smooth-display">4. 内核侧：smooth display</a></li><li class="depth-2"><a href="#41-解析-boot_disp" data-for="41-解析-boot_disp">4.1 解析 boot_disp</a></li><li class="depth-2"><a href="#42-探测顺序非常关键" data-for="42-探测顺序非常关键">4.2 探测顺序（非常关键）</a></li><li class="depth-2"><a href="#43-start_work冷启动-vs-无缝" data-for="43-start_work冷启动-vs-无缝">4.3 start_work()：冷启动 vs 无缝</a></li><li class="depth-2"><a href="#44-disp_lcd_enable-vs-disp_lcd_sw_enable" data-for="44-disp_lcd_enable-vs-disp_lcd_sw_enable">4.4 disp_lcd_enable() vs disp_lcd_sw_enable()</a></li><li class="depth-2"><a href="#45-为什么要把-enabled-置-1" data-for="45-为什么要把-enabled-置-1">4.5 为什么要把 enabled 置 1</a></li><li class="depth-1"><a href="#5-logo-如何从-u-boot-fb-接到内核-fb" data-for="5-logo-如何从-u-boot-fb-接到内核-fb">5. Logo 如何从 U-Boot FB 接到内核 FB</a></li><li class="depth-2"><a href="#51-调用点" data-for="51-调用点">5.1 调用点</a></li><li class="depth-2"><a href="#52-fb_map_kernel_logo" data-for="52-fb_map_kernel_logo">5.2 Fb_map_kernel_logo()</a></li><li class="depth-2"><a href="#53-fb_copy_boot_fb" data-for="53-fb_copy_boot_fb">5.3 Fb_copy_boot_fb()</a></li><li class="depth-2"><a href="#54-切-layer-时硬件仍在出-u-boot-那层" data-for="54-切-layer-时硬件仍在出-u-boot-那层">5.4 切 layer 时硬件仍在出 U-Boot 那层</a></li><li class="depth-1"><a href="#6-lvds-相关注意点" data-for="6-lvds-相关注意点">6. LVDS 相关注意点</a></li><li class="depth-1"><a href="#7-关键代码索引" data-for="7-关键代码索引">7. 关键代码索引</a></li><li class="depth-2"><a href="#u-boot" data-for="u-boot">U-Boot</a></li><li class="depth-2"><a href="#kernel" data-for="kernel">Kernel</a></li><li class="depth-1"><a href="#8-参数清单" data-for="8-参数清单">8. 参数清单</a></li><li class="depth-1"><a href="#9-排障清单" data-for="9-排障清单">9. 排障清单</a></li><li class="depth-2"><a href="#91-内核有没有进入无缝" data-for="91-内核有没有进入无缝">9.1 内核有没有进入无缝</a></li><li class="depth-2"><a href="#92-boot_fb0--disp_reserve-是否有效" data-for="92-boot_fb0--disp_reserve-是否有效">9.2 boot_fb0 / disp_reserve 是否有效</a></li><li class="depth-2"><a href="#93-是否误走了完整-open_flow" data-for="93-是否误走了完整-open_flow">9.3 是否误走了完整 open_flow</a></li><li class="depth-2"><a href="#94-时钟是否被-ccf-关掉" data-for="94-时钟是否被-ccf-关掉">9.4 时钟是否被 CCF 关掉</a></li><li class="depth-2"><a href="#95-不要在内核里再开一次屏" data-for="95-不要在内核里再开一次屏">9.5 不要在内核里再开一次屏</a></li><li class="depth-2"><a href="#96-pwm-背光" data-for="96-pwm-背光">9.6 PWM 背光</a></li><li class="depth-1"><a href="#10-和闪一下对应的代码路径对照" data-for="10-和闪一下对应的代码路径对照">10. 和“闪一下”对应的代码路径对照</a></li><li class="depth-1"><a href="#11-实现检查表" data-for="11-实现检查表">11. 实现检查表</a></li><li class="depth-1"><a href="#12-一句话总结" data-for="12-一句话总结">12. 一句话总结</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-ede79cfd.js" type="module" data-persist="true"></script></html>
