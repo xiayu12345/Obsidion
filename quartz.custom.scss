@@ -3,18 +3,18 @@
 // A+C+D hybrid: centered page shell + clear tree hierarchy + rounded hit targets.
 // Colors stay on Quartz theme tokens.
 
-// --- A: centered page shell (keep sidebars; don't flush full-bleed) ---
+// Layout: left sidebar flush to viewport left; center article centered;
+// right sidebar on the right with TOC centered in that column.
 .page {
-  max-width: 1500px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   width: 100%;
 }
 
 .page > #quartz-body {
   column-gap: 1.75rem;
-  // restore normal horizontal padding vs flush-left 0
-  padding-left: 1rem;
-  padding-right: 1rem;
+  padding-left: 0;
+  padding-right: 0;
 
   @media all and ($tablet) {
     column-gap: 1.25rem;
@@ -22,10 +22,10 @@
 
   @media all and ($mobile) {
     padding-left: 1rem;
+    padding-right: 1rem;
   }
 
   & > .sidebar.left {
-    // Was $topSpacing (6rem) — too much empty space above title.
     padding: 1.25rem 0.65rem 1.5rem 0.85rem;
     background: transparent;
     border-right: none;
@@ -36,13 +36,38 @@
     margin-top: 1.25rem;
   }
 
+  // Center column: readable measure; avoid flex on whole .center (tables)
+  & > .center,
   & > #center {
-    padding-left: 0.5rem;
     min-width: 0;
   }
 
+  & > .center > .page-header,
+  & > .center > article,
+  & > .center > .page-footer,
+  & > #center > .page-header,
+  & > #center > article,
+  & > #center > .page-footer {
+    max-width: 48rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
   & > .sidebar.right {
-    padding-right: 0.75rem;
+    padding-right: 0.85rem;
+    padding-left: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  & > .sidebar.right > .toc {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 16rem;
   }
 }
 
