@@ -466,3 +466,114 @@ article h2 {
   border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 60%, transparent);
   font-size: 1.15rem;
 }
+
+// --- Stronger content chrome ---
+article {
+  line-height: 1.65;
+}
+
+// Soften duplicate page chrome: meta line less shouty
+.page-header .meta,
+.page-header .content-meta,
+.page-header time,
+.content-meta {
+  opacity: 0.72;
+  font-size: 0.86rem;
+}
+
+article > h1:first-of-type {
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.35rem;
+}
+
+article .lead {
+  max-width: 52rem;
+}
+
+article .home-panel,
+article .compare-panel {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lightgray) 40%, transparent),
+    0 12px 40px color-mix(in srgb, #000 22%, transparent);
+}
+
+article .table-container > table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.st-nor {
+  color: #a5b4fc;
+  background: color-mix(in srgb, #818cf8 16%, transparent);
+  border-color: color-mix(in srgb, #818cf8 32%, transparent);
+}
+.st-emmc {
+  color: #fcd34d;
+  background: color-mix(in srgb, #f59e0b 16%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 32%, transparent);
+}
+
+.note-box {
+  margin: 1rem 0 1.5rem;
+  padding: 0.9rem 1.1rem;
+  border-radius: 0.85rem;
+  border-left: 3px solid var(--secondary);
+  background: color-mix(in srgb, var(--lightgray) 16%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+  border-right: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+}
+.note-box ul {
+  margin: 0.35rem 0 0;
+}
+.note-box li {
+  margin: 0.4rem 0;
+}
+
+// Numbered how-to as soft cards
+article .home-cards ol {
+  list-style: none;
+  padding-left: 0;
+  counter-reset: how;
+  display: grid;
+  gap: 0.65rem;
+}
+article .home-cards ol > li {
+  counter-increment: how;
+  position: relative;
+  padding: 0.85rem 1rem 0.85rem 3rem;
+  border-radius: 0.75rem;
+  border: 1px solid color-mix(in srgb, var(--lightgray) 65%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 12%, transparent);
+  margin: 0;
+}
+article .home-cards ol > li::before {
+  content: counter(how);
+  position: absolute;
+  left: 0.85rem;
+  top: 0.85rem;
+  width: 1.55rem;
+  height: 1.55rem;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 35%, transparent);
+}
+
+// Right TOC pills
+.sidebar.right .toc a {
+  display: block;
+  padding: 0.35rem 0.55rem;
+  border-radius: 0.45rem;
+  margin: 0.15rem 0;
+}
+.sidebar.right .toc a:hover {
+  background: color-mix(in srgb, var(--highlight) 70%, transparent);
+}
+

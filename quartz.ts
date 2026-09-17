@@ -21,6 +21,28 @@ try {
         }
         return node
       },
+      sortFn: (a: { isFolder?: boolean; slugSegment?: string; displayName?: string }, b: { isFolder?: boolean; slugSegment?: string; displayName?: string }) => {
+        const pin = (n: { slugSegment?: string; displayName?: string }) => {
+          const seg = (n.slugSegment || "").toLowerCase()
+          const name = (n.displayName || "")
+          return (
+            seg === "板件与项目对照" ||
+            name === "板件与项目对照" ||
+            (seg.includes("%") && decodeURIComponent(seg) === "板件与项目对照")
+          )
+        }
+        const ap = pin(a), bp = pin(b)
+        if (ap && !bp) return -1
+        if (!ap && bp) return 1
+        if ((!a.isFolder && !b.isFolder) || (a.isFolder && b.isFolder)) {
+          return (a.displayName || "").localeCompare(b.displayName || "", undefined, {
+            numeric: true,
+            sensitivity: "base",
+          })
+        }
+        if (!a.isFolder && b.isFolder) return 1
+        return -1
+      },
     })
   }
 } catch {
