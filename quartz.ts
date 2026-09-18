@@ -22,15 +22,23 @@ try {
         return node
       },
       sortFn: (a: { isFolder?: boolean; slugSegment?: string; displayName?: string }, b: { isFolder?: boolean; slugSegment?: string; displayName?: string }) => {
+        const isH133 = (n: { slugSegment?: string; displayName?: string }) => {
+          const seg = (n.slugSegment || "").toLowerCase()
+          const name = n.displayName || ""
+          return seg === "h133" || name === "H133"
+        }
         const pin = (n: { slugSegment?: string; displayName?: string }) => {
           const seg = (n.slugSegment || "").toLowerCase()
-          const name = (n.displayName || "")
+          const name = n.displayName || ""
           return (
             seg === "板件与项目对照" ||
             name === "板件与项目对照" ||
             (seg.includes("%") && decodeURIComponent(seg) === "板件与项目对照")
           )
         }
+        const ah = isH133(a), bh = isH133(b)
+        if (ah && !bh) return -1
+        if (!ah && bh) return 1
         const ap = pin(a), bp = pin(b)
         if (ap && !bp) return -1
         if (!ap && bp) return 1
