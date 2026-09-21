@@ -779,6 +779,35 @@ article:has(.dl-page) .content-meta {
   margin-bottom: 1rem;
 }
 
+
+.dl-section {
+  margin-top: 1.35rem;
+}
+.dl-section-head {
+  margin: 0 0 0.65rem 0.1rem;
+}
+.dl-section-title {
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  font-size: 1.05rem !important;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--dark);
+}
+.dl-section-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: var(--gray);
+  line-height: 1.4;
+}
+.dl-empty {
+  padding: 1.15rem 1.1rem;
+  font-size: 0.9rem;
+  color: var(--gray);
+  text-align: center;
+}
+
 // Hide page breadcrumbs (path under title area)
 .breadcrumb-container,
 nav.breadcrumb-container,
