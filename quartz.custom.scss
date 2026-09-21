@@ -158,14 +158,15 @@ html, body {
   opacity: 1;
 }
 
-// Active leaf: same size as siblings — never larger than parent folder
+// Active leaf: quiet pill — same size as siblings, no loud accent bar
 .sidebar.left .explorer-content ul li > a.active {
   opacity: 1;
-  color: var(--secondary);
-  background: color-mix(in srgb, var(--highlight) 90%, transparent);
-  border-left-color: var(--secondary);
+  color: var(--dark);
+  background: color-mix(in srgb, var(--lightgray) 40%, transparent);
+  border-left-color: transparent;
   font-size: 0.86rem;
-  font-weight: 560;
+  font-weight: 500;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--lightgray) 70%, transparent);
 }
 
 // C: clearer folder nesting rail
@@ -640,4 +641,12 @@ article .home-cards ol > li::before {
   box-sizing: border-box;
   padding: 0.55rem 1rem;
   font-size: 0.95rem;
+}
+
+
+// Hide page breadcrumbs (path under title area)
+.breadcrumb-container,
+nav.breadcrumb-container,
+.page-header .breadcrumb-container {
+  display: none !important;
 }
