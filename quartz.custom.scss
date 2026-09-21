@@ -708,6 +708,9 @@ article .home-cards ol > li::before {
   background: linear-gradient(145deg, #5b8def, #3d6fd8);
 }
 
+.dl-file-icon[data-ext="zip"] {
+  background: linear-gradient(145deg, #6aa84f, #38761d);
+}
 .dl-file-icon[data-ext="rar"] {
   background: linear-gradient(145deg, #7b97aa, #4d6d82);
 }
