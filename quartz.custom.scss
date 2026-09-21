@@ -144,9 +144,12 @@ html, body {
 .sidebar.left .explorer-content ul li > a {
   display: block;
   border-radius: 0.5rem;
-  padding: 0.28rem 0.55rem 0.28rem 0.6rem;
+  padding: 0.22rem 0.5rem 0.22rem 0.55rem;
   border-left: 2px solid transparent;
   line-height: 1.35;
+  font-size: 0.86rem; // child notes smaller than folder titles
+  font-weight: 500;
+  opacity: 0.82;
   transition: background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
 }
 
@@ -155,13 +158,14 @@ html, body {
   opacity: 1;
 }
 
-// C: active leaf accent bar
+// Active leaf: same size as siblings — never larger than parent folder
 .sidebar.left .explorer-content ul li > a.active {
   opacity: 1;
   color: var(--secondary);
   background: color-mix(in srgb, var(--highlight) 90%, transparent);
   border-left-color: var(--secondary);
-  font-weight: 600;
+  font-size: 0.86rem;
+  font-weight: 560;
 }
 
 // C: clearer folder nesting rail
@@ -183,34 +187,36 @@ html, body {
 
 .sidebar.left .folder-container div > a,
 .sidebar.left .folder-container div > button span {
-  font-size: 0.92rem;
+  font-size: 0.92rem; // parent folders stay one step above file links
+  font-weight: 600;
+  color: var(--secondary);
 }
 
 // Folder caret — moderate size (not oversized)
 .sidebar.left .folder-icon {
-  width: 11px !important;
-  height: 11px !important;
-  min-width: 11px !important;
-  min-height: 11px !important;
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  min-height: 10px !important;
   margin-right: 0.4rem;
   color: var(--secondary);
   opacity: 0.95;
   flex-shrink: 0;
-  stroke-width: 2.25;
+  stroke-width: 2;
 }
 .sidebar.left .folder-icon:hover {
   color: var(--tertiary);
   opacity: 1;
 }
 .sidebar.left .explorer .fold {
-  width: 11px !important;
-  height: 11px !important;
+  width: 10px !important;
+  height: 10px !important;
   opacity: 0.9;
   color: var(--secondary);
 }
 .sidebar.left .explorer .folder-icon polyline,
 .sidebar.left .explorer .fold polyline {
-  stroke-width: 2.25;
+  stroke-width: 2;
 }
 
 
@@ -584,3 +590,54 @@ article .home-cards ol > li::before {
   background: color-mix(in srgb, var(--highlight) 70%, transparent);
 }
 
+
+
+// Tool download page card
+.tool-download-card {
+  border: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+  background: color-mix(in srgb, var(--lightgray) 16%, transparent);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--lightgray) 35%, transparent), 0 10px 32px #00000030;
+  border-radius: 1rem;
+  margin: 1.25rem 0 1.75rem;
+  padding: 1.15rem 1.25rem 1.05rem;
+  max-width: 28rem;
+}
+.tool-download-head {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-bottom: 1rem;
+}
+.tool-download-icon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.75rem;
+  display: grid;
+  place-items: center;
+  font-size: 1.05rem;
+  color: var(--secondary);
+  background: color-mix(in srgb, var(--secondary) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--secondary) 30%, transparent);
+  flex-shrink: 0;
+}
+.tool-download-name {
+  font-weight: 650;
+  font-size: 1.02rem;
+  color: var(--dark);
+  letter-spacing: -0.01em;
+}
+.tool-download-size {
+  margin-top: 0.2rem;
+  font-size: 0.86rem;
+  color: var(--gray);
+}
+.tool-download-card .doc-download {
+  margin: 0;
+}
+.tool-download-card .download-btn {
+  width: 100%;
+  justify-content: center;
+  box-sizing: border-box;
+  padding: 0.55rem 1rem;
+  font-size: 0.95rem;
+}
