@@ -27,6 +27,17 @@ try {
           const name = n.displayName || ""
           return seg === "h133" || name === "H133"
         }
+        const sink = (n: { slugSegment?: string; displayName?: string }) => {
+          const seg = (n.slugSegment || "").toLowerCase()
+          const name = n.displayName || ""
+          let decoded = seg
+          try { decoded = decodeURIComponent(seg) } catch {}
+          return (
+            seg === "工具目录" || seg === "驱动目录" ||
+            name === "工具目录" || name === "驱动目录" ||
+            decoded === "工具目录" || decoded === "驱动目录"
+          )
+        }
         const pin = (n: { slugSegment?: string; displayName?: string }) => {
           const seg = (n.slugSegment || "").toLowerCase()
           const name = n.displayName || ""
@@ -39,6 +50,9 @@ try {
         const ah = isH133(a), bh = isH133(b)
         if (ah && !bh) return -1
         if (!ah && bh) return 1
+        const as = sink(a), bs = sink(b)
+        if (as && !bs) return 1
+        if (!as && bs) return -1
         const ap = pin(a), bp = pin(b)
         if (ap && !bp) return -1
         if (!ap && bp) return 1

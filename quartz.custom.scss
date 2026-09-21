@@ -186,24 +186,31 @@ html, body {
   font-size: 0.92rem;
 }
 
-// Clean folder caret (more visible)
+// Folder caret — moderate size (not oversized)
 .sidebar.left .folder-icon {
-  width: 18px;
-  height: 18px;
-  margin-right: 0.35rem;
+  width: 11px !important;
+  height: 11px !important;
+  min-width: 11px !important;
+  min-height: 11px !important;
+  margin-right: 0.4rem;
   color: var(--secondary);
-  opacity: 1;
+  opacity: 0.95;
   flex-shrink: 0;
+  stroke-width: 2.25;
 }
 .sidebar.left .folder-icon:hover {
   color: var(--tertiary);
   opacity: 1;
 }
 .sidebar.left .explorer .fold {
-  width: 14px;
-  height: 14px;
+  width: 11px !important;
+  height: 11px !important;
   opacity: 0.9;
   color: var(--secondary);
+}
+.sidebar.left .explorer .folder-icon polyline,
+.sidebar.left .explorer .fold polyline {
+  stroke-width: 2.25;
 }
 
 
