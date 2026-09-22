@@ -1,0 +1,262 @@
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/asound.conf b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/asound.conf
+index e3c206c67..7771f1199 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/asound.conf
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/asound.conf
+@@ -1,5 +1,14 @@
+-# TP-H10: playback routes spdif | hdmi | lineout(HPOUT)
+-# Switch: /usr/bin/audio_route.sh spdif|hdmi|lineout|auto
++# K1: playback routes i2s | spdif | hdmi | lineout(HPOUT)
++# Switch: /usr/bin/audio_route.sh i2s|spdif|hdmi|lineout|auto
++# 默认 I2S1 → BP1048 DSP（PG11–PG15）
++
++pcm.PlaybackI2S {
++    type plug
++    slave.pcm "hw:sndi2s1,0"
++    slave.rate 44100
++    slave.format S16_LE
++    slave.channels 2
++}
+ 
+ pcm.PlaybackSPDIF {
+     type plug
+@@ -20,7 +29,7 @@ pcm.PlaybackHDMI {
+ pcm.CaptureAC107 {
+     type plug
+     slave.pcm "hw:sndi2s1,0"
+-    slave.rate 48000
++    slave.rate 44100
+     slave.format S16_LE
+     slave.channels 2
+ }
+@@ -33,7 +42,7 @@ pcm.CaptureDsnoop {
+         ipc_perm 0666
+         slave {
+             pcm "hw:sndi2s1,0"
+-            rate 48000
++            rate 44100
+             channels 2
+             format S16_LE
+             period_size 1024
+@@ -179,11 +188,12 @@ pcm.PlaybackHPOUT {
+ # --- default route（audio_route.sh 改 playback.pcm 与 ctl card） ---
+ ctl.!default {
+     type hw
+-    card sndowa
++    card sndi2s1
+ }
+ 
+ pcm.!default {
+     type asym
+-    playback.pcm "PlaybackSPDIF"
+-    capture.pcm "CaptureAC107"
++    playback.pcm "PlaybackI2S"
++    /* K1 无 AC107；默认录音走片内 codec，避免和 I2S1 播放抢同一张卡 */
++    capture.pcm "Capture"
+ }
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_configuration.xml b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_configuration.xml
+index e26e581dc..0eb3b6198 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_configuration.xml
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_configuration.xml
+@@ -31,13 +31,24 @@
+         type="OUT_HDMI_ARC">
+     </snd_card_config>
+ 
++    <!-- 通路 D：I2S1 → BP1048 DSP（K1 默认播放，沿用未用的 OUT_CVBS） -->
++    <snd_card_config
++        card_name="sndi2s1"
++        device="0"
++        channels="2"
++        rate="44100"
++        period_size="882"
++        period_count="4"
++        type="OUT_CVBS">
++    </snd_card_config>
++
+     <!-- AC107 dual-mic capture on I2S1 (TWI2 @ 0x36) -->
+     <snd_card_config
+         card_name="sndi2s1"
+         device="0"
+         channels="2"
+-        rate="48000"
+-        period_size="960"
++        rate="44100"
++        period_size="882"
+         period_count="4"
+         type="IN_MIC">
+     </snd_card_config>
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_output.mode b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_output.mode
+index 8bb4f7c9d..40fbf18ea 100644
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_output.mode
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/audio_output.mode
+@@ -1 +1 @@
+-spdif
++i2s
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/audio_route.sh b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/audio_route.sh
+index f2098d75d..e5cb404d5 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/audio_route.sh
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/audio_route.sh
+@@ -1,14 +1,15 @@
+ #!/bin/sh
+-# ALSA playback route: spdif | hdmi | lineout
++# ALSA playback route: i2s | spdif | hdmi | lineout
++# i2s：I2S1 → BP1048 DSP（K1 默认）
+ # lineout：audiocodec HPOUT + LINEOUT（设置页第三项）
+-# UI: Speaker(0)->spdif, ARC(1)->hdmi, Headphone(3)->lineout
++# UI: Speaker(0)->i2s（K1 喇叭在 DSP），ARC(1)->hdmi, Headphone(3)->lineout, I2S(5)->i2s
+ 
+ ASOUND="/etc/asound.conf"
+ MODE_FILE="/etc/audio_output.mode"
+ ACARD="hw:audiocodec"
+ 
+ usage() {
+-    echo "用法: audio_route.sh spdif|hdmi|lineout|auto|show"
++    echo "用法: audio_route.sh i2s|spdif|hdmi|lineout|auto|show"
+     echo "当前: $(cat "$MODE_FILE" 2>/dev/null || echo unknown)"
+ }
+ 
+@@ -39,11 +40,12 @@ resolve_mode_from_setting() {
+     [ -f /mnt/UDISK/setting.ini ] || return 1
+     so=$(grep -E '^sound_output[[:space:]]*=' /mnt/UDISK/setting.ini | tail -1 | sed 's/.*=[[:space:]]*//')
+     case "$so" in
+-        0) echo spdif ;;
++        0) echo i2s ;;    # K1 喇叭走 I2S1→DSP，没有 SPDIF 功放
+         1) echo hdmi ;;
+         3) echo lineout ;;
+-        4) echo spdif ;;  # legacy dual -> spdif
+-        *) echo spdif ;;
++        4) echo i2s ;;
++        5) echo i2s ;;
++        *) echo i2s ;;
+     esac
+ }
+ 
+@@ -52,6 +54,11 @@ apply_route() {
+     local pcm card
+ 
+     case "$mode" in
++        i2s)
++            pcm="PlaybackI2S"
++            card="sndi2s1"
++            apply_analog_out 0
++            ;;
+         spdif)
+             pcm="PlaybackSPDIF"
+             card="sndowa"
+@@ -81,18 +88,18 @@ apply_route() {
+ 
+ MODE="$1"
+ case "$MODE" in
+-    spdif|hdmi|lineout) ;;
++    i2s|spdif|hdmi|lineout) ;;
+     show)
+         usage
+         exit 0
+         ;;
+     auto|"")
+         MODE=$(resolve_mode_from_setting 2>/dev/null || cat "$MODE_FILE" 2>/dev/null)
+-        [ -n "$MODE" ] || MODE=spdif
++        [ -n "$MODE" ] || MODE=i2s
+         ;;
+     dual)
+-        echo "dual 已移除，改用 spdif"
+-        MODE=spdif
++        echo "dual 已移除，改用 i2s"
++        MODE=i2s
+         ;;
+     *)
+         echo "无效模式: $MODE"
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c
+index 1b61cc4b8..d9e695fb5 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tsound_ctrl.c
+@@ -175,6 +175,8 @@ static enum snd_device_type routeModeFileToSndDevice(void)
+         return OUT_HDMI_ARC;
+     if (strncmp(buf, "lineout", 7) == 0)
+         return OUT_HEADSET;
++    if (strncmp(buf, "i2s", 3) == 0)
++        return OUT_CVBS;
+     return OUT_SPK;
+ }
+ 
+diff --git a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/core/desk_setting_param.c b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/core/desk_setting_param.c
+index 2625233a0..a103150d6 100644
+--- a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/core/desk_setting_param.c
++++ b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/core/desk_setting_param.c
+@@ -15,6 +15,8 @@ static void desk_setting_apply_audio_route(int sound_output_mode)
+         cmd = "/usr/bin/audio_route.sh hdmi";
+     } else if (sound_output_mode == SOUND_OUTPUT_HEADPHONE) {
+         cmd = "/usr/bin/audio_route.sh lineout";
++    } else if (sound_output_mode == SOUND_OUTPUT_I2S) {
++        cmd = "/usr/bin/audio_route.sh i2s";
+     } else {
+         cmd = "/usr/bin/audio_route.sh spdif";
+     }
+diff --git a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.c b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.c
+index d70c81da2..06346eb38 100644
+--- a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.c
++++ b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.c
+@@ -46,6 +46,8 @@ static const char *cedarse_dev_for_mode(int mode)
+         return "OUT_HDMI_ARC";
+     case SOUND_OUTPUT_HEADPHONE:
+         return "OUT_HEADSET";
++    case SOUND_OUTPUT_I2S:
++        return "OUT_CVBS";
+     default:
+         return "OUT_SPK";
+     }
+@@ -308,6 +310,9 @@ static void sound_apply_cedarse_volume_all_live_paths(int mode, int vol)
+     if (mode != SOUND_OUTPUT_HEADPHONE) {
+         sound_apply_cedarse_volume(SOUND_OUTPUT_HEADPHONE, vol);
+     }
++    if (mode != SOUND_OUTPUT_I2S) {
++        sound_apply_cedarse_volume(SOUND_OUTPUT_I2S, vol);
++    }
+ }
+ 
+ static void *sound_vol_apply_thread(void *arg)
+@@ -374,6 +379,7 @@ int factory_set_sound_output(int value)
+         case SOUND_OUTPUT_BT:
+         case SOUND_OUTPUT_HEADPHONE:
+         case SOUND_OUTPUT_OWA:
++        case SOUND_OUTPUT_I2S:
+             break;
+         default:
+             value = 0;
+diff --git a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.h b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.h
+index c648690bb..7801a0cf1 100644
+--- a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.h
++++ b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/setting/hw/sound_setting.h
+@@ -61,6 +61,7 @@
+ #define SOUND_OUTPUT_BT            (2)
+ #define SOUND_OUTPUT_HEADPHONE     (3)
+ #define SOUND_OUTPUT_OWA           (4)
++#define SOUND_OUTPUT_I2S           (5)
+ 
+ int factory_set_sound_mode(int value);
+ int factory_get_sounde_mode(void);
+diff --git a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/projector_port/audio/audio_api.c b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/projector_port/audio/audio_api.c
+index 986b555ed..e24ffbb2c 100644
+--- a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/projector_port/audio/audio_api.c
++++ b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/projector_port/audio/audio_api.c
+@@ -150,6 +150,9 @@ int audio_set_output_device(int mode) {
+         case SOUND_OUTPUT_OWA:
+             type = OUT_OWA;
+             break;
++        case SOUND_OUTPUT_I2S:
++            type = OUT_CVBS;
++            break;
+         default:
+             type = OUT_SPK;
+             break;
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
+index f6f30ab81..9a9a69539 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
+@@ -57,5 +57,6 @@
+ volume = 30
+ sound_mode = 0
+-sound_output = 1
++# 0=spdif 1=hdmi 3=lineout 5=i2s1(DSP)
++sound_output = 5
+ 
+ [display]

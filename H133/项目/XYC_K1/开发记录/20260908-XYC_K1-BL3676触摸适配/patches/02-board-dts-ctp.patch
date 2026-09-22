@@ -1,0 +1,66 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -663,28 +663,18 @@
+ 	pinctrl-0 = <&twi1_pins_a>;
+ 	pinctrl-1 = <&twi1_pins_b>;
+ 	pinctrl-names = "default", "sleep";
++	/* CPU 模式；=1 走 DMA，本板 TWI1 申请不到通道，CTP I2C 写失败 */
+ 	twi_drv_used = <0>;
+ 	status = "okay";
+ 
+-	/* JYY070 GSL1680 fornew-x @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x40 */
+-	ctp@40 {
+-		compatible = "allwinner,gslX680";
+-		device_type = "ctp";
+-		reg = <0x40>;
++	/* BL3676：TWI1 PG8/PG9，RST=PG2，INT=PG3，I2C 0x2C；gpios[0]=RST [1]=INT */
++	betterlife_ts@2c {
++		compatible = "BTL,betterlife_ts";
++		reg = <0x2c>;
+ 		status = "okay";
+-		ctp_name = "gsl1680_fornew";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x40>;
+-		ctp_screen_max_x = <0x400>;
+-		ctp_screen_max_y = <0x258>;
+-		/* 与 fb0 1280x800 对齐，驱动内线性映射；未配则与 ctp_screen_max 1:1 */
+-		ctp_report_max_x = <1280>;
+-		ctp_report_max_y = <800>;
+-		ctp_revert_x_flag = <0x1>;
+-		ctp_revert_y_flag = <0x1>;
+-		ctp_exchange_x_y_flag = <0x0>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
++		gpios = <&pio PG 2 GPIO_ACTIVE_HIGH>, <&pio PG 3 GPIO_ACTIVE_HIGH>;
++		TP_MAX_X = <1280>;
++		TP_MAX_Y = <800>;
+ 	};
+ };
+ 
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig b/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
+@@ -98,8 +98,9 @@
+ CONFIG_USB_HID=y
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_SUNXI=y
+-CONFIG_TOUCHSCREEN_GSLX680NEW=y
++# CONFIG_TOUCHSCREEN_GSLX680NEW is not set
+ # CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set
++CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y
+ CONFIG_INPUT_SENSOR=y
+ CONFIG_SUNXI_GPADC=y
+ # CONFIG_LEGACY_PTYS is not set
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
+@@ -53,7 +53,7 @@
+ 
+ if nonzero_hex "$ABS"; then
+     case "$NAME" in
+-    *gsl*|*gslX680*|*gt9xx*|*Goodix*|*goodix*|*touch*|*Touch*)
++    *gsl*|*gslX680*|*gt9xx*|*Goodix*|*goodix*|*betterlife*|*touch*|*Touch*)
+         ln -sf "$DEV_NAME" "${INPUT_DIR}/touch"
+         exit 0
+         ;;

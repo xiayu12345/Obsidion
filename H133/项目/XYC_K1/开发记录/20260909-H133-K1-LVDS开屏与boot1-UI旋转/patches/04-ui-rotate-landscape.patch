@@ -1,0 +1,74 @@
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
+index f6f30ab81..a1ea4bcd1 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
+@@ -60,32 +60,33 @@ sound_mode = 0
+ sound_output = 1
+ 
+ [display]
++# LVDS 1280x800 横屏：UI 不再软旋
+ # 0=0° 1=90° 2=180° 3=270°
+-disp_rotate = 1
++disp_rotate = 0
+ tp_rotate = 0
+-video_rotate = 2
+-# 视频 layer：DE 屏坐标（竖屏）
+-video_screen_w = 800
+-video_screen_h = 1280
+-video_small_x = 150
+-video_small_y = 360
+-video_small_w = 320
+-video_small_h = 570
+-
+-# 阳光ktv 3套配置（UI/逻辑 1280x800，与表一致）
++video_rotate = 0
++# 视频 layer：DE 屏坐标（与 FB 1280x800 一致）
++video_screen_w = 1280
++video_screen_h = 800
++video_small_x = 350
++video_small_y = 150
++video_small_w = 570
++video_small_h = 320
++
++# 阳光ktv 3套配置（UI/DE 1280x800，由旧 90° DE 坐标反算）
+ # 首页视频
+-sun_video_home_x = 128
+-sun_video_home_y = 524
+-sun_video_home_w = 404
+-sun_video_home_h = 719
++sun_video_home_x = 37
++sun_video_home_y = 128
++sun_video_home_w = 719
++sun_video_home_h = 404
+ # 左下小窗
+-sun_video_lb_x = 541
+-sun_video_lb_y = 870
+-sun_video_lb_w = 210
+-sun_video_lb_h = 373
++sun_video_lb_x = 37
++sun_video_lb_y = 541
++sun_video_lb_w = 373
++sun_video_lb_h = 210
+ # 全屏
+-sun_video_screen_w = 800
+-sun_video_screen_h = 1280
++sun_video_screen_w = 1280
++sun_video_screen_h = 800
+ 
+ [s_standard]
+ bass = 0
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_orient_config.h b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_orient_config.h
+index 7b7c61377..224193703 100644
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_orient_config.h
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/lv_orient_config.h
+@@ -12,8 +12,8 @@ typedef struct {
+ #define LV_ORIENT_SECTION           "display"
+ #define LV_ORIENT_KEY_DISP_ROTATE   "disp_rotate"
+ #define LV_ORIENT_KEY_TP_ROTATE     "tp_rotate"
+-#define LV_ORIENT_DEFAULT_DISP      3U
+-#define LV_ORIENT_DEFAULT_TP        2U
++#define LV_ORIENT_DEFAULT_DISP      0U
++#define LV_ORIENT_DEFAULT_TP        0U
+ 
+ int lv_orient_config_load(lv_orient_config_t *cfg);
+ 

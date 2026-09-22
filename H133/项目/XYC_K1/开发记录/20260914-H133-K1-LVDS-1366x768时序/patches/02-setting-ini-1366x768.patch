@@ -1,0 +1,40 @@
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/setting.ini
+@@ -61,20 +61,21 @@
+ sound_output = 5
+ 
+ [display]
+-# LVDS 1280x800 横屏：UI 不软旋，触摸 180° 在 LVGL 里转
++# LVDS 1366x768 横屏：UI 不软旋，触摸 180° 在 LVGL 里转
++# 原 1280x800：video_screen_w/h=1280/800，sun_video_screen_w/h=1280/800
+ # 0=0° 1=90° 2=180° 3=270°
+ disp_rotate = 0
+ tp_rotate = 2
+ video_rotate = 0
+-# 视频 layer：DE 屏坐标（与 FB 1280x800 一致）
+-video_screen_w = 1280
+-video_screen_h = 800
++# 视频 layer：DE 屏坐标（与 FB 1366x768 一致）
++video_screen_w = 1366
++video_screen_h = 768
+ video_small_x = 350
+ video_small_y = 150
+ video_small_w = 570
+ video_small_h = 320
+ 
+-# 阳光ktv 3套配置（UI/DE 1280x800，由旧 90° DE 坐标反算）
++# 阳光ktv 3套配置（全屏跟新 FB；小窗坐标暂沿用 1280x800 布局）
+ # 首页视频
+ sun_video_home_x = 37
+ sun_video_home_y = 128
+@@ -86,8 +87,8 @@
+ sun_video_lb_w = 373
+ sun_video_lb_h = 210
+ # 全屏
+-sun_video_screen_w = 1280
+-sun_video_screen_h = 800
++sun_video_screen_w = 1366
++sun_video_screen_h = 768
+ 
+ [s_standard]
+ bass = 0

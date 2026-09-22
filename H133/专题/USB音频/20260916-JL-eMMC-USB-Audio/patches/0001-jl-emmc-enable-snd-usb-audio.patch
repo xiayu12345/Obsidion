@@ -1,0 +1,64 @@
+From: AI-tq
+Subject: [PATCH] p1_emmc_JL_M101: enable snd-usb-audio for 2.4G mic dongle
+
+Enable CONFIG_SND_USB / CONFIG_SND_USB_AUDIO so Tmall 2.4G receiver
+(Audio Control + Streaming interfaces) can expose ALSA capture on
+H133. Also enable HWDEP/RAWMIDI selected by the USB audio driver.
+
+Kernel build loads openwrt/bsp_defconfig; linux-5.4/config-5.4 is kept
+in sync as the full config snapshot.
+
+MEDIA_CONTROLLER is off on this board; do not force
+CONFIG_SND_USB_AUDIO_USE_MEDIA_CONTROLLER.
+
+---
+ device/.../p1_emmc_JL_M101/linux-5.4/config-5.4   | 16 +++++++++++++++-
+ device/.../p1_emmc_JL_M101/openwrt/bsp_defconfig  |  4 ++++
+ 2 files changed
+
+diff --git a/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/config-5.4 b/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/config-5.4
+index 1111111..2222222 100644
+--- a/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/config-5.4
++++ b/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/config-5.4
+@@ -2580,6 +2580,8 @@ CONFIG_SND=y
+ CONFIG_SND_TIMER=y
+ CONFIG_SND_PCM=y
+ CONFIG_SND_DMAENGINE_PCM=y
++CONFIG_SND_HWDEP=y
++CONFIG_SND_RAWMIDI=y
+ CONFIG_SND_JACK=y
+ CONFIG_SND_JACK_INPUT_DEV=y
+ # CONFIG_SND_MIXER_OSS is not set
+@@ -2603,7 +2605,19 @@ CONFIG_SND_HDA_PREALLOC_SIZE=64
+ # CONFIG_SND_ARM is not set
+ # CONFIG_SND_SPI is not set
+-# CONFIG_SND_USB is not set
++CONFIG_SND_USB=y
++CONFIG_SND_USB_AUDIO=y
++# CONFIG_SND_USB_UA101 is not set
++# CONFIG_SND_USB_CAIAQ is not set
++# CONFIG_SND_USB_6FIRE is not set
++# CONFIG_SND_USB_HIFACE is not set
++# CONFIG_SND_BCD2000 is not set
++# CONFIG_SND_USB_POD is not set
++# CONFIG_SND_USB_PODHD is not set
++# CONFIG_SND_USB_TONEPORT is not set
++# CONFIG_SND_USB_VARIAX is not set
+ CONFIG_SND_SOC=y
+ CONFIG_SND_SOC_GENERIC_DMAENGINE_PCM=y
+ # CONFIG_SND_SOC_AMD_ACP is not set
+diff --git a/device/config/chips/h133/configs/p1_emmc_JL_M101/openwrt/bsp_defconfig b/device/config/chips/h133/configs/p1_emmc_JL_M101/openwrt/bsp_defconfig
+index 1111111..2222222 100644
+--- a/device/config/chips/h133/configs/p1_emmc_JL_M101/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_emmc_JL_M101/openwrt/bsp_defconfig
+@@ -152,6 +152,10 @@ CONFIG_DISP2_SUNXI_COMPOSER=y
+ # CONFIG_DISP2_SUNXI_DEVICE_OFF_ON_RELEASE is not set
+ CONFIG_SOUND=y
+ CONFIG_SND=y
++CONFIG_SND_HWDEP=y
++CONFIG_SND_RAWMIDI=y
++CONFIG_SND_USB=y
++CONFIG_SND_USB_AUDIO=y
+ CONFIG_SND_SOC=y
+ CONFIG_SND_SUNXI_SOC_SUN8IW20_CODEC=y
+ CONFIG_SND_SUNXI_SOC_SIMPLE_CARD=y

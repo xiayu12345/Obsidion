@@ -1,0 +1,124 @@
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -1071,14 +1071,15 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1280>;
+-	fb0_height               = <800>;
++	/* 原 1280x800：fb0_width=<1280>; fb0_height=<800>; */
++	fb0_width                = <1366>;
++	fb0_height               = <768>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+ 	fb1_height               = <0>;
+ 	chn_cfg_mode             = <1>;
+-	dual_display_rot         = <0>; /* LVDS 已是 1280x800 横屏 */
++	dual_display_rot         = <0>; /* LVDS 1366x768 横屏 */
+ 
+ 	disp_para_zone           = <1>;
+ };
+@@ -1144,16 +1145,21 @@
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	/* K1 LVDS 1280x800：时序按厂 fex；开屏只做 LCD-EN + PWM */
++	/* 原 K1 LVDS 1280x800 参数备份：
++	 * lcd_x=<1280>; lcd_y=<800>; lcd_dclk_freq=<67>;
++	 * lcd_hbp=<20>; lcd_ht=<1380>; lcd_hspw=<10>;
++	 * lcd_vbp=<10>; lcd_vt=<814>; lcd_vspw=<5>;
++	 */
++	/* K1 LVDS 1366x768：hbp=88=40+48（全志 hbp=HBP+HSW）；PWM/线序不变 */
+ 	lcd_driver_name     = "xyc_k1_lvds";
+ 	lcd_backlight       = <210>;
+ 	lcd_if              = <3>;          /* LVDS */
+ 
+-	lcd_x               = <1280>;
+-	lcd_y               = <800>;
++	lcd_x               = <1366>;
++	lcd_y               = <768>;
+ 	lcd_width           = <150>;
+ 	lcd_height          = <94>;
+-	lcd_dclk_freq       = <67>;
++	lcd_dclk_freq       = <70>;
+ 
+ 	/* K1：PB12 PWM0 → PT4117B EN，原理图 50kHz；pol=0 高有效 */
+ 	lcd_pwm_used        = <1>;
+@@ -1162,12 +1168,12 @@
+ 	lcd_pwm_pol         = <0>;
+ 	lcd_pwm_max_limit   = <255>;
+ 
+-	lcd_hbp             = <20>;
+-	lcd_ht              = <1380>;
+-	lcd_hspw            = <10>;
+-	lcd_vbp             = <10>;
+-	lcd_vt              = <814>;
+-	lcd_vspw            = <5>;
++	lcd_hbp             = <88>;
++	lcd_ht              = <1492>;
++	lcd_hspw            = <48>;
++	lcd_vbp             = <8>;
++	lcd_vt              = <782>;
++	lcd_vspw            = <4>;
+ 
+ 	lcd_lvds_if         = <0>;
+ 	lcd_lvds_colordepth = <1>;          /* 6bit */
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
+@@ -322,8 +322,9 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <1280>;
+-	fb0_height               = <800>;
++	/* 原 1280x800：fb0_width=<1280>; fb0_height=<800>; */
++	fb0_width                = <1366>;
++	fb0_height               = <768>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+@@ -336,28 +337,33 @@
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	/* K1 LVDS 1280x800：时序按厂 fex；开屏只做 LCD-EN + PWM */
++	/* 原 K1 LVDS 1280x800 参数备份：
++	 * lcd_x=<1280>; lcd_y=<800>; lcd_dclk_freq=<67>;
++	 * lcd_hbp=<20>; lcd_ht=<1380>; lcd_hspw=<10>;
++	 * lcd_vbp=<10>; lcd_vt=<814>; lcd_vspw=<5>;
++	 */
++	/* K1 LVDS 1366x768：hbp=88=40+48（全志 hbp=HBP+HSW）；PWM/线序不变 */
+ 	lcd_driver_name     = "xyc_k1_lvds";
+ 	lcd_backlight       = <210>;
+ 	lcd_if              = <3>;
+ 
+-	lcd_x               = <1280>;
+-	lcd_y               = <800>;
++	lcd_x               = <1366>;
++	lcd_y               = <768>;
+ 	lcd_width           = <150>;
+ 	lcd_height          = <94>;
+-	lcd_dclk_freq       = <67>;
++	lcd_dclk_freq       = <70>;
+ 
+ 	lcd_pwm_used        = <1>;
+ 	lcd_pwm_ch          = <0>;
+ 	lcd_pwm_freq        = <50000>;
+ 	lcd_pwm_pol         = <0>;
+ 	lcd_pwm_max_limit   = <255>;
+-	lcd_hbp             = <20>;
+-	lcd_ht              = <1380>;
+-	lcd_hspw            = <10>;
+-	lcd_vbp             = <10>;
+-	lcd_vt              = <814>;
+-	lcd_vspw            = <5>;
++	lcd_hbp             = <88>;
++	lcd_ht              = <1492>;
++	lcd_hspw            = <48>;
++	lcd_vbp             = <8>;
++	lcd_vt              = <782>;
++	lcd_vspw            = <4>;
+ 
+ 	lcd_lvds_if         = <0>;
+ 	lcd_lvds_colordepth = <1>;

@@ -1,0 +1,130 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -57,7 +57,8 @@
+ };
+ 
+ &pio {
+-	vcc-pg-supply = <&reg_pio1_8>;
++	/* K1：原理图 RP29=0Ω，VCC-PG = VCC-3V3 */
++	vcc-pg-supply = <&reg_pio3_3>;
+ 
+ 	sdc0_pins_a: sdc0@0 {
+ 		allwinner,pins = "PF0", "PF1", "PF2",
+@@ -141,10 +142,7 @@
+ 		function = "gpio_in";
+ 	};
+ 
+-	wlan_pins_a:wlan@0 {
+-		pins = "PG11";
+-		function = "clk_fanout1";
+-	};
++	/* K1：PG11 是 I2S1-MCLK，不再给 WiFi 32k fanout */
+ 
+ 	uart0_pins_a: uart0_pins@0 {  /* For P1 board */
+ 		pins = "PB8", "PB9";
+@@ -319,9 +317,9 @@
+ 		bias-disable;
+ 	};
+ 
+-	/* TP-H10 AC107: I2S1 LRCK/BCLK/DIN on PG12-PG14 (PG11=MCLK conflicts with WiFi) */
++	/* H133-K1 I2S1：MCLK/LRCK/BCLK + DIN0/DOUT0 = PG11–PG15 */
+ 	tp_h10_i2s1_pins_a: tp_h10_i2s1@0 {
+-		pins = "PG12", "PG13";
++		pins = "PG11", "PG12", "PG13";
+ 		function = "i2s1";
+ 		drive-strength = <20>;
+ 		bias-disable;
+@@ -334,8 +332,15 @@
+ 		bias-disable;
+ 	};
+ 
++	tp_h10_i2s1_dout_a: tp_h10_i2s1_dout@0 {
++		pins = "PG15";
++		function = "i2s1_dout";
++		drive-strength = <20>;
++		bias-disable;
++	};
++
+ 	tp_h10_i2s1_pins_b: tp_h10_i2s1_sleep@0 {
+-		pins = "PG12", "PG13";
++		pins = "PG11", "PG12", "PG13";
+ 		function = "io_disabled";
+ 		drive-strength = <20>;
+ 		bias-disable;
+@@ -348,6 +353,13 @@
+ 		bias-disable;
+ 	};
+ 
++	tp_h10_i2s1_dout_b: tp_h10_i2s1_dout_sleep@0 {
++		pins = "PG15";
++		function = "io_disabled";
++		drive-strength = <20>;
++		bias-disable;
++	};
++
+ 	i2s2_pins_a: daudio2@0 {
+ 		/* I2S_PIN: MCLK, BCLK, LRCK */
+ 		pins = "PF6", "PF3", "PF5";
+@@ -849,10 +861,7 @@
+ 
+ 		wlan: wlan@0 {
+ 			compatible    = "allwinner,sunxi-wlan";
+-			pinctrl-0 = <&wlan_pins_a>;
+-			pinctrl-names = "default";
+-			clock-names = "32k-fanout1";
+-			clocks = <&ccu CLK_FANOUT1_OUT>;
++			/* PG11 已给 I2S1-MCLK，不再挂 32k fanout */
+ 			wlan_busnum    = <0x1>;
+ 			wlan_regon    = <&pio PG 17 GPIO_ACTIVE_HIGH>;
+ 			wlan_hostwake  = <&pio PG 10 GPIO_ACTIVE_HIGH>;
+@@ -866,8 +875,6 @@
+ 
+ 		bt: bt@0 {
+ 			compatible    = "allwinner,sunxi-bt";
+-			pinctrl-0 = <&wlan_pins_a>;
+-			pinctrl-names = "default";
+ 			clock-names = "32k-fanout1";
+ 			clocks = <&ccu CLK_FANOUT1_OUT>;
+ 			/*bt_power_num = <0x01>;*/
+@@ -1362,32 +1369,31 @@
+ 
+ &i2s1_plat {
+ 	tdm-num		= <1>;
+-	/* capture-only (AC107); tx-pin required by sunxi I2S driver */
++	/* K1：I2S1 PG11–PG15 接 BP1048 DSP；tx=播放 DOUT0，rx=回采 DIN0 */
+ 	tx-pin		= <0>;
+ 	rx-pin		= <0>;
+ 	pinctrl-used;
+ 	pinctrl-names	= "default", "sleep";
+-	pinctrl-0	= <&tp_h10_i2s1_pins_a &tp_h10_i2s1_din_a>;
+-	pinctrl-1	= <&tp_h10_i2s1_pins_b &tp_h10_i2s1_din_b>;
+-	rx-sync-en;
++	pinctrl-0	= <&tp_h10_i2s1_pins_a &tp_h10_i2s1_din_a &tp_h10_i2s1_dout_a>;
++	pinctrl-1	= <&tp_h10_i2s1_pins_b &tp_h10_i2s1_din_b &tp_h10_i2s1_dout_b>;
+ 	status		= "okay";
+ };
+ 
+ &i2s1_mach {
+ 	soundcard-mach,format		= "i2s";
+-	soundcard-mach,frame-master	= <&i2s1_cpu>;
+-	soundcard-mach,bitclock-master	= <&i2s1_cpu>;
++	/* K1：H133 I2S1 从机，BCLK/LRCK 由 BP1048 出 */
++	soundcard-mach,frame-master	= <&i2s1_codec>;
++	soundcard-mach,bitclock-master	= <&i2s1_codec>;
+ 	soundcard-mach,slot-num		= <2>;
+ 	soundcard-mach,slot-width	= <32>;
+-	soundcard-mach,capture-only;
++	/* DSP 无 codec 驱动，codec 节点留空走 dummy；CPU 只出 MCLK 作参考 */
+ 	status		= "okay";
+ 	i2s1_cpu: soundcard-mach,cpu {
+ 		sound-dai = <&i2s1_plat>;
+ 		soundcard-mach,pll-fs	= <1>;
+-		soundcard-mach,mclk-fs	= <0>;
++		soundcard-mach,mclk-fs	= <256>;
+ 	};
+ 	i2s1_codec: soundcard-mach,codec {
+-		sound-dai = <&ac107_0>;
+ 	};
+ };
+ 

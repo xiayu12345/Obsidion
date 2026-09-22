@@ -1,0 +1,836 @@
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/init.d/rc.final b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/init.d/rc.final
+index 91b93e71f..5d947955f 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/init.d/rc.final
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/init.d/rc.final
+@@ -51,8 +51,8 @@ if [ -x /etc/wifi/load_wifi_modules.sh ]; then
+ 	done
+ fi
+ 
+-# TP-H10: MCU SPDIF mode first, then ALSA playback route (spdif|hdmi)
+-/usr/bin/mcu_spdif_init.sh &
++# K1: BP1048 UART（独立协议，不走 mcu_spdif_init）
++/usr/bin/dsp1048.sh boot &
+ sleep 4
+ /usr/bin/audio_route.sh auto
+ 
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/mcu_spdif_init.sh b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/mcu_spdif_init.sh
+index b5db9cd05..de28c8268 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/mcu_spdif_init.sh
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/mcu_spdif_init.sh
+@@ -1,107 +1,6 @@
+ #!/bin/sh
+-# TP-H10: UART3 (/dev/ttyS3) init external amp MCU for SPDIF playback (protocol v2.13)
+-
+-UART_DEV=/dev/ttyS3
+-LOCK_FILE=/var/lock/ttyS3.mcu
+-INIT_DONE=/tmp/mcu_spdif_init.done
+-MCU_PARAMS_PATH=/usr/share/mix_station/参数.txt
+-LOG_TAG="[mcu_spdif]"
+-
+-log() {
+-	echo "$LOG_TAG $*"
+-}
+-
+-wait_sndowa() {
+-	n=0
+-	while [ $n -lt 30 ]; do
+-		if grep -q sndowa /proc/asound/cards 2>/dev/null; then
+-			log "sndowa ready"
+-			return 0
+-		fi
+-		n=$((n + 1))
+-		sleep 1
+-	done
+-	log "warn: sndowa not found, continue anyway"
+-	return 1
+-}
+-
+-open_uart() {
+-	if [ ! -e "$UART_DEV" ]; then
+-		log "error: $UART_DEV missing"
+-		return 1
+-	fi
+-	stty -F "$UART_DEV" 115200 cs8 -cstopb -parenb raw -echo 2>/dev/null || {
+-		log "error: stty $UART_DEV failed"
+-		return 1
+-	}
+-	return 0
+-}
+-
+-mcu_gap() {
+-	usleep 30000 2>/dev/null || true
+-}
+-
+-read_master_volume() {
+-	vol=2
+-	if [ -n "$DESK_MCU_VOLUME" ]; then
+-		vol=$DESK_MCU_VOLUME
+-	elif [ -f "$MCU_PARAMS_PATH" ]; then
+-		v=$(grep -o '"master_volume"[[:space:]]*:[[:space:]]*[0-9][0-9]*' "$MCU_PARAMS_PATH" 2>/dev/null \
+-			| head -1 | sed 's/.*:[[:space:]]*//')
+-		[ -n "$v" ] && vol=$v
+-	fi
+-	if [ "$vol" -lt 0 ] 2>/dev/null; then vol=0; fi
+-	if [ "$vol" -gt 32 ] 2>/dev/null; then vol=32; fi
+-	echo "$vol"
+-}
+-
+-mcu_send_volume() {
+-	vol=$1
+-	cs=$((0x05 ^ 0x01 ^ 0x01 ^ 0x01 ^ vol))
+-	awk -v v="$vol" -v c="$cs" 'BEGIN {
+-		printf "%c%c%c%c%c%c%c", 175, 85, 5, 1, 1, 1, v + 0
+-		printf "%c", c + 0
+-	}' > "$UART_DEV"
+-}
+-
+-rm -f "$INIT_DONE"
+-mkdir -p /var/lock 2>/dev/null
+-
+-(
+-	flock -x 9 || {
+-		log "error: flock $LOCK_FILE failed"
+-		exit 1
+-	}
+-
+-	wait_sndowa
+-	open_uart || exit 1
+-
+-	log "init_start"
+-	printf '\xAF\x55\x05\x01\x01\x07\x00\x02' > "$UART_DEV"
+-	mcu_gap
+-	sleep 1
+-
+-	log "unmute"
+-	printf '\xAF\x55\x05\x01\x01\x02\x09\x0E' > "$UART_DEV"
+-	mcu_gap
+-
+-	MASTER_VOL=$(read_master_volume)
+-	log "master volume (priority) vol=$MASTER_VOL"
+-	mcu_send_volume "$MASTER_VOL"
+-	mcu_gap
+-
+-	# 切光纤；desk 稍后读 参数.txt 再发全量参数
+-
+-	log "switch SPDIF mode (0x60)"
+-	printf '\xAF\x55\x05\x01\x01\x02\x60\x67' > "$UART_DEV"
+-	mcu_gap
+-
+-	log "init_end"
+-	printf '\xAF\x55\x05\x01\x01\x07\x01\x03' > "$UART_DEV"
+-	mcu_gap
+-
+-	log "MCU switched to SPDIF mode"
+-) 9>"$LOCK_FILE" || exit 1
+-
+-touch "$INIT_DONE"
+-log "done marker $INIT_DONE"
++# H133-K1 没有 SPDIF 功放 MCU，不得发送旧 AF55 协议。
++# 通用层会拷入同名脚本；本文件覆盖它并直接退出。
++# DSP 初始化由 rc.final 调用 /usr/bin/dsp1048.sh boot。
++echo "[mcu_spdif] unused on K1, skip (use dsp1048.sh)"
++exit 0
+diff --git a/platform/thirdparty/gui/lvgl-8/app/MixStation/src/amp_mcu/amp_mcu_uart.c b/platform/thirdparty/gui/lvgl-8/app/MixStation/src/amp_mcu/amp_mcu_uart.c
+index e75719dd0..7e345f442 100644
+--- a/platform/thirdparty/gui/lvgl-8/app/MixStation/src/amp_mcu/amp_mcu_uart.c
++++ b/platform/thirdparty/gui/lvgl-8/app/MixStation/src/amp_mcu/amp_mcu_uart.c
+@@ -65,6 +65,11 @@ int amp_uart_open(const char *dev, int baud, int timeout_ms)
+ {
+     (void)timeout_ms;
+ 
++    if (access("/etc/dsp1048.protocol", F_OK) == 0) {
++        /* K1 BP1048 是 1500000/AA A6，禁止把 ttyS3 改回 115200 AF55 */
++        return AMP_MCU_ERR_STATE;
++    }
++
+     if (dev == NULL || dev[0] == '\0') {
+         return AMP_MCU_ERR_INVALID_ARG;
+     }
+diff --git a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/custom/desk_mcu_quick.c b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/custom/desk_mcu_quick.c
+index d0aa6f9ce..44ef9486e 100644
+--- a/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/custom/desk_mcu_quick.c
++++ b/platform/thirdparty/gui/lvgl-8/app_depend/desk_huiyin/src/custom/desk_mcu_quick.c
+@@ -1,7 +1,10 @@
+ /*
+- * desk 功放 MCU 上电初始化（/dev/ttyS3，115200）。
+- * 读 /usr/share/mix_station/参数.txt 按协议下发；无有效文件时回退 DESK_MCU_VOLUME。
+- * 与 mcu_spdif_init.sh 共用 flock；spdif 完成后按 参数.txt 直发命令（不重复 init_begin/end）。
++ * desk 功放 UART 上电初始化（/dev/ttyS3）。
++ * K1（存在 /etc/dsp1048.protocol）：BP1048，1500000，AA A6/AA 55 … EF。
++ * 其它板：旧功放 MCU，115200，AF 55 协议 v2.13。
++ * 读 /usr/share/mix_station/参数.txt 下发；无有效文件时回退 DESK_MCU_VOLUME。
++ * K1：ttyS3 由 dsp1048.sh 守护进程常开；desk 只往 /tmp/dsp1048.cmd 写，不开关串口。
++ * 旧板与 mcu_spdif_init.sh 共用 /var/lock/ttyS3.mcu。
+  */
+ #include "desk_mcu_quick.h"
+ #include "desk_log.h"
+@@ -22,6 +25,10 @@
+ #define DESK_MCU_PARAMS_PATH   "/usr/share/mix_station/参数.txt"
+ #define MCU_UART_LOCK_PATH     "/var/lock/ttyS3.mcu"
+ #define MCU_SPDIF_INIT_DONE    "/tmp/mcu_spdif_init.done"
++#define DSP1048_UART_LOCK_PATH "/var/lock/ttyS3.dsp1048"
++#define DSP1048_INIT_DONE      "/tmp/dsp1048_init.done"
++#define DSP1048_CMD_FIFO       "/tmp/dsp1048.cmd"
++#define DSP1048_READY_FILE     "/tmp/dsp1048.ready"
+ #define MCU_HEAD0              0xAF
+ #define MCU_HEAD1              0x55
+ #define MCU_GRP_ID             0x01
+@@ -32,7 +39,11 @@
+ #define MCU_DATA_EQ            0x05
+ #define MCU_DATA_INIT          0x07
+ #define MCU_CTRL_MUTE_OFF      0x09
+-#define MCU_CTRL_OPTICAL       0x60  /* 光纤输入，与 mcu_spdif_init.sh 一致 */
++#define MCU_CTRL_OPTICAL       0x60  /* 光纤输入，仅旧 MCU 协议 */
++#define DSP1048_PROTOCOL_PATH  "/etc/dsp1048.protocol"
++#ifndef B1500000
++#define B1500000               0010012
++#endif
+ #define MCU_FRAME_GAP_US       25000
+ #define MCU_BOOTSTRAP_RETRY_MAX  24
+ #define MCU_BOOTSTRAP_RETRY_US   500000
+@@ -66,17 +77,40 @@ typedef struct {
+ static int g_mcu_fd = -1;
+ static int g_uart_lock_fd = -1;
+ static pthread_mutex_t g_vol_mtx = PTHREAD_MUTEX_INITIALIZER;
++
++static int desk_mcu_is_dsp1048(void)
++{
++    static int cached = -1;
++
++    if (cached < 0) {
++        cached = (access(DSP1048_PROTOCOL_PATH, F_OK) == 0) ? 1 : 0;
++    }
++    return cached;
++}
++
++static const char *desk_mcu_lock_path(void)
++{
++    return desk_mcu_is_dsp1048() ? DSP1048_UART_LOCK_PATH : MCU_UART_LOCK_PATH;
++}
++
++static const char *desk_mcu_init_done_path(void)
++{
++    return desk_mcu_is_dsp1048() ? DSP1048_INIT_DONE : MCU_SPDIF_INIT_DONE;
++}
++
+ static int g_vol_pending = -1;
+ static int g_vol_persist;
+ static int g_vol_busy;
+ 
+ static int desk_mcu_uart_lock(void)
+ {
++    const char *lock_path = desk_mcu_lock_path();
++
+     if (g_uart_lock_fd < 0) {
+-        g_uart_lock_fd = open(MCU_UART_LOCK_PATH, O_CREAT | O_RDWR, 0644);
++        g_uart_lock_fd = open(lock_path, O_CREAT | O_RDWR, 0644);
+         if (g_uart_lock_fd < 0) {
+             DESK_LOG_M("desk_mcu", "lock open %s failed: %s",
+-                       MCU_UART_LOCK_PATH, strerror(errno));
++                       lock_path, strerror(errno));
+             return -1;
+         }
+     }
+@@ -95,19 +129,25 @@ static void desk_mcu_uart_unlock(void)
+     }
+ }
+ 
+-static int desk_mcu_wait_spdif_init(void)
++static int desk_mcu_wait_uart_init(void)
+ {
++    const char *done_path = desk_mcu_init_done_path();
+     int i;
+ 
+     for (i = 0; i < MCU_SPDIF_WAIT_MAX; ++i) {
+-        if (access(MCU_SPDIF_INIT_DONE, F_OK) == 0) {
+-            DESK_LOG_M("desk_mcu", "mcu_spdif_init done, start bootstrap");
++        if (access(done_path, F_OK) == 0) {
++            DESK_LOG_M("desk_mcu", "%s ready, start bootstrap", done_path);
++            return 0;
++        }
++        if (desk_mcu_is_dsp1048() && access(DSP1048_READY_FILE, F_OK) == 0 &&
++            access(DSP1048_CMD_FIFO, F_OK) == 0) {
++            DESK_LOG_M("desk_mcu", "%s ready, start bootstrap", DSP1048_READY_FILE);
+             return 0;
+         }
+         usleep(MCU_SPDIF_WAIT_US);
+     }
+ 
+-    DESK_LOG_M("desk_mcu", "warn: %s missing, bootstrap anyway", MCU_SPDIF_INIT_DONE);
++    DESK_LOG_M("desk_mcu", "warn: %s missing, bootstrap anyway", done_path);
+     return -1;
+ }
+ 
+@@ -132,11 +172,42 @@ static const char *desk_mcu_uart_dev(void)
+     return dev;
+ }
+ 
++static int desk_mcu_open_cmdfifo(void)
++{
++    int fd;
++    int i;
++    int fl;
++
++    for (i = 0; i < 50; i++) {
++        fd = open(DSP1048_CMD_FIFO, O_WRONLY | O_NONBLOCK);
++        if (fd >= 0) {
++            fl = fcntl(fd, F_GETFL, 0);
++            if (fl >= 0) {
++                (void)fcntl(fd, F_SETFL, fl & ~O_NONBLOCK);
++            }
++            DESK_LOG_M("desk_mcu", "dsp1048 tx via %s (uart held by daemon)",
++                       DSP1048_CMD_FIFO);
++            return fd;
++        }
++        if (errno != ENXIO && errno != ENOENT) {
++            DESK_LOG_M("desk_mcu", "cmd fifo open failed: %s", strerror(errno));
++            return -1;
++        }
++        usleep(100000);
++    }
++    DESK_LOG_M("desk_mcu", "cmd fifo not ready: %s", DSP1048_CMD_FIFO);
++    return -1;
++}
++
+ static int desk_mcu_uart_open_one(const char *dev)
+ {
+     struct termios tio;
+     int fd;
+ 
++    if (desk_mcu_is_dsp1048()) {
++        return desk_mcu_open_cmdfifo();
++    }
++
+     if (!dev || !dev[0]) {
+         return -1;
+     }
+@@ -167,7 +238,7 @@ static int desk_mcu_uart_open_one(const char *dev)
+     }
+ 
+     tcflush(fd, TCIOFLUSH);
+-    DESK_LOG_M("desk_mcu", "uart ok: %s", dev);
++    DESK_LOG_M("desk_mcu", "uart ok: %s baud=115200", dev);
+     return fd;
+ }
+ 
+@@ -186,8 +257,10 @@ static int desk_mcu_uart_ensure_open(void)
+         return 0;
+     }
+ 
+-    if (desk_mcu_uart_lock() != 0) {
+-        return -1;
++    if (!desk_mcu_is_dsp1048()) {
++        if (desk_mcu_uart_lock() != 0) {
++            return -1;
++        }
+     }
+ 
+     g_mcu_fd = desk_mcu_uart_open_one(desk_mcu_uart_dev());
+@@ -231,7 +304,9 @@ static int desk_mcu_send_payload(uint8_t data0, const uint8_t *payload, size_t p
+     frame[6U + payload_len] = desk_mcu_xor(&frame[2], 4U + payload_len);
+ 
+     w = write(g_mcu_fd, frame, frame_len);
+-    tcdrain(g_mcu_fd);
++    if (!desk_mcu_is_dsp1048()) {
++        tcdrain(g_mcu_fd);
++    }
+     usleep(MCU_FRAME_GAP_US);
+ 
+     if (w != (ssize_t)frame_len) {
+@@ -262,7 +337,7 @@ static uint8_t desk_mcu_volume_from_env(void)
+     long v;
+ 
+     if (!s || !s[0]) {
+-        return 3;
++        return desk_mcu_is_dsp1048() ? 16 : 3;
+     }
+ 
+     v = strtol(s, NULL, 10);
+@@ -416,6 +491,89 @@ static int desk_mcu_send_control(uint8_t code)
+     return desk_mcu_send_payload(MCU_DATA_CONTROL, &code, 1U);
+ }
+ 
++static int desk_mcu_dsp1048_cmd(uint8_t cmd, const uint8_t *data, uint8_t dlen)
++{
++    uint8_t frame[12];
++    size_t n;
++    ssize_t w;
++
++    if (g_mcu_fd < 0) {
++        return -1;
++    }
++    if (dlen > 4U) {
++        return -1;
++    }
++
++    frame[0] = 0xAA;
++    frame[1] = 0xA6;
++    frame[2] = cmd;
++    frame[3] = dlen;
++    if (dlen > 0U && data != NULL) {
++        memcpy(&frame[4], data, dlen);
++    }
++    frame[4U + dlen] = 0xEF;
++    n = 5U + (size_t)dlen;
++
++    w = write(g_mcu_fd, frame, n);
++    if (!desk_mcu_is_dsp1048()) {
++        tcdrain(g_mcu_fd);
++    }
++    usleep(MCU_FRAME_GAP_US);
++    if (w != (ssize_t)n) {
++        DESK_LOG_M("desk_mcu", "dsp1048 write cmd=0x%02x failed", cmd);
++        return -1;
++    }
++    DESK_LOG_M("desk_mcu", "dsp1048 tx cmd=0x%02x dlen=%u", cmd, dlen);
++    return 0;
++}
++
++static int desk_mcu_dsp1048_query(uint8_t q) __attribute__((unused));
++static int desk_mcu_dsp1048_query(uint8_t q)
++{
++    uint8_t frame[4] = { 0xAA, 0x55, q, 0xEF };
++    ssize_t w;
++
++    if (g_mcu_fd < 0) {
++        return -1;
++    }
++    w = write(g_mcu_fd, frame, sizeof(frame));
++    if (!desk_mcu_is_dsp1048()) {
++        tcdrain(g_mcu_fd);
++    }
++    usleep(MCU_FRAME_GAP_US);
++    return (w == (ssize_t)sizeof(frame)) ? 0 : -1;
++}
++
++static uint8_t desk_mcu_u8_min(uint8_t v, uint8_t maxv)
++{
++    return (v > maxv) ? maxv : v;
++}
++
++static int desk_mcu_dsp1048_volume(uint8_t vol)
++{
++    uint8_t data[2];
++
++    data[0] = 0x10;
++    data[1] = desk_mcu_u8_min(vol, 32U);
++    return desk_mcu_dsp1048_cmd(0x10, data, 2U);
++}
++
++static int desk_mcu_dsp1048_bootstrap(const desk_mcu_params_t *p)
++{
++    int r = 0;
++    uint8_t v;
++
++    /* DSP 的 I2S 输入无需模式命令；这里只补解静音和音量。 */
++    if (!p->mute) {
++        v = 0x00;
++        r = desk_mcu_dsp1048_cmd(0x02, &v, 1U);
++    }
++    if (r == 0) {
++        r = desk_mcu_dsp1048_volume(p->master_volume);
++    }
++    return r;
++}
++
+ static int desk_mcu_send_eq(const desk_mcu_params_t *p)
+ {
+     uint8_t payload[1U + MCU_EQ_BANDS];
+@@ -437,7 +595,11 @@ static int desk_mcu_bootstrap_once(const desk_mcu_params_t *p)
+ {
+     int r = 0;
+ 
+-    /* mcu_spdif_init 已做过 init_begin/end；与调音台滑条一致，直接发命令，不再包 init 会话 */
++    if (desk_mcu_is_dsp1048()) {
++        return desk_mcu_dsp1048_bootstrap(p);
++    }
++
++    /* 旧 MCU：mcu_spdif_init 已做过 init_begin/end；直接发命令 */
+     if (!p->mute) {
+         r = desk_mcu_send_control(MCU_CTRL_MUTE_OFF);
+     }
+@@ -514,7 +676,7 @@ int desk_mcu_apply_startup_volume(void)
+         DESK_LOG_M("desk_mcu", "fallback env/default vol=%u", params.master_volume);
+     }
+ 
+-    desk_mcu_wait_spdif_init();
++    desk_mcu_wait_uart_init();
+ 
+     for (attempt = 0; attempt < MCU_BOOTSTRAP_RETRY_MAX; attempt++) {
+         if (attempt > 0) {
+@@ -526,8 +688,8 @@ int desk_mcu_apply_startup_volume(void)
+         }
+ 
+         r = desk_mcu_bootstrap_once(&params);
+-        if (r == 0) {
+-            /* MCU 可能在批量命令后才稳定，1s 后再发一次主音量 */
++        if (r == 0 && !desk_mcu_is_dsp1048()) {
++            /* 旧 MCU：批量命令后 1s 再确认音量。K1 不重发，避免串口连打。 */
+             usleep(1000000);
+             r = desk_mcu_send_payload(MCU_DATA_VOLUME, &params.master_volume, 1U);
+             if (r == 0) {
+@@ -665,7 +827,11 @@ static void *desk_mcu_volume_worker(void *arg)
+         pthread_mutex_unlock(&g_vol_mtx);
+ 
+         if (uart_ok) {
+-            (void)desk_mcu_send_payload(MCU_DATA_VOLUME, &vol, 1U);
++            if (desk_mcu_is_dsp1048()) {
++                (void)desk_mcu_dsp1048_volume(vol);
++            } else {
++                (void)desk_mcu_send_payload(MCU_DATA_VOLUME, &vol, 1U);
++            }
+         }
+         if (persist) {
+             (void)desk_mcu_params_save_volume(vol);
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_mcu.c b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_mcu.c
+index 78d4effb3..4cd004cbe 100644
+--- a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_mcu.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/src/aas_mcu.c
+@@ -70,6 +70,11 @@ static int aas_mcu_send_apu(uint8_t data0, const uint8_t *params, uint8_t param_
+ 
+ int aas_mcu_open(void)
+ {
++    if (access("/etc/dsp1048.protocol", F_OK) == 0) {
++        /* K1 BP1048 不是旧 AF55 协议，避免把 UART 改回 115200 */
++        return 0;
++    }
++
+     if (g_fd >= 0) {
+         return 0;
+     }
+@@ -104,6 +109,9 @@ int aas_mcu_send_control(uint8_t sub_cmd)
+ 
+ int aas_mcu_open_record_channel(void)
+ {
++    if (access("/etc/dsp1048.protocol", F_OK) == 0) {
++        return 0;
++    }
+     if (aas_mcu_send_control(0x0C) != 0) {
+         return -1;
+     }
+@@ -117,6 +125,9 @@ int aas_mcu_open_record_channel(void)
+ 
+ int aas_mcu_close_record_channel(void)
+ {
++    if (access("/etc/dsp1048.protocol", F_OK) == 0) {
++        return 0;
++    }
+     if (aas_mcu_send_control(0x0B) != 0) {
+         return -1;
+     }
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/dsp1048.sh b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/dsp1048.sh
+new file mode 100755
+index 000000000..5ce36cbed
+--- /dev/null
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/dsp1048.sh
+@@ -0,0 +1,302 @@
++#!/bin/sh
++# H133-K1: BP1048 UART（协议 20260908）
++# 波特率 1500000；安卓→DSP：AA A6 / AA 55 … EF
++#
++# ttyS3 由守护进程常开，不再 close（关串口会停 RX、下次 open 冲 FIFO）。
++# 发命令走 /tmp/dsp1048.cmd；收包写 /tmp/dsp1048.rx.bin。
++# 持续看：dsp1048.sh log
++#
++# 用法:
++#   dsp1048.sh boot              开机：拉起守护进程 + 解静音/音量
++#   dsp1048.sh aux|bt            切到 AUX/蓝牙输入
++#   dsp1048.sh unmute|mute
++#   dsp1048.sh vol <0-32>
++#   dsp1048.sh query             查版本（单条）
++#   dsp1048.sh log               持续打印 RX
++#   dsp1048.sh status            守护进程状态
++
++UART_DEV=${DSP1048_UART:-/dev/ttyS3}
++CMD_FIFO=/tmp/dsp1048.cmd
++RX_LOG=/tmp/dsp1048.rx.log
++RX_BIN=/tmp/dsp1048.rx.bin
++PID_FILE=/tmp/dsp1048.pid
++READY_FILE=/tmp/dsp1048.ready
++INIT_DONE=/tmp/dsp1048_init.done
++MCU_PARAMS_PATH=/usr/share/mix_station/参数.txt
++BAUD=1500000
++LOG_TAG="[dsp1048]"
++
++log() { echo "$LOG_TAG $*"; }
++
++gap() { usleep 80000 2>/dev/null || true; }
++
++daemon_alive() {
++	[ -f "$PID_FILE" ] || return 1
++	kill -0 "$(cat "$PID_FILE" 2>/dev/null)" 2>/dev/null
++}
++
++# 清掉旧守护（含 RX/TX 子进程），避免双开抢 RX
++stop_daemon() {
++	if [ -f "$PID_FILE" ]; then
++		kill "$(cat "$PID_FILE" 2>/dev/null)" 2>/dev/null || true
++	fi
++	ps | grep '[d]sp1048.sh _daemon' | awk '{print $1}' | while read -r p; do
++		kill -9 "$p" 2>/dev/null || true
++	done
++	ps | grep 'cat /tmp/dsp1048.cmd' | awk '{print $1}' | while read -r p; do
++		kill -9 "$p" 2>/dev/null || true
++	done
++	ps | grep 'cat /dev/ttyS3' | awk '{print $1}' | while read -r p; do
++		kill -9 "$p" 2>/dev/null || true
++	done
++	rm -f "$READY_FILE" "$PID_FILE"
++	usleep 200000 2>/dev/null || sleep 1
++}
++
++# 完整一帧一次 printf，避免 FIFO 上多 write 交错
++send_hex() {
++	fmt=""
++	for b in "$@"; do
++		fmt="${fmt}\\x$b"
++	done
++	if ! daemon_alive || [ ! -p "$CMD_FIFO" ]; then
++		log "error: daemon not running (need: dsp1048.sh boot)"
++		return 1
++	fi
++	printf "$fmt" > "$CMD_FIFO"
++}
++
++dump_rx() {
++	usleep 200000 2>/dev/null || sleep 1
++	if [ -f "$RX_BIN" ]; then
++		hexdump -v -C "$RX_BIN" | tail -n 12 | sed "s/^/$LOG_TAG rx /"
++	fi
++}
++
++# $1=vol 0~32 → AA A6 10 02 10 VOL EF
++send_vol() {
++	v=$1
++	[ "$v" -lt 0 ] 2>/dev/null && v=0
++	[ "$v" -gt 32 ] 2>/dev/null && v=32
++	send_hex aa a6 10 02 10 "$(printf '%02x' "$v")" ef
++}
++
++# AUX=2 BT=3 → AA A6 01 01 MODE EF
++send_mode() {
++	send_hex aa a6 01 01 "$(printf '%02x' "$1")" ef
++}
++
++# unmute=0 mute=1 → AA A6 02 01 X EF
++send_mute() {
++	send_hex aa a6 02 01 "$(printf '%02x' "$1")" ef
++}
++
++# AA 55 CMD EF
++send_query() {
++	send_hex aa 55 "$(printf '%02x' "$1")" ef
++}
++
++read_master_volume() {
++	vol=16
++	if [ -n "$DESK_MCU_VOLUME" ]; then
++		vol=$DESK_MCU_VOLUME
++	elif [ -f "$MCU_PARAMS_PATH" ]; then
++		v=$(grep -o '"master_volume"[[:space:]]*:[[:space:]]*[0-9][0-9]*' "$MCU_PARAMS_PATH" 2>/dev/null \
++			| head -1 | sed 's/.*:[[:space:]]*//')
++		[ -n "$v" ] && vol=$v
++	fi
++	if [ "$vol" -lt 0 ] 2>/dev/null; then vol=0; fi
++	if [ "$vol" -gt 32 ] 2>/dev/null; then vol=32; fi
++	echo "$vol"
++}
++
++wait_i2s() {
++	n=0
++	while [ $n -lt 20 ]; do
++		if grep -q sndi2s1 /proc/asound/cards 2>/dev/null; then
++			return 0
++		fi
++		n=$((n + 1))
++		sleep 1
++	done
++	log "warn: sndi2s1 not ready, continue"
++	return 1
++}
++
++rotate_rx_log() {
++	sz=$(wc -c < "$RX_BIN" 2>/dev/null || echo 0)
++	if [ "$sz" -gt 65536 ]; then
++		: > "$RX_BIN"
++	fi
++}
++
++# 常驻：RX 子进程一直占着 ttyS3；本 shell 不 exec 打开串口
++# （ash 把 stdout 重定向到 /dev/ttyS3 后不会改回来，日志会打到 DSP）
++cmd_daemon() {
++	trap '' HUP
++	trap 'rm -f "$READY_FILE" "$PID_FILE"; exit 0' TERM INT
++
++	echo $$ > "$PID_FILE"
++	rm -f "$CMD_FIFO" "$READY_FILE"
++	mkfifo -m 666 "$CMD_FIFO" || {
++		echo "$LOG_TAG error: mkfifo $CMD_FIFO" >&2
++		exit 1
++	}
++	: > "$RX_BIN"
++	chmod 666 "$RX_BIN" 2>/dev/null || true
++
++	[ -e "$UART_DEV" ] || { echo "$LOG_TAG error: $UART_DEV missing" >&2; exit 1; }
++
++	exec 0</dev/null
++	exec 1>>/tmp/dsp1048.daemon.log
++	exec 2>>/tmp/dsp1048.daemon.log
++
++	# cat 一直占着 UART；不要用 count=1 那种读完就 close
++	(
++		trap '' HUP
++		cat "$UART_DEV" >> "$RX_BIN"
++	) &
++	usleep 80000 2>/dev/null || true
++
++	stty -F "$UART_DEV" "$BAUD" cs8 -cstopb -parenb raw -echo -crtscts clocal cread min 1 time 0 2>/dev/null || {
++		log "error: stty $BAUD failed"
++		exit 1
++	}
++
++	(
++		trap '' HUP
++		while :; do
++			sleep 30
++			rotate_rx_log
++		done
++	) &
++
++	touch "$READY_FILE"
++	log "daemon tty=$UART_DEV baud=$BAUD (hold open)"
++
++	# dd 在子进程里打开串口，避免本 shell 的 stdout 被绑到 TX
++	while :; do
++		dd if="$CMD_FIFO" of="$UART_DEV" bs=256 2>/dev/null
++	done
++}
++
++start_daemon() {
++	if daemon_alive && [ -p "$CMD_FIFO" ] && [ -f "$READY_FILE" ]; then
++		return 0
++	fi
++	stop_daemon
++	self=$0
++	case "$self" in
++	/*) ;;
++	*) self=/usr/bin/dsp1048.sh ;;
++	esac
++	"$self" _daemon </dev/null >>/tmp/dsp1048.daemon.log 2>&1 &
++	n=0
++	while [ $n -lt 50 ]; do
++		if [ -f "$READY_FILE" ] && daemon_alive; then
++			return 0
++		fi
++		usleep 100000 2>/dev/null || sleep 1
++		n=$((n + 1))
++	done
++	log "error: daemon start timeout"
++	return 1
++}
++
++cmd_boot() {
++	wait_i2s
++	start_daemon || return 1
++
++	log "unmute"
++	send_mute 0
++	gap
++
++	vol=$(read_master_volume)
++	log "music volume $vol"
++	send_vol "$vol"
++	gap
++	dump_rx
++
++	touch "$INIT_DONE"
++	log "boot done vol=$vol (uart held by pid $(cat "$PID_FILE" 2>/dev/null))"
++}
++
++cmd_query() {
++	start_daemon || return 1
++	off=0
++	[ -f "$RX_BIN" ] && off=$(wc -c < "$RX_BIN")
++	log "query version"
++	send_query 236
++	usleep 200000 2>/dev/null || sleep 1
++	if [ -f "$RX_BIN" ]; then
++		tail -c +$((off + 1)) "$RX_BIN" 2>/dev/null | hexdump -v -C | sed "s/^/$LOG_TAG rx /"
++	fi
++}
++
++cmd_status() {
++	if daemon_alive; then
++		log "daemon pid=$(cat "$PID_FILE") ready=$([ -f "$READY_FILE" ] && echo yes || echo no)"
++		log "cmd $CMD_FIFO  rx $RX_BIN"
++		ls -l /dev/ttyS3 "$CMD_FIFO" "$RX_BIN" "$PID_FILE" 2>/dev/null
++	else
++		log "daemon not running"
++		return 1
++	fi
++}
++
++usage() {
++	echo "用法: dsp1048.sh boot|aux|bt|unmute|mute|vol <0-32>|query|log|status"
++}
++
++case "${1:-}" in
++_daemon)
++	cmd_daemon
++	;;
++boot)
++	cmd_boot
++	;;
++aux)
++	start_daemon && send_mode 2
++	;;
++bt)
++	start_daemon && send_mode 3
++	;;
++unmute)
++	start_daemon && send_mute 0
++	;;
++mute)
++	start_daemon && send_mute 1
++	;;
++vol)
++	[ -n "${2:-}" ] || { usage; exit 1; }
++	start_daemon && send_vol "$2"
++	;;
++query)
++	cmd_query
++	;;
++log)
++	start_daemon || exit 1
++	log "follow $RX_BIN (Ctrl-C 退出，不关串口)"
++	off=0
++	[ -f "$RX_BIN" ] && off=$(wc -c < "$RX_BIN")
++	while :; do
++		usleep 200000 2>/dev/null || sleep 1
++		[ -f "$RX_BIN" ] || continue
++		nsz=$(wc -c < "$RX_BIN")
++		if [ "$nsz" -lt "$off" ]; then
++			off=0
++		fi
++		if [ "$nsz" -gt "$off" ]; then
++			tail -c +$((off + 1)) "$RX_BIN" | hexdump -v -C
++			off=$nsz
++		fi
++	done
++	;;
++status)
++	cmd_status
++	;;
++*)
++	usage
++	exit 1
++	;;
++esac
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/dsp1048.protocol b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/dsp1048.protocol
+new file mode 100644
+index 000000000..3fe68d500
+--- /dev/null
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/etc/dsp1048.protocol
+@@ -0,0 +1,2 @@
++# H133-K1 ↔ BP1048 UART protocol (20260908)
++# baud=1500000  frames=AA A6|AA 55 ... EF

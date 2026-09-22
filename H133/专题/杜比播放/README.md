@@ -1,6 +1,11 @@
 # 杜比播放
 
-| 目录 | 内容 |
+HDMI / SPDIF 杜比·DTS 透传（跨板专题，不是某客户硬件包）。
+
+| 文件 | 说明 |
 |------|------|
-| [开发记录/](./开发记录/README.md) | 路由架构、透传落地、设置切换踩坑、补丁 |
-| [h133-tina-5.0-support-passthrough/](./h133-tina-5.0-support-passthrough/) | 原厂透传补丁包 |
+| [杜比透传-开发笔记.md](./杜比透传-开发笔记.md) | 链路现状、断点、怎么验 |
+| [H133-HDMI音频透传架构.md](./H133-HDMI音频透传架构.md) | 架构说明 |
+| [H133-HDMI音频透传-与官方补丁差异及问题反馈.txt](./H133-HDMI音频透传-与官方补丁差异及问题反馈.txt) | 与官方补丁差异 |
+| `H133-HDMI透传卡顿与raw-DMA修复.patch` | 卡顿 / raw DMA 修复 |
+| `h133-tina-5.0-support-passthrough.zip`、`透传.zip` | 官方透传包 |

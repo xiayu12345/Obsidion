@@ -1,0 +1,289 @@
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+index a76c3ac58..25e214a4b 100644
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/dev_disp.c
+@@ -1126,9 +1126,13 @@ static ssize_t disp_capture_dump_store(struct device *dev,
+ 	return count;
+ }
+ 
+-/* ===== Dual Display (同显) ===== */
++/* ===== Dual Display (WB 同显) =====
++ * 独立功能：起来后就是把 DE0 抓帧旋转贴到 HDMI。
++ * 产品当前不启用，也没有自动启动路径，只能由 DISP_DUAL_DISPLAY_ENABLE 拉起。
++ * 同/异显的切换与此无关，由用户态选择视频层贴哪块屏实现。
++ */
+ static bool g_dual_display_enabled;
+-/* pan 软件 clone；默认关（同显靠 WB，异显只关 HDMI 上 WB 层） */
++/* pan 时把 fb0 的层软件克隆到 screen1，供 chn_cfg_mode<1 的板子用；默认关 */
+ static bool g_fb_clone_allow;
+ static DEFINE_MUTEX(g_dual_display_mutex);
+ static dma_addr_t g_dual_display_phy_addr;
+@@ -1147,8 +1151,6 @@ static struct work_struct g_dual_display_work;
+ static struct workqueue_struct *g_dual_display_wq;
+ static struct disp_layer_config g_dual_display_hdmi_layer;
+ static bool g_dual_display_hdmi_layer_ready;
+-/* true=同显把 WB 贴到 HDMI；false=异显腾出 DE1（capture/wq 不拆） */
+-static bool g_dual_display_hdmi_output = true;
+ 
+ #if IS_ENABLED(CONFIG_SUNXI_G2D) && IS_ENABLED(CONFIG_SUNXI_G2D_ROTATE)
+ static g2d_blt_h g_dual_display_g2d_blt;
+@@ -1501,10 +1503,6 @@ static int disp_dual_display_init_hdmi_layer(struct disp_manager *mgr1,
+ 	if (ret)
+ 		return ret;
+ 
+-	/* 异显：模板仍就绪，但 enable=0 腾出 DE1 给视频层 */
+-	if (!g_dual_display_hdmi_output)
+-		g_dual_display_hdmi_layer.enable = 0;
+-
+ 	ret = mgr1->set_layer_config(mgr1, &g_dual_display_hdmi_layer, 1);
+ 	if (ret) {
+ 		pr_err("[DISP] dual display: set DE1 layer fail %d\n", ret);
+@@ -1513,8 +1511,7 @@ static int disp_dual_display_init_hdmi_layer(struct disp_manager *mgr1,
+ 	}
+ 
+ 	g_dual_display_hdmi_layer_ready = true;
+-	if (g_dual_display_hdmi_output &&
+-	    mgr1->device && mgr1->device->get_resolution &&
++	if (mgr1->device && mgr1->device->get_resolution &&
+ 	    mgr1->device->get_resolution(mgr1->device, &dst_w, &dst_h) == 0 &&
+ 	    dst_w > 0 && dst_h > 0) {
+ 		pr_info("[DISP] dual display HDMI G2D rot%s: %ux%u full on %ux%u (WB %ux%u)\n",
+@@ -1535,14 +1532,10 @@ static int disp_dual_display_flip_hdmi_layer(struct disp_manager *mgr1,
+ 	if (!mgr1 || !mgr1->set_layer_config || !rot_phy)
+ 		return -1;
+ 
+-	if (!g_dual_display_hdmi_output)
+-		return 0;
+-
+ 	if (!g_dual_display_hdmi_layer_ready)
+ 		return disp_dual_display_init_hdmi_layer(mgr1, rot_phy);
+ 
+ 	rot_uv = g_dual_display_rot_width * g_dual_display_rot_height;
+-	g_dual_display_hdmi_layer.enable = 1;
+ 	g_dual_display_hdmi_layer.info.fb.addr[0] = (unsigned long long)rot_phy;
+ 	g_dual_display_hdmi_layer.info.fb.addr[1] =
+ 		(unsigned long long)rot_phy + rot_uv;
+@@ -1555,9 +1548,12 @@ static int disp_dual_display_flip_hdmi_layer(struct disp_manager *mgr1,
+ 
+ static void disp_dual_display_work_handler(struct work_struct *work)
+ {
+-	struct disp_manager *mgr0;
++	struct disp_manager *mgr0, *mgr1;
+ 	struct disp_capture *cptr;
+ 	struct disp_capture_info cptr_info;
++	unsigned int write_idx;
++	void *dst_vir;
++	dma_addr_t dst_phy;
+ 
+ 	mutex_lock(&g_dual_display_mutex);
+ 	if (!g_dual_display_enabled) {
+@@ -1565,28 +1561,20 @@ static void disp_dual_display_work_handler(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	/* 异显：跳过 G2D/HDMI flip，仍继续 WB capture commit */
+-	if (g_dual_display_hdmi_output) {
+-		struct disp_manager *mgr1;
+-		unsigned int write_idx;
+-		void *dst_vir;
+-		dma_addr_t dst_phy;
+-
+-		write_idx = 1 - g_dual_display_rot_show_idx;
+-		dst_vir = disp_dual_display_rot_vir(write_idx);
+-		dst_phy = disp_dual_display_rot_phy(write_idx);
+-		if (!dst_vir || !dst_phy) {
+-			mutex_unlock(&g_dual_display_mutex);
+-			return;
+-		}
++	write_idx = 1 - g_dual_display_rot_show_idx;
++	dst_vir = disp_dual_display_rot_vir(write_idx);
++	dst_phy = disp_dual_display_rot_phy(write_idx);
++	if (!dst_vir || !dst_phy) {
++		mutex_unlock(&g_dual_display_mutex);
++		return;
++	}
+ 
+-		disp_dual_display_apply_rot(dst_phy, dst_vir);
++	disp_dual_display_apply_rot(dst_phy, dst_vir);
+ 
+-		mgr1 = g_disp_drv.mgr[1];
+-		if (mgr1)
+-			disp_dual_display_flip_hdmi_layer(mgr1, dst_phy);
+-		g_dual_display_rot_show_idx = write_idx;
+-	}
++	mgr1 = g_disp_drv.mgr[1];
++	if (mgr1)
++		disp_dual_display_flip_hdmi_layer(mgr1, dst_phy);
++	g_dual_display_rot_show_idx = write_idx;
+ 
+ 	mgr0 = g_disp_drv.mgr[0];
+ 	if (!mgr0 || !mgr0->cptr) {
+@@ -1781,8 +1769,8 @@ static int disp_dual_display_enable(void)
+ 	return -1;
+ }
+ 
+-/* 产品路径不用：切异显改走 set_hdmi_output。保留实现供极端排障。 */
+-static int __maybe_unused disp_dual_display_disable(void)
++/* 只允许进程上下文（ioctl）调用：会 flush/destroy workqueue，勿在 HPD/中断里调 */
++static int disp_dual_display_disable(void)
+ {
+ 	struct disp_manager *mgr0, *mgr1;
+ 	struct disp_layer_config layer_config;
+@@ -1866,59 +1854,6 @@ void disp_fb_clone_allow_set(bool allow)
+ 	g_fb_clone_allow = allow;
+ }
+ 
+-/* 只显隐 HDMI 上的 WB 层；不拆 capture/wq（同↔异显切换用） */
+-static int disp_dual_display_set_hdmi_output(bool on)
+-{
+-	struct disp_manager *mgr1;
+-	struct disp_layer_config cfg;
+-
+-	mutex_lock(&g_dual_display_mutex);
+-	if (g_dual_display_hdmi_output == on) {
+-		mutex_unlock(&g_dual_display_mutex);
+-		return 0;
+-	}
+-	g_dual_display_hdmi_output = on;
+-
+-	mgr1 = g_disp_drv.mgr[1];
+-	if (!g_dual_display_enabled || !mgr1 || !mgr1->set_layer_config) {
+-		mutex_unlock(&g_dual_display_mutex);
+-		pr_info("[DISP] dual HDMI output %s (wb %s)\n",
+-			on ? "on" : "off",
+-			g_dual_display_enabled ? "up" : "down");
+-		return 0;
+-	}
+-
+-	if (!on) {
+-		if (g_dual_display_hdmi_layer_ready) {
+-			cfg = g_dual_display_hdmi_layer;
+-			cfg.enable = 0;
+-			mgr1->set_layer_config(mgr1, &cfg, 1);
+-			g_dual_display_hdmi_layer.enable = 0;
+-		}
+-	} else {
+-		dma_addr_t phy = disp_dual_display_rot_phy(g_dual_display_rot_show_idx);
+-
+-		if (!phy)
+-			phy = disp_dual_display_rot_phy(0);
+-		if (phy) {
+-			if (g_dual_display_hdmi_layer_ready) {
+-				g_dual_display_hdmi_layer.enable = 1;
+-				disp_dual_display_flip_hdmi_layer(mgr1, phy);
+-			} else {
+-				disp_dual_display_init_hdmi_layer(mgr1, phy);
+-			}
+-		}
+-	}
+-	mutex_unlock(&g_dual_display_mutex);
+-	pr_info("[DISP] dual HDMI output %s\n", on ? "on" : "off");
+-	return 0;
+-}
+-
+-static bool disp_dual_display_get_hdmi_output(void)
+-{
+-	return g_dual_display_hdmi_output;
+-}
+-
+ static DEVICE_ATTR(boot_para, 0660, disp_boot_para_show, NULL);
+ static DEVICE_ATTR(xres, 0660, disp_xres_show, NULL);
+ static DEVICE_ATTR(yres, 0660, disp_yres_show, NULL);
+@@ -2535,19 +2470,14 @@ s32 disp_set_hdmi_detect(bool hpd)
+ 	    g_disp_drv.disp_init.b_init &&
+ 	    g_disp_drv.disp_init.output_type[1] == DISP_OUTPUT_TYPE_HDMI) {
+ 		disp_device_set_config(&g_disp_drv.disp_init, 1);
+-		if (g_disp_drv.disp_init.chn_cfg_mode >= 1) {
+-			msleep(600);
+-			/* WB 管道常开；同/异显只切 HDMI 层显隐，不在此 disable */
+-			disp_dual_display_enable();
+-		} else if (!disp_dual_display_is_enabled() &&
+-			   disp_fb_clone_is_allowed()) {
++		/* 双通道配置下 HDMI 的视频层由 tlayer 直贴，不启 WB */
++		if (g_disp_drv.disp_init.chn_cfg_mode < 1 &&
++		    !disp_dual_display_is_enabled() &&
++		    disp_fb_clone_is_allowed()) {
+ 			msleep(300);
+ 			disp_fb_clone_to_screen(0, 1);
+ 		}
+ 	}
+-	/* Do not disable WB on HPD disconnect: hdmi thread cannot safely
+-	 * destroy workqueue; transient HPD glitches would kill mirror.
+-	 */
+ 	return ret;
+ }
+ EXPORT_SYMBOL(disp_set_hdmi_detect);
+@@ -2703,15 +2633,6 @@ static void start_work(struct work_struct *work)
+ 			}
+ 		}
+ 	}
+-
+-	/* Auto-enable dual display when screen1 is active with dual-channel config */
+-	if (g_disp_drv.disp_init.chn_cfg_mode >= 1
+-	    && bsp_disp_get_output_type(1) != DISP_OUTPUT_TYPE_NONE) {
+-		pr_info("[DISP] auto-enable dual display (chn_cfg=%d, screen1_output=%d)\n",
+-			g_disp_drv.disp_init.chn_cfg_mode,
+-			bsp_disp_get_output_type(1));
+-		disp_dual_display_enable();
+-	}
+ }
+ 
+ static s32 start_process(void)
+@@ -4774,14 +4695,11 @@ long disp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ #endif
+ 
+ 	case DISP_DUAL_DISPLAY_ENABLE:
+-		/* 确保 WB 管道起来；同↔异显勿用 DISABLE，改用 SET_HDMI_OUT */
+ 		ret = disp_dual_display_enable();
+ 		break;
+ 
+ 	case DISP_DUAL_DISPLAY_DISABLE:
+-		/* 已废弃：拆 WB 会 scheduling while atomic 且产品改为管道常开 */
+-		pr_warn("[DISP] DISP_DUAL_DISPLAY_DISABLE ignored; use SET_HDMI_OUT\n");
+-		ret = -EINVAL;
++		ret = disp_dual_display_disable();
+ 		break;
+ 
+ 	case DISP_DUAL_DISPLAY_GET_EN:
+@@ -4793,18 +4711,6 @@ long disp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+ 		ret = 0;
+ 		break;
+ 
+-	case DISP_FB_CLONE_ALLOW_GET:
+-		ret = disp_fb_clone_is_allowed() ? 1 : 0;
+-		break;
+-
+-	case DISP_DUAL_DISPLAY_SET_HDMI_OUT:
+-		ret = disp_dual_display_set_hdmi_output(ubuffer[0] != 0);
+-		break;
+-
+-	case DISP_DUAL_DISPLAY_GET_HDMI_OUT:
+-		ret = disp_dual_display_get_hdmi_output() ? 1 : 0;
+-		break;
+-
+ 	case DISP_GET_OUTPUT:
+ 		{
+ 			struct disp_output para;
+diff --git a/kernel/linux-5.4/include/video/sunxi_display2.h b/kernel/linux-5.4/include/video/sunxi_display2.h
+index cb5e54698..2e1b916a4 100755
+--- a/kernel/linux-5.4/include/video/sunxi_display2.h
++++ b/kernel/linux-5.4/include/video/sunxi_display2.h
+@@ -981,15 +981,11 @@ enum tag_DISP_CMD {
+ 	DISP_EINK_OVERLAP_SKIP = 0x405,
+ 	DISP_EINK_UPDATE2 = 0x406,
+ 
+-	/* MIPI+HDMI：WB 管道常开；切同/异显只用 SET_HDMI_OUT */
+-	DISP_DUAL_DISPLAY_ENABLE = 0x407,       /* 确保 WB 起来 */
+-	DISP_DUAL_DISPLAY_DISABLE = 0x408,      /* 废弃，内核直接 -EINVAL */
++	/* WB 同显：独立功能，默认不启；与同/异显切换无关 */
++	DISP_DUAL_DISPLAY_ENABLE = 0x407,
++	DISP_DUAL_DISPLAY_DISABLE = 0x408,
+ 	DISP_DUAL_DISPLAY_GET_EN = 0x409,
+ 	DISP_FB_CLONE_ALLOW_SET = 0x40a,
+-	DISP_FB_CLONE_ALLOW_GET = 0x40b,
+-	/* ubuffer[0]=0/1：关/开 HDMI 上的 WB 层；capture/wq 不拆 */
+-	DISP_DUAL_DISPLAY_SET_HDMI_OUT = 0x40c,
+-	DISP_DUAL_DISPLAY_GET_HDMI_OUT = 0x40d,
+ };
+ 
+ enum {

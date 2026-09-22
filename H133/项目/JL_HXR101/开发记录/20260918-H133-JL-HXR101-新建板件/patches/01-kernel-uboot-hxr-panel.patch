@@ -1,0 +1,122 @@
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
+@@ -235,6 +235,13 @@
+ 	---help---
+ 		Newman ZS101 800x1280 MIPI (ILI9881C), board p1_nor_ZS101.
+ 
++config LCD_SUPPORT_JL_HXR_ILI9881C
++	bool "LCD support HXR10106B-28 ILI9881C 10.1inch MIPI panel"
++	default n
++	---help---
++		Jinglong HXR10106B-28 LB 800x1280 MIPI (ILI9881C-0H);
++		boards p1_nor_JL_HXR101 / p1_emmc_JL_HXR101.
++
+ config LCD_SUPPORT_LQ140_MIPI2EDP
+ 	bool "LCD support LQ140M1JW61 via MIPI-to-eDP bridge"
+ 	default n
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/Makefile
+@@ -68,6 +68,7 @@
+ disp-$(CONFIG_LCD_SUPPORT_JL_M101_JD9365DA) += lcd/jl_m101_jd9365da.o
+ disp-$(CONFIG_LCD_SUPPORT_XYC_K1_LVDS) += lcd/xyc_k1_lvds.o
+ disp-$(CONFIG_LCD_SUPPORT_ZS101_ILI9881C) += lcd/zs101_ili9881c.o
++disp-$(CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C) += lcd/jl_hxr_ili9881c.o
+ disp-$(CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP) += lcd/lq140_mipi2edp.o
+ disp-$(CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP) += lcd/lq190_mipi2edp.o
+ 
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.c
+@@ -139,6 +139,9 @@
+ #ifdef CONFIG_LCD_SUPPORT_ZS101_ILI9881C
+ 	&zs101_ili9881c_panel,
+ #endif
++#ifdef CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C
++	&jl_hxr_ili9881c_panel,
++#endif
+ #ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
+ 	&lq140_mipi2edp_panel,
+ #endif
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/panels.h
+@@ -179,6 +179,9 @@
+ #ifdef CONFIG_LCD_SUPPORT_ZS101_ILI9881C
+ extern struct __lcd_panel zs101_ili9881c_panel;
+ #endif
++#ifdef CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C
++extern struct __lcd_panel jl_hxr_ili9881c_panel;
++#endif
+ #ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
+ extern struct __lcd_panel lq140_mipi2edp_panel;
+ #endif
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
+@@ -241,6 +241,13 @@
+ 	---help---
+ 		Newman ZS101 800x1280 MIPI (ILI9881C), board p1_nor_ZS101.
+ 
++config LCD_SUPPORT_JL_HXR_ILI9881C
++	bool "LCD support HXR10106B-28 ILI9881C 10.1inch MIPI panel"
++	default n
++	---help---
++		Jinglong HXR10106B-28 LB 800x1280 MIPI (ILI9881C-0H);
++		boards p1_nor_JL_HXR101 / p1_emmc_JL_HXR101.
++
+ config LCD_SUPPORT_LQ140_MIPI2EDP
+ 	bool "LCD support LQ140M1JW61 via MIPI-to-eDP bridge"
+ 	default n
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/Makefile
+@@ -61,6 +61,7 @@
+ disp-$(CONFIG_LCD_SUPPORT_JL_M101_JD9365DA) += lcd/jl_m101_jd9365da.o
+ disp-$(CONFIG_LCD_SUPPORT_XYC_K1_LVDS) += lcd/xyc_k1_lvds.o
+ disp-$(CONFIG_LCD_SUPPORT_ZS101_ILI9881C) += lcd/zs101_ili9881c.o
++disp-$(CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C) += lcd/jl_hxr_ili9881c.o
+ disp-$(CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP) += lcd/lq140_mipi2edp.o
+ disp-$(CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP) += lcd/lq190_mipi2edp.o
+ disp-$(CONFIG_LCD_SUPPORT_JD9366AB_3) += lcd/jd9366ab_3.o
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.c
+@@ -171,6 +171,10 @@
+ 	&zs101_ili9881c_panel,
+ #endif
+ 
++#ifdef CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C
++	&jl_hxr_ili9881c_panel,
++#endif
++
+ #ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
+ 	&lq140_mipi2edp_panel,
+ #endif
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/panels.h
+@@ -268,6 +268,10 @@
+ extern __lcd_panel_t zs101_ili9881c_panel;
+ #endif
+ 
++#ifdef CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C
++extern __lcd_panel_t jl_hxr_ili9881c_panel;
++#endif
++
+ #ifdef CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP
+ extern __lcd_panel_t lq140_mipi2edp_panel;
+ #endif
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_defconfig
+@@ -194,6 +194,7 @@
+ CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y
+ CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP=y
+ CONFIG_LCD_SUPPORT_ZS101_ILI9881C=y
++CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C=y
+ 
+ #
+ # Display engine feature select
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig
+@@ -128,6 +128,7 @@
+ # CONFIG_EINK_PANEL_USED is not set
+ # CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
+ CONFIG_LCD_SUPPORT_JL_M101_JD9365DA=y
++CONFIG_LCD_SUPPORT_JL_HXR_ILI9881C=y
+ CONFIG_LCD_SUPPORT_XYC_K1_LVDS=y
+ # CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
+ # CONFIG_LCD_SUPPORT_ZS101_ILI9881C is not set
