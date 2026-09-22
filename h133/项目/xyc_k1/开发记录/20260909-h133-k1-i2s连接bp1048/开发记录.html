@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>开发记录</title><meta charset="utf-8"/><link rel="preload" href="../../../../../index-3622e4ec.css" as="style"/><link rel="preload" href="../../../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="开发记录"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="开发记录"/><meta name="twitter:description" content="H133-K1 I2S 连接 BP1048 开发记录 日期：2026-09-09 工程：AI-tq（H133 Tina Linux / OpenWrt） 板级：p1_nor_XYC_K1（2026-09-11 由 p1_nor_JL_M101 改名） 主控：H133，I2S 从机 DSP：BP1048B2，I2S 主机 资料：AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf、AI-skiil/硬件资料/鑫宇宸/H133芯片协议通讯_20260908.xls 结果：2026-09-09 晚用户确认播放有声 对应镜像：out/h133_linux_p1_nor_XYC_K1_uar..."/><meta property="og:description" content="H133-K1 I2S 连接 BP1048 开发记录 日期：2026-09-09 工程：AI-tq（H133 Tina Linux / OpenWrt） 板级：p1_nor_XYC_K1（2026-09-11 由 p1_nor_JL_M101 改名） 主控：H133，I2S 从机 DSP：BP1048B2，I2S 主机 资料：AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf、AI-skiil/硬件资料/鑫宇宸/H133芯片协议通讯_20260908.xls 结果：2026-09-09 晚用户确认播放有声 对应镜像：out/h133_linux_p1_nor_XYC_K1_uar..."/><meta property="og:image:alt" content="H133-K1 I2S 连接 BP1048 开发记录 日期：2026-09-09 工程：AI-tq（H133 Tina Linux / OpenWrt） 板级：p1_nor_XYC_K1（2026-09-11 由 p1_nor_JL_M101 改名） 主控：H133，I2S 从机 DSP：BP1048B2，I2S 主机 资料：AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf、AI-skiil/硬件资料/鑫宇宸/H133芯片协议通讯_20260908.xls 结果：2026-09-09 晚用户确认播放有声 对应镜像：out/h133_linux_p1_nor_XYC_K1_uar..."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录"/><link rel="icon" href="../../../../../static/icon.png"/><meta name="description" content="H133-K1 I2S 连接 BP1048 开发记录 日期：2026-09-09 工程：AI-tq（H133 Tina Linux / OpenWrt） 板级：p1_nor_XYC_K1（2026-09-11 由 p1_nor_JL_M101 改名） 主控：H133，I2S 从机 DSP：BP1048B2，I2S 主机 资料：AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf、AI-skiil/硬件资料/鑫宇宸/H133芯片协议通讯_20260908.xls 结果：2026-09-09 晚用户确认播放有声 对应镜像：out/h133_linux_p1_nor_XYC_K1_uar..."/><meta name="generator" content="Quartz"/><link href="../../../../../index-3622e4ec.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/项目/xyc_k1/开发记录/20260909-h133-k1-i2s连接bp1048/开发记录" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-266" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-266" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><h1 class="article-title">开发记录</h1><p show-comma="true" class="content-meta"><time datetime="2026-09-21T03:44:17.000Z">2026年9月21日</time><span>8分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="h133-k1-i2s-连接-bp1048-开发记录">H133-K1 I2S 连接 BP1048 开发记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#h133-k1-i2s-连接-bp1048-开发记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>日期：2026-09-09</li>
+<li>工程：<code>AI-tq</code>（H133 Tina Linux / OpenWrt）</li>
+<li>板级：<code>p1_nor_XYC_K1</code>（2026-09-11 由 <code>p1_nor_JL_M101</code> 改名）</li>
+<li>主控：H133，I2S 从机</li>
+<li>DSP：BP1048B2，I2S 主机</li>
+<li>资料：<code>AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf</code>、<code>AI-skiil/硬件资料/鑫宇宸/H133芯片协议通讯_20260908.xls</code></li>
+<li>结果：2026-09-09 晚用户确认播放有声</li>
+<li>对应镜像：<code>out/h133_linux_p1_nor_XYC_K1_uart0_nor.img</code>（MD5 <code>988ccbd8970279db145453288195b2d1</code>，I2S1 从机 + 原厂 16bit LSB；当时打包文件名仍是 <code>p1_nor_JL_M101</code>）</li>
+</ul>
+<p>本记录说明 H133 I2S1 到 BP1048 的硬件连接、软件接入、现场排查过程。配套补丁覆盖：DTS 开 I2S1 播放并从机、ALSA 默认走 I2S、BP1048 UART。16bit MSB 对齐曾做过实验，无声后已回退，不要再改 I2S 驱动。</p>
+<h2 id="1-硬件链路">1. 硬件链路<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-硬件链路" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>播放链路：</p>
+<p><code>H133 I2S1 → BP1048B2 I2S 输入/DAC → 4558 运放 → AMP_LIN/AMP_RIN → HTA8128MTE → 喇叭</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>H133</th><th>网络</th><th>串联电阻</th><th>BP1048方向</th><th>说明</th></tr></thead><tbody><tr><td>PG11</td><td>I2S1-MCLK</td><td>R10005 33Ω</td><td>MCLK输入</td><td>H133输出参考时钟</td></tr><tr><td>PG12</td><td>I2S1-LRCK</td><td>R10006 33Ω</td><td>输出</td><td>BP1048主机提供帧时钟</td></tr><tr><td>PG13</td><td>I2S1-BCLK</td><td>R10007 33Ω</td><td>输出</td><td>BP1048主机提供位时钟</td></tr><tr><td>PG14</td><td>I2S1-DIN0</td><td>R10008 33Ω</td><td>I2S-DOUT</td><td>DSP到H133回采</td></tr><tr><td>PG15</td><td>I2S1-DOUT0</td><td>R10009 33Ω</td><td>I2S-DIN</td><td>H133到DSP播放数据</td></tr></tbody></table></div>
+<p>BP1048的 DACL/DACR 经运放形成 <code>AMP_LIN/AMP_RIN</code>。功放 HTA8128MTE 的 ENA 受 BP1048 <code>MUTE</code> 网络控制，ENB默认上拉使能。现场确认 BP1048 开机播报有声，因此 DSP 电源、DAC、功放、喇叭链路正常。</p>
+<h3 id="11-io电压">1.1 IO电压<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#11-io电压" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>H133 PG组应配置为3.3V：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>vcc-pg-supply = &lt;&amp;reg_pio3_3>;</span></span></code></pre></figure>
+<p>理由：</p>
+<ul>
+<li>H133与BP1048之间只有33Ω串联电阻，没有电平转换。</li>
+<li>BP1048数据手册规定数字IO电源为3.3V。</li>
+<li>BP1048输入高电平门限 <code>VIH</code> 最低2.2V。</li>
+</ul>
+<p>板端设备树与运行时 phandle 均已确认指向3.3V，配置值为3,300,000µV。</p>
+<h2 id="2-h133软件配置">2. H133软件配置<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-h133软件配置" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>I2S1设备树关键配置：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>&amp;i2s1_mach {</span></span>
+<span data-line><span>	soundcard-mach,format = &quot;i2s&quot;;</span></span>
+<span data-line><span>	soundcard-mach,frame-master = &lt;&amp;i2s1_codec>;</span></span>
+<span data-line><span>	soundcard-mach,bitclock-master = &lt;&amp;i2s1_codec>;</span></span>
+<span data-line><span>	soundcard-mach,slot-num = &lt;2>;</span></span>
+<span data-line><span>	soundcard-mach,slot-width = &lt;32>;</span></span>
+<span data-line><span>	status = &quot;okay&quot;;</span></span>
+<span data-line> </span>
+<span data-line><span>	i2s1_cpu: soundcard-mach,cpu {</span></span>
+<span data-line><span>		sound-dai = &lt;&amp;i2s1_plat>;</span></span>
+<span data-line><span>		soundcard-mach,pll-fs = &lt;1>;</span></span>
+<span data-line><span>		soundcard-mach,mclk-fs = &lt;256>;</span></span>
+<span data-line><span>	};</span></span>
+<span data-line><span>};</span></span></code></pre></figure>
+<p>含义：</p>
+<ul>
+<li>Philips I2S格式。</li>
+<li>H133的 BCLK/LRCK 均为输入，即H133为从机。</li>
+<li>双声道、每声道32-bit slot。</li>
+<li>H133输出256fs MCLK。</li>
+<li>播放数据通过PG15 DOUT0输出。</li>
+</ul>
+<p>ALSA默认路由：</p>
+<p><code>pcm.!default → PlaybackI2S → hw:sndi2s1,0</code></p>
+<p>现场验证过 <code>hw:sndi2s1,0</code> 上 S16_LE、双声道、44.1kHz 播放。播放期间 PCM 为 <code>RUNNING</code>，<code>hw_ptr</code> 按 44.1k 递增。</p>
+<p>UART3（PG0/PG1，1500000 8N1）现场已通：</p>
+<ul>
+<li>查询版本 <code>AA 55 EC EF</code> 应答 <code>3F 11 H133-K1_XYC_MJ_V05 EF</code></li>
+<li>DSP 心跳 <code>66 AA 00 EF</code>，电量满格 <code>AA A5 03 01 06 EF</code></li>
+<li>串口由 <code>dsp1048.sh</code> 守护进程常开，命令走 <code>/tmp/dsp1048.cmd</code>，RX 写 <code>/tmp/dsp1048.rx.bin</code></li>
+</ul>
+<h2 id="3-运行时验证">3. 运行时验证<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-运行时验证" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>播放时关键寄存器：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>CTL=0x00000115</span></span>
+<span data-line><span>PG_CFG1=0x22222133</span></span></code></pre></figure>
+<p><code>CTL=0x115</code>表示：</p>
+<ul>
+<li>I2S全局使能。</li>
+<li>TX使能。</li>
+<li>DOUT0使能。</li>
+<li>Philips I2S模式。</li>
+<li>BCLK/LRCK方向为输入。</li>
+</ul>
+<p><code>PG_CFG1=0x22222133</code>表示PG11～PG15处于I2S功能。</p>
+<p>停止播放后现场读到：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>CTL=0x00000011</span></span>
+<span data-line><span>PG_CFG1=0xfffff133</span></span></code></pre></figure>
+<p>此时TX关闭，PG11～PG15进入 <code>io_disabled</code>。在这种状态测量PG12，示波器可能把浮空串扰误判为约563.6kHz、1.76V的异常波形。测量时必须保持PCM为 <code>RUNNING</code>。</p>
+<p>44.1kHz、双声道、32-bit slot时理论波形：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>信号</th><th>频率</th></tr></thead><tbody><tr><td>MCLK</td><td>11.2896MHz（256fs）</td></tr><tr><td>BCLK</td><td>2.8224MHz（44.1k × 2 × 32）</td></tr><tr><td>LRCK</td><td>44.1kHz，周期约22.68µs</td></tr></tbody></table></div>
+<p>48kHz时对应为 MCLK 12.288MHz、BCLK 3.072MHz、LRCK 48kHz。</p>
+<h2 id="4-走过的弯路不要再做">4. 走过的弯路（不要再做）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-走过的弯路不要再做" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="41-把-and-模式当成切-i2s-输入">4.1 把 And 模式当成切 I2S 输入<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-把-and-模式当成切-i2s-输入" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>协议表里的 <code>AA A6 01 01 00 EF</code> 是 <strong>And 产品模式</strong>，不是“切 DSP 到 I2S 输入”。这份协议没有 I2S/SPDIF/光纤输入源命令。把 And 当切源下发，本机 DSP 固件不认，还可能异常重启。见第 5 节。</p>
+<p>协议里也没有静音查询。解静音是 <code>AA A6 02 01 00 EF</code>，DSP 不回这条。</p>
+<h3 id="42-把-h133-配成-i2s-主机">4.2 把 H133 配成 I2S 主机<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-把-h133-配成-i2s-主机" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>排查初期 DTS 曾把 <code>frame-master</code> / <code>bitclock-master</code> 指到 <code>i2s1_cpu</code>，H133 往外打 BCLK/LRCK。硬件是 <strong>BP1048 主机、H133 从机</strong>，两边抢时钟。已改回从机，见第 2 节和第 7 节补丁 <code>0001</code>。</p>
+<p>从机模式下 PCM 能 <code>RUNNING</code> 且 <code>hw_ptr</code> 按 44.1k 涨，说明 DSP 已在出 BCLK/LRCK。</p>
+<h3 id="43-16bit-放进-32bit-slot-的-msb">4.3 16bit 放进 32bit slot 的 MSB<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-16bit-放进-32bit-slot-的-msb" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>曾把 <code>snd_sunxi_i2s.c</code> 里 S16 播放的 <code>TXIM</code> 从 LSB 改成 MSB，怀疑 DSP 读到全 0。改完仍无声。用户要求回退，<strong>源码已恢复原厂 <code>TXIM=1</code>（LSB）</strong>。不要再改这一处。HDMI 非 PCM 那条 <code>TXIM=0</code> 是原厂代码，不要动。</p>
+<h2 id="5-dsp-uart协议问题">5. DSP UART协议问题<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-dsp-uart协议问题" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>原代码把协议表中的 <code>And模式</code> 解释成“I2S切换”，开机发送：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>AA A6 01 01 00 EF</span></span></code></pre></figure>
+<p>现场确认此DSP固件不存在该I2S切换命令，发送会导致异常重启。该命令原来被发送两次：</p>
+<ol>
+<li><code>dsp1048.sh boot</code></li>
+<li><code>desk_mcu_dsp1048_bootstrap()</code></li>
+</ol>
+<p>现已移除两处发送，同时删除无效的 <code>dsp1048.sh and</code> 子命令。开机只保留：</p>
+<ol>
+<li>启动并保持 <code>/dev/ttyS3</code> 守护进程，1500000波特率。</li>
+<li>发送解除静音。</li>
+<li>设置音乐音量。</li>
+</ol>
+<p>AUX和蓝牙模式命令仍保留，因为现场可收到DSP模式应答。</p>
+<h2 id="6-测试方法">6. 测试方法<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-测试方法" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="61-查看软件状态">6.1 查看软件状态<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#61-查看软件状态" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /proc/asound/cards</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /etc/audio_output.mode</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /proc/asound/card0/pcm0p/sub0/status</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cat</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /proc/asound/card0/pcm0p/sub0/hw_params</span></span></code></pre></figure>
+<p>期望：</p>
+<ul>
+<li>声卡包含 <code>sndi2s1</code>。</li>
+<li>输出模式为 <code>i2s</code>。</li>
+<li>播放期间状态为 <code>RUNNING</code>。</li>
+</ul>
+<h3 id="62-直接播放">6.2 直接播放<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#62-直接播放" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">aplay</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -D</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> hw:sndi2s1,0</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> test.wav</span></span></code></pre></figure>
+<p>测试文件建议使用 S16_LE、双声道、44.1kHz。</p>
+<h3 id="63-示波器测量">6.3 示波器测量<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#63-示波器测量" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>必须在播放期间测量：</p>
+<ul>
+<li>PG11或R10005：MCLK。</li>
+<li>PG12或R10006：LRCK。</li>
+<li>PG13或R10007：BCLK。</li>
+<li>PG15或R10009：播放数据。</li>
+</ul>
+<p>建议使用×10探头、短地弹簧、DC耦合。若DSP侧波形正常而H133侧异常，检查33Ω电阻、焊接和短路；若DSP侧也异常，检查DSP固件I2S主机配置。</p>
+<h2 id="7-配套补丁">7. 配套补丁<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-配套补丁" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>补丁在 <code>patches/</code>，按序号打到 <code>AI-tq</code> 根目录（相对 <code>汇音项目-release</code>）。工作区已经落地。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>补丁</th><th>作用</th></tr></thead><tbody><tr><td><code>0001-h133-k1-i2s1-dts.patch</code></td><td>I2S1 接入：PG11–PG15、开播放、H133 从机、PG 3.3V、PG11 不再给 WiFi 32k</td></tr><tr><td><code>0002-h133-k1-alsa-i2s-route.patch</code></td><td>默认播放 <code>PlaybackI2S</code> → <code>hw:sndi2s1</code>，44100，路由/设置页/tplayer</td></tr><tr><td><code>0003-h133-k1-bp1048-uart.patch</code></td><td><code>dsp1048.sh</code> 常开串口；开机解静音+音量；不发 And；<code>mcu_spdif_init.sh</code> 空操作</td></tr></tbody></table></div>
+<p>不含：LCD/触摸、<code>setting.ini</code> 横屏坐标、已回退的 16bit MSB。<code>sunxi-daudio.c</code> / <code>snd_sunxi_i2s.c</code> 不用改。</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">AI-skiil/板件开发记录/XYC_K1/20260909-H133-K1-I2S连接BP1048/patches/apply.sh</span></span></code></pre></figure>
+<h2 id="8-注意事项">8. 注意事项<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-注意事项" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>不要再执行 <code>dsp1048.sh and</code>，修复后该子命令已删除。</li>
+<li>不要直接以115200波特率向 <code>/dev/ttyS3</code> 发送旧 <code>AF 55</code> 协议。</li>
+<li><code>/dev/ttyS3</code> 应由 <code>dsp1048.sh</code> 守护进程独占，命令通过 <code>/tmp/dsp1048.cmd</code> 发送。</li>
+<li>I2S静止时的浮空波形不能用于判断LRCK频率。</li>
+<li>H133侧运行正常不能单独证明DSP已按正确格式接收；最终以示波器波形和实际出声为准。</li>
+<li>不要把 <code>snd_sunxi_i2s.c</code> 的 S16 <code>TXIM</code> 从 LSB 改成 MSB，实验无效且已回退。</li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-187" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#h133-k1-i2s-连接-bp1048-开发记录" data-for="h133-k1-i2s-连接-bp1048-开发记录">H133-K1 I2S 连接 BP1048 开发记录</a></li><li class="depth-1"><a href="#1-硬件链路" data-for="1-硬件链路">1. 硬件链路</a></li><li class="depth-2"><a href="#11-io电压" data-for="11-io电压">1.1 IO电压</a></li><li class="depth-1"><a href="#2-h133软件配置" data-for="2-h133软件配置">2. H133软件配置</a></li><li class="depth-1"><a href="#3-运行时验证" data-for="3-运行时验证">3. 运行时验证</a></li><li class="depth-1"><a href="#4-走过的弯路不要再做" data-for="4-走过的弯路不要再做">4. 走过的弯路（不要再做）</a></li><li class="depth-2"><a href="#41-把-and-模式当成切-i2s-输入" data-for="41-把-and-模式当成切-i2s-输入">4.1 把 And 模式当成切 I2S 输入</a></li><li class="depth-2"><a href="#42-把-h133-配成-i2s-主机" data-for="42-把-h133-配成-i2s-主机">4.2 把 H133 配成 I2S 主机</a></li><li class="depth-2"><a href="#43-16bit-放进-32bit-slot-的-msb" data-for="43-16bit-放进-32bit-slot-的-msb">4.3 16bit 放进 32bit slot 的 MSB</a></li><li class="depth-1"><a href="#5-dsp-uart协议问题" data-for="5-dsp-uart协议问题">5. DSP UART协议问题</a></li><li class="depth-1"><a href="#6-测试方法" data-for="6-测试方法">6. 测试方法</a></li><li class="depth-2"><a href="#61-查看软件状态" data-for="61-查看软件状态">6.1 查看软件状态</a></li><li class="depth-2"><a href="#62-直接播放" data-for="62-直接播放">6.2 直接播放</a></li><li class="depth-2"><a href="#63-示波器测量" data-for="63-示波器测量">6.3 示波器测量</a></li><li class="depth-1"><a href="#7-配套补丁" data-for="7-配套补丁">7. 配套补丁</a></li><li class="depth-1"><a href="#8-注意事项" data-for="8-注意事项">8. 注意事项</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../../postscript-441eae38.js" type="module" data-persist="true"></script></html>

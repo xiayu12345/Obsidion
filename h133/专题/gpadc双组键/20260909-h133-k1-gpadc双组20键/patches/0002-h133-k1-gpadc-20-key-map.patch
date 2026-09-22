@@ -1,0 +1,57 @@
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -1540,19 +1540,43 @@
+ 	channel_compare_select = <1>;
+ 	channel_cld_select = <1>;
+ 	channel_chd_select = <1>;
++	key-group-gpios = <&pio PG 18 GPIO_ACTIVE_HIGH>;
+ 	channel0_compare_lowdata = <1700000>;
+ 	channel0_compare_higdata = <1200000>;
+-	key_cnt = <5>;
+-	key0_vol = <210>;
+-	key0_val = <115>;
+-	key1_vol = <410>;
+-	key1_val = <114>;
+-	key2_vol = <590>;
+-	key2_val = <139>;
+-	key3_vol = <750>;
+-	key3_val = <28>;
+-	key4_vol = <880>;
+-	key4_val = <240>;
++	key_cnt = <10>;
++	/* PG18=0，A组：导航和功能按键 */
++	key0_vol = <4>;
++	key0_val = <103>;	/* KEY_UP：向上 */
++	key1_vol = <118>;
++	key1_val = <108>;	/* KEY_DOWN：向下 */
++	key2_vol = <238>;
++	key2_val = <105>;	/* KEY_LEFT：向左 */
++	key3_vol = <357>;
++	key3_val = <106>;	/* KEY_RIGHT：向右 */
++	key4_vol = <479>;
++	key4_val = <28>;	/* KEY_ENTER：确认 */
++	key5_vol = <597>;
++	key5_val = <158>;	/* KEY_BACK：返回 */
++	key6_vol = <716>;
++	key6_val = <139>;	/* KEY_MENU：菜单/监听 */
++	key7_vol = <834>;
++	key7_val = <87>;	/* KEY_F11：话筒优先 */
++	key8_vol = <963>;
++	key8_val = <88>;	/* KEY_F12：伴唱 */
++	key9_vol = <1079>;
++	key9_val = <237>;	/* KEY_BLUETOOTH：蓝牙 */
++
++	/* PG18=1，B组：音效按键 */
++	Bkey0_val = <59>;	/* KEY_F1：室内/室外 */
++	Bkey1_val = <60>;	/* KEY_F2：变声 */
++	Bkey2_val = <61>;	/* KEY_F3：贱拉拉 */
++	Bkey3_val = <62>;	/* KEY_F4：掌声 */
++	Bkey4_val = <63>;	/* KEY_F5：欢呼 */
++	Bkey5_val = <64>;	/* KEY_F6：飞吻 */
++	Bkey6_val = <65>;	/* KEY_F7：么么哒 */
++	Bkey7_val = <66>;	/* KEY_F8：鄙视 */
++	Bkey8_val = <67>;	/* KEY_F9：开场 */
++	Bkey9_val = <68>;	/* KEY_F10：混响效果 */
+ 	status = "okay";
+ };
+ 

@@ -1,0 +1,272 @@
+--- a/kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.c
++++ b/kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.c
+@@ -29,6 +29,7 @@
+ #include <linux/of_address.h>
+ #include <linux/pm.h>
+ #include <linux/workqueue.h>
++#include <linux/gpio/consumer.h>
+ #include "sunxi_gpadc.h"
+ #include <linux/sched.h>
+ #include <linux/clkdev.h>
+@@ -50,6 +51,8 @@
+ 		pr_info(fmt, ##__VA_ARGS__);	\
+ } while (0)
+ 
++#define KEY_GROUP_SCAN_INTERVAL_MS	10
++
+ static struct sunxi_gpadc *sunxi_gpadc;
+ static struct status_reg  status_para;
+ static struct vol_reg     vol_para;
+@@ -863,6 +866,11 @@
+ 		for (i = 0; i < KEY_MAX_CNT; i++)
+ 			set_bit(sunxi_gpadc->scankeycodes[i],
+ 					input_dev->keybit);
++		if (sunxi_gpadc->key_group_enabled) {
++			for (i = 0; i < sunxi_gpadc->key_num; i++)
++				set_bit(sunxi_gpadc->scankeycodes_group_b[i],
++						input_dev->keybit);
++		}
+ 		break;
+ 
+ 	case GP_CH_1:
+@@ -957,6 +965,24 @@
+ 	return ret;
+ }
+ 
++static void sunxi_gpadc_key_group_work(struct work_struct *work)
++{
++	struct sunxi_gpadc *chip =
++		container_of(to_delayed_work(work), struct sunxi_gpadc,
++			     key_group_work);
++	unsigned long flags;
++
++	spin_lock_irqsave(&chip->key_group_lock, flags);
++	if (!chip->key_pressed) {
++		chip->key_group_b = !chip->key_group_b;
++		gpiod_set_value(chip->key_group_gpio, chip->key_group_b);
++	}
++	spin_unlock_irqrestore(&chip->key_group_lock, flags);
++
++	schedule_delayed_work(&chip->key_group_work,
++			      msecs_to_jiffies(KEY_GROUP_SCAN_INTERVAL_MS));
++}
++
+ static int sunxi_key_init(struct sunxi_gpadc *sunxi_gpadc,
+ 		struct platform_device *pdev)
+ {
+@@ -964,6 +990,7 @@
+ 	unsigned char i, j = 0;
+ 	u32 vol, val;
+ 	u32 set_vol[VOL_NUM];
++	int ret;
+ 
+ 	np = pdev->dev.of_node;
+ 	if (of_property_read_u32(np, "key_cnt", &sunxi_gpadc->key_num)) {
+@@ -994,6 +1021,36 @@
+ 		pr_debug("%s: key%d vol= %d code= %d\n", __func__, i,
+ 				key_vol[i], sunxi_gpadc->scankeycodes[i]);
+ 	}
++
++	sunxi_gpadc->key_group_gpio = devm_gpiod_get_optional(&pdev->dev,
++						"key-group", GPIOD_OUT_LOW);
++	if (IS_ERR(sunxi_gpadc->key_group_gpio)) {
++		ret = PTR_ERR(sunxi_gpadc->key_group_gpio);
++		dev_err(&pdev->dev, "failed to get key group GPIO: %d\n", ret);
++		return ret;
++	}
++
++	if (sunxi_gpadc->key_group_gpio) {
++		for (i = 0; i < sunxi_gpadc->key_num; i++) {
++			snprintf(sunxi_gpadc->key_name,
++				 sizeof(sunxi_gpadc->key_name),
++				 "Bkey%d_val", i);
++			if (of_property_read_u32(np, sunxi_gpadc->key_name,
++						 &val)) {
++				dev_err(&pdev->dev, "get %s failed\n",
++					sunxi_gpadc->key_name);
++				return -EINVAL;
++			}
++			sunxi_gpadc->scankeycodes_group_b[i] = val;
++		}
++
++		spin_lock_init(&sunxi_gpadc->key_group_lock);
++		INIT_DELAYED_WORK(&sunxi_gpadc->key_group_work,
++				  sunxi_gpadc_key_group_work);
++		sunxi_gpadc->key_group_enabled = true;
++		sunxi_gpadc->key_group_b = false;
++	}
++
+ 	key_vol[sunxi_gpadc->key_num] = MAXIMUM_INPUT_VOLTAGE;
+ 
+ 	for (i = 0; i < sunxi_gpadc->key_num; i++)
+@@ -1222,6 +1279,7 @@
+ static u32 sunxi_gpadc_key_xfer(struct sunxi_gpadc *sunxi_gpadc, u32 data, u32 irq_low_set)
+ {
+ 	u32 vol_data;
++	u32 keycode;
+ 	u8 ch_num;
+ 
+ #ifdef CONFIG_ARCH_SUN8IW18
+@@ -1273,9 +1331,20 @@
+ 				return -EINVAL;
+ 			}
+ 			if (sunxi_gpadc->key_code != sunxi_gpadc->key_num) {
++				if (sunxi_gpadc->key_group_enabled &&
++				    sunxi_gpadc->key_group_b)
++					keycode = sunxi_gpadc->scankeycodes_group_b[
++						sunxi_gpadc->key_code];
++				else
++					keycode = sunxi_gpadc->scankeycodes[
++						sunxi_gpadc->key_code];
+ 				input_report_key(sunxi_gpadc->input_gpadc[ch_num],
+-					sunxi_gpadc->scankeycodes[sunxi_gpadc->key_code], 1);
++						 keycode, 1);
+ 				input_sync(sunxi_gpadc->input_gpadc[ch_num]);
++				if (sunxi_gpadc->key_group_enabled) {
++					sunxi_gpadc->active_keycode = keycode;
++					sunxi_gpadc->key_reported = true;
++				}
+ 			}
+ 			sunxi_gpadc->compare_later = 0;
+ 			sunxi_gpadc->key_cnt = 0;
+@@ -1289,6 +1358,7 @@
+ static irqreturn_t sunxi_gpadc_interrupt(int irqno, void *dev_id)
+ {
+ 	struct sunxi_gpadc *sunxi_gpadc = (struct sunxi_gpadc *)dev_id;
++	unsigned long flags;
+ 	u32  irq_data_set, irq_low_set, irq_hig_set;
+ 	u32  irq_data_val, irq_low_en, irq_hig_en;
+ 	u32 data;
+@@ -1313,15 +1383,36 @@
+ 		data = sunxi_gpadc_read_data(sunxi_gpadc->reg_base, GP_CH_0);
+ 
+ 	if (irq_low_set & GP_CH0_LOW & irq_low_en) {
++		if (sunxi_gpadc->key_group_enabled) {
++			spin_lock_irqsave(&sunxi_gpadc->key_group_lock, flags);
++			sunxi_gpadc->key_pressed = true;
++			spin_unlock_irqrestore(&sunxi_gpadc->key_group_lock,
++					       flags);
++		}
+ 		data = sunxi_gpadc_read_data(sunxi_gpadc->reg_base, GP_CH_0);
+ 		sunxi_gpadc_key_xfer(sunxi_gpadc, data, irq_low_set);
+ 		sunxi_enable_higirq_ch_select(sunxi_gpadc->reg_base, GP_CH_0);
+ 	}
+ 
+ 	if (irq_hig_set & GP_CH0_HIG & irq_hig_en) {
+-		input_report_key(sunxi_gpadc->input_gpadc[GP_CH_0],
+-			sunxi_gpadc->scankeycodes[sunxi_gpadc->key_code], 0);
+-		input_sync(sunxi_gpadc->input_gpadc[GP_CH_0]);
++		if (sunxi_gpadc->key_group_enabled) {
++			if (sunxi_gpadc->key_reported) {
++				input_report_key(
++					sunxi_gpadc->input_gpadc[GP_CH_0],
++					sunxi_gpadc->active_keycode, 0);
++				input_sync(sunxi_gpadc->input_gpadc[GP_CH_0]);
++			}
++			spin_lock_irqsave(&sunxi_gpadc->key_group_lock, flags);
++			sunxi_gpadc->key_pressed = false;
++			sunxi_gpadc->key_reported = false;
++			spin_unlock_irqrestore(&sunxi_gpadc->key_group_lock,
++					       flags);
++		} else {
++			input_report_key(sunxi_gpadc->input_gpadc[GP_CH_0],
++				sunxi_gpadc->scankeycodes[
++					sunxi_gpadc->key_code], 0);
++			input_sync(sunxi_gpadc->input_gpadc[GP_CH_0]);
++		}
+ 		sunxi_gpadc->compare_later = 0;
+ 		sunxi_gpadc->key_cnt = 0;
+ 		sunxi_disable_higirq_ch_select(sunxi_gpadc->reg_base, GP_CH_0);
+@@ -2004,7 +2095,9 @@
+ 	}
+ #endif
+ 	sunxi_gpadc->dev = &pdev->dev;
+-	sunxi_key_init(sunxi_gpadc, pdev);
++	ret = sunxi_key_init(sunxi_gpadc, pdev);
++	if (ret)
++		goto fail2;
+ 	sunxi_gpadc_setup(pdev, sunxi_gpadc);
+ 	sunxi_gpadc_hw_init(sunxi_gpadc);
+ 	sunxi_gpadc_input_register_setup(sunxi_gpadc);
+@@ -2023,6 +2116,11 @@
+ 		return -1;
+ 	}
+ 
++	if (sunxi_gpadc->key_group_enabled)
++		schedule_delayed_work(&sunxi_gpadc->key_group_work,
++				      msecs_to_jiffies(
++					      KEY_GROUP_SCAN_INTERVAL_MS));
++
+ /*
+ * This function will only be used when IIO is enabled !!!
+ */
+@@ -2049,6 +2147,8 @@
+ {
+ 	struct sunxi_gpadc *sunxi_gpadc = platform_get_drvdata(pdev);
+ 
++	if (sunxi_gpadc->key_group_enabled)
++		cancel_delayed_work_sync(&sunxi_gpadc->key_group_work);
+ 	cancel_delayed_work_sync(&sunxi_gpadc->gpadc_work);
+ 
+ 	sunxi_gpadc_hw_exit(sunxi_gpadc);
+@@ -2065,6 +2165,8 @@
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct sunxi_gpadc *sunxi_gpadc = platform_get_drvdata(pdev);
+ 
++	if (sunxi_gpadc->key_group_enabled)
++		cancel_delayed_work_sync(&sunxi_gpadc->key_group_work);
+ #ifdef USE_DATA_SCAN
+ 	schedule_delayed_work(&sunxi_gpadc->gpadc_work, 0);
+ 	flush_delayed_work(&sunxi_gpadc->gpadc_work);
+@@ -2085,6 +2187,7 @@
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct sunxi_gpadc *sunxi_gpadc = platform_get_drvdata(pdev);
++	unsigned long flags;
+ 
+ 	reset_control_deassert(sunxi_gpadc->reset);
+ 
+@@ -2097,6 +2200,18 @@
+ 
+ 	enable_irq(sunxi_gpadc->irq_num);
+ 
++	if (sunxi_gpadc->key_group_enabled) {
++		gpiod_set_value(sunxi_gpadc->key_group_gpio, 0);
++		spin_lock_irqsave(&sunxi_gpadc->key_group_lock, flags);
++		sunxi_gpadc->key_group_b = false;
++		sunxi_gpadc->key_pressed = false;
++		sunxi_gpadc->key_reported = false;
++		spin_unlock_irqrestore(&sunxi_gpadc->key_group_lock, flags);
++		schedule_delayed_work(&sunxi_gpadc->key_group_work,
++				      msecs_to_jiffies(
++					      KEY_GROUP_SCAN_INTERVAL_MS));
++	}
++
+ #ifdef USE_DATA_SCAN
+ 	schedule_delayed_work(&sunxi_gpadc->gpadc_work, sunxi_gpadc->interval);
+ #endif
+--- a/kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.h
++++ b/kernel/linux-5.4/drivers/input/sensor/sunxi_gpadc.h
+@@ -299,6 +299,7 @@
+ 	int irq_num;
+ 	u32 channel_num;
+ 	u32 scankeycodes[KEY_MAX_CNT];
++	u32 scankeycodes_group_b[KEY_MAX_CNT];
+ 	u32 gpadc_sample_rate;
+ 	char key_name[16];
+ 	u32 key_num;
+@@ -307,6 +308,14 @@
+ 	u8 compare_later;
+ 	u8 key_code;
+ 	u32 key_val;
++	struct gpio_desc *key_group_gpio;
++	struct delayed_work key_group_work;
++	spinlock_t key_group_lock;
++	bool key_group_enabled;
++	bool key_group_b;
++	bool key_pressed;
++	bool key_reported;
++	u32 active_keycode;
+ 	struct delayed_work gpadc_work;
+ 	unsigned int interval;
+ 	int bus_num;

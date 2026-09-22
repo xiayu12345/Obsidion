@@ -1,0 +1,25 @@
+diff --git a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig
+index 560c8d78b..841d97869 100755
+--- a/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig
++++ b/brandy/brandy-2.0/u-boot-2018/configs/sun8iw20p1_nor_defconfig
+@@ -126,10 +126,17 @@ CONFIG_AW_PHY=y
+ # CONFIG_DISP2_TV_AC200 is not set
+ # CONFIG_EDP_DISP2_SUNXI is not set
+ # CONFIG_EINK_PANEL_USED is not set
+-CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP=y
++# CONFIG_LCD_SUPPORT_LQ140_MIPI2EDP is not set
+ CONFIG_LCD_SUPPORT_XYC_K1_LVDS=y
+-CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP=y
+-CONFIG_LCD_SUPPORT_ZS101_ILI9881C=y
++# CONFIG_LCD_SUPPORT_LQ190_MIPI2EDP is not set
++# CONFIG_LCD_SUPPORT_ZS101_ILI9881C is not set
++# Kconfig default y panels — must disable or they inflate NOR boot1
++# CONFIG_LCD_SUPPORT_HE0801A068 is not set
++# CONFIG_LCD_SUPPORT_WILLIAMLCD is not set
++# CONFIG_LCD_SUPPORT_LQ101R1SX03 is not set
++# CONFIG_LCD_SUPPORT_INET_DSI_PANEL is not set
++# CONFIG_LCD_SUPPORT_CC08021801_310_800X1280 is not set
++# CONFIG_LCD_SUPPORT_JYY070_LVDS is not set
+ 
+ # BOOT GUI
+ #

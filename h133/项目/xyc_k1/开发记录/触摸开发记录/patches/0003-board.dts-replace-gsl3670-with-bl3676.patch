@@ -1,0 +1,45 @@
+Subject: [PATCH 3/4] dts: p1_nor_XYC_K1 replace GSL3670 with BL3676 on TWI1
+
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -650,30 +650,21 @@
+ 	pinctrl-0 = <&twi1_pins_a>;
+ 	pinctrl-1 = <&twi1_pins_b>;
+ 	pinctrl-names = "default", "sleep";
++	/* TWI1 DMA 通道 44；本板实测可用 */
+ 	twi_drv_used = <1>;
+ 	dmas = <&dma 44>, <&dma 44>;
+ 	dma-names = "tx", "rx";
+ 	status = "okay";
+ 
+-	/* JL-M101 板载 GSL3670 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x40；固件 conf_3670(3)+GSL3670_JL_M101.h（800×1280）；IRQ 下降沿 */
+-	ctp@40 {
+-		compatible = "allwinner,gslX680";
+-		device_type = "ctp";
+-		reg = <0x40>;
++	/* BL3676：TWI1 PG8/PG9，RST=PG2，INT=PG3，I2C 0x2C；gpios[0]=RST [1]=INT */
++	betterlife_ts@2c {
++		compatible = "BTL,betterlife_ts";
++		reg = <0x2c>;
+ 		status = "okay";
+-		ctp_name = "gsl3670";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x40>;
+-		/* exchange 后 1280×800；report 保持同量程，对齐 LVGL（disp_rotate=3） */
+-		ctp_screen_max_x = <1280>;
+-		ctp_screen_max_y = <800>;
+-		ctp_report_max_x = <1280>;
+-		ctp_report_max_y = <800>;
+-		ctp_revert_x_flag = <0x0>;
+-		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x1>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
++		gpios = <&pio PG 2 GPIO_ACTIVE_HIGH>,
++			<&pio PG 3 GPIO_ACTIVE_HIGH>;
++		TP_MAX_X = <1280>;
++		TP_MAX_Y = <800>;
+ 	};
+ };
+ 

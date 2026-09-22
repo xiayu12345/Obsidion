@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>使用与构建</title><meta charset="utf-8"/><link rel="preload" href="../../../index-3622e4ec.css" as="style"/><link rel="preload" href="../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="使用与构建"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="使用与构建"/><meta name="twitter:description" content="双屏同/异显 — 合并后使用与构建 补丁已合进树。本文是 ⑤ 当前用法。 演进：① 最小验证 → ② 第一版 HDMI 有视频 LCD 没有 → ③ 两路都有 → ④ 加 DIFF_HDMI → ⑤ 取消同显，两模式。头文件坑见 20260828。 1."/><meta property="og:description" content="双屏同/异显 — 合并后使用与构建 补丁已合进树。本文是 ⑤ 当前用法。 演进：① 最小验证 → ② 第一版 HDMI 有视频 LCD 没有 → ③ 两路都有 → ④ 加 DIFF_HDMI → ⑤ 取消同显，两模式。头文件坑见 20260828。 1."/><meta property="og:image:alt" content="双屏同/异显 — 合并后使用与构建 补丁已合进树。本文是 ⑤ 当前用法。 演进：① 最小验证 → ② 第一版 HDMI 有视频 LCD 没有 → ③ 两路都有 → ④ 加 DIFF_HDMI → ⑤ 取消同显，两模式。头文件坑见 20260828。 1."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/使用与构建"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/使用与构建"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="双屏同/异显 — 合并后使用与构建 补丁已合进树。本文是 ⑤ 当前用法。 演进：① 最小验证 → ② 第一版 HDMI 有视频 LCD 没有 → ③ 两路都有 → ④ 加 DIFF_HDMI → ⑤ 取消同显，两模式。头文件坑见 20260828。 1."/><meta name="generator" content="Quartz"/><link href="../../../index-3622e4ec.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/使用与构建-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/使用与构建-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/使用与构建-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/专题/双屏异显/使用与构建" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-59" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-59" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><h1 class="article-title">使用与构建</h1><p show-comma="true" class="content-meta"><time datetime="2026-09-20T07:57:17.000Z">2026年9月20日</time><span>5分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="双屏同异显--合并后使用与构建">双屏同/异显 — 合并后使用与构建<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#双屏同异显--合并后使用与构建" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>补丁已合进树。本文是 <strong>⑤ 当前用法</strong>。</p>
+<p>演进：① <a href="../../../20260805-hdmi异显最小验证/" class="internal internal-link alias" data-slug="20260805-hdmi异显最小验证/index">最小验证</a> → ② <a href="../../../20260806-同异显切换/" class="internal internal-link alias" data-slug="20260806-同异显切换/index">第一版 HDMI 有视频 LCD 没有</a> → ③ <a href="../../../20260915-异显视频双贴lcd-hdmi/" class="internal internal-link alias" data-slug="20260915-异显视频双贴lcd-hdmi/index">两路都有</a> → ④ <a href="../../../20260918-异显仅hdmi第三模式/" class="internal internal-link alias" data-slug="20260918-异显仅hdmi第三模式/index">加 DIFF_HDMI</a> → ⑤ <a href="../../../20260920-取消wb同显-两模式/" class="internal internal-link alias" data-slug="20260920-取消wb同显-两模式/index">取消同显，两模式</a>。头文件坑见 <a href="../../../20260828-libuapi内核头对齐/" class="internal internal-link alias" data-slug="20260828-libuapi内核头对齐/index">20260828</a>。</p>
+<hr/>
+<h2 id="1-行为">1. 行为<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-行为" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>MIPI = screen0（LCD/UI），HDMI = screen1。<strong>产品没有同显了</strong>：WB 管道不会自动启动，
+切模式也不碰它，两种模式只决定视频层贴哪块屏。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>模式</th><th>设置页</th><th>视频</th><th><code>disp_mode</code></th></tr></thead><tbody><tr><td><strong>SAME</strong>（默认）</td><td>同屏</td><td>LCD+HDMI 都有（<code>disp_screen=3</code>，须已插线）</td><td><code>same</code></td></tr><tr><td><strong>DIFF</strong></td><td>异屏</td><td>只 HDMI（<code>disp_screen=2</code>；LCD 仅 UI）</td><td><code>diff</code></td></tr></tbody></table></div>
+<p>⚠️ <strong>④ 升级上来要注意含义搬家</strong>：<code>SAME</code> 从”视频贴 LCD、HDMI 看 WB 镜像”变成”两块屏都有视频”；
+<code>DIFF</code> 从 mask 3 变成 mask 2（即 ④ 的 <code>diff_hdmi</code>）。<code>DIFF_HDMI</code> 已删除。
+<code>/etc/disp_mirror_mode</code> 里存着的老值 <code>2</code> 会自动迁成 <code>DIFF</code>，不用手工清。</p>
+<p>未插 HDMI 时视频强制 LCD（⑤ 实测有效，见 <a href="../../../h133/专题/双屏异显/20260920-取消wb同显-两模式/开发记录" class="internal internal-link alias" data-slug="h133/专题/双屏异显/20260920-取消wb同显-两模式/开发记录">⑤ 开发记录 §6.1</a>）。
+播中切模式失败（<code>-EBUSY</code>）。切完要<strong>再起播</strong>才按新屏建层。偏好落 <code>/etc/disp_mirror_mode</code>，
+每次建层时现读（<code>boot_sync</code> 只负责开机关掉 fb pan clone）。
+HDMI 视频窗跟 LCD <code>video_screen</code> 等比放大（不是电视全屏）。</p>
+<p>不要在蓝牙 K 歌里测：电视不会镜像整屏 UI。去点歌播一首。</p>
+<hr/>
+<h2 id="2-机上命令">2. 机上命令<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-机上命令" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">disp_mode</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> get</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># same: mode=same hdmi=1 video_screen=3</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># diff: mode=diff hdmi=1 video_screen=2</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">disp_mode</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> same</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">disp_mode</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> diff</span></span></code></pre></figure>
+<p>⑤ 起输出里<strong>不再有</strong> <code>wb=</code> / <code>hdmi_out=</code> 两列，<code>diff_hdmi</code> 也没有了。</p>
+<p>插 HDMI → 停播 → <code>disp_mode same</code> → 进点歌再播，LCD 视频窗和 HDMI 都应有视频。<br/>
+<code>disp_mode diff</code>：LCD 点歌窗空、视频只上电视。设置页两项就对应这两条命令。</p>
+<hr/>
+<h2 id="3-应用接口不必走命令">3. 应用接口（不必走命令）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-应用接口不必走命令" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>链 <code>-luapi</code>，头文件 <code>/usr/include/disp_dual.h</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="c" data-theme="github-light github-dark"><code data-language="c" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="punctuation">#include</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &lt;disp_dual.h></span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="property">sunxi_disp_mode_t</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> mode;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sunxi_disp_mode_get</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">&amp;</span><span style="--shiki-light:#E36209;--shiki-dark:#FFAB70;" data-token-type="important">mode</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">);</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sunxi_disp_mode_set</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(SUNXI_DISP_MODE_SAME);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   /* 同屏：LCD+HDMI 都有 */</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sunxi_disp_mode_set</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">(SUNXI_DISP_MODE_DIFF);</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">   /* 异屏：只上电视，LCD 仅 UI */</span></span>
+<span data-line> </span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sunxi_disp_hdmi_connected</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">        /* 0/1 */</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">sunxi_disp_video_screen_mask</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation">();</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">     /* 未插=1；SAME+已插=3；DIFF+已插=2 */</span></span></code></pre></figure>
+<p>产品路径只用 <code>sunxi_disp_mode_set</code> / <code>get</code>。
+⑤ 已删掉 <code>SUNXI_DISP_MODE_DIFF_HDMI</code> 和三个 <code>sunxi_dual_display_*()</code> 排障接口（那几个是切 WB 层用的），
+老代码若还在引用，编译期就会报错，按上表改过来即可。</p>
+<p>播中 <code>set</code> 返回 <code>-EBUSY</code>。</p>
+<hr/>
+<h2 id="4-构建注意事项">4. 构建注意事项<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-构建注意事项" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>异显是<strong>内核 ioctl + libuapi 结构体</strong>成对的。只编一边会对不齐，<code>SET_CONFIG2</code> 会把栈当 <code>layer_id</code> Oops。</p>
+<h3 id="41-头文件必须跟内核走">4.1 头文件必须跟内核走<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#41-头文件必须跟内核走" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>官方 libuapi 是 <code>#include &lt;video/sunxi_display2.h></code>，实际吃<strong>工具链</strong>头，不是 <code>headers_install</code>。</p>
+<p>改过 <code>kernel/linux-5.4/include/video/sunxi_display2.h</code> 之后：</p>
+<ol>
+<li>覆盖工具链（glibc 必换；musl 一并换）：</li>
+</ol>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">K</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">kernel/linux-5.4/include/video/sunxi_display2.h</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cp</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -a</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">$K</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> prebuilt/rootfsbuilt/arm/toolchain-sunxi-glibc-gcc-830/toolchain/include/video/sunxi_display2.h</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cp</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -a</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">$K</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> prebuilt/rootfsbuilt/arm/toolchain-sunxi-musl-gcc-830/toolchain/include/video/sunxi_display2.h</span></span></code></pre></figure>
+<ol start="2">
+<li><strong>清 libuapi 再编用户态</strong>，再 pack。不要只编内核。</li>
+</ol>
+<p>不要：改内核结构迁就旧头、<code>-I</code> 整棵 <code>kernel/include</code>、给 libuapi 加 <code>kern_inc</code>、把 libuapi 改成 tinycedar 那种 <code>&quot;sunxi_display2.h&quot;</code>。</p>
+<h3 id="42-编哪几块">4.2 编哪几块<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#42-编哪几块" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>改了什么</th><th>要编</th></tr></thead><tbody><tr><td>内核 disp / <code>sunxi_display2.h</code></td><td>kernel（boot.img）<strong>并且</strong>换工具链头 + 重编 libuapi</td></tr><tr><td><code>disp_dual.c</code> / libuapi</td><td>OpenWrt <code>libuapi</code></td></tr><tr><td><code>tlayer_ctrl.c</code></td><td><code>libtmedia</code></td></tr><tr><td><code>media_session.c</code></td><td><code>media_session</code></td></tr><tr><td>只测命令</td><td>有 <code>/usr/bin/disp_mode</code> 和匹配的 <code>libuapi.so</code> 即可</td></tr></tbody></table></div>
+<p>强制重编用户态示例（ZS）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">rm</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -rf</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> out/h133/p1_nor_ZS101/openwrt/build_dir/target/libuapi</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> openwrt_rootfs</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> pack</span></span></code></pre></figure>
+<p>其它板把路径里的板名换掉。确认 <code>libuapi.so</code> 时间晚于换头。</p>
+<h3 id="43-板件脚本">4.3 板件脚本<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#43-板件脚本" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_JL_M101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> full</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    # 京龙</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./tools/build_p1_nor_ZS101.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> kernel</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    # 只编内核+uboot，不 pack</span></span></code></pre></figure>
+<ul>
+<li><code>kernel</code> 模式<strong>不 pack</strong>，要镜像再 <code>./build.sh pack</code>。</li>
+<li><strong>ZS101 不要用脚本的 <code>full</code> / <code>rootfs</code>（里面是 <code>m</code>，会编 SPL 失败）。</strong> 内核用 <code>./tools/build_p1_nor_ZS101.sh kernel</code>，用户态用 <code>./build.sh openwrt_rootfs</code> + <code>./build.sh pack</code>。</li>
+<li>京龙 <code>full</code> 可用（<code>m</code> + <code>p</code>）。</li>
+<li>OpenWrt 外层要用 SDK <strong>make 4.1</strong>（脚本已前置 <code>prebuilt/hostbuilt/make4.1</code>）。</li>
+<li><strong>禁止</strong>在 WSL/x86 对 <code>desk</code> / <code>libuapi</code> / <code>tlayer</code> 源码树本地 <code>make</code> / <code>gcc -c</code>（会留下 x86 <code>.o</code>，交叉链接 arm 炸）。</li>
+</ul>
+<h3 id="44-板级差异构建时就会编进去">4.4 板级差异（构建时就会编进去）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#44-板级差异构建时就会编进去" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>libtmedia</code> 的 <code>VIDEO_WB_MIRROR_ROTATE</code>：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>板</th><th>值</th></tr></thead><tbody><tr><td><code>p1_nor</code> / <code>p1_nor_8733</code> / <code>p1_nor_JL_M101</code></td><td>90</td></tr><tr><td><code>p1_nor_JYY070</code> / <code>p1_nor_4k</code></td><td>0</td></tr><tr><td>其它（含 <strong>ZS101</strong>）</td><td>默认 0</td></tr></tbody></table></div>
+<p>换板编 <code>libtmedia</code> 时看 Makefile 的 <code>CONFIG_TARGET_h133_*</code>，不要混 90/0 的包。</p>
+<p>各板 <code>defconfig</code> 已是 <code>CONFIG_SUNXI_DISPLAY_TWO=y</code>、<code>CONFIG_SUNXI_TRANS_DISPBUF_FD=y</code>。</p>
+<hr/>
+<h2 id="5-串口里可忽略的">5. 串口里可忽略的<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-串口里可忽略的" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>⑤ 起<strong>不该</strong>再出现 <code>[DISP] auto-enable dual display</code>；若看到，说明内核补丁没打全。</li>
+<li>cedarc 扫 <code>libaw_mp3dec.so</code>：音频库当视频插件，忽略。</li>
+<li><code>dma_buf_get failed, fd=0</code>：起层时 fd 还是 0，<strong>不是头文件没对齐</strong>。对齐失败是脏 <code>layer_id</code> + Oops。</li>
+</ul></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-44" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#双屏同异显--合并后使用与构建" data-for="双屏同异显--合并后使用与构建">双屏同/异显 — 合并后使用与构建</a></li><li class="depth-1"><a href="#1-行为" data-for="1-行为">1. 行为</a></li><li class="depth-1"><a href="#2-机上命令" data-for="2-机上命令">2. 机上命令</a></li><li class="depth-1"><a href="#3-应用接口不必走命令" data-for="3-应用接口不必走命令">3. 应用接口（不必走命令）</a></li><li class="depth-1"><a href="#4-构建注意事项" data-for="4-构建注意事项">4. 构建注意事项</a></li><li class="depth-2"><a href="#41-头文件必须跟内核走" data-for="41-头文件必须跟内核走">4.1 头文件必须跟内核走</a></li><li class="depth-2"><a href="#42-编哪几块" data-for="42-编哪几块">4.2 编哪几块</a></li><li class="depth-2"><a href="#43-板件脚本" data-for="43-板件脚本">4.3 板件脚本</a></li><li class="depth-2"><a href="#44-板级差异构建时就会编进去" data-for="44-板级差异构建时就会编进去">4.4 板级差异（构建时就会编进去）</a></li><li class="depth-1"><a href="#5-串口里可忽略的" data-for="5-串口里可忽略的">5. 串口里可忽略的</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-441eae38.js" type="module" data-persist="true"></script></html>

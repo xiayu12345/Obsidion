@@ -1,0 +1,69 @@
+diff --git a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
+index 58247a333..3c79259c9 100644
+--- a/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
++++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
+@@ -818,16 +818,9 @@ s32 tcon0_cfg(u32 sel, disp_panel_para *panel)
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_correct_mode = 0;
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_dir = 0;
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_sel = 1;
+-		/* dts lcd_lvds_io_polarity：bit[3:0] 数据反相，bit4 时钟反相 */
+-		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert =
+-		    panel->lcd_lvds_io_polarity & 0xf;
+-		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert =
+-		    (panel->lcd_lvds_io_polarity >> 4) & 0x1;
+ #if defined(LVDS_REVERT)
+-		if (!panel->lcd_lvds_io_polarity) {
+-			lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert = 0xf;
+-			lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert = 0x1;
+-		}
++		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert = 0xf;
++		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert = 0x1;
+ #endif
+ 		panel->lcd_fresh_mode = 0;
+ 		tcon0_cfg_mode_auto(sel, panel);
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -1175,8 +1175,6 @@
+ 	lcd_frm             = <1>;          /* RGB666 dither */
+ 	lcd_hv_clk_phase    = <0>;
+ 	lcd_hv_sync_polarity= <0>;
+-	/* 厂 fex：io_polarity=15 + clk_polarity=1 → bit[3:0] 数据反、bit4 时钟反 */
+-	lcd_lvds_io_polarity = <0x1f>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+ 	lcd_cmap_en         = <0>;
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
+@@ -365,7 +365,6 @@
+ 	lcd_frm             = <1>;
+ 	lcd_hv_clk_phase    = <0>;
+ 	lcd_hv_sync_polarity= <0>;
+-	lcd_lvds_io_polarity = <0x1f>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+ 	lcd_cmap_en         = <0>;
+diff --git a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
+index c5d4e9bca..694646762 100644
+--- a/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
++++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/de/lowlevel_v2x/de_lcd.c
+@@ -902,16 +902,9 @@ s32 tcon0_cfg(u32 sel, struct disp_panel_para *panel)
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_correct_mode = 0;
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_dir = 0;
+ 		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_sel = 1;
+-		/* dts lcd_lvds_io_polarity：bit[3:0] 数据反相，bit4 时钟反相 */
+-		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert =
+-		    panel->lcd_lvds_io_polarity & 0xf;
+-		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert =
+-		    (panel->lcd_lvds_io_polarity >> 4) & 0x1;
+ #if defined(LVDS_REVERT)
+-		if (!panel->lcd_lvds_io_polarity) {
+-			lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert = 0xf;
+-			lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert = 0x1;
+-		}
++		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_data_revert = 0xf;
++		lcd_dev[sel]->tcon0_lvds_ctl.bits.tcon0_lvds_clk_revert = 0x1;
+ #endif
+ 		panel->lcd_fresh_mode = 0;
+ 		tcon0_cfg_mode_auto(sel, panel);

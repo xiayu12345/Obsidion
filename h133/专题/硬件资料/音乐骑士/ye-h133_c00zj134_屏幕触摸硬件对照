@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>YE-H133-V1 → C00ZJ134YKW7031 屏幕+触摸硬件对照</title>
+<style>
+  @page { size: A4; margin: 14mm 12mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Microsoft YaHei", "微软雅黑", "Noto Sans CJK SC", sans-serif;
+    color: #1a1a1a;
+    font-size: 12px;
+    line-height: 1.45;
+    margin: 0;
+    padding: 8px 4px 24px;
+  }
+  h1 { font-size: 20px; margin: 0 0 6px; font-weight: 700; }
+  h2 { font-size: 15px; margin: 22px 0 8px; border-bottom: 1px solid #ccc; padding-bottom: 4px; }
+  .sub { color: #555; margin: 0 0 14px; }
+  .kpis { display: flex; gap: 8px; margin: 12px 0 16px; }
+  .kpi {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 10px;
+  }
+  .kpi b { display: block; font-size: 14px; }
+  .kpi span { color: #666; font-size: 11px; }
+  .kpi.bad b { color: #b42318; }
+  .kpi.warn b { color: #b54708; }
+  .concl {
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin: 0 0 8px;
+  }
+  .concl strong { color: #b42318; }
+  table { width: 100%; border-collapse: collapse; margin: 0 0 6px; }
+  th, td {
+    border: 1px solid #d0d5dd;
+    padding: 5px 7px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th { background: #f2f4f7; font-weight: 600; }
+  tr:nth-child(even) td { background: #fafafa; }
+  .src { color: #667085; font-size: 11px; margin-top: 8px; }
+  .legend { color: #667085; font-size: 11px; margin: 0 0 6px; }
+  .tone-d { border-left: 3px solid #d92d20; }
+  .tone-w { border-left: 3px solid #dc6803; }
+  .tone-s { border-left: 3px solid #079455; }
+</style>
+</head>
+<body>
+  <h1>屏幕 + 触摸：YE-H133-V1 → C00ZJ134YKW7031</h1>
+  <p class="sub">只看硬件。现板是 eDP 屏 + 独立 I2C 触摸座；新屏是 51pin 上的 4-lane MIPI + 1.8V SPI 触摸。不能直插。</p>
+
+  <div class="kpis">
+    <div class="kpi bad"><b>不能直插</b><span>51pin vs 30pin eDP</span></div>
+    <div class="kpi bad"><b>缺 ±5.8V</b><span>VSP / VSN 板上没有</span></div>
+    <div class="kpi warn"><b>DSI 直驱</b><span>CS5523 / QE01 弃用</span></div>
+    <div class="kpi warn"><b>触摸改 SPI</b><span>独立 I2C 座不能用</span></div>
+  </div>
+
+  <div class="concl">
+    <strong>结论：</strong>
+    屏：4-lane DSI 直连 + 1.8V IO + 1.8V RST + 新做 ±5.8V + 背光接到 LEDA/LEDK，CS5523 不焊。
+    触摸：同一条 FPC 走 1.8V SPI 四线 + RST + INT，旧 I2C 触摸座废掉。
+  </div>
+
+  <h2>屏幕</h2>
+  <table>
+    <thead>
+      <tr><th>项目</th><th>现板 YE-H133-V1</th><th>新屏 C00ZJ134YKW7031</th><th>动作</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tone-d">接口</td><td>CS5523 → CON4 30pin eDP；另有小 MIPI 座</td><td>51pin FPC，4-lane MIPI，约 990 Mbps</td><td>换座或转接线，弃用 eDP</td></tr>
+      <tr><td class="tone-d">分辨率 / IC</td><td>LQ140 1920×1080 eDP</td><td>1200×1920，FT-8201P / CSOT BPD361BT1-1</td><td>DSI 直驱，CS5523 不焊</td></tr>
+      <tr><td class="tone-d">模拟电</td><td>3.3V / 1.8V / 12V，无 ±5.8V</td><td>VSP +5.8V（pin26–28）、VSN −5.8V（pin31–33）</td><td>必须加 bias IC</td></tr>
+      <tr><td class="tone-s">数字电</td><td>VCC-LCD-1V8 有</td><td>IOVCC 1.8V（pin40–41，1.7–1.9V）</td><td>可复用</td></tr>
+      <tr><td class="tone-w">复位</td><td>LCD-RST 网，原理图可选 3.3V 直驱或电阻分压 1.8V</td><td>LCD_RST pin42，跟 IO 1.8V</td><td>改成 1.8V（R52=1.5K，R53=1.8K）</td></tr>
+      <tr><td class="tone-w">背光</td><td>eDP 路 12V BL_POWER；MIPI 路 RT9293B，标注 IMAX=0.2A</td><td>8串6并，24V typ / 130mA，LEDA pin1–2、LEDK pin4–8</td><td>走 RT9293B，不要用 12V eDP 电</td></tr>
+    </tbody>
+  </table>
+
+  <h2>触摸</h2>
+  <table>
+    <thead>
+      <tr><th>项目</th><th>现板</th><th>新屏 Rev01</th><th>动作</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tone-d">接口</td><td>独立 I2C 座，GSL3670</td><td>和屏同一条 51pin FPC</td><td>旧 I2C 座废掉</td></tr>
+      <tr><td class="tone-d">总线</td><td>CTP-SCK / CTP-SDA，3.3V（原理图 PG8 / PG9）</td><td>SPI：SS/SCL/MISO/MOSI，1.8V（pin48–51）</td><td>新布 1.8V SPI 到屏座</td></tr>
+      <tr><td class="tone-d">RST / INT</td><td>CTP-RST / CTP-INT，3.3V（原理图 PG2 / PG3）</td><td>TP_RESX pin44、TP_INT pin45，1.8V</td><td>新接到屏座，电平 1.8V</td></tr>
+      <tr><td>I2C 脚</td><td>现 I2C 接到独立触摸座</td><td>pin46/47 TP_SDA/SCL 规格书写 NC</td><td>不要接到屏 FPC</td></tr>
+    </tbody>
+  </table>
+
+  <h2>51pin：屏 + 触 对现板</h2>
+  <p class="legend">左边色条：红 = 必须新做；绿 = 可复用；无色 = 悬空</p>
+  <table>
+    <thead>
+      <tr><th>Pin</th><th>新屏</th><th>现板</th><th>改法</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="tone-w">1–2</td><td>LEDA</td><td>RT9293B VLED+</td><td>接到升压，约 24V / 130mA</td></tr>
+      <tr><td>3</td><td>NC</td><td>—</td><td>悬空</td></tr>
+      <tr><td class="tone-w">4–8</td><td>LEDK</td><td>RT9293B LED−</td><td>五脚并接阴极</td></tr>
+      <tr><td>9 等</td><td>GND</td><td>GND</td><td>共地</td></tr>
+      <tr><td class="tone-s">10–11</td><td>D0P / D0N</td><td>DSI-D0P/N（PD0/PD1）</td><td>直连；规格书 P/N 文字有反，按网名接后确认</td></tr>
+      <tr><td class="tone-s">13–14</td><td>D1P / D1N</td><td>DSI-D1P/N</td><td>直连</td></tr>
+      <tr><td class="tone-s">16–17</td><td>CLKP / CLKN</td><td>DSI-CKP/N</td><td>直连</td></tr>
+      <tr><td class="tone-s">19–20</td><td>D2P / D2N</td><td>DSI-D2P/N</td><td>直连</td></tr>
+      <tr><td class="tone-s">22–23</td><td>D3P / D3N</td><td>DSI-D3P/N</td><td>直连</td></tr>
+      <tr><td class="tone-d">26–28</td><td>VSP +5.8V</td><td>无</td><td>新增 bias 正压</td></tr>
+      <tr><td>29–30</td><td>NC</td><td>—</td><td>悬空</td></tr>
+      <tr><td class="tone-d">31–33</td><td>VSN −5.8V</td><td>无</td><td>新增 bias 负压</td></tr>
+      <tr><td>36</td><td>ID0 = NC</td><td>—</td><td>悬空</td></tr>
+      <tr><td>37</td><td>外形 VDD 3.3V / 表 NC</td><td>不要上 3.3V</td><td>先悬空，问供应商。数字脚耐压 1.95V</td></tr>
+      <tr><td>38</td><td>M_PWM1 CABC</td><td>可选</td><td>可悬空，背光用板端 PWM</td></tr>
+      <tr><td>39</td><td>TE = NC</td><td>—</td><td>悬空</td></tr>
+      <tr><td class="tone-s">40–41</td><td>IOVCC 1.8V</td><td>VCC-LCD-1V8</td><td>直供</td></tr>
+      <tr><td class="tone-w">42</td><td>LCD_RST</td><td>LCD-RST 网</td><td>必须 1.8V</td></tr>
+      <tr><td>43</td><td>GND</td><td>GND</td><td>共地</td></tr>
+      <tr><td class="tone-d">44</td><td>TP_RESX 1.8V</td><td>旧 CTP-RST 3.3V</td><td>接到屏座，1.8V</td></tr>
+      <tr><td class="tone-d">45</td><td>TP_INT 1.8V</td><td>旧 CTP-INT 3.3V</td><td>接到屏座，1.8V</td></tr>
+      <tr><td>46–47</td><td>TP I2C = NC</td><td>不要接 CTP-SDA/SCK</td><td>悬空</td></tr>
+      <tr><td class="tone-d">48–51</td><td>SPI SS/SCL/MISO/MOSI 1.8V</td><td>屏座上没有 SPI</td><td>新布到 51pin，避开 LCD-RST / LCD-PWM</td></tr>
+    </tbody>
+  </table>
+
+  <p class="src">来源：YE-H133-V1_0824.DSN 第 12–14 页（CTP / eDP / MIPI-DSI）；C00ZJ134YKW7031 规格书 Rev01。</p>
+</body>
+</html>

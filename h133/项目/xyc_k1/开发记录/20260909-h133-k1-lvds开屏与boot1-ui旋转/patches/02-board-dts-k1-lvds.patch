@@ -1,0 +1,546 @@
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+index 910475e49..2cef22feb 100755
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
+@@ -28,8 +28,21 @@
+ 		regulator-min-microvolt = <5000000>;
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-enable-ramp-delay = <1000>;
+-		gpio = <&pio PB 10 GPIO_ACTIVE_HIGH>;
++		regulator-always-on;
++		regulator-boot-on;
++		/* K1：USB1 接 USB WiFi；PB10 是 LCD-EN，不再当 VBUS 开关 */
++	};
++
++	/* H133-K1：PG10 = POWER-EN */
++	reg_power_en: power-en {
++		compatible = "regulator-fixed";
++		regulator-name = "power_en";
++		regulator-min-microvolt = <3300000>;
++		regulator-max-microvolt = <3300000>;
++		gpio = <&pio PG 10 GPIO_ACTIVE_HIGH>;
+ 		enable-active-high;
++		regulator-always-on;
++		regulator-boot-on;
+ 	};
+ 
+ 	/* TP-H10 external AC107 mic codec (P10 audio, TWI2 @ 0x36) */
+@@ -141,10 +154,7 @@
+ 		function = "gpio_in";
+ 	};
+ 
+-	wlan_pins_a:wlan@0 {
+-		pins = "PG11";
+-		function = "clk_fanout1";
+-	};
++	/* K1：PG11 是 I2S1-MCLK，不再给 WiFi 32k fanout */
+ 
+ 	uart0_pins_a: uart0_pins@0 {  /* For P1 board */
+ 		pins = "PB8", "PB9";
+@@ -224,14 +234,15 @@
+ 		function = "gpio_in";
+ 	};
+ 
++	/* H133-K1：TWI2 = PG6/PG7 重力感应；不再用 PC0/PC1 */
+ 	twi2_pins_a: twi2@0 {
+-		pins = "PC0", "PC1";
++		pins = "PG6", "PG7";
+ 		function = "twi2";
+ 		drive-strength = <10>;
+ 	};
+ 
+ 	twi2_pins_b: twi2@1 {
+-		pins = "PC0", "PC1";
++		pins = "PG6", "PG7";
+ 		function = "gpio_in";
+ 	};
+ 
+@@ -319,9 +330,9 @@
+ 		bias-disable;
+ 	};
+ 
+-	/* TP-H10 AC107: I2S1 LRCK/BCLK/DIN on PG12-PG14 (PG11=MCLK conflicts with WiFi) */
++	/* H133-K1 I2S1：MCLK/LRCK/BCLK + DIN0/DOUT0 = PG11–PG15 */
+ 	tp_h10_i2s1_pins_a: tp_h10_i2s1@0 {
+-		pins = "PG12", "PG13";
++		pins = "PG11", "PG12", "PG13";
+ 		function = "i2s1";
+ 		drive-strength = <20>;
+ 		bias-disable;
+@@ -334,8 +345,15 @@
+ 		bias-disable;
+ 	};
+ 
++	tp_h10_i2s1_dout_a: tp_h10_i2s1_dout@0 {
++		pins = "PG15";
++		function = "i2s1_dout";
++		drive-strength = <20>;
++		bias-disable;
++	};
++
+ 	tp_h10_i2s1_pins_b: tp_h10_i2s1_sleep@0 {
+-		pins = "PG12", "PG13";
++		pins = "PG11", "PG12", "PG13";
+ 		function = "io_disabled";
+ 		drive-strength = <20>;
+ 		bias-disable;
+@@ -348,6 +366,13 @@
+ 		bias-disable;
+ 	};
+ 
++	tp_h10_i2s1_dout_b: tp_h10_i2s1_dout_sleep@0 {
++		pins = "PG15";
++		function = "io_disabled";
++		drive-strength = <20>;
++		bias-disable;
++	};
++
+ 	i2s2_pins_a: daudio2@0 {
+ 		/* I2S_PIN: MCLK, BCLK, LRCK */
+ 		pins = "PF6", "PF3", "PF5";
+@@ -469,7 +494,7 @@
+ 		bias-disable;
+ 	};
+ 
+-	/* s10 转接板：PB12=LCD-PWM → PT4117B EN，SoC 复用 PWM0 */
++	/* K1：PB12=LCD-PWM → PT4117B EN，PWM0 */
+ 	pwm0_pin_a: pwm0@0 {
+ 		pins = "PB12";
+ 		function = "pwm0";
+@@ -655,25 +680,16 @@
+ 	dma-names = "tx", "rx";
+ 	status = "okay";
+ 
+-	/* JL-M101 板载 GSL3670 @ TWI1 PG8/PG9, INT/RST PG3/PG2, I2C 0x40；固件 conf_3670(3)+GSL3670_JL_M101.h（800×1280）；IRQ 下降沿 */
+-	ctp@40 {
+-		compatible = "allwinner,gslX680";
+-		device_type = "ctp";
+-		reg = <0x40>;
++	/* K1 CTP：TWI1 PG8/PG9，RST PG2，INT PG3，Betterlife BL3676 @ 0x2c */
++	ctp@2c {
++		compatible = "BTL,betterlife_ts";
++		reg = <0x2c>;
+ 		status = "okay";
+-		ctp_name = "gsl3670";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x40>;
+-		/* exchange 后 1280×800；report 保持同量程，对齐 LVGL（disp_rotate=3） */
+-		ctp_screen_max_x = <1280>;
+-		ctp_screen_max_y = <800>;
+-		ctp_report_max_x = <1280>;
+-		ctp_report_max_y = <800>;
+-		ctp_revert_x_flag = <0x0>;
+-		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x1>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
++		/* gpios[0]=RST, gpios[1]=INT，顺序由驱动 of_get_gpio() 约定 */
++		gpios = <&pio PG 2 GPIO_ACTIVE_HIGH>,
++			<&pio PG 3 GPIO_ACTIVE_HIGH>;
++		TP_MAX_X = <1280>;
++		TP_MAX_Y = <800>;
+ 	};
+ };
+ 
+@@ -685,7 +701,7 @@
+ 	pinctrl-names = "default", "sleep";
+ 	twi_drv_used = <0>;
+ 	status = "okay";
+-	/* CTP on TP-H10: TWI1 @ PG8/PG9 — not twi2@PC0/1; old gt9xx/fts nodes removed */
++	/* K1：TWI2@PG6/7 给重力计；AC107 不在这组脚上 */
+ 
+ 	ac107_0: ac107@36 {
+ 		compatible = "ac107_0";
+@@ -693,6 +709,7 @@
+ 		#sound-dai-cells = <0>;
+ 		ac107_dvcc_1v8 = "ac107_dvcc_1v8";
+ 		ac107_avcc_vccio_3v3 = "ac107_avcc_vccio_3v3";
++		status = "disabled";
+ 	};
+ };
+ 
+@@ -847,45 +864,25 @@
+ 		power_en;
+ 		status        = "okay";
+ 
++		/* K1：USB WiFi(AW869AU/8731BU4)，只保留 WL-REGEN=PG17 */
+ 		wlan: wlan@0 {
+ 			compatible    = "allwinner,sunxi-wlan";
+-			pinctrl-0 = <&wlan_pins_a>;
+-			pinctrl-names = "default";
+-			clock-names = "32k-fanout1";
+-			clocks = <&ccu CLK_FANOUT1_OUT>;
+-			wlan_busnum    = <0x1>;
+ 			wlan_regon    = <&pio PG 17 GPIO_ACTIVE_HIGH>;
+-			wlan_hostwake  = <&pio PG 10 GPIO_ACTIVE_HIGH>;
+-			/*wlan_power    = "VCC-3V3";*/
+-			/*wlan_power_vol = <3300000>;*/
+-			/*interrupt-parent = <&pio>;
+-			interrupts = < PG 10 IRQ_TYPE_LEVEL_HIGH>;*/
+-			wakeup-source;
+-
++			/* PG10=POWER-EN，PG11=I2S1-MCLK，不再当 hostwake/32k */
++			status        = "okay";
+ 		};
+ 
+ 		bt: bt@0 {
+ 			compatible    = "allwinner,sunxi-bt";
+-			pinctrl-0 = <&wlan_pins_a>;
+-			pinctrl-names = "default";
+-			clock-names = "32k-fanout1";
+-			clocks = <&ccu CLK_FANOUT1_OUT>;
+-			/*bt_power_num = <0x01>;*/
+-			/*bt_power      = "axp803-dldo1";*/
+-			/*bt_io_regulator = "axp803-dldo1";*/
+-			/*bt_io_vol = <3300000>;*/
+-			/*bt_power_vol = <330000>;*/
+-			/*bt_rst_n      = <&pio PD 00 GPIO_ACTIVE_HIGH>;*/
+-			status        = "okay";
++			status        = "disabled";
+ 		};
+ 	};
+ 
+ 	btlpm: btlpm@0 {
+ 		compatible  = "allwinner,sunxi-btlpm";
+ 		uart_index  = <0x1>;
+-		bt_wake     = <&pio PG 16 GPIO_ACTIVE_HIGH>;
+-		bt_hostwake = <&pio PG 18 GPIO_ACTIVE_HIGH>;
+-		status      = "okay";
++		/* PG16/PG18 不再当 BT wake；PG18=TWI3-SDA 按键口 */
++		status      = "disabled";
+ 	};
+ 
+ 	addr_mgt: addr_mgt@0 {
+@@ -1073,22 +1070,16 @@ chn_cfg_mode     : Hardware DE channel allocation config. 0:single display with
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+ 	fb1_height               = <0>;
+ 	chn_cfg_mode             = <1>;
+-	dual_display_rot         = <1>; /* 90°：竖屏 DE0 → 横屏 HDMI */
++	dual_display_rot         = <0>; /* LVDS 已是 1280x800 横屏 */
+ 
+ 	disp_para_zone           = <1>;
+-	/*VCC-LCD*/
+-/*	dc1sw-supply = <&reg_dc1sw>;*/
+-	/*VCC-DSI*/
+-/*	eldo3-supply = <&reg_eldo3>;*/
+-	/*VCC-PD*/
+-/*	dcdc1-supply = <&reg_dcdc1>;*/
+ };
+ 
+ /*----------------------------------------------------------------------------------
+@@ -1149,39 +1140,42 @@ pull up or pull down(default 0), driver level(default 1), data>
+ ;For lvds1: use lvds1_pins_a  and lvds1_pins_b instead
+ ;For lvds0: use lvds0_pins_a  and lvds0_pins_b instead
+ ;----------------------------------------------------------------------------------*/
+-/*&lcd0 {
+-	lcd_used            = <0>;
++&lcd0 {
++	lcd_used            = <1>;
+ 
+-	lcd_driver_name     = "default_lcd";
+-	lcd_backlight       = <50>;
+-	lcd_if              = <3>;
++	/* K1 LVDS 1280x800：时序按厂 fex；开屏只做 LCD-EN + PWM */
++	lcd_driver_name     = "xyc_k1_lvds";
++	lcd_backlight       = <210>;
++	lcd_if              = <3>;          /* LVDS */
+ 
+ 	lcd_x               = <1280>;
+ 	lcd_y               = <800>;
+ 	lcd_width           = <150>;
+ 	lcd_height          = <94>;
+-	lcd_dclk_freq       = <71>;
++	lcd_dclk_freq       = <67>;
+ 
++	/* K1：PB12 PWM0 → PT4117B EN，原理图 50kHz；pol=0 高有效 */
+ 	lcd_pwm_used        = <1>;
+-	lcd_pwm_ch          = <7>;
++	lcd_pwm_ch          = <0>;
+ 	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
++	lcd_pwm_pol         = <0>;
+ 	lcd_pwm_max_limit   = <255>;
+-	lcd_bl_en           = <&pio PD 20 GPIO_ACTIVE_HIGH>;
+ 
+ 	lcd_hbp             = <20>;
+-	lcd_ht              = <1418>;
++	lcd_ht              = <1380>;
+ 	lcd_hspw            = <10>;
+ 	lcd_vbp             = <10>;
+ 	lcd_vt              = <814>;
+ 	lcd_vspw            = <5>;
+ 
+ 	lcd_lvds_if         = <0>;
+-	lcd_lvds_colordepth = <1>;
+-	lcd_lvds_mode       = <0>;
+-	lcd_frm             = <1>;
++	lcd_lvds_colordepth = <1>;          /* 6bit */
++	lcd_lvds_mode       = <0>;          /* NS */
++	lcd_frm             = <1>;          /* RGB666 dither */
+ 	lcd_hv_clk_phase    = <0>;
+ 	lcd_hv_sync_polarity= <0>;
++	/* 厂 fex：io_polarity=15 + clk_polarity=1 → bit[3:0] 数据反、bit4 时钟反 */
++	lcd_lvds_io_polarity = <0x1f>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+ 	lcd_cmap_en         = <0>;
+@@ -1190,61 +1184,9 @@ pull up or pull down(default 0), driver level(default 1), data>
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
++	lcd_gpio_0          = <&pio PB 10 GPIO_ACTIVE_HIGH>; /* K1 LCD-EN */
+ 	pinctrl-0 = <&lvds0_pins_a>;
+ 	pinctrl-1 = <&lvds0_pins_b>;
+-};*/
+-
+-&lcd0 {
+-	lcd_used            = <1>;
+-
+-	/* 京龙 JL-M101B196 / JD9365DA-H3；init 见 xyc_k1_lvds.c */
+-	lcd_driver_name     = "xyc_k1_lvds";
+-	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
+-
+-	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
+-
+-	/* s10：LCD-PWM=PB12/PWM0 → PT4117B EN，原理图 PWM_Frequence=50KHz */
+-	lcd_pwm_used        = <1>;
+-	lcd_pwm_ch          = <0>;
+-	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
+-
+-	/* vendor: HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20 → Allwinner ht/hbp/vt/vbp */
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
+-	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
+-
+-	lcd_lvds_if         = <0>;
+-	lcd_lvds_colordepth = <1>;
+-	lcd_lvds_mode       = <0>;
+-	lcd_frm             = <0>;
+-	lcd_io_phase        = <0x0000>;
+-	lcd_gamma_en        = <0>;
+-	lcd_bright_curve_en = <0>;
+-	lcd_cmap_en         = <0>;
+-
+-	deu_mode            = <0>;
+-	lcdgamma4iep        = <22>;
+-	smart_color         = <90>;
+-
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>; /* LCD-RST；勿当 lcd_bl_en 用 PB12 */
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
+ };
+ 
+ 
+@@ -1367,8 +1309,8 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
+ 	rx-pin		= <0>;
+ 	pinctrl-used;
+ 	pinctrl-names	= "default", "sleep";
+-	pinctrl-0	= <&tp_h10_i2s1_pins_a &tp_h10_i2s1_din_a>;
+-	pinctrl-1	= <&tp_h10_i2s1_pins_b &tp_h10_i2s1_din_b>;
++	pinctrl-0	= <&tp_h10_i2s1_pins_a &tp_h10_i2s1_din_a &tp_h10_i2s1_dout_a>;
++	pinctrl-1	= <&tp_h10_i2s1_pins_b &tp_h10_i2s1_din_b &tp_h10_i2s1_dout_b>;
+ 	rx-sync-en;
+ 	status		= "okay";
+ };
+@@ -1380,7 +1322,8 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
+ 	soundcard-mach,slot-num		= <2>;
+ 	soundcard-mach,slot-width	= <32>;
+ 	soundcard-mach,capture-only;
+-	status		= "okay";
++	/* AC107 不在 K1 TWI2 上，先关掉这张声卡，只留 I2S1 脚复用 */
++	status		= "disabled";
+ 	i2s1_cpu: soundcard-mach,cpu {
+ 		sound-dai = <&i2s1_plat>;
+ 		soundcard-mach,pll-fs	= <1>;
+@@ -1507,12 +1450,13 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
+ 	pinctrl-0	= <&owa_pins_a>; 
+ 	pinctrl-1	= <&owa_pins_b>; 
+ 	tx-hub-en;
+-	status		= "okay";
++	/* K1：PG18 是按键 TWI3-SDA，不能开 SPDIF */
++	status		= "disabled";
+ };
+ 
+ &owa_mach {
+ 	soundcard-mach,playback-only;
+-	status		= "okay";
++	status		= "disabled";
+ 	soundcard-mach,cpu {
+ 		sound-dai = <&owa_plat>;
+ 	};
+@@ -1535,8 +1479,7 @@ tvd_row*tvd_column is the total tvd channel number to be used in multichannel mo
+ 	usb_port_type = <0x0>;
+ 	usb_detect_type = <0x0>;
+ 	usb_detect_mode = <0>;
+-	/* PB11=LCD-RST, PB12=LCD-PWM(京龙屏复用)。usb 若 request 会抢走 PB11，
+-	 * 导致复位脚没被真正驱动、复位线浮到屏内部上拉的 1.8V，屏收不到复位。 */
++	/* K1 原理图：PB10=LCD-EN，PB11=LCD-RST（硬件 3.3V），PB12=LCD-PWM。USB 不得占这些脚。 */
+ 	/* usb_id_gpio = <&pio PB 11 GPIO_ACTIVE_HIGH>; */
+ 	enable-active-high;
+ 	/* usb_det_vbus_gpio = <&pio PB 12 GPIO_ACTIVE_HIGH>; */
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts b/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
+index e9d0ee58d..3e6a53a63 100755
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/uboot-board.dts
+@@ -52,7 +52,7 @@
+ 	status = "okay";
+ };
+ 
+-/* s10：PB12=LCD-PWM/PWM0 → PT4117B EN（与内核一致） */
++/* K1：PB12=LCD-PWM/PWM0 → PT4117B EN */
+ &pio {
+ 	pwm0_pin_a: pwm0@0 {
+ 		pins = "PB12";
+@@ -322,8 +322,8 @@
+ 	hdmi_mode_check          = <1>;
+ 
+ 	fb0_format               = <0>;
+-	fb0_width                = <800>;
+-	fb0_height               = <1280>;
++	fb0_width                = <1280>;
++	fb0_height               = <800>;
+ 
+ 	fb1_format               = <0>;
+ 	fb1_width                = <0>;
+@@ -331,37 +331,29 @@
+ 	chn_cfg_mode             = <1>;
+ 
+ 	disp_para_zone           = <1>;
+-	/*VCC-LCD*/
+-/*	dc1sw-supply = <&reg_dc1sw>;*/
+-	/*VCC-DSI*/
+-/*	eldo3-supply = <&reg_eldo3>;*/
+-	/*VCC-PD*/
+-/*	dcdc1-supply = <&reg_dcdc1>;*/
+ };
+ 
+-/*
+ &lcd0 {
+-	lcd_used            = <0>;
++	lcd_used            = <1>;
+ 
+-	lcd_driver_name     = "default_lcd";
+-	lcd_backlight       = <50>;
++	/* K1 LVDS 1280x800：时序按厂 fex；开屏只做 LCD-EN + PWM */
++	lcd_driver_name     = "xyc_k1_lvds";
++	lcd_backlight       = <210>;
+ 	lcd_if              = <3>;
+ 
+ 	lcd_x               = <1280>;
+ 	lcd_y               = <800>;
+ 	lcd_width           = <150>;
+ 	lcd_height          = <94>;
+-	lcd_dclk_freq       = <71>;
++	lcd_dclk_freq       = <67>;
+ 
+ 	lcd_pwm_used        = <1>;
+-	lcd_pwm_ch          = <7>;
++	lcd_pwm_ch          = <0>;
+ 	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
++	lcd_pwm_pol         = <0>;
+ 	lcd_pwm_max_limit   = <255>;
+-	lcd_bl_en           = <&pio PD 20 GPIO_ACTIVE_HIGH>;
+-
+ 	lcd_hbp             = <20>;
+-	lcd_ht              = <1418>;
++	lcd_ht              = <1380>;
+ 	lcd_hspw            = <10>;
+ 	lcd_vbp             = <10>;
+ 	lcd_vt              = <814>;
+@@ -373,6 +365,7 @@
+ 	lcd_frm             = <1>;
+ 	lcd_hv_clk_phase    = <0>;
+ 	lcd_hv_sync_polarity= <0>;
++	lcd_lvds_io_polarity = <0x1f>;
+ 	lcd_gamma_en        = <0>;
+ 	lcd_bright_curve_en = <0>;
+ 	lcd_cmap_en         = <0>;
+@@ -381,61 +374,10 @@
+ 	lcdgamma4iep        = <22>;
+ 	smart_color         = <90>;
+ 
++	lcd_gpio_0          = <&pio PB 10 GPIO_ACTIVE_HIGH>; /* K1 LCD-EN */
+ 	pinctrl-0 = <&lvds0_pins_a>;
+ 	pinctrl-1 = <&lvds0_pins_b>;
+ };
+-*/
+-
+-&lcd0 {
+-	lcd_used            = <1>;
+-
+-	/* 与内核一致：京龙 JL-M101 / JD9365DA；U-Boot 侧 panel 见 xyc_k1_lvds.c */
+-	lcd_driver_name     = "xyc_k1_lvds";
+-	lcd_backlight       = <200>;
+-	lcd_if              = <4>;
+-
+-	lcd_x               = <800>;
+-	lcd_y               = <1280>;
+-	lcd_width           = <135>;
+-	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
+-
+-	/* s10：LCD-PWM=PB12/PWM0，PWM_Frequence=50KHz */
+-	lcd_pwm_used        = <1>;
+-	lcd_pwm_ch          = <0>;
+-	lcd_pwm_freq        = <50000>;
+-	lcd_pwm_pol         = <1>;
+-	lcd_pwm_max_limit   = <255>;
+-	lcd_hbp             = <40>;
+-	lcd_ht              = <880>;
+-	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
+-	lcd_vspw            = <4>;
+-
+-	lcd_dsi_if          = <0>;
+-	lcd_dsi_lane        = <4>;
+-	lcd_dsi_format      = <0>;
+-	lcd_dsi_te          = <0>;
+-	lcd_dsi_eotp        = <0>;
+-
+-	lcd_lvds_if         = <0>;
+-	lcd_lvds_colordepth = <1>;
+-	lcd_lvds_mode       = <0>;
+-	lcd_frm             = <0>;
+-	lcd_io_phase        = <0x0000>;
+-	lcd_gamma_en        = <0>;
+-	lcd_bright_curve_en = <0>;
+-	lcd_cmap_en         = <0>;
+-
+-	deu_mode            = <0>;
+-	lcdgamma4iep        = <22>;
+-	smart_color         = <90>;
+-
+-	lcd_gpio_0          = <&pio PB 11 GPIO_ACTIVE_HIGH>; /* LCD-RST */
+-	pinctrl-0 = <&dsi4lane_pins_a>;
+-	pinctrl-1 = <&dsi4lane_pins_b>;
+-};
+ 
+ &hdmi {
+ 	hdmi_used = <1>;

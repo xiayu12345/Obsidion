@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>开发记录</title><meta charset="utf-8"/><link rel="preload" href="../../../../../index-3622e4ec.css" as="style"/><link rel="preload" href="../../../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="开发记录"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="开发记录"/><meta name="twitter:description" content="H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录 日期：2026-09-10（驱动/DTS 定稿）；2026-09-16 按当前工程改点穿（不再 liblvgl EVIOCGRAB） 工程：AI-tq（全志 H133 Tina / OpenWrt SDK） 板级：p1_nor_XYC_K1（LVDS 1280×800 横屏；2026-09-11 由 p1_nor_JL_M101 改名） 资料：AI-skiil/硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf、AI-skiil/硬件资料/鑫宇宸/betterlife_ts.7..."/><meta property="og:description" content="H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录 日期：2026-09-10（驱动/DTS 定稿）；2026-09-16 按当前工程改点穿（不再 liblvgl EVIOCGRAB） 工程：AI-tq（全志 H133 Tina / OpenWrt SDK） 板级：p1_nor_XYC_K1（LVDS 1280×800 横屏；2026-09-11 由 p1_nor_JL_M101 改名） 资料：AI-skiil/硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf、AI-skiil/硬件资料/鑫宇宸/betterlife_ts.7..."/><meta property="og:image:alt" content="H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录 日期：2026-09-10（驱动/DTS 定稿）；2026-09-16 按当前工程改点穿（不再 liblvgl EVIOCGRAB） 工程：AI-tq（全志 H133 Tina / OpenWrt SDK） 板级：p1_nor_XYC_K1（LVDS 1280×800 横屏；2026-09-11 由 p1_nor_JL_M101 改名） 资料：AI-skiil/硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf、AI-skiil/硬件资料/鑫宇宸/betterlife_ts.7..."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录"/><link rel="icon" href="../../../../../static/icon.png"/><meta name="description" content="H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录 日期：2026-09-10（驱动/DTS 定稿）；2026-09-16 按当前工程改点穿（不再 liblvgl EVIOCGRAB） 工程：AI-tq（全志 H133 Tina / OpenWrt SDK） 板级：p1_nor_XYC_K1（LVDS 1280×800 横屏；2026-09-11 由 p1_nor_JL_M101 改名） 资料：AI-skiil/硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf、AI-skiil/硬件资料/鑫宇宸/betterlife_ts.7..."/><meta name="generator" content="Quartz"/><link href="../../../../../index-3622e4ec.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/项目/xyc_k1/开发记录/触摸开发记录/开发记录" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-288" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-288" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><h1 class="article-title">开发记录</h1><p show-comma="true" class="content-meta"><time datetime="2026-09-21T03:44:17.000Z">2026年9月21日</time><span>13分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="h133-k1--xyc_k1-接入-betterlife-bl3676-触摸开发记录">H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#h133-k1--xyc_k1-接入-betterlife-bl3676-触摸开发记录" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<ul>
+<li>日期：2026-09-10（驱动/DTS 定稿）；2026-09-16 按当前工程改点穿（不再 <code>liblvgl</code> <code>EVIOCGRAB</code>）</li>
+<li>工程：<code>AI-tq</code>（全志 H133 Tina / OpenWrt SDK）</li>
+<li>板级：<code>p1_nor_XYC_K1</code>（LVDS 1280×800 横屏；2026-09-11 由 <code>p1_nor_JL_M101</code> 改名）</li>
+<li>资料：<code>AI-skiil/硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf</code>、<code>AI-skiil/硬件资料/鑫宇宸/betterlife_ts.7z</code>、<code>AI-skiil/硬件资料/鑫宇宸/H133-K1原理图.pdf</code></li>
+<li>对照：<code>AI-skiil/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配</code>（同 SDK、同 IC；驱动裁剪按这份落地）</li>
+<li>最新镜像：<code>out/h133_linux_p1_nor_XYC_K1_uart0_nor.img</code></li>
+<li>历史 MD5：<code>4f31c46db8136bb3e1090118b44c89e6</code>（2026-09-10：BL3676 + TWI1 DMA 44 + 当时的 liblvgl <code>EVIOCGRAB</code>；文件名仍是 <code>p1_nor_JL_M101</code>）</li>
+</ul>
+<p>本目录补丁覆盖触摸驱动/DTS/识别，以及当前工程的点穿规避。<code>board.dts</code> 里屏驱/PWM 等其它改动不在这些补丁里。</p>
+<p>协议和报点解析以厂家 <code>betterlife_ts.7z</code> 源码为准，不要按规格书时序图硬改。</p>
+<hr/>
+<h2 id="1-背景">1. 背景<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#1-背景" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>JL_M101 原方案是 <strong>Silead GSL3670</strong>（<code>allwinner,gslX680</code> @ <code>0x40</code>），TWI1 + PG2/PG3。H133-K1 硬件换成 <strong>Betterlife BL3676</strong>，I2C 脚位不变，从地址 <strong>0x2C</strong>。上机 <code>chipID = 41</code>。</p>
+<p>桌面：<code>desk_huiyin</code>（<code>lv_port_indev_init</code> → <code>evdev_read</code>）。<code>setting.ini</code>：<code>disp_rotate=0</code>，<code>tp_rotate=0</code>。</p>
+<p>「智能K歌」generated 仍写 <code>/usr/bin/sing_ktv</code>，<code>desk_subapp_launch()</code> <strong>硬切</strong> <code>/usr/bin/hy_app</code>。</p>
+<p>定稿原则：<strong>厂家驱动原样报点，不改 evdev 协议解析</strong>（<code>TRACKING_ID</code> / <code>SYN_REPORT</code> / <code>scroll_limit</code>）。短按不灵时先查总线和节点，不要在 IRQ / 用户态加“修短按”逻辑。子应用与桌面双开 fd 造成的点穿，<strong>不要</strong>在 <code>liblvgl</code> 里 <code>EVIOCGRAB</code>，由应用自己挡（第 9 节）。</p>
+<h2 id="2-硬件脚位原理图-h133-k1">2. 硬件脚位（原理图 H133-K1）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#2-硬件脚位原理图-h133-k1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>信号</th><th>脚位</th><th>说明</th></tr></thead><tbody><tr><td>SCL / SDA</td><td>PG8 / PG9</td><td>TWI1，400 kHz</td></tr><tr><td>RST</td><td>PG2</td><td>复位，驱动 <code>gpios[0]</code></td></tr><tr><td>INT</td><td>PG3</td><td>中断，驱动 <code>gpios[1]</code>，<strong>下降沿</strong>有效</td></tr><tr><td>电源</td><td>VCC-CTP1</td><td>3.3 V</td></tr><tr><td>I2C 地址</td><td>0x2C</td><td>资料也可 0x3D / 0x4E，本板实测 0x2C</td></tr></tbody></table></div>
+<h2 id="3-定稿做了什么">3. 定稿做了什么<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#3-定稿做了什么" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="31-厂家驱动">3.1 厂家驱动<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#31-厂家驱动" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>路径：<code>kernel/linux-5.4/drivers/input/touchscreen/betterlife_ts/</code></p>
+<p>相对 <code>betterlife_ts.7z</code>：</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>项</th><th>厂家包</th><th>本工程（定稿）</th></tr></thead><tbody><tr><td>芯片宏</td><td><code>TS_CHIP=BL7XX1</code>，<code>BTL_CHIP_NAME=BL3676</code>，<code>CTP_SLAVE_ADDR=0x2c</code></td><td>保持</td></tr><tr><td>协议</td><td>Type A</td><td>保持</td></tr><tr><td><code>uaccess.h</code></td><td><code>asm/uaccess.h</code></td><td><code>linux/uaccess.h</code>（5.4）</td></tr><tr><td><code>fwbin[]</code></td><td><code>#error</code> 强制填固件</td><td>去掉 <code>#error</code>；空数组，模组自带 Flash</td></tr><tr><td><code>btl_read_flash</code></td><td>先调用后定义</td><td><code>fw_update.c</code> 补前置声明</td></tr><tr><td>产测</td><td><code>factory_test/</code></td><td>未合入</td></tr><tr><td>充电 / APK / 自动升级</td><td>可开</td><td><strong>关</strong></td></tr><tr><td>ESD / debugfs</td><td>原厂模板可开</td><td><strong>关</strong></td></tr><tr><td>调试宏</td><td><code>BTL_DEBUG_SUPPORT</code> + <code>LogEn=1</code></td><td><strong>关</strong>（IRQ 热路径 <code>printk</code> 会堵 ONESHOT）</td></tr><tr><td>input 名</td><td><code>betterlife-ts</code></td><td><strong><code>betterlife-touch</code></strong>（<code>input_symlink.sh</code> 的 <code>*touch*</code> 才能链上）</td></tr><tr><td>IRQ</td><td>每次中断只读一次</td><td><strong>保持只读一次</strong></td></tr></tbody></table></div>
+<p><code>Kconfig</code> / 子目录 <code>Makefile</code> 为本工程新增。</p>
+<h3 id="32-内核配置">3.2 内核配置<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#32-内核配置" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p><code>device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig</code>（内核吃这份，<strong>不是</strong> <code>linux-5.4/config-5.4</code>）：</p>
+<ul>
+<li><code>CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y</code></li>
+<li><code># CONFIG_TOUCHSCREEN_GSLX680NEW is not set</code></li>
+<li><code>CONFIG_EXTRA_FIRMWARE=&quot;gsl_firmware/gsl3670.bin&quot;</code> <strong>保留</strong>（BL 不用它，删不删都不影响触摸）</li>
+</ul>
+<p>编内核前若 <code>out/</code> 里 <code>.config</code> 仍是 GSL，必须先 <code>./build.sh loadconfig</code>。</p>
+<h3 id="33-dtstwi1">3.3 DTS（TWI1）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#33-dtstwi1" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>本板 GSL 原方案就是 DMA。定稿保持 DMA，节点换成 BL：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="dts" data-theme="github-light github-dark"><code data-language="dts" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>&amp;twi1 {</span></span>
+<span data-line><span>	clock-frequency = &lt;400000>;</span></span>
+<span data-line><span>	pinctrl-0 = &lt;&amp;twi1_pins_a>;</span></span>
+<span data-line><span>	pinctrl-1 = &lt;&amp;twi1_pins_b>;</span></span>
+<span data-line><span>	pinctrl-names = &quot;default&quot;, &quot;sleep&quot;;</span></span>
+<span data-line><span>	/* TWI1 DMA 通道 44；本板实测可用 */</span></span>
+<span data-line><span>	twi_drv_used = &lt;1>;</span></span>
+<span data-line><span>	dmas = &lt;&amp;dma 44>, &lt;&amp;dma 44>;</span></span>
+<span data-line><span>	dma-names = &quot;tx&quot;, &quot;rx&quot;;</span></span>
+<span data-line><span>	status = &quot;okay&quot;;</span></span>
+<span data-line> </span>
+<span data-line><span>	/* BL3676：gpios[0]=RST [1]=INT */</span></span>
+<span data-line><span>	betterlife_ts@2c {</span></span>
+<span data-line><span>		compatible = &quot;BTL,betterlife_ts&quot;;</span></span>
+<span data-line><span>		reg = &lt;0x2c>;</span></span>
+<span data-line><span>		status = &quot;okay&quot;;</span></span>
+<span data-line><span>		gpios = &lt;&amp;pio PG 2 GPIO_ACTIVE_HIGH>,</span></span>
+<span data-line><span>			&lt;&amp;pio PG 3 GPIO_ACTIVE_HIGH>;</span></span>
+<span data-line><span>		TP_MAX_X = &lt;1280>;</span></span>
+<span data-line><span>		TP_MAX_Y = &lt;800>;</span></span>
+<span data-line><span>	};</span></span>
+<span data-line><span>};</span></span></code></pre></figure>
+<ul>
+<li>节点名用 <strong><code>betterlife_ts@2c</code></strong>，不要 <code>ctp@2c</code></li>
+<li>不要给 BL 加 GSL 的 <code>ctp_report_max</code> / <code>revert</code> / <code>exchange</code></li>
+<li><code>gpios</code> 顺序不要对调</li>
+</ul>
+<p>对照目录 <code>20260908-XYC_K1-BL3676触摸适配</code> 写 TWI1 申请不到 DMA 通道、必须 <code>twi_drv_used=0</code>。那是他们从 JYY070 克隆下来的情况。<strong>本板从 JL_M101 改过来，原 DTS 就是 DMA 44，2026-09-10 上机 DMA 可用</strong>，不要改成 CPU。</p>
+<h3 id="34-用户态">3.4 用户态<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#34-用户态" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li><code>input_symlink.sh</code> 匹配加上 <code>*betterlife*</code>（设备名已含 <code>touch</code>，旧 rootfs 也能链 <code>/dev/input/touch</code>）</li>
+<li><strong>不改</strong> 报点解析、<code>scroll_limit</code>、<code>PRESS_LOCK</code></li>
+<li><code>evdev_set_file()</code>：<code>open(..., O_CLOEXEC)</code>；<code>evdev_read()</code> 在 <code>evdev_fd &lt; 0</code> 时回 REL</li>
+<li><strong>不在</strong> <code>liblvgl</code> 里 <code>EVIOCGRAB</code>（第 9 节）；<code>liblvgl</code> <code>PKG_RELEASE</code> 现为 7</li>
+</ul>
+<h2 id="4-厂家协议以源码为准">4. 厂家协议（以源码为准）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#4-厂家协议以源码为准" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>读 <code>TS_DATA_REG=0x01</code>，一次 <strong>62 字节</strong></li>
+<li>用 <code>btl_i2c_write_read</code>（repeated start），不要拆成写完 STOP 再读</li>
+<li><code>touch_num = point_data[1] &amp; 0x0f</code>；<strong><code>touch_num==0</code> 才整板抬手</strong></li>
+<li><code>eventFlag</code>：0=DOWN，1=UP，2=MOVE，3=空槽</li>
+<li>Type A 下 <strong><code>EventFlag=Up</code> 是空操作</strong>，不能当成整板抬手</li>
+<li>空槽：<code>id==0x0f</code> 跳过；循环仍扫 <code>MAX_POINT_NUM</code>（10）</li>
+<li>X 掩码厂家是 <code>&amp; 0x0f</code>（不要改成规格书 <code>&amp; 0x3f</code>）</li>
+<li>IRQ：<code>IRQF_TRIGGER_FALLING | ONESHOT</code>；<code>BTL_THREADED_IRQ</code></li>
+<li>不要改成 <code>IRQF_TRIGGER_LOW</code></li>
+<li>不要在 probe 写 <code>LPM=ACTIVE</code></li>
+</ul>
+<h2 id="5-走过的弯路不要再做">5. 走过的弯路（不要再做）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#5-走过的弯路不要再做" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>做过</th><th>结果</th></tr></thead><tbody><tr><td>IRQ 里 INT 仍低则连读最多 8 次</td><td>不是定稿；厂家每次只读一次，XYC 能用的也是这样</td></tr><tr><td>开 ESD（每 3s 读 <code>0xf9</code>）</td><td>定稿关掉</td></tr><tr><td><code>evdev</code>：<code>SYN_REPORT</code> 分帧、<code>TRACKING_ID>=0</code> 为按下</td><td>撤回；协议解析不改</td></tr><tr><td><code>scroll_limit=50</code>、热区 <code>PRESS_LOCK</code>、关桌面滚动</td><td>明确否定，已撤回</td></tr><tr><td><code>page_nav_stack</code> 里 <code>lv_indev_wait_release()</code></td><td>切页吞点击，已撤回；现用关 indev 100ms + <code>lv_indev_reset</code></td></tr><tr><td>子应用退出 <code>evdev_drop_pending_touch()</code> + <code>wait_release</code></td><td>已撤回</td></tr><tr><td>进子应用关桌面触摸 fd、回来再 <code>open</code></td><td>明确否定，已撤回</td></tr><tr><td><code>evdev_set_file()</code> 里 <code>LVGL_LAUNCHED_BY_DESK</code> → <code>EVIOCGRAB</code></td><td>09-10 用过。<code>hy_app</code> 再拉 <code>xyc_mix</code> 时报 <code>Device or resource busy</code>，已从 liblvgl 拿掉</td></tr><tr><td>节点写成 <code>ctp@2c</code></td><td>改成 <code>betterlife_ts@2c</code></td></tr><tr><td>强制 <code>twi_drv_used=0</code>（跟 XYC）</td><td>本板 DMA 可用；定稿 DMA</td></tr><tr><td>Type B、<code>EventFlag=Up</code> 当整板抬手、I2C 拆 STOP、X 改 <code>&amp; 0x3f</code></td><td>必须退回</td></tr><tr><td><code>IRQF_TRIGGER_LOW</code>、probe 写 <code>LPM=ACTIVE</code></td><td>必须退回</td></tr><tr><td>DTS <code>tp_cal_points</code> / 驱动内四角标定</td><td>不要</td></tr><tr><td>在 WSL 源码树本地 <code>make</code> 出 <code>.o</code></td><td>不要</td></tr></tbody></table></div>
+<p><code>BTL_DEBUG_SUPPORT</code> 开着会在 IRQ 热路径 <code>printk</code>，表现为点了没打印、松手后日志才刷。定稿关掉。</p>
+<h2 id="6-编译与打包">6. 编译与打包<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#6-编译与打包" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>只改内核 / DTS 时不必重编 rootfs：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="function">cd</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /root/Work/AI-tq</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">export</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> LICHEE_JLEVEL</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">4</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> loadconfig</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    # 板级 defconfig 变更后必须</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> kernel</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">cp</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -a</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> out/h133/kernel/staging/boot.img</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> out/h133/kernel/staging/uImage</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="string"> \</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">      out/h133/p1_nor_XYC_K1/openwrt/</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> pack</span></span></code></pre></figure>
+<p><code>input_symlink.sh</code> 或 <code>evdev.c</code> / <code>liblvgl</code> 有改动才需要编 rootfs。<code>./build.sh openwrt</code> 无效，要用 <code>openwrt_rootfs</code>。</p>
+<p>只改 <code>evdev.c</code>（打进 <code>liblvgl.so</code>）时：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="function">cd</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /root/Work/AI-tq</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">export</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> LICHEE_JLEVEL</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value">4</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">export</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> PATH</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;/root/Work/AI-tq/prebuilt/hostbuilt/make4.1/bin:</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">$PATH</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> openwrt_rootfs</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> package/subpackage/thirdparty/gui/lvgl-8/liblvgl/clean</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> openwrt_rootfs</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> package/subpackage/thirdparty/gui/lvgl-8/liblvgl/compile</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># compile 只更新 ipk / staging，不会改 squashfs 用的 TARGET_DIR</span></span>
+<span data-line><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">SO</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator">=</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">out/h133/p1_nor_XYC_K1/openwrt/build_dir/target/liblvgl/ipkg-arm_cortex-a7_neon/liblvgl/usr/lib/liblvgl.so.1</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">for</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal"> d </span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword">in</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> \</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">  out/h133/p1_nor_XYC_K1/openwrt/build_dir/target/root-h133-p1_nor_XYC_K1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> \</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">  out/h133/p1_nor_XYC_K1/openwrt/build_dir/target/root.orig-h133-p1_nor_XYC_K1</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;"> \</span></span>
+<span data-line><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">  out/h133/p1_nor_XYC_K1/openwrt/build_dir/target/root-h133-p1_nor_XYC_K1-tmp</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> do</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">  cp</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -a</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">$SO</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">&quot;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> &quot;</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="normal">$d</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string">/usr/lib/liblvgl.so.1&quot;</span></span>
+<span data-line><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="keyword"> done</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> openwrt_rootfs</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> target/install</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> pack</span></span></code></pre></figure>
+<p><code>package/.../compile</code> 之后直接 <code>target/install</code> + <code>pack</code>，镜像里仍可能是旧 <code>liblvgl.so</code>。点穿规避在 <code>hy_app</code> / <code>huiyin_ktv</code> 里，编对应应用即可，不必为 grab 去拆 squashfs 搜 <code>EVIOCGRAB</code>。</p>
+<p>输出：<code>out/h133_linux_p1_nor_XYC_K1_uart0_nor.img</code></p>
+<h2 id="7-验证">7. 验证<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#7-验证" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">ls</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /sys/bus/i2c/devices/</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">          # 应有 1-002c，不是 1-0040</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">dmesg</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> |</span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function"> grep</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -iE</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> 'btl|betterlife|3676'</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># I2C communication success:chipID = 41</span></span>
+<span data-line><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment"># Name=&quot;betterlife-touch&quot;</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">ls</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -l</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /dev/input/touch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">getevent</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -lt</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /dev/input/touch</span><span style="--shiki-light:#6A737D;--shiki-dark:#6A737D;" data-token-type="comment">    # 不要 -p（INOTIFY_USER 关了会失败）</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>实际</th><th>意思</th></tr></thead><tbody><tr><td>只有 <code>1-0040</code> + <code>gslX680</code></td><td>烧成旧 GSL 镜像 / 没 loadconfig</td></tr><tr><td><code>I2C communication ERROR</code></td><td>TWI1 / 0x2C / RST</td></tr><tr><td><code>Please specify the IC model:0x??</code></td><td>通了但 chipID ≠ 0x41</td></tr><tr><td>完全没 BTL</td><td>没编进内核或节点没 probe</td></tr></tbody></table></div>
+<p><code>i2cdetect -y 1</code>：<code>0x2c</code> 应显示 <code>2c</code>。空槽 <code>id:15, x:4095, y:4095</code> 忽略。</p>
+<p>四角约 1280×800，左上原点；<code>tp_rotate=0</code>。短按图标、底部设置应能点进。</p>
+<p>进「智能K歌」实际拉的是 <code>hy_app</code>，<strong>不会</strong>再打 <code>evdev: GRAB on /dev/input/touch</code>。从调音台回到 hy_app 时串口应有：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>return input guard armed</span></span></code></pre></figure>
+<p>松手或超时后：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>return input guard dropped</span></span></code></pre></figure>
+<p>切页应有 <code>indev block 100ms</code>。</p>
+<h2 id="8-未做--注意">8. 未做 / 注意<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#8-未做--注意" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<ul>
+<li>无厂家项目 <code>BTL.bin</code>，未开 <code>BTL_AUTO_UPDATE_FARMWARE</code>。以后要驱动内升级：向厂家要固件填 <code>fwbin[]</code> 并打开该宏。</li>
+<li><code>BTL_SUSPEND</code> 依赖 earlysuspend，本内核没有，<code>btl_ts_suspend/resume</code> 有 unused 告警，不影响点屏。</li>
+<li>I2C 地址若不是 0x2C，改 DTS <code>reg</code> 和 <code>bl_chip_custom.h</code> 的 <code>CTP_SLAVE_ADDR</code>。</li>
+<li>显示专题若把屏改成 1366×768，本触摸量程仍是 <code>TP_MAX=1280×800</code>，不要跟着改驱动解析。</li>
+</ul>
+<h2 id="9-子应用退出点穿当前应用侧挡">9. 子应用退出点穿（当前：应用侧挡）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#9-子应用退出点穿当前应用侧挡" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<h3 id="现象">现象<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#现象" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>桌面点「智能K歌」，点右上角退出。应回桌面，却立刻进系统设置。一次短按，不是长按、也不是点了两下。</p>
+<p>退出坐标约 <code>1195, 88</code>，落在桌面右上角设置热区 <code>screen_7_btn_11</code>（<code>1033,4</code> 起，<code>244×111</code>）。</p>
+<p>内核一次短按：<code>eventFlag:0</code>（DOWN）+ 同坐标 <code>eventFlag:2</code>（MOVE，约 118 ms 后）+ 空槽 <code>id:15, x:4095, y:4095</code>。厂家 Type A 正常报点。</p>
+<h3 id="根因">根因<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#根因" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<ul>
+<li>桌面 <code>desk_huiyin</code> 启动时 <code>open(/dev/input/touch)</code>，进子应用只暂停 LVGL（<code>g_lvgl_paused</code>），<strong>fd 一直开着</strong>。</li>
+<li>子应用是 <code>fork</code> + <code>execl</code>，自己再 <code>lv_port_indev_init()</code> → 又 open 一次。Linux evdev <strong>每个 open 一份事件拷贝</strong>（无 <code>EVIOCGRAB</code> 则两边都收）。</li>
+<li>子应用处理「退出」后进程退出；桌面恢复 LVGL 时把队列里同一坐标当成新点击，打中设置。</li>
+<li>GSL 时期同样双开 fd，但 GSL 抬手报 <code>TRACKING_ID=-1</code>，短按很快 Down→Up。BL3676 Type A <strong>永远 id=0</strong>，<code>evdev.c</code> 把 <code>TRACKING_ID==0</code> 当按下；抬手不报 <code>-1</code>，短按还会多一帧同坐标 MOVE。所以换芯片后才爆。</li>
+<li>桌面拉子应用时已有 <code>setenv(&quot;LVGL_LAUNCHED_BY_DESK&quot;, &quot;1&quot;, 1)</code>（<code>desk_subapp_mgr.c</code>），不必再改桌面启动逻辑。</li>
+</ul>
+<h3 id="09-10-曾用-liblvgl-eviocgrab已撤">09-10 曾用 liblvgl EVIOCGRAB（已撤）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#09-10-曾用-liblvgl-eviocgrab已撤" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>当时做法：<code>evdev_set_file()</code> 见 <code>LVGL_LAUNCHED_BY_DESK</code> 就 <code>ioctl(EVIOCGRAB, 1)</code>，桌面 fd 一直开着但收不到点。</p>
+<p>后来 <code>hy_app</code> 再 fork <code>xyc_mix</code>，两层都带这个环境变量，第二层 grab 失败：<code>EVIOCGRAB: Device or resource busy</code>。共享库级独占拿掉，改应用自己挡。</p>
+<h3 id="当前工程怎么挡">当前工程怎么挡<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#当前工程怎么挡" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h3>
+<p>桌面仍是：进子应用 <code>g_lvgl_paused=1</code>（停 <code>lv_timer_handler</code>），触摸 fd 不关；回来再跑 LVGL。<code>web_touch_claim</code> 只把网页遥控切回桌面，跟物理 TP 点穿无关。</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>路径</th><th>做法</th><th>代码</th></tr></thead><tbody><tr><td>hy_app ← 嵌套子应用（xyc_mix）</td><td>顶层铺全屏透明可点 obj，吃掉残留按下；<code>RELEASED</code> 后再等 100ms 拆，最多 500ms 超时；拆时 <code>lv_indev_reset</code></td><td><code>app/hy_app/src/launcher/lv_app_launcher.c</code></td></tr><tr><td>hy_app / huiyin_ktv / sing_ktv 切页</td><td><code>lv_indev_enable(NULL, false)</code> + <code>lv_indev_reset</code>，100ms 后再开。<strong>不是</strong> <code>wait_release</code></td><td>各 <code>page_nav_stack.c</code> 的 <code>page_nav_block_input_temporarily</code></td></tr><tr><td>huiyin_ktv → 桌面</td><td><code>huiyin_ktv_ui_shutdown()</code> 后 <code>sleep(1)</code> 再 <code>huiyin_app_request_exit()</code></td><td><code>huiyin_ui_nav.c</code></td></tr><tr><td>hy_app → 桌面</td><td><code>sleep(1)</code> 已注释，直接 <code>boot_ui_request_exit()</code>。桌面<strong>没有</strong>对等挡板</td><td><code>hy_app/.../events_init.c</code> <code>HOME_btn_exit</code></td></tr><tr><td>卡拉 OK overlay（demo）</td><td>自己 <code>ioctl(EVIOCGRAB)</code>，kiosk 路径，不是桌面子应用这条</td><td><code>hy_karaoke_demo_cli/src/ui_overlay.c</code></td></tr></tbody></table></div>
+<p><code>evdev.c</code> 只留 <code>O_CLOEXEC</code> 和 <code>evdev_fd &lt; 0</code> 回 REL。<strong>不改</strong> <code>TRACKING_ID</code> 判断、<code>scroll_limit</code>、<code>PRESS_LOCK</code>、驱动报点。</p>
+<h2 id="10-补丁说明">10. 补丁说明<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#10-补丁说明" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<p>目录：<code>AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/</code></p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文件</th><th>内容</th></tr></thead><tbody><tr><td><code>0001-kernel-add-betterlife-BL3676-driver.patch</code></td><td>新增 <code>betterlife_ts/</code>：5.4 适配、<code>betterlife-touch</code>、关调试 / ESD / debugfs，IRQ 每次只读一次</td></tr><tr><td><code>0002-kernel-enable-Betterlife-disable-GSL.patch</code></td><td><code>touchscreen/Kconfig</code> <code>Makefile</code> + <code>bsp_defconfig</code></td></tr><tr><td><code>0003-board.dts-replace-GSL3670-with-BL3676.patch</code></td><td>TWI1：<code>ctp@40</code> → <code>betterlife_ts@2c</code>，<strong>保留 DMA 44</strong></td></tr><tr><td><code>0004-userspace-recognize-betterlife-touch.patch</code></td><td><code>input_symlink.sh</code> 加 <code>*betterlife*</code>（不改 evdev 协议解析）</td></tr><tr><td><code>0005-evdev-O_CLOEXEC-and-fd-guard.patch</code></td><td><code>O_CLOEXEC</code> + <code>evdev_fd &lt; 0</code> 回 REL；<code>PKG_RELEASE</code> 5→7。<strong>无</strong> <code>EVIOCGRAB</code></td></tr><tr><td><code>0006-app-side-touch-pierce-guard.patch</code></td><td>hy_app 返回挡板 + 切页禁输入；huiyin_ktv 回桌面 <code>sleep(1)</code></td></tr></tbody></table></div>
+<p>基线是 <strong>尚未合入触摸改动</strong> 的工程（TWI1 仍是 <code>ctp@40</code> GSL）。<code>0006</code> 还要求已有 <code>hy_app</code>。补丁路径是 <code>p1_nor_XYC_K1</code>：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="sh" data-theme="github-light github-dark"><code data-language="sh" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="function">cd</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> /root/Work/AI-tq</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0001-kernel-add-betterlife-BL3676-driver.patch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0002-kernel-enable-Betterlife-disable-GSL.patch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0003-board.dts-replace-GSL3670-with-BL3676.patch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0004-userspace-recognize-betterlife-touch.patch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0005-evdev-O_CLOEXEC-and-fd-guard.patch</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">patch</span><span style="--shiki-light:#005CC5;--shiki-dark:#79B8FF;" data-token-type="value"> -p1</span><span style="--shiki-light:#D73A49;--shiki-dark:#F97583;" data-token-type="operator"> &lt;</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/板件开发记录/XYC_K1/触摸开发记录/patches/0006-app-side-touch-pierce-guard.patch</span></span></code></pre></figure>
+<p>当前工作树已经改过再打会提示 already applied / fuzz，属正常。<code>0003</code> 不要用整份 <code>board.dts</code> 的 <code>git diff</code>（里面可能夹着屏驱改动）。不要再打已删除的 <code>0005-evdev-EVIOCGRAB-child-of-desk.patch</code>。</p></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-203" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#h133-k1--xyc_k1-接入-betterlife-bl3676-触摸开发记录" data-for="h133-k1--xyc_k1-接入-betterlife-bl3676-触摸开发记录">H133-K1 / XYC_K1 接入 Betterlife BL3676 触摸开发记录</a></li><li class="depth-1"><a href="#1-背景" data-for="1-背景">1. 背景</a></li><li class="depth-1"><a href="#2-硬件脚位原理图-h133-k1" data-for="2-硬件脚位原理图-h133-k1">2. 硬件脚位（原理图 H133-K1）</a></li><li class="depth-1"><a href="#3-定稿做了什么" data-for="3-定稿做了什么">3. 定稿做了什么</a></li><li class="depth-2"><a href="#31-厂家驱动" data-for="31-厂家驱动">3.1 厂家驱动</a></li><li class="depth-2"><a href="#32-内核配置" data-for="32-内核配置">3.2 内核配置</a></li><li class="depth-2"><a href="#33-dtstwi1" data-for="33-dtstwi1">3.3 DTS（TWI1）</a></li><li class="depth-2"><a href="#34-用户态" data-for="34-用户态">3.4 用户态</a></li><li class="depth-1"><a href="#4-厂家协议以源码为准" data-for="4-厂家协议以源码为准">4. 厂家协议（以源码为准）</a></li><li class="depth-1"><a href="#5-走过的弯路不要再做" data-for="5-走过的弯路不要再做">5. 走过的弯路（不要再做）</a></li><li class="depth-1"><a href="#6-编译与打包" data-for="6-编译与打包">6. 编译与打包</a></li><li class="depth-1"><a href="#7-验证" data-for="7-验证">7. 验证</a></li><li class="depth-1"><a href="#8-未做--注意" data-for="8-未做--注意">8. 未做 / 注意</a></li><li class="depth-1"><a href="#9-子应用退出点穿当前应用侧挡" data-for="9-子应用退出点穿当前应用侧挡">9. 子应用退出点穿（当前：应用侧挡）</a></li><li class="depth-2"><a href="#现象" data-for="现象">现象</a></li><li class="depth-2"><a href="#根因" data-for="根因">根因</a></li><li class="depth-2"><a href="#09-10-曾用-liblvgl-eviocgrab已撤" data-for="09-10-曾用-liblvgl-eviocgrab已撤">09-10 曾用 liblvgl EVIOCGRAB（已撤）</a></li><li class="depth-2"><a href="#当前工程怎么挡" data-for="当前工程怎么挡">当前工程怎么挡</a></li><li class="depth-1"><a href="#10-补丁说明" data-for="10-补丁说明">10. 补丁说明</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../../../postscript-441eae38.js" type="module" data-persist="true"></script></html>

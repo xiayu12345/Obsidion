@@ -1,0 +1,136 @@
+diff --git a/platform/allwinner/display/libuapi/src/disp_dual.c b/platform/allwinner/display/libuapi/src/disp_dual.c
+--- a/platform/allwinner/display/libuapi/src/disp_dual.c
++++ b/platform/allwinner/display/libuapi/src/disp_dual.c
+@@ -104,8 +104,9 @@
+ 	fp = fopen(DISP_MODE_PATH, "r");
+ 	if (!fp)
+ 		return 0;
+-	if (fscanf(fp, "%d", &v) == 1 && v == SUNXI_DISP_MODE_DIFF)
+-		*mode = SUNXI_DISP_MODE_DIFF;
++	if (fscanf(fp, "%d", &v) == 1 &&
++	    (v == SUNXI_DISP_MODE_DIFF || v == SUNXI_DISP_MODE_DIFF_HDMI))
++		*mode = (sunxi_disp_mode_t)v;
+ 	fclose(fp);
+ 	return 0;
+ }
+@@ -157,7 +158,7 @@
+ 	if (ret < 0 && ret != -EBUSY)
+ 		return ret;
+ 
+-	/* SAME：HDMI 显示 WB；DIFF：关 HDMI WB 层，腾 DE1 */
++	/* SAME：HDMI 显示 WB；DIFF / DIFF_HDMI：关 HDMI WB 层，腾 DE1 */
+ 	ret = sunxi_dual_display_set_hdmi_output(
+ 		mode == SUNXI_DISP_MODE_SAME ? 1 : 0);
+ 	if (ret < 0)
+@@ -169,7 +170,9 @@
+ {
+ 	int ret;
+ 
+-	if (mode != SUNXI_DISP_MODE_SAME && mode != SUNXI_DISP_MODE_DIFF)
++	if (mode != SUNXI_DISP_MODE_SAME &&
++	    mode != SUNXI_DISP_MODE_DIFF &&
++	    mode != SUNXI_DISP_MODE_DIFF_HDMI)
+ 		return -EINVAL;
+ 	if (playback_busy())
+ 		return -EBUSY;
+@@ -197,6 +200,8 @@
+ 		return 1;
+ 	if (mode == SUNXI_DISP_MODE_DIFF)
+ 		return 3;
++	if (mode == SUNXI_DISP_MODE_DIFF_HDMI)
++		return 2;
+ 	return 1;
+ }
+ 
+diff --git a/platform/allwinner/display/libuapi/src/disp_mode_cli.c b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+--- a/platform/allwinner/display/libuapi/src/disp_mode_cli.c
++++ b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+@@ -1,16 +1,26 @@
+-/* 机上切换同/异显：disp_mode same|diff|get（WB 常开，只切 HDMI WB 层） */
++/* 机上切换同/异显：disp_mode same|diff|diff_hdmi|get（WB 常开，只切 HDMI WB 层） */
+ #include <stdio.h>
+ #include <string.h>
+ #include <errno.h>
+ #include "disp_dual.h"
+ 
++static const char *mode_name(sunxi_disp_mode_t mode)
++{
++	if (mode == SUNXI_DISP_MODE_DIFF)
++		return "diff";
++	if (mode == SUNXI_DISP_MODE_DIFF_HDMI)
++		return "diff_hdmi";
++	return "same";
++}
++
+ static void usage(const char *argv0)
+ {
+ 	fprintf(stderr,
+-		"Usage: %s same|diff|get\n"
+-		"  same  同显（WB→HDMI，视频贴 LCD）\n"
+-		"  diff  异显（关 HDMI WB；播片时视频 LCD+HDMI；未插仍上 LCD）\n"
+-		"  get   查偏好 / HDMI / WB / hdmi_out / 视频屏\n"
++		"Usage: %s same|diff|diff_hdmi|get\n"
++		"  same       同显（WB→HDMI，视频贴 LCD）\n"
++		"  diff       异显（关 HDMI WB；播片时视频 LCD+HDMI；未插仍上 LCD）\n"
++		"  diff_hdmi  异显仅电视（关 HDMI WB；视频只贴 HDMI，LCD 仅 UI）\n"
++		"  get        查偏好 / HDMI / WB / hdmi_out / 视频屏\n"
+ 		"播中切换会失败（EBUSY）。切完需再播才会按新屏建层。\n",
+ 		argv0);
+ }
+@@ -29,7 +39,7 @@
+ 		mode = SUNXI_DISP_MODE_SAME;
+ 		(void)sunxi_disp_mode_get(&mode);
+ 		printf("mode=%s hdmi=%d wb=%d hdmi_out=%d video_screen=%d\n",
+-		       mode == SUNXI_DISP_MODE_DIFF ? "diff" : "same",
++		       mode_name(mode),
+ 		       sunxi_disp_hdmi_connected(),
+ 		       sunxi_dual_display_is_enabled(),
+ 		       sunxi_dual_display_get_hdmi_output(),
+@@ -41,6 +51,8 @@
+ 		mode = SUNXI_DISP_MODE_SAME;
+ 	else if (strcmp(argv[1], "diff") == 0)
+ 		mode = SUNXI_DISP_MODE_DIFF;
++	else if (strcmp(argv[1], "diff_hdmi") == 0)
++		mode = SUNXI_DISP_MODE_DIFF_HDMI;
+ 	else {
+ 		usage(argv[0]);
+ 		return 1;
+@@ -53,7 +65,7 @@
+ 		return 1;
+ 	}
+ 	printf("ok mode=%s hdmi=%d wb=%d hdmi_out=%d video_screen=%d\n",
+-	       mode == SUNXI_DISP_MODE_DIFF ? "diff" : "same",
++	       mode_name(mode),
+ 	       sunxi_disp_hdmi_connected(),
+ 	       sunxi_dual_display_is_enabled(),
+ 	       sunxi_dual_display_get_hdmi_output(),
+diff --git a/platform/allwinner/display/libuapi/src/include/disp_dual.h b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+--- a/platform/allwinner/display/libuapi/src/include/disp_dual.h
++++ b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+@@ -4,7 +4,9 @@
+  * WB 管道由内核启动后常开；切模式只显隐 HDMI 上的 WB 层 + 视频贴屏：
+  *   SAME：HDMI 显示 WB，视频 DE0
+  *   DIFF：关 HDMI 上 WB 层（腾 DE1），视频同时贴 LCD+HDMI（须已插）
++ *   DIFF_HDMI：关 HDMI 上 WB 层，视频只贴 HDMI（LCD 仅 UI；须已插）
+  * 播中勿切；未插 HDMI 时视频强制 LCD
++ * SAME/DIFF 的 set/get 语义不变；设置页「异屏」仍是 DIFF
+  */
+ #ifndef __DISP_DUAL_H__
+ #define __DISP_DUAL_H__
+@@ -16,6 +18,7 @@
+ typedef enum {
+ 	SUNXI_DISP_MODE_SAME = 0,
+ 	SUNXI_DISP_MODE_DIFF = 1,
++	SUNXI_DISP_MODE_DIFF_HDMI = 2,
+ } sunxi_disp_mode_t;
+ 
+ #define SUNXI_DISP_KTV_STATE_IDLE (-2)
+@@ -43,7 +46,7 @@
+ int sunxi_disp_mode_apply(sunxi_disp_mode_t mode);
+ int sunxi_disp_mode_boot_sync(void);
+ 
+-/* LayerCreate：未插 HDMI→1；DIFF+已插→3（两路都贴）；否则 1 */
++/* LayerCreate：未插 HDMI→1；DIFF+已插→3；DIFF_HDMI+已插→2；否则 1 */
+ int sunxi_disp_video_screen_mask(void);
+ 
+ #ifdef __cplusplus

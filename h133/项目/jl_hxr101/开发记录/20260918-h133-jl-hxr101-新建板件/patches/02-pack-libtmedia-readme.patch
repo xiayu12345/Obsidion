@@ -1,0 +1,40 @@
+--- a/build/pack
++++ b/build/pack
+@@ -816,7 +816,9 @@
+ 		fi
+ 		# 京龙 MIPI 竖屏：板级 100x432，不要用 common 的 312x76 横图
+ 		if { [ x"${PACK_BOARD}" = x"p1_nor_JL_M101" ] || \
+-		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_M101" ]; } && \
++		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_M101" ] || \
++		     [ x"${PACK_BOARD}" = x"p1_nor_JL_HXR101" ] || \
++		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_HXR101" ]; } && \
+ 		   [ -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp ]; then
+ 			cp -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp \
+ 				${LICHEE_PACK_OUT_DIR}/boot-resource/bootlogo.bmp
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -66,8 +66,8 @@
+ endif
+ 
+ # WB mirror CPU 旋转角（度）；按 target -D，tlayer_ctrl #if VIDEO_WB_MIRROR_ROTATE
+-# JYY070 / p1_nor_4k=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101),y)
++# JYY070 / p1_nor_4k=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101 / p1_nor_JL_HXR101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_JL_HXR101),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070)$(CONFIG_TARGET_h133_p1_nor_4k),y)
+--- a/openwrt/README.md
++++ b/openwrt/README.md
+@@ -10,6 +10,8 @@
+ 4  h133-p1_nor_XYC_K1-tina        H133-K1 LVDS 1366x768 + BL3676
+ 5  h133-p1_nor_JL_M101-tina       京龙 JL-M101 JD9365DA MIPI 800x1280 + GSL3670
+ 6  h133-p1_emmc_JL_M101-tina      京龙 JL-M101 eMMC 16G，屏驱同 NOR
+-7  h133-p1_nor_JYY070-tina        7寸屏，欣欣智能老坑货，1024*600
+-8  h133-p1_nor_LQ140M1JW61-tina   音乐骑士项目，1920*1080
+-9  h133-p2-tina                   最原始，无人使用
++7  h133-p1_nor_JL_HXR101-tina     京龙 HXR10106B-28 ILI9881C MIPI 800x1280 + GSL3670
++8  h133-p1_emmc_JL_HXR101-tina    京龙 HXR10106B-28 eMMC 16G，屏驱同 NOR HXR
++9  h133-p1_nor_JYY070-tina        7寸屏，欣欣智能老坑货，1024*600
++10 h133-p1_nor_LQ140M1JW61-tina   音乐骑士项目，1920*1080
++11 h133-p2-tina                   最原始，无人使用

@@ -1,0 +1,26 @@
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+index 7c6d0ea3e..79cc58d0b 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+@@ -457,7 +457,7 @@ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+     unsigned int bufferSize;
+ 
+     port = lc->mDispOutPort;
+-    /* disp_screen=1: WB mirror, rotate for MIPI only; 3: dual-diff both screens */
++    /* 只处理含 screen0 的贴屏：1=仅 LCD（未插 HDMI），3=LCD+HDMI；CPU 旋转只给 MIPI */
+     if (port == NULL || (port->disp_screen != 3 && port->disp_screen != 1))
+         return -1;
+ 
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
+index 034d129bb..5891cd62a 100644
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/engine/media_session.c
+@@ -516,7 +516,7 @@ int media_session_init(uint32_t queue_capacity)
+         g_ms.items[i] = NULL;
+     }
+ 
+-    /* 同/异显偏好开机同步（默认 SAME；DIFF 时关 WB） */
++    /* 开机关掉 fb pan clone，免得 UI 被复制到 HDMI 抢 DE1；贴屏偏好在建层时才读 */
+     (void)sunxi_disp_mode_boot_sync();
+ 
+ MS_DBG("[media_session] init ok, capacity=%u\n", queue_capacity);

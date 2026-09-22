@@ -1,0 +1,1347 @@
+diff --git a/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_XYC_K1.md b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_XYC_K1.md
+new file mode 100644
+index 000000000..49d554c8e
+--- /dev/null
++++ b/H133-AI-Skills/skills/h133-display/board-profile-p1_nor_XYC_K1.md
+@@ -0,0 +1,95 @@
++# H133 p1_nor_XYC_K1 板级档案（鑫宇宸 H133-K1 LVDS）
++
++> **当前定稿（2026-09-08）**。LCD + HDMI 已出图，背光 GPIO 常亮。板差异只进本板件目录。
++
++## 工程标识
++
++| 项 | 值 |
++|----|-----|
++| 板级 | **p1_nor_XYC_K1** |
++| 项目 | 鑫宇宸（资料在 `硬件资料/鑫宇宸/`） |
++| 原理图 | `H133-K1原理图.pdf`（h133-k1-v0_0825） |
++| 屏 | **LTN141AT0-001**（同系列 AT02/AT13），14.1" **1280×800 LVDS 1ch 6-bit** DE-only |
++| panel | **`xyc_k1_lvds`** |
++| UI / fb0 | **1280×800**（与物理屏一致，无 DE 缩放） |
++| 触摸 | **BL3676**（`betterlife_ts@2c`，I2C `0x2C`） |
++| WiFi | **RTL8733BU**（随 JYY070 基线） |
++| lunch | `h133-p1_nor_XYC_K1-tina` |
++| 镜像 | `out/h133_linux_p1_nor_XYC_K1_uart0_nor.img` |
++| 板级配置 | `device/config/chips/h133/configs/p1_nor_XYC_K1/`（`device/product/configs/p1_nor_XYC_K1` 同 inode） |
++| OpenWrt target | `openwrt/target/h133/h133-p1_nor_XYC_K1/` |
++
++## 板件隔绝
++
++| 允许 | 禁止 |
++|------|------|
++| 只改 `configs/p1_nor_XYC_K1/**`、`h133-p1_nor_XYC_K1/**` | 改 `p1_nor_JYY070` / 其它板 DTS 迁就本屏 |
++| 独立 `xyc_k1_lvds.c` | 改 `jyy070_lvds.c` / `default_panel.c` |
++| 本板 `usbc0` 注释 PB11/PB12 | 把 USB ID/VBUS 脚改回共享板 |
++
++## 显示定稿
++
++| 项 | 取值 |
++|----|-----|
++| `lcd_driver_name` | `xyc_k1_lvds` |
++| `lcd_if` | 3（LVDS） |
++| `lcd_x/y` | 1280 / 800 |
++| `lcd_dclk_freq` | **69**（AT13 typ 69.3MHz） |
++| porch | `hbp=80` `ht=1416` `hspw=32` / `vbp=10` `vt=816` `vspw=6` |
++| LVDS | 1ch、`colordepth=1`（6bit）、`frm=1`、NS |
++| `fb0` | 1280×800 |
++| `chn_cfg_mode` | 1（双 DE：LCD=DE0，HDMI 写回） |
++| `screen0_output_type` | 1（LCD） |
++| U-Boot `disp_init_enable` | **1** |
++| `setting.ini` | `disp_rotate=0`，`tp_rotate=0` |
++
++## 背光（定稿）
++
++| 项 | 取值 |
++|----|-----|
++| 硬件 | LCD-PWM=**PB12** → PT4117B **EN**（高电平才工作） |
++| 软件 | **`lcd_pwm_used=0`**，`lcd_bl_en = PB12 GPIO_ACTIVE_HIGH` |
++| `&pwm0` | **`status=okay`，不配 pinctrl**（disabled 会 `sunxi_pwm_probe` 空指针崩机） |
++| 灯条供电 | 16P LVDS **没有**背光脚；灯走 PT4117 `VLED+/VLED-`（CON5 / CN6） |
++
++`lcd_pwm_pol=1`（active low）会让 PB12 大部分时间低，14.1" 灯条启不来。PWM 调光留到灯亮之后再开（到时 `pwm_pol=0` 并给 pwm0 配 pinctrl）。
++
++## 触摸
++
++专题：[20260908-BL3676触摸适配](../../开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/README.md)
++
++| 属性 | 值 |
++|------|-----|
++| 芯片 | BL3676，`compatible = "BTL,betterlife_ts"` |
++| 总线 | TWI1 PG8/PG9，`twi_drv_used=0`（DMA 会申请不到通道） |
++| 地址 | `0x2C` |
++| RST / INT | PG2 / PG3（`gpios[0]`/`[1]`） |
++| `TP_MAX_X/Y` | 1280 / 800 |
++| 驱动 | `kernel/.../touchscreen/betterlife_ts/` |
++| `bsp_defconfig` | `CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y`，GSL/GT9xx **not set** |
++
++## 旋转
++
++| 链路 | 本板 |
++|------|------|
++| UI `disp_rotate` | **0** |
++| 触摸 `tp_rotate` | **0** |
++| `dual_display_rot` | **0** |
++| 视频 WB | 横屏应对齐 JYY070=`0`；`libtmedia` **尚未加本 target 挂钩**（播 MV 前补） |
++
++## 编译
++
++```bash
++export PATH="/root/Work/H133-AIKTV/prebuilt/hostbuilt/make4.1/bin:$PATH"
++./tools/build_p1_nor_XYC_K1.sh kernel
++./tools/build_p1_nor_XYC_K1.sh full
++# 产物：out/h133_linux_p1_nor_XYC_K1_uart0_nor.img
++```
++
++NOR U-Boot **不要** `./build.sh bootloader uboot force`（会 distclean 并把 XYC panel 打掉）。应用 `sun8iw20p1_nor_defconfig`，产物是 `u-boot-spinor-sun8iw20p1.bin`。
++
++## 相关开发记录
++
++- [20260908-板件克隆与LVDS点亮定稿](../../开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/README.md)
++- [20260908-BL3676触摸适配](../../开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/README.md)
++- [20260909-GPADC双组20键](../../开发记录/板件开发记录/XYC_K1/20260909-XYC_K1-GPADC双组20键/README.md)
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\344\270\216\351\241\271\347\233\256\345\257\271\347\205\247.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\344\270\216\351\241\271\347\233\256\345\257\271\347\205\247.md"
+new file mode 100644
+index 000000000..1993a5e5e
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\344\270\216\351\241\271\347\233\256\345\257\271\347\205\247.md"
+@@ -0,0 +1,23 @@
++# 板件与项目对照
++
++各独立 lunch 板型：项目、存储、屏、触摸。eMMC 与 NOR 分开计。  
++调试流水按板放 `板件开发记录/<板型>/`。
++
++| 板型 | 项目 | 存储 | 屏幕 | 触摸 | 档案 |
++|------|------|------|------|------|------|
++| `p1_nor_JYY070` | 未写明 | NOR | JYY070BD35L27A1-50，7" **1024×600 LVDS** 横屏，`jyy070_lvds` | **GSL1680**（映射到 UI 1280×800） | [档案](../skills/h133-display/board-profile-p1_nor_JYY070.md) · [记录](./板件开发记录/JYY070/README.md) |
++| `p1_nor_JL_M101` | 四川京龙 | NOR | JL-M101B196-P21WX-M402632，10.1" **800×1280 MIPI**，IC **JD9365DA-H3**，`jl_m101_jd9365da` | **GSL3670** | [档案](../skills/h133-display/board-profile-p1_nor_JL_M101.md) · [记录](./板件开发记录/JL_M101/README.md) |
++| `p1_nor_ZS101` | **纽曼** | NOR | 中深 ZS101NI4042J4H8II-B，10.1" **800×1280 MIPI**，IC **ILI9881C**，`zs101_ili9881c` | **FXT101041 GT928**（`gt928_fxt101041`，1280×800，`revert_y=1`） | [档案](../skills/h133-display/board-profile-p1_nor_ZS101.md) · [记录](./板件开发记录/ZS101/README.md) |
++| `p1_nor_LQ140M1JW61` | 音乐骑士 | NOR | Sharp LQ140M1JW61，14" **1920×1080 eDP**，经 QE01MIPI001-V01，`lq140_mipi2edp` | **GT9110H**（`gt9110h_lq140`，1401598@1920×1080） | [档案](../skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md) · [记录](./板件开发记录/LQ140M1JW61/README.md) |
++| `p1_emmc_LQ140M1JW61` | 音乐骑士 | **eMMC**（三星 KLMAG1JETD-B041 16GB） | 同 `p1_nor_LQ140M1JW61` | 同 `p1_nor_LQ140M1JW61`（GT9110H） | [记录](./板件开发记录/p1_emmc_LQ140M1JW61/README.md) |
++| `p1_nor_LQ190` | 鸿博芯业 | NOR | Sharp LQ190E1LX65 **1280×1024** 双 LVDS + GM8775C MIPI→LVDS，`lq190_mipi2edp` | **无**（`ctp@5d` disabled；PG2 作桥片 RST） | [档案](../skills/h133-display/board-profile-p1_nor_LQ190.md) · [记录](./板件开发记录/LQ190/README.md) |
++| `p1_nor_4k` | 未写明 | NOR | 无本板 LCD；**纯 HDMI 1080p60**，fb0=1920×1080 | 无 | [档案](../skills/h133-display/board-profile-p1_nor_4k.md) · [记录](./板件开发记录/p1_nor_4k/README.md) |
++| `p1_nor_WXY050` | **未写明** | NOR | 婺芯源 WXY050M022LA1201-SW2，5" **720×1280 MIPI**，IC **ST7121P**，`wxy050_st7121p` | TDDI 未适配（`ctp@40` disabled） | [档案](../skills/h133-display/board-profile-p1_nor_WXY050.md) · [记录](./板件开发记录/WXY050/README.md) |
++| `p1_nor_XYC_K1` | **鑫宇宸** | NOR | LTN141AT0-001，14.1" **1280×800 LVDS** 1ch 6-bit，`xyc_k1_lvds` | **BL3676**（`betterlife_ts@2c`） | [档案](../skills/h133-display/board-profile-p1_nor_XYC_K1.md) · [记录](./板件开发记录/XYC_K1/README.md) |
++
++说明：
++
++- **纽曼** 在 ZS101 档案里写死；京龙 / 音乐骑士 / 鸿博芯业 按 `硬件资料/` 归属与各板开发记录。
++- `p1_nor_WXY050`：资料在 `硬件资料/5寸屏幕/`，无客户目录；**2026-09-07 SDK 已克隆**，未点亮。
++- `p1_nor_XYC_K1`：资料在 `硬件资料/鑫宇宸/`；**2026-09-08 LCD+HDMI 已出图**，背光 PB12 GPIO 常亮；触摸专题 [BL3676](./板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/README.md)。
++- `p1_nor`、`p1_nor_8733`（拓步基线）与吴明才 12.1" 无独立 lunch 档案，不列入。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/00-\346\200\273\350\247\210.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/00-\346\200\273\350\247\210.md"
+new file mode 100644
+index 000000000..3ebf587db
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/00-\346\200\273\350\247\210.md"
+@@ -0,0 +1,55 @@
++# 00 — 总览
++
++| 项 | 内容 |
++|---|---|
++| 板型 | `p1_nor_XYC_K1` |
++| 定稿日 | 2026-09-08 |
++| 状态 | **BL3676 报点**；四角左上原点，X 右、Y 下 |
++
++---
++
++## 1. 一句话结论
++
++本板 CTP 是 **Betterlife BL3676**，不是克隆源 JYY070 的 GSL1680。走 TWI1（PG8/PG9），地址 **`0x2C`**，chipID **`0x41`**。原生量程 **1280×800**，跟 `fb0` 一致，不用 `ctp_exchange` / `revert` / `tp_rotate`。
++
++---
++
++## 2. 与其它板对照
++
++| 项 | JYY070 | **本板 XYC_K1** | ZS101 |
++|---|---|---|---|
++| 芯片 | GSL1680 | **BL3676** | GT928 |
++| 驱动 | `gslX680` | **`betterlife_ts`** | `gt9xxnew` |
++| 地址 | `0x40` | **`0x2C`** | `0x5d` |
++| 脚 | TWI1 + PG2/PG3 | **同脚，IC 不同** | 同 |
++| 量程 | 1024×600 映到 1280×800 | **直接 1280×800** | 1280×800，`revert_y=1` |
++
++---
++
++## 3. 定稿关键量
++
++| 项 | 取值 |
++|---|---|
++| 节点 | `betterlife_ts@2c` |
++| `compatible` | `"BTL,betterlife_ts"` |
++| `reg` | `<0x2c>` |
++| `gpios` | `[0]=PG2 RST`，`[1]=PG3 INT` |
++| `TP_MAX_X/Y` | 1280 / 800 |
++| `twi_drv_used` | **0**（DMA 申请不到通道） |
++| `bsp_defconfig` | `CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y`；GSL/GT9xx **not set** |
++| `setting.ini` | `tp_rotate=0` |
++| 输入名 | `betterlife-touch` → `/dev/input/touch` |
++
++---
++
++## 4. 和 LVDS 定稿的关系
++
++触摸是 09-08 跟屏一起做的，当时写进了显示专题。本目录是按其它板「触摸适配」拆出来的检索入口。
++
++| 树的状态 | 怎么做 |
++|---|---|
++| 已出图（有 `betterlife_ts@2c`） | **不要再打本补丁** |
++| 干净树 | 打 LVDS `display-final` 即可，里面已含 CTP |
++| 只有 JYY070 克隆、CTP 仍是 `ctp@40` | 打本专题 `01`+`02` |
++
++不要在兄弟板开 `CONFIG_TOUCHSCREEN_BETTERLIFE_TS`。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/01-\347\241\254\344\273\266\344\270\216\351\251\261\345\212\250.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/01-\347\241\254\344\273\266\344\270\216\351\251\261\345\212\250.md"
+new file mode 100644
+index 000000000..f1c2a15da
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/01-\347\241\254\344\273\266\344\270\216\351\251\261\345\212\250.md"
+@@ -0,0 +1,71 @@
++# 01 — 硬件与驱动
++
++## 1.1 原理图
++
++资料：`H133-AI-Skills/硬件资料/鑫宇宸/H133-K1原理图.pdf`（h133-k1-v0_0825）。
++
++| 项 | 网 / 脚 |
++|---|---|
++| I2C | TWI1 **PG8 SCL / PG9 SDA** |
++| RST | **PG2** |
++| INT | **PG3** |
++| 地址 | **`0x2C`**（7-bit） |
++| 供电 | 板上 3.3V 常供，DTS 无独立 regulator |
++
++规格书：`硬件资料/鑫宇宸/BL3676_datasheet中文_V1.1(1).pdf`。
++
++---
++
++## 1.2 原厂驱动包
++
++`硬件资料/鑫宇宸/betterlife_ts.7z` → 进树：
++
++```text
++kernel/linux-5.4/drivers/input/touchscreen/betterlife_ts/
++```
++
++接入点（公共 `touchscreen/`，**default n**，只本板 defconfig 打开）：
++
++| 文件 | 内容 |
++|---|---|
++| `touchscreen/Kconfig` | `source ".../betterlife_ts/Kconfig"` |
++| `touchscreen/Makefile` | `obj-$(CONFIG_TOUCHSCREEN_BETTERLIFE_TS) += betterlife_ts/` |
++| `betterlife_ts/Kconfig` | `TOUCHSCREEN_BETTERLIFE_TS`，`compatible = "BTL,betterlife_ts"` |
++
++`device/product/...` 与 `chips/...` 同 inode，`bsp_defconfig` 改一处即可。
++
++---
++
++## 1.3 本板裁剪（`bl_chip_custom.h`）
++
++| 宏 | 本板 |
++|---|---|
++| `TS_CHIP` | `BL7XX1` → `BTL_FLASH_ID=0x41` |
++| `BTL_CHIP_NAME` | `"BL3676"` |
++| `CTP_SLAVE_ADDR` | `0x2c` |
++| `BTL_CONFIG_OF` | 开，读 DTS |
++| `BTL_CHECK_CHIPID` | 开 |
++| `RESET_PIN_WAKEUP` | 开 |
++| `BTL_THREADED_IRQ` | 开 |
++| `BTL_UPDATE_FIRMWARE_ENABLE` | 开（原厂模板） |
++| 充电 / ESD / debugfs / apk / 压力 | **关**（充电检测未接） |
++
++输入设备名必须带 `touch`，`input_symlink.sh` 才链到 `/dev/input/touch`：
++
++```c
++static const char *btl_ts_name = "betterlife-touch";
++```
++
++本板脚本额外加了 `*betterlife*`，双保险。
++
++---
++
++## 1.4 DTS 脚序
++
++`of_get_gpio(np, 0)` = RST，`(np, 1)` = INT。必须：
++
++```dts
++gpios = <&pio PG 2 GPIO_ACTIVE_HIGH>, <&pio PG 3 GPIO_ACTIVE_HIGH>;
++```
++
++对调会复位/中断反了，I2C 可能通但没报点。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/02-DTS\344\270\216\351\207\217\347\250\213.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/02-DTS\344\270\216\351\207\217\347\250\213.md"
+new file mode 100644
+index 000000000..9ea9cd3b2
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/02-DTS\344\270\216\351\207\217\347\250\213.md"
+@@ -0,0 +1,63 @@
++# 02 — DTS 与量程
++
++只改本板 `linux-5.4/board.dts` 的 `&twi1`。U-Boot DTS **没有** CTP 节点。
++
++```text
++device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++```
++
++## 2.1 定稿节点
++
++```dts
++&twi1 {
++	clock-frequency = <400000>;
++	pinctrl-0 = <&twi1_pins_a>;
++	pinctrl-1 = <&twi1_pins_b>;
++	pinctrl-names = "default", "sleep";
++	/* CPU 模式；=1 走 DMA，本板 TWI1 申请不到通道，CTP I2C 写失败 */
++	twi_drv_used = <0>;
++	status = "okay";
++
++	/* BL3676：TWI1 PG8/PG9，RST=PG2，INT=PG3，I2C 0x2C；gpios[0]=RST [1]=INT */
++	betterlife_ts@2c {
++		compatible = "BTL,betterlife_ts";
++		reg = <0x2c>;
++		status = "okay";
++		gpios = <&pio PG 2 GPIO_ACTIVE_HIGH>, <&pio PG 3 GPIO_ACTIVE_HIGH>;
++		TP_MAX_X = <1280>;
++		TP_MAX_Y = <800>;
++	};
++};
++```
++
++从 JYY070 克隆下来是 `ctp@40` / `allwinner,gslX680`。本板删掉 GSL 节点，不要 disabled 留着抢地址。
++
++---
++
++## 2.2 `TP_MAX` 就是 ABS 量程
++
++驱动 `of_property_read_u32(TP_MAX_X/Y)`，再 `input_set_abs_params(..., 0, ts->TP_MAX_*)`。大于量程的点被裁掉。
++
++模组原生约 **1280×800**（四角 raw 见 [测试方法.md](./测试方法.md)）。克隆时沿用 JYY 占位 **1024×600**，四角会被贴边、中间偏。定稿跟 `lcd_x/y`、`fb0` 一样 1280×800。
++
++本驱动 **没有** GSL 那套 `ctp_report_max` / `revert` / `exchange`。方向不对先看模组朝向和 `tp_rotate`，不要抄 GSL 属性进这个节点。
++
++---
++
++## 2.3 `twi_drv_used` 必须 0
++
++`=1` 走 DMA。本板 TWI1 申请不到通道，probe 阶段 I2C 写失败。JYY070 已经是 0，克隆后不要改回去。
++
++---
++
++## 2.4 内核开关
++
++OpenWrt 内核吃 **`openwrt/bsp_defconfig`**，不是 `linux-5.4/config-5.4`。
++
++```text
++CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y
++# CONFIG_TOUCHSCREEN_GSLX680NEW is not set
++# CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set
++```
++
++`input_symlink.sh` 匹配 `*betterlife*`（设备名 `betterlife-touch`，`*touch*` 也能中）。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/03-\346\224\271\345\212\250\350\277\207\347\250\213\344\270\216\350\270\251\345\235\221.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/03-\346\224\271\345\212\250\350\277\207\347\250\213\344\270\216\350\270\251\345\235\221.md"
+new file mode 100644
+index 000000000..942bf1c00
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/03-\346\224\271\345\212\250\350\277\207\347\250\213\344\270\216\350\270\251\345\235\221.md"
+@@ -0,0 +1,41 @@
++# 03 — 改动过程与踩坑
++
++克隆当天计划是 CTP **disabled**、BL3676 另做。资料包里有 IC 和 `betterlife_ts.7z`，当天就接上了，和屏一起验证。显示定稿把驱动打进 `01-kernel-uboot-panel.patch`，DTS 打进 `02-board-tree.patch`。本专题把那一段拆开写清。
++
++---
++
++## 3.1 时间线
++
++| 阶段 | 现象 | 结论 |
++|---|---|---|
++| 克隆 JYY070 | `ctp@40` GSL | 本板不是这颗 IC |
++| 接入 `betterlife_ts@2c` | 第一份串口是 `gslX680`、`1-0040` | **烧的是 JYY070 镜像**，不是 XYC_K1 |
++| 烧对 XYC 包 | `betterlife-touch` / `event3` | probe 成功 |
++| `getevent` 四角 | 左上原点，约 1280×800 | 不用交换/翻转 |
++| `TP_MAX` 仍 1024×600 | 边角被裁、点偏 | 改成 1280×800 |
++| 占位屏参 | 画面和点可能对不齐 | 屏按时序定稿后跟手 |
++
++---
++
++## 3.2 踩坑（必读）
++
++| 现象 | 根因 | 处理 |
++|---|---|---|
++| I2C 只有 `1-0040`，设备名 `gslX680`，dmesg 无 `btl` | 镜像不是本板 | 烧 `p1_nor_XYC_K1` 整包，别只烧 rootfs |
++| `I2C communication ERROR` | TWI1 不通：脚、`0x2C`、供电、RST | `i2cdetect -y 1`，`0x2c` 应是 `2c` |
++| `Please specify the IC model:0x??` | 通了但 chipID ≠ `0x41` | `bl_chip_custom.h` 的 `TS_CHIP`/`BTL_FLASH_ID` |
++| 完全没 BTL 日志 | 没编进内核 / 节点没 probe | `bsp_defconfig` `BETTERLIFE=y`；DTS `status=okay` |
++| I2C 写失败、DMA | `twi_drv_used=1` | 必须 **0** |
++| 有设备、滑没点 | INT/RST 对调或模组没报 | 核 `gpios[0/1]`；`getevent` |
++| 四角贴边、中间偏 | `TP_MAX` 还是 1024×600 | 改 1280×800 |
++| `id:15, x:4095, y:4095` | 空指槽 | 当没看见 |
++| `getevent -p`：`Function not implemented` | `INOTIFY_USER` 关了 | `getevent -lt /dev/input/eventN` |
++
++---
++
++## 3.3 不要做的
++
++- 不要给 BL3676 加 GSL 的 `ctp_report_max` / `revert_x/y` / `exchange`
++- 不要在 `linux-5.4/config-5.4` 里改触摸开关当生效（内核走 `bsp_defconfig`）
++- 不要开兄弟板的 `TOUCHSCREEN_BETTERLIFE_TS`
++- 不要在 WSL 源码树本地 `make` 出 `.o`
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/04-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/04-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+new file mode 100644
+index 000000000..3db7ea2fa
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/04-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+@@ -0,0 +1,60 @@
++# 04 — 编译与验收
++
++## 4.0 打补丁
++
++当前出图树（LVDS 定稿已含 CTP）**不必再打**。只在板级仍是 GSL `ctp@40` 时：
++
++```bash
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/patches/apply-xyc-k1-bl3676-tp.sh
++```
++
++须已有 `p1_nor_XYC_K1`。没有板级树时先打 LVDS 定稿（会连触摸一起带上）。
++
++## 4.1 编译（只动内核，不编 U-Boot）
++
++```bash
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++./tools/build_p1_nor_XYC_K1.sh kernel
++source build/envsetup.sh && p
++```
++
++产物：`out/h133_linux_p1_nor_XYC_K1_uart0_nor.img`
++
++禁止在 WSL 源码树本地 `make` / `gcc -c` 出 `.o`。
++
++确认内核配置：
++
++```bash
++grep CONFIG_TOUCHSCREEN_BETTERLIFE_TS out/h133/kernel/build/.config
++# 应为 y
++grep CONFIG_TOUCHSCREEN_GSLX680NEW out/h133/kernel/build/.config
++# 应为 is not set
++```
++
++dtb：
++
++```bash
++dtc -I dtb -O dts out/h133/kernel/build/arch/arm/boot/dts/board.dtb \
++  | awk '/betterlife_ts@/,/^[[:space:]]*\};/'
++```
++
++应有 `reg = <0x2c>`，`TP_MAX_X/Y` 1280/800。
++
++## 4.2 验收
++
++机上步骤见 [测试方法.md](./测试方法.md)。
++
++- [x] `1-002c`，不是 `1-0040`
++- [x] `chipID = 41`
++- [x] `betterlife-touch`，有 `/dev/input/touch`
++- [x] 四角 raw 约 1280×800，左上原点
++- [x] desk `tp_rotate=0` 跟手（屏时序定稿后）
++
++## 4.3 隔绝自检
++
++```bash
++rg -n 'betterlife_ts|TOUCHSCREEN_BETTERLIFE' \
++  device/config/chips/h133/configs/p1_nor_JYY070 \
++  device/config/chips/h133/configs/p1_nor_JL_M101
++# 期望：无匹配
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/README.md"
+new file mode 100644
+index 000000000..6b4c5eb6b
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/README.md"
+@@ -0,0 +1,58 @@
++# 鑫宇宸 XYC_K1 BL3676 触摸适配
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-09-08（与 LVDS 同日；2026-09-10 从显示记录拆出本专题） |
++| 板型 | **`p1_nor_XYC_K1`** |
++| 基线 | 已有板级树（[20260908 LVDS 定稿](../20260908-XYC_K1-板件克隆与LVDS点亮定稿/README.md)） |
++| 触摸 | **BL3676** I2C `0x2C`，`betterlife_ts` |
++| 坐标 | `TP_MAX=1280×800`；不交换、不翻转；`tp_rotate=0` |
++| 状态 | **实机报点、四角方向已验** |
++| 镜像 | 含在 LVDS 出图包 `out/h133_linux_p1_nor_XYC_K1_uart0_nor.img` |
++
++---
++
++## 一句话
++
++鑫宇宸 K1 触摸不是 GSL。TWI1 挂 **BL3676**（`0x2C`，RST=PG2，INT=PG3），量程跟屏一样 1280×800。LVDS 定稿补丁里已经带上；本专题是独立检索入口和 CTP 子集补丁。
++
++---
++
++## 阅读顺序
++
++| 步骤 | 文档 | 内容 |
++|------|------|------|
++| 0 | [00-总览.md](./00-总览.md) | 结论、对照、与显示补丁的关系 |
++| 1 | [01-硬件与驱动.md](./01-硬件与驱动.md) | 原理图、原厂包、`betterlife_ts` |
++| 2 | [02-DTS与量程.md](./02-DTS与量程.md) | 节点、`TP_MAX`、`twi_drv_used` |
++| 3 | [03-改动过程与踩坑.md](./03-改动过程与踩坑.md) | 烧错镜像、量程裁点、DMA |
++| 4 | [04-编译与验收.md](./04-编译与验收.md) | 只编 kernel；验收 |
++| — | [如何修改.md](./如何修改.md) | 改地址 / 脚 / 量程 |
++| — | [测试方法.md](./测试方法.md) | dmesg、`getevent`、四角 |
++
++---
++
++## 补丁（相对「XYC 板级仍是 JYY070 GSL」的树）
++
++路径：[patches/](./patches/)
++
++| 文件 | 内容 |
++|------|------|
++| `01-kernel-betterlife-ts.patch` | 内核 `betterlife_ts` + Kconfig/Makefile |
++| `02-board-dts-ctp.patch` | 本板 DTS `ctp@40`→`betterlife_ts@2c`；关 GSL 开 BETTERLIFE；`input_symlink` |
++| `03-docs.patch` | 本专题文档 + 索引 |
++| `xyc-k1-bl3676-tp.patch` | 以上合并 |
++| `apply-xyc-k1-bl3676-tp.sh` | 应用（已落地则跳过） |
++| `gen-xyc-k1-bl3676-tp-patch.sh` | 从当前树重生成 |
++
++**当前出图树不必再打**：LVDS `xyc-k1-display-final.patch` 已含驱动和 DTS。再 apply 会报已存在，属正常。
++
++```bash
++# 仅当板级还是 GSL@40、还没有 betterlife_ts 时
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/patches/apply-xyc-k1-bl3676-tp.sh
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++./tools/build_p1_nor_XYC_K1.sh kernel
++source build/envsetup.sh && p
++```
++
++未改 U-Boot。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/README.md"
+new file mode 100644
+index 000000000..fdb694a69
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/README.md"
+@@ -0,0 +1,21 @@
++# XYC_K1 BL3676 触摸 — 补丁
++
++在 **SDK 根目录**执行。相对 **XYC 板级仍是 JYY070 `ctp@40` GSL** 的树。H133-AI-Skills 被 gitignore，文档补丁靠 `git add -f`。
++
++LVDS 定稿 `xyc-k1-display-final.patch` **已经含** 驱动和 DTS。当前出图树再 apply 会 already applied，属正常。
++
++| 文件 | 内容 |
++|---|---|
++| `01-kernel-betterlife-ts.patch` | `betterlife_ts/` + `touchscreen/Kconfig` `Makefile` |
++| `02-board-dts-ctp.patch` | 本板 `&twi1`、`bsp_defconfig`、`input_symlink.sh` |
++| `03-docs.patch` | 开发记录 + 索引 |
++| `xyc-k1-bl3676-tp.patch` | 合并 |
++
++```bash
++bash apply-xyc-k1-bl3676-tp.sh          # 打合并
++bash apply-xyc-k1-bl3676-tp.sh --check
++bash apply-xyc-k1-bl3676-tp.sh 01       # 分段
++bash gen-xyc-k1-bl3676-tp-patch.sh     # 从当前树重生成
++```
++
++未改 U-Boot。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/apply-xyc-k1-bl3676-tp.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/apply-xyc-k1-bl3676-tp.sh"
+new file mode 100755
+index 000000000..1f17eb787
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/apply-xyc-k1-bl3676-tp.sh"
+@@ -0,0 +1,111 @@
++#!/bin/bash
++# 鑫宇宸 XYC_K1 BL3676 触摸 — 补丁应用
++# 在 H133 SDK 根目录执行，或设置 H133_SDK_ROOT
++#
++# Usage:
++#   bash apply-xyc-k1-bl3676-tp.sh          # 打合并补丁
++#   bash apply-xyc-k1-bl3676-tp.sh --check
++#   bash apply-xyc-k1-bl3676-tp.sh 01|02|03
++set -e
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../../.." && pwd)}"
++
++if [ ! -f "$ROOT/build/envsetup.sh" ]; then
++	echo "error: 请在 SDK 根目录执行，或设置 H133_SDK_ROOT" >&2
++	echo "  当前 ROOT=$ROOT" >&2
++	exit 1
++fi
++
++if [ ! -f "$ROOT/device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts" ]; then
++	echo "error: 没有 p1_nor_XYC_K1 板级树。先打 LVDS 定稿补丁（会连触摸一起带上）。" >&2
++	exit 1
++fi
++
++cd "$ROOT"
++
++pick_patch() {
++	case "${1:-all}" in
++	01) echo "$SCRIPT_DIR/01-kernel-betterlife-ts.patch" ;;
++	02) echo "$SCRIPT_DIR/02-board-dts-ctp.patch" ;;
++	03) echo "$SCRIPT_DIR/03-docs.patch" ;;
++	all|"") echo "$SCRIPT_DIR/xyc-k1-bl3676-tp.patch" ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03]" >&2
++		exit 1
++		;;
++	esac
++}
++
++MODE=apply
++ARG=all
++for a in "$@"; do
++	case "$a" in
++	--check) MODE=check ;;
++	all|01|02|03) ARG=$a ;;
++	*)
++		echo "Usage: $0 [--check] [all|01|02|03]" >&2
++		exit 1
++		;;
++	esac
++done
++
++PATCH="$(pick_patch "$ARG")"
++if [ ! -f "$PATCH" ]; then
++	echo "error: missing $PATCH — 先跑 gen-xyc-k1-bl3676-tp-patch.sh" >&2
++	exit 1
++fi
++
++try_patch_check() {
++	if patch -p1 --dry-run <"$PATCH" >/dev/null 2>&1; then
++		echo "forward"
++	elif patch -p1 --dry-run -R <"$PATCH" >/dev/null 2>&1; then
++		echo "reverse"
++	else
++		echo "fail"
++	fi
++}
++
++git_ok=0
++if command -v git >/dev/null 2>&1 && git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
++	git_ok=1
++fi
++
++if [ "$MODE" = check ]; then
++	echo "==> dry-run: $PATCH"
++	if [ "$git_ok" = 1 ] && git apply --check "$PATCH" 2>/dev/null; then
++		echo "==> OK (check)"
++		exit 0
++	fi
++	if [ "$git_ok" = 1 ] && git apply --reverse --check "$PATCH" 2>/dev/null; then
++		echo "==> 已落地（reverse check OK）"
++		exit 0
++	fi
++	case "$(try_patch_check)" in
++	forward) echo "==> OK (check)" ;;
++	reverse) echo "==> 已落地（reverse check OK）" ;;
++	*) echo "error: 无法 check，请人工对照开发记录" >&2; exit 1 ;;
++	esac
++	exit 0
++fi
++
++echo "==> apply: $PATCH"
++if [ "$git_ok" = 1 ] && git apply --check "$PATCH" 2>/dev/null; then
++	git apply "$PATCH"
++	echo "==> done"
++elif [ "$git_ok" = 1 ] && git apply --reverse --check "$PATCH" 2>/dev/null; then
++	echo "==> 已存在，跳过"
++elif [ "$(try_patch_check)" = reverse ]; then
++	echo "==> 已存在，跳过"
++elif [ "$(try_patch_check)" = forward ]; then
++	patch -p1 <"$PATCH"
++	echo "==> done"
++else
++	echo "error: 无法应用。当前出图树已含 BL3676 则属正常；否则对照开发记录。" >&2
++	exit 1
++fi
++
++echo "    编译: export PATH=\"\$PWD/prebuilt/hostbuilt/make4.1/bin:\$PATH\""
++echo "          ./tools/build_p1_nor_XYC_K1.sh kernel"
++echo "          source build/envsetup.sh && p"
++echo "    文档: H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/README.md"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/gen-xyc-k1-bl3676-tp-patch.sh" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/gen-xyc-k1-bl3676-tp-patch.sh"
+new file mode 100755
+index 000000000..31f6f06bb
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/patches/gen-xyc-k1-bl3676-tp-patch.sh"
+@@ -0,0 +1,194 @@
++#!/bin/bash
++# 重新生成鑫宇宸 XYC_K1 BL3676 触摸补丁
++# 在 SDK 根执行，或设置 H133_SDK_ROOT
++set -euo pipefail
++
++SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
++ROOT="${H133_SDK_ROOT:-$(cd "$SCRIPT_DIR/../../../../../.." && pwd)}"
++OUT_DIR="$SCRIPT_DIR"
++DOC_DIR="H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配"
++DISPLAY_01="$ROOT/H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/01-kernel-uboot-panel.patch"
++
++cd "$ROOT"
++if [ ! -f build/envsetup.sh ]; then
++	echo "error: not SDK root: $ROOT" >&2
++	exit 1
++fi
++
++python3 - "$DISPLAY_01" "$OUT_DIR/01-kernel-betterlife-ts.patch" <<'PY'
++"""从 LVDS 01 里抽出 betterlife_ts / touchscreen Kconfig+Makefile。"""
++import pathlib, re, sys
++
++src = pathlib.Path(sys.argv[1])
++out = pathlib.Path(sys.argv[2])
++if not src.is_file():
++    raise SystemExit(f"missing display 01 patch: {src}")
++
++text = src.read_bytes().decode("latin-1")
++files = re.split(r"(?=^diff --git )", text, flags=re.M)
++keep = []
++for f in files:
++    if not f.strip():
++        continue
++    m = re.search(r"^diff --git a/(.+?) b/(.+)$", f, re.M)
++    if not m:
++        continue
++    rel = m.group(2)
++    if "betterlife_ts" in rel or rel.endswith("input/touchscreen/Kconfig") or rel.endswith("input/touchscreen/Makefile"):
++        keep.append(f)
++if not keep:
++    raise SystemExit("no betterlife hunks in display 01")
++out.write_bytes("".join(keep).encode("latin-1"))
++PY
++
++python3 - "$ROOT" "$OUT_DIR/02-board-dts-ctp.patch" <<'PY'
++"""相对 JYY070 克隆态：只含本板 CTP / defconfig / symlink。"""
++import pathlib, re, subprocess, tempfile, sys
++
++root = pathlib.Path(sys.argv[1])
++out = pathlib.Path(sys.argv[2])
++jyy = root / "device/config/chips/h133/configs/p1_nor_JYY070"
++xyc = root / "device/config/chips/h133/configs/p1_nor_XYC_K1"
++
++def uni(old, new, rel):
++    with tempfile.TemporaryDirectory() as td:
++        td = pathlib.Path(td)
++        a, b = td / "a", td / "b"
++        a.write_bytes(old.encode("latin-1"))
++        b.write_bytes(new.encode("latin-1"))
++        r = subprocess.run(["diff", "-u", str(a), str(b)], capture_output=True)
++        d = r.stdout.decode("latin-1")
++        if not d.strip():
++            return ""
++        d = d.replace(f"--- {a}", f"--- a/{rel}")
++        d = d.replace(f"+++ {b}", f"+++ b/{rel}")
++        d = re.sub(r"^(--- |\+\+\+ )(.+?)\t.*$", r"\1\2", d, flags=re.M)
++        return f"diff --git a/{rel} b/{rel}\n" + d
++
++def twi1_block(text):
++    m = re.search(r"^&twi1 \{.*?\n\};\n", text, re.M | re.S)
++    if not m:
++        raise SystemExit("no &twi1 block")
++    return m.group(0)
++
++parts = []
++
++rel_dts = "device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts"
++old_dts = (jyy / "linux-5.4/board.dts").read_text(encoding="latin-1")
++new_dts = (xyc / "linux-5.4/board.dts").read_text(encoding="latin-1")
++# 只替换 &twi1，其余当 XYC 现状（补丁上下文取自 XYC 文件头尾）
++old_one = new_dts.replace(twi1_block(new_dts), twi1_block(old_dts), 1)
++p = uni(old_one, new_dts, rel_dts)
++if p:
++    parts.append(p)
++
++rel_cfg = "device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig"
++old_cfg = (jyy / "openwrt/bsp_defconfig").read_text(encoding="latin-1")
++new_cfg = (xyc / "openwrt/bsp_defconfig").read_text(encoding="latin-1")
++# 把 JYY 的触摸三行套进 XYC 全文，再 diff，避免把其它 defconfig 差异打进来
++def swap_ts(cfg, flavor):
++    if flavor == "jyy":
++        return re.sub(
++            r"# CONFIG_TOUCHSCREEN_GSLX680NEW is not set\n"
++            r"# CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set\n"
++            r"CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y\n",
++            "CONFIG_TOUCHSCREEN_GSLX680NEW=y\n"
++            "# CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set\n",
++            cfg,
++            count=1,
++        )
++    return cfg
++
++# 从 XYC 当前生成「仍是 GSL」的假旧文件
++old_from_xyc = swap_ts(new_cfg, "jyy")
++if old_from_xyc == new_cfg:
++    raise SystemExit("bsp_defconfig BETTERLIFE 块未匹配，无法生成 02")
++p = uni(old_from_xyc, new_cfg, rel_cfg)
++if p:
++    parts.append(p)
++
++rel_sy = "openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh"
++old_sy = (root / "openwrt/target/h133/h133-p1_nor_JYY070/busybox-init-base-files/usr/bin/input_symlink.sh").read_text(encoding="latin-1")
++new_sy = (root / rel_sy).read_text(encoding="latin-1")
++# 只保留 betterlife 那一行差异
++old_line_sy = new_sy.replace("*betterlife*|", "")
++p = uni(old_line_sy, new_sy, rel_sy)
++if p:
++    parts.append(p)
++
++if not parts:
++    raise SystemExit("02-board-dts-ctp empty")
++out.write_bytes("".join(parts).encode("latin-1"))
++PY
++
++trap 'git reset HEAD >/dev/null 2>&1 || true' EXIT
++
++git add -f -- \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/README.md" \
++	"$DOC_DIR/README.md" \
++	"$DOC_DIR/00-总览.md" \
++	"$DOC_DIR/01-硬件与驱动.md" \
++	"$DOC_DIR/02-DTS与量程.md" \
++	"$DOC_DIR/03-改动过程与踩坑.md" \
++	"$DOC_DIR/04-编译与验收.md" \
++	"$DOC_DIR/如何修改.md" \
++	"$DOC_DIR/测试方法.md" \
++	"$DOC_DIR/patches/README.md" \
++	"$DOC_DIR/patches/apply-xyc-k1-bl3676-tp.sh" \
++	"$DOC_DIR/patches/gen-xyc-k1-bl3676-tp-patch.sh"
++
++# 交叉链接的显示/档案也进文档补丁
++git add -f -- \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/README.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/03-DTS与背光.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/05-编译与验收.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/README.md" \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_XYC_K1.md" \
++	"H133-AI-Skills/开发记录/板件与项目对照.md" \
++	2>/dev/null || true
++
++git diff --cached -- \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/README.md" \
++	"H133-AI-Skills/开发记录/板件与项目对照.md" \
++	"H133-AI-Skills/skills/h133-display/board-profile-p1_nor_XYC_K1.md" \
++	"$DOC_DIR" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/README.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/03-DTS与背光.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/05-编译与验收.md" \
++	"H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/README.md" \
++	> "$OUT_DIR/03-docs.patch"
++
++python3 - "$OUT_DIR/03-docs.patch" <<'PY'
++import pathlib, sys
++p = pathlib.Path(sys.argv[1])
++text = p.read_bytes().decode("latin-1")
++import re
++files = re.split(r"(?=^diff --git )", text, flags=re.M)
++keep = []
++skip = (
++    "01-kernel-betterlife-ts.patch",
++    "02-board-dts-ctp.patch",
++    "03-docs.patch",
++    "xyc-k1-bl3676-tp.patch",
++)
++for f in files:
++    if not f.strip():
++        continue
++    if any(s in f.split("\n", 3)[0] for s in skip):
++        continue
++    keep.append(f)
++p.write_bytes("".join(keep).encode("latin-1"))
++PY
++
++cat "$OUT_DIR/01-kernel-betterlife-ts.patch" \
++	"$OUT_DIR/02-board-dts-ctp.patch" \
++	"$OUT_DIR/03-docs.patch" \
++	> "$OUT_DIR/xyc-k1-bl3676-tp.patch"
++
++git reset HEAD >/dev/null 2>&1 || true
++chmod +x "$OUT_DIR/apply-xyc-k1-bl3676-tp.sh" "$OUT_DIR/gen-xyc-k1-bl3676-tp-patch.sh"
++
++echo "==> $OUT_DIR/01-kernel-betterlife-ts.patch ($(grep -c '^diff --git' "$OUT_DIR/01-kernel-betterlife-ts.patch" || true) diffs)"
++echo "==> $OUT_DIR/02-board-dts-ctp.patch ($(grep -c '^diff --git' "$OUT_DIR/02-board-dts-ctp.patch" || true) diffs)"
++echo "==> $OUT_DIR/03-docs.patch ($(grep -c '^diff --git' "$OUT_DIR/03-docs.patch" || true) diffs)"
++echo "==> $OUT_DIR/xyc-k1-bl3676-tp.patch ($(grep -c '^diff --git' "$OUT_DIR/xyc-k1-bl3676-tp.patch" || true) diffs, $(wc -l < "$OUT_DIR/xyc-k1-bl3676-tp.patch") lines)"
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\345\246\202\344\275\225\344\277\256\346\224\271.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\345\246\202\344\275\225\344\277\256\346\224\271.md"
+new file mode 100644
+index 000000000..98ff84788
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\345\246\202\344\275\225\344\277\256\346\224\271.md"
+@@ -0,0 +1,47 @@
++# 如何改本板 BL3676
++
++只改 **`p1_nor_XYC_K1` 的 `board.dts` `&twi1`**。`device/product/.../board.dts` 与 chips 同一 inode。不要改 JYY070 / 京龙 dts。
++
++对照：[02-DTS与量程.md](./02-DTS与量程.md)、[测试方法.md](./测试方法.md)
++
++```text
++device/config/chips/h133/configs/p1_nor_XYC_K1/linux-5.4/board.dts
++```
++
++改完只编 kernel 再 pack：
++
++```bash
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++./tools/build_p1_nor_XYC_K1.sh kernel
++source build/envsetup.sh && p
++```
++
++禁止在 WSL 本地 `make` 出 `.o`。
++
++---
++
++## 1. 量程
++
++`TP_MAX_X` / `TP_MAX_Y` 必须等于模组 ABS 最大值（本板 **1280×800**）。
++
++四角 X 到不了 1280 或贴边：先 `getevent` 看 raw，再改这两个数。不要用 GSL 的 `ctp_report_max`。
++
++## 2. 方向
++
++本驱动没有 `revert` / `exchange`。
++
++| 现象 | 先查 |
++|---|---|
++| 左右反 | 模组朝向；desk `tp_rotate`（本板应是 0） |
++| 上下反 | 同上；不要抄 GSL `ctp_revert_y` 进这个节点 |
++| XY 互换 | 不该发生；确认没改 LVGL evdev 校准 |
++
++## 3. 地址 / 脚
++
++换座或改原理图时同步 `reg` 和 `gpios`。`gpios[0]=RST`、`[1]=INT`，对调会没报点。
++
++`bl_chip_custom.h` 的 `CTP_SLAVE_ADDR` 要和 DTS `reg` 一致（本板 `0x2c`）。
++
++## 4. chipID 对不上
++
++`Please specify the IC model:0x??`：I2C 通了但不是 `0x41`。核 `TS_CHIP`（本板 `BL7XX1`）和规格书，不要先改 DTS 地址碰运气。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\346\265\213\350\257\225\346\226\271\346\263\225.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\346\265\213\350\257\225\346\226\271\346\263\225.md"
+new file mode 100644
+index 000000000..3687d1a08
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-BL3676\350\247\246\346\221\270\351\200\202\351\205\215/\346\265\213\350\257\225\346\226\271\346\263\225.md"
+@@ -0,0 +1,76 @@
++# BL3676 — 测试方法
++
++串口 root。先确认驱动报点，再看桌面跟手。
++
++---
++
++## 0. 是不是这张镜像
++
++```bash
++ls /sys/bus/i2c/devices/
++cat /proc/bus/input/devices
++dmesg | grep -iE 'btl|betterlife|3676'
++```
++
++对了应有 **`1-002c`**、**`betterlife-touch`**、`I2C communication success:chipID = 41`。
++
++| 实际 | 意思 |
++|---|---|
++| 只有 `1-0040` + `gslX680` | 烧成 JYY070 了 |
++| `I2C communication ERROR` | TWI1 / 0x2C / RST |
++| `Please specify the IC model:0x??` | 通了但不是 0x41 |
++| 完全没 BTL | 没 probe |
++
++I2C 再扫：
++
++```bash
++i2cdetect -y 1
++# 0x2c 应显示 2c
++```
++
++---
++
++## 1. 软链
++
++```bash
++ls -l /dev/input/
++```
++
++应有 `touch -> eventN`（常见 `event3`）。没有：`input_symlink.sh` 没匹配到设备名。
++
++---
++
++## 2. 报点
++
++```bash
++getevent -lt /dev/input/touch
++# 没有 getevent 就：
++hexdump -C /dev/input/touch
++```
++
++手指滑动要持续刷 `ABS_MT_POSITION_X/Y`。完全没输出：INT/RST 或模组没报。
++
++不要用 `getevent -p`（`INOTIFY_USER` 关着会 `Function not implemented`）。
++
++`id:15, x:4095, y:4095` 是空指槽，忽略。
++
++---
++
++## 3. 四角（已验，2026-09-08）
++
++左上 → 右上 → 左下 → 右下：
++
++| 位置 | raw（约） |
++|---|---|
++| 左上 | (5, 3) |
++| 右上 | (1279, 0) |
++| 左下 | (59, 779) |
++| 右下 | (1260, 782) |
++
++左上原点，X 往右、Y 往下。量程按 **1280×800** 配。desk 保持 `tp_rotate=0`。
++
++---
++
++## 4. 桌面
++
++`getevent` 有数 = 硬件和驱动通。点不准先核 `TP_MAX` 和屏是否已按 1280×800 出图，再查 `tp_rotate`。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211.md"
+new file mode 100644
+index 000000000..057cd9bdd
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/03-DTS\344\270\216\350\203\214\345\205\211.md"
+@@ -0,0 +1,108 @@
++# 03 — DTS 与背光
++
++## 3.1 lcd0（内核 `linux-5.4/board.dts` 与 `uboot-board.dts` 同步）
++
++```dts
++&lcd0 {
++	lcd_used            = <1>;
++	lcd_driver_name     = "xyc_k1_lvds";
++	lcd_backlight       = <210>;
++	lcd_if              = <3>;
++
++	lcd_x               = <1280>;
++	lcd_y               = <800>;
++	lcd_width           = <303>;
++	lcd_height          = <190>;
++	lcd_dclk_freq       = <69>;
++
++	lcd_pwm_used        = <0>;
++	lcd_bl_en           = <&pio PB 12 GPIO_ACTIVE_HIGH>;
++
++	lcd_hbp             = <80>;
++	lcd_ht              = <1416>;
++	lcd_hspw            = <32>;
++	lcd_vbp             = <10>;
++	lcd_vt              = <816>;
++	lcd_vspw            = <6>;
++
++	lcd_lvds_if         = <0>;
++	lcd_lvds_colordepth = <1>;
++	lcd_lvds_mode       = <0>;
++	lcd_frm             = <1>;
++
++	pinctrl-0 = <&lvds0_pins_a>;
++	pinctrl-1 = <&lvds0_pins_b>;
++};
++```
++
++无 `lcd_gpio_0`（PB11 只到 MIPI CON5）。
++
++---
++
++## 3.2 背光：GPIO EN，不是 PWM
++
++原理图标 **LCD-PWM=PB12 → PT4117 EN，50kHz**。实机 14.1" 灯条：`lcd_pwm_pol=1` 时脚大部分时间低，EN 启不来。
++
++定稿：
++
++| 项 | 值 |
++|---|---|
++| `lcd_pwm_used` | 0 |
++| `lcd_bl_en` | PB12 HIGH |
++| panel | `LCD_bl_open` 只调 `sunxi_lcd_backlight_enable` |
++
++---
++
++## 3.3 pwm0：必须 okay，不许 disabled
++
++全志父节点 `sunxi-pwms` 遍历 pwm0~7。`of_find_device_by_node` 在通道 **disabled** 时返回 NULL → `sunxi_pwm_probe` 空指针，开机 panic。
++
++`p1_nor_4k` 已写过这坑。
++
++```dts
++&pwm0 {
++	/* 父 pwm 扫 pwm0~7，disabled 会 probe 空指针；本板 PB12 当 GPIO EN，不配 pinctrl */
++	status = "okay";
++};
++```
++
++**不要**给 pwm0 配 `pinctrl-0 = pwm0_pin_a`，否则 PB12 被复用成 PWM，GPIO EN 抢不到脚。
++
++---
++
++## 3.4 USB 脚冲突
++
++模板 `usbc0` 用 PB11=ID、PB12=VBUS。本板这两脚是 LCD-RST / 背光 EN。
++
++```dts
++&usbc0 {
++	/* usb_id_gpio = <&pio PB 11 GPIO_ACTIVE_HIGH>; */
++	/* usb_det_vbus_gpio = <&pio PB 12 GPIO_ACTIVE_HIGH>; */
++};
++```
++
++与京龙板相同做法。
++
++---
++
++## 3.5 disp / HDMI
++
++```dts
++&disp {
++	disp_init_enable      = <1>;
++	screen0_output_type   = <1>;   /* LCD → DE0 / TCON0 */
++	chn_cfg_mode          = <1>;   /* 双 DE */
++	fb0_width             = <1280>;
++	fb0_height            = <800>;
++};
++```
++
++HDMI **不是** DE0 直出：DE0 writeback YUV420 → DE1 HDMI。写回跟 DE0 vsync（LCD TCON0）绑在一起。YUV 全 0 → **HDMI 纯绿**。排绿屏先看 TCON0 有没有 vsync，不要先改 HDMI。
++
++---
++
++## 3.6 CTP
++
++**BL3676** `betterlife_ts@2c`，I2C `0x2C`，RST=PG2，INT=PG3，`TP_MAX=1280×800`。
++
++完整过程、踩坑、验收、子集补丁：[20260908-XYC_K1-BL3676触摸适配](../20260908-XYC_K1-BL3676触摸适配/README.md)。本定稿补丁已含驱动和 DTS，当前出图树不必再打触摸补丁。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+new file mode 100644
+index 000000000..4de71452c
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/05-\347\274\226\350\257\221\344\270\216\351\252\214\346\224\266.md"
+@@ -0,0 +1,93 @@
++# 05 — 编译与验收
++
++## 5.0 干净树打补丁
++
++```bash
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/apply-xyc-k1-display-final.sh
++# 分段：01 panel+TP | 02 board | 03 hooks | 04 docs
++```
++
++当前已出图树**不必再打**。
++
++---
++
++## 5.1 编译
++
++```bash
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++# SDK 根目录；确认 .buildconfig 为 p1_nor_XYC_K1
++./tools/build_p1_nor_XYC_K1.sh kernel
++./tools/build_p1_nor_XYC_K1.sh full
++```
++
++产物：
++
++```text
++out/h133_linux_p1_nor_XYC_K1_uart0_nor.img
++```
++
++定稿参考 md5（2026-09-08 18:00 出图包）：`bd312edc87f1506e507d5bae3b8277fc`（后续重编会变）。
++
++### 改动类型 → 编什么
++
++| 改动 | 命令 |
++|---|---|
++| panel `.c` / 内核 DTS / config-5.4 | `./build.sh kernel`，stamp brandy，再 `m -j1 && p` |
++| U-Boot panel / `uboot-board.dts` | **`./build.sh uboot`**（force）。**不要** `./build.sh kernel bootloader`（不会编 U-Boot）。确认 spinor 文件时间和 `strings \| grep xyc_k1_lvds` 后再 `p` |
++| `setting.ini` / rootfs | `./tools/build_p1_nor_XYC_K1.sh rootfs` |
++
++### 注意
++
++- **禁止**在 WSL/x86 上对 panel 源码本地 `gcc -c`（会污染 `.o`，交叉链接炸）
++- PATH 必须带 `prebuilt/hostbuilt/make4.1/bin`
++- 改 U-Boot 后：`ls -l` 时间必须是刚才；`strings u-boot-spinor-sun8iw20p1.bin | grep xyc_k1_lvds`
++- 串口认 `xyc_k1_lvds: open_flow`，**不要**认横幅里的 Sep 01 日期
++- `./build.sh kernel bootloader` **≠** 编 U-Boot（见 04 §4.8）
++- 确认镜像里已是新 U-Boot 后再 stamp，避免下次只编内核时被 skip
++
++### 手工 NOR 流程（kernel 脚本绕过 brandy 时）
++
++```bash
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++source build/envsetup.sh
++cd brandy/brandy-2.0/u-boot-2018 && make sun8iw20p1_nor_defconfig && make -j
++cd "$OLDPWD"
++./build.sh kernel
++# stamp u-boot-2018 和 spl-pub
++m -j1 && p
++```
++
++---
++
++## 5.2 验收清单（出图定稿）
++
++- [x] 内核含 `xyc_k1_lvds.o`
++- [x] DTB：`lcd_driver_name=xyc_k1_lvds`，`lcd_pwm_used=0`，`lcd_bl_en`=PB12，`pwm0 status=okay` 且无 pinctrl-0
++- [x] 内核能起来（无 `sunxi_pwm_probe` panic）
++- [x] **LCD 出图**；HDMI 有图（非纯绿）
++- [x] 背光常亮（PB12 高 → PT4117 EN）
++- [x] 触摸 BL3676（见 [BL3676触摸适配](../20260908-XYC_K1-BL3676触摸适配/README.md)）
++- [x] desk HD，`disp_rotate=0`
++- [ ] （回归）JYY070 DTS 未被本改动改坏
++
++## 5.3 常见问题速查
++
++| 现象 | 优先查 |
++|---|---|
++| HDMI 纯绿 | TCON0 vsync：是否又加了 `panel_reset`；USB 是否又占 PB11/12 |
++| `sunxi_pwm_probe` panic | pwm0 是否又 disabled |
++| 有图灯不亮 | PB12 是否常高；VLED 接线；pwm0 是否抢了 pinctrl |
++| 烧进去仍是旧 U-Boot / 只画 logo 不开屏 | 是否其实跑了 `kernel bootloader`（没编 U-Boot）；是否 stamp 后 skip brandy；`strings`+文件时间 |
++| 触摸无设备 | 见 [BL3676 测试方法](../20260908-XYC_K1-BL3676触摸适配/测试方法.md)；`twi_drv_used=0`；`BETTERLIFE=y` |
++
++## 5.4 隔绝自检
++
++```bash
++rg -n 'xyc_k1_lvds|lcd_bl_en.*PB 12' \
++  device/config/chips/h133/configs/p1_nor_JYY070/linux-5.4/board.dts \
++  device/config/chips/h133/configs/p1_nor/linux-5.4/board.dts
++# 期望：无匹配
++
++rg -n 'CONFIG_LCD_SUPPORT_XYC_K1' device/config/chips/h133/configs/*/linux-5.4/config-5.4
++# 期望：仅 p1_nor_XYC_K1=y
++```
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/README.md"
+new file mode 100644
+index 000000000..8cdb087e7
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/README.md"
+@@ -0,0 +1,62 @@
++# 鑫宇宸 XYC_K1 板件新建与 LVDS 点亮定稿 — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 日期 | 2026-09-08（克隆当天点亮） |
++| 板型 | **`p1_nor_XYC_K1`** |
++| 基线 | **`p1_nor_JYY070`** |
++| 屏 | LTN141AT0-001，14.1" **1280×800 LVDS 1ch 6-bit** |
++| panel | `xyc_k1_lvds` |
++| 板级档案 | [board-profile-p1_nor_XYC_K1.md](../../../../skills/h133-display/board-profile-p1_nor_XYC_K1.md) |
++| 镜像 | `out/h133_linux_p1_nor_XYC_K1_uart0_nor.img` |
++| 定稿参考 MD5 | `bd312edc87f1506e507d5bae3b8277fc`（后续重编会变） |
++
++---
++
++## 阅读顺序
++
++| 步骤 | 文档 | 内容 |
++|---|---|---|
++| 0 | [00-总览与定稿.md](./00-总览与定稿.md) | 结论、对照表、硬件要点、隔绝 |
++| 1 | [01-板件新建.md](./01-板件新建.md) | 从 JYY070 克隆板级 / OpenWrt / 编译脚本 |
++| 2 | [02-panel与时序.md](./02-panel与时序.md) | `xyc_k1_lvds`、open_flow、时序来源 |
++| 3 | [03-DTS与背光.md](./03-DTS与背光.md) | lcd0、PB12 GPIO EN、pwm0、USB 脚 |
++| 4 | [04-实机调试与踩坑.md](./04-实机调试与踩坑.md) | HDMI 全绿、PWM 崩机、背光不亮、**U-Boot 没进镜像** |
++| 5 | [05-编译与验收.md](./05-编译与验收.md) | NOR U-Boot、验收清单 |
++
++**建议：** 复盘或新开类似 LVDS → 先读 **00**；从零克隆 → **01**；排绿屏/灭灯 → **04**。
++
++---
++
++## 补丁（定稿，相对干净基线）
++
++路径：[patches/](./patches/)
++
++| 文件 | 内容 |
++|---|---|
++| `01-kernel-uboot-panel.patch` | 内核+U-Boot `xyc_k1_lvds` + 注册；**含** BL3676 `betterlife_ts`（专题见 [BL3676触摸适配](../20260908-XYC_K1-BL3676触摸适配/README.md)） |
++| `02-board-tree.patch` | `p1_nor_XYC_K1` + OpenWrt target + 编译脚本 |
++| `03-shared-hooks.patch` | U-Boot `sun8iw20p1(_nor)_defconfig` 打开本 panel |
++| `04-docs.patch` | 本定稿文档 + board-profile |
++| `xyc-k1-display-final.patch` | 以上合并（**干净树一键落地用这个**） |
++| `apply-xyc-k1-display-final.sh` | 应用 |
++| `gen-xyc-k1-display-final-patch.sh` | 从当前树重生成 |
++
++```bash
++# 干净 SDK 根目录
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/apply-xyc-k1-display-final.sh
++
++# 分段
++bash …/patches/apply-xyc-k1-display-final.sh 01
++
++# 重生成（已有出图树时）
++bash …/patches/gen-xyc-k1-display-final-patch.sh
++```
++
++`bootlogo.bmp` 不进补丁；apply 时若缺失会从 `p1_nor_JYY070` 复制。
++
++> 若树里**已经**有 XYC 板（当前出图树），再 apply 会报 already exists，属正常。
++
++---
++
++*2026-09-08：实机 LCD+HDMI 出图、背光常亮；文档定稿；final 补丁已生成。*
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/patches/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/patches/README.md"
+new file mode 100644
+index 000000000..0a4243a69
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/20260908-XYC_K1-\346\235\277\344\273\266\345\205\213\351\232\206\344\270\216LVDS\347\202\271\344\272\256\345\256\232\347\250\277/patches/README.md"
+@@ -0,0 +1,20 @@
++# XYC_K1 LVDS 点亮定稿 — 补丁
++
++在 **SDK 根目录**执行。H133-AI-Skills 被 gitignore，文档补丁靠 `git add -f`。
++
++| 文件 | 内容 |
++|---|---|
++| `01-kernel-uboot-panel.patch` | `xyc_k1_lvds` + BL3676（触摸专题另有子集补丁） |
++| `02-board-tree.patch` | 板级树 + OpenWrt target + `tools/build_p1_nor_XYC_K1.sh` |
++| `03-shared-hooks.patch` | U-Boot 两份 defconfig |
++| `04-docs.patch` | 开发记录 + board-profile |
++| `xyc-k1-display-final.patch` | 合并 |
++
++```bash
++bash apply-xyc-k1-display-final.sh          # 打合并
++bash apply-xyc-k1-display-final.sh --check
++bash apply-xyc-k1-display-final.sh 01       # 分段
++bash gen-xyc-k1-display-final-patch.sh     # 从出图树重生成
++```
++
++`bootlogo.bmp` 不进补丁；apply 时从 `p1_nor_JYY070` 复制。
+diff --git "a/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/README.md" "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/README.md"
+new file mode 100644
+index 000000000..dd1080662
+--- /dev/null
++++ "b/H133-AI-Skills/\345\274\200\345\217\221\350\256\260\345\275\225/\346\235\277\344\273\266\345\274\200\345\217\221\350\256\260\345\275\225/XYC_K1/README.md"
+@@ -0,0 +1,41 @@
++# 鑫宇宸 H133-K1 LVDS — 文档索引
++
++| 项 | 内容 |
++|---|---|
++| 项目 | 鑫宇宸（资料在 `硬件资料/鑫宇宸/`） |
++| 板型 | `p1_nor_XYC_K1`（从 `p1_nor_JYY070` 克隆） |
++| 原理图 | `H133-K1原理图.pdf`（h133-k1-v0_0825） |
++| 屏 | **LTN141AT0-001**，14.1" **1280×800 LVDS 1ch 6-bit**，`xyc_k1_lvds` |
++| 触摸 | **BL3676** I2C `0x2C`（`betterlife_ts`）；专题见 [20260908-BL3676触摸适配](./20260908-XYC_K1-BL3676触摸适配/README.md) |
++| 状态 | **2026-09-08 出图定稿**；**2026-09-08 BL3676 触摸**；**2026-09-09 GPADC 双组 20 键内核识别** |
++| 板级档案 | [board-profile-p1_nor_XYC_K1.md](../../../skills/h133-display/board-profile-p1_nor_XYC_K1.md) |
++
++## 专题记录
++
++| 目录 | 说明 |
++|------|------|
++| **[20260909-GPADC双组20键/](./20260909-XYC_K1-GPADC双组20键/README.md)** | **20 键：PG18 组选 + 10 档电压；补丁** |
++| **[20260908-BL3676触摸适配/](./20260908-XYC_K1-BL3676触摸适配/README.md)** | **BL3676 `0x2C` 四角已验；CTP 子集补丁** |
++| **[20260908-板件克隆与LVDS点亮定稿/](./20260908-XYC_K1-板件克隆与LVDS点亮定稿/README.md)** | **出图定稿 + final 补丁**（含触摸驱动/DTS） |
++| [20260908-XYC_K1-板件克隆/](./20260908-XYC_K1-板件克隆/README.md) | 当日克隆备忘（已被定稿覆盖） |
++
++定稿目录内顺序：`00 总览` → `01 板件新建` → `02 panel/时序` → `03 DTS/背光` → `04 踩坑` → `05 编译验收`。
++
++**干净树一键落地：**
++
++```bash
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-板件克隆与LVDS点亮定稿/patches/apply-xyc-k1-display-final.sh
++# 触摸已含在上一份；板级仍是 GSL@40 时再打：
++# bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/patches/apply-xyc-k1-bl3676-tp.sh
++bash H133-AI-Skills/开发记录/板件开发记录/XYC_K1/20260909-XYC_K1-GPADC双组20键/patches/apply-xyc-k1-gpadc-20key.sh
++./tools/build_p1_nor_XYC_K1.sh full
++```
++
++## 编译
++
++```bash
++export PATH="$PWD/prebuilt/hostbuilt/make4.1/bin:$PATH"
++./tools/build_p1_nor_XYC_K1.sh kernel
++./tools/build_p1_nor_XYC_K1.sh full
++# 产物：out/h133_linux_p1_nor_XYC_K1_uart0_nor.img
++```

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh" dir="ltr"><head><title>README</title><meta charset="utf-8"/><link rel="preload" href="../../../index-3622e4ec.css" as="style"/><link rel="preload" href="../../../prescript-ee7931aa.js" as="script"/><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted Grotesk:wght@400;700&amp;family=Source Sans Pro:ital,wght@0,400;0,600;1,400;1,600&amp;family=IBM Plex Mono:wght@400;600&amp;display=swap"/><link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin="anonymous"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><meta name="og:site_name" content="全志"/><meta property="og:title" content="README"/><meta property="og:type" content="website"/><meta name="twitter:card" content="summary_large_image"/><meta name="twitter:title" content="README"/><meta name="twitter:description" content="双屏异显 MIPI/LCD（screen0）+ HDMI（screen1），跨板共用。同显一度是：视频在 LCD，HDMI 靠 WB 镜像整屏； ⑤ 起产品取消了同显，WB 降级成不自动启动的独立功能。 画面走了五轮，先看表，再进对应目录。当前产品行为以 使用与构建.md 为准。 演进（按代读） 同显（基线） LCD：UI + 视频 HDMI：WB 镜像整屏（UI+视频一起过去） │ ▼ ① 最小验证 20260805 编译期关掉 WB，视频死贴 HDMI 只证明「异显通路能出片、能流畅」 LCD 无视频；未播时 HDMI 也没有 UI │ ▼ ② 第一版 20260806 WB 常开，切模式..."/><meta property="og:description" content="双屏异显 MIPI/LCD（screen0）+ HDMI（screen1），跨板共用。同显一度是：视频在 LCD，HDMI 靠 WB 镜像整屏； ⑤ 起产品取消了同显，WB 降级成不自动启动的独立功能。 画面走了五轮，先看表，再进对应目录。当前产品行为以 使用与构建.md 为准。 演进（按代读） 同显（基线） LCD：UI + 视频 HDMI：WB 镜像整屏（UI+视频一起过去） │ ▼ ① 最小验证 20260805 编译期关掉 WB，视频死贴 HDMI 只证明「异显通路能出片、能流畅」 LCD 无视频；未播时 HDMI 也没有 UI │ ▼ ② 第一版 20260806 WB 常开，切模式..."/><meta property="og:image:alt" content="双屏异显 MIPI/LCD（screen0）+ HDMI（screen1），跨板共用。同显一度是：视频在 LCD，HDMI 靠 WB 镜像整屏； ⑤ 起产品取消了同显，WB 降级成不自动启动的独立功能。 画面走了五轮，先看表，再进对应目录。当前产品行为以 使用与构建.md 为准。 演进（按代读） 同显（基线） LCD：UI + 视频 HDMI：WB 镜像整屏（UI+视频一起过去） │ ▼ ① 最小验证 20260805 编译期关掉 WB，视频死贴 HDMI 只证明「异显通路能出片、能流畅」 LCD 无视频；未播时 HDMI 也没有 UI │ ▼ ② 第一版 20260806 WB 常开，切模式..."/><meta property="twitter:domain" content="xiayu12345.github.io/Obsidion"/><meta property="og:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/readme"/><meta property="twitter:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/readme"/><link rel="icon" href="../../../static/icon.png"/><meta name="description" content="双屏异显 MIPI/LCD（screen0）+ HDMI（screen1），跨板共用。同显一度是：视频在 LCD，HDMI 靠 WB 镜像整屏； ⑤ 起产品取消了同显，WB 降级成不自动启动的独立功能。 画面走了五轮，先看表，再进对应目录。当前产品行为以 使用与构建.md 为准。 演进（按代读） 同显（基线） LCD：UI + 视频 HDMI：WB 镜像整屏（UI+视频一起过去） │ ▼ ① 最小验证 20260805 编译期关掉 WB，视频死贴 HDMI 只证明「异显通路能出片、能流畅」 LCD 无视频；未播时 HDMI 也没有 UI │ ▼ ② 第一版 20260806 WB 常开，切模式..."/><meta name="generator" content="Quartz"/><link href="../../../index-3622e4ec.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-589c1cea.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-bbc3f7c0.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-2911f5d1.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-53b25b2b.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-c93c6a44.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-8a06014f.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-77d6a441.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-1ea6ad18.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-788c9ca3.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-4abc06bd.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-274a3dfe.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-94cb6c84.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../component-58d5ff56.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-a5c806d2.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-6bd36952.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-9857b007.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="../../../static/resource-style-d3a1a224.css" rel="stylesheet" type="text/css" data-persist="true"/><link href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" rel="stylesheet" type="text/css" data-persist="true"/><script src="../../../prescript-ee7931aa.js" type="application/javascript" data-persist="true"></script><script type="application/javascript" data-persist="true">const fetchData = fetch("../../../static/contentIndex.json").then(data => data.json())</script><link rel="preconnect" href="https://fonts.googleapis.com"/><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous"/><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted%20Grotesk%3Awght%40400%3B700&amp;family=Source%20Sans%20Pro%3Aital%2Cwght%400%2C400%3B0%2C600%3B1%2C400%3B1%2C600&amp;family=IBM%20Plex%20Mono%3Awght%40400%3B600&amp;display=swap"/><meta property="og:image:width" content="1200"/><meta property="og:image:height" content="630"/><meta property="og:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/readme-og-image.webp"/><meta property="og:image:url" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/readme-og-image.webp"/><meta name="twitter:image" content="https://xiayu12345.github.io/Obsidion/h133/专题/双屏异显/readme-og-image.webp"/><meta property="og:image:type" content="image/webp"/></head><body data-slug="h133/专题/双屏异显/readme" data-basepath="/Obsidion"><div id="quartz-root" class="page" data-frame="default"><div id="quartz-body"><div class="left sidebar"><h2 class="page-title"><a href="../../..">全志</a></h2><div class="mobile-only"><div class="spacer"></div></div><div class="flex-component" style="flex-direction: row; flex-wrap: nowrap; gap: 0.5rem;"><div style="flex-grow: 1; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><div class="search"><button class="search-button" aria-label="搜索" aria-expanded="false"><svg role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.9 19.7"><title>Search</title><g class="search-path" fill="none"><path stroke-linecap="square" d="M18.5 18.3l-5.4-5.4"></path><circle cx="8" cy="8" r="7"></circle></g></svg><p>搜索</p></button><div class="search-container"><div class="search-space"><input autocomplete="off" class="search-bar" name="search" type="text" aria-label="搜索内容..." placeholder="搜索内容..."/><div class="search-layout" data-preview="true" data-field-priority="[&quot;title&quot;,&quot;content&quot;,&quot;tags&quot;]"></div></div></div></div></div><div style="flex-grow: 0; flex-shrink: 1; flex-basis: auto; order: 0; align-self: center; justify-self: center;"><button class="darkmode" aria-label="暗色模式"><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="dayIcon" x="0px" y="0px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35" xml:space="preserve" aria-label="暗色模式"><title>暗色模式</title><path d="M6,17.5C6,16.672,5.328,16,4.5,16h-3C0.672,16,0,16.672,0,17.5    S0.672,19,1.5,19h3C5.328,19,6,18.328,6,17.5z M7.5,26c-0.414,0-0.789,0.168-1.061,0.439l-2,2C4.168,28.711,4,29.086,4,29.5    C4,30.328,4.671,31,5.5,31c0.414,0,0.789-0.168,1.06-0.44l2-2C8.832,28.289,9,27.914,9,27.5C9,26.672,8.329,26,7.5,26z M17.5,6    C18.329,6,19,5.328,19,4.5v-3C19,0.672,18.329,0,17.5,0S16,0.672,16,1.5v3C16,5.328,16.671,6,17.5,6z M27.5,9    c0.414,0,0.789-0.168,1.06-0.439l2-2C30.832,6.289,31,5.914,31,5.5C31,4.672,30.329,4,29.5,4c-0.414,0-0.789,0.168-1.061,0.44    l-2,2C26.168,6.711,26,7.086,26,7.5C26,8.328,26.671,9,27.5,9z M6.439,8.561C6.711,8.832,7.086,9,7.5,9C8.328,9,9,8.328,9,7.5    c0-0.414-0.168-0.789-0.439-1.061l-2-2C6.289,4.168,5.914,4,5.5,4C4.672,4,4,4.672,4,5.5c0,0.414,0.168,0.789,0.439,1.06    L6.439,8.561z M33.5,16h-3c-0.828,0-1.5,0.672-1.5,1.5s0.672,1.5,1.5,1.5h3c0.828,0,1.5-0.672,1.5-1.5S34.328,16,33.5,16z     M28.561,26.439C28.289,26.168,27.914,26,27.5,26c-0.828,0-1.5,0.672-1.5,1.5c0,0.414,0.168,0.789,0.439,1.06l2,2    C28.711,30.832,29.086,31,29.5,31c0.828,0,1.5-0.672,1.5-1.5c0-0.414-0.168-0.789-0.439-1.061L28.561,26.439z M17.5,29    c-0.829,0-1.5,0.672-1.5,1.5v3c0,0.828,0.671,1.5,1.5,1.5s1.5-0.672,1.5-1.5v-3C19,29.672,18.329,29,17.5,29z M17.5,7    C11.71,7,7,11.71,7,17.5S11.71,28,17.5,28S28,23.29,28,17.5S23.29,7,17.5,7z M17.5,25c-4.136,0-7.5-3.364-7.5-7.5    c0-4.136,3.364-7.5,7.5-7.5c4.136,0,7.5,3.364,7.5,7.5C25,21.636,21.636,25,17.5,25z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" class="nightIcon" x="0px" y="0px" viewBox="0 0 100 100" style="enable-background:new 0 0 100 100" xml:space="preserve" aria-label="亮色模式"><title>亮色模式</title><path d="M96.76,66.458c-0.853-0.852-2.15-1.064-3.23-0.534c-6.063,2.991-12.858,4.571-19.655,4.571  C62.022,70.495,50.88,65.88,42.5,57.5C29.043,44.043,25.658,23.536,34.076,6.47c0.532-1.08,0.318-2.379-0.534-3.23  c-0.851-0.852-2.15-1.064-3.23-0.534c-4.918,2.427-9.375,5.619-13.246,9.491c-9.447,9.447-14.65,22.008-14.65,35.369  c0,13.36,5.203,25.921,14.65,35.368s22.008,14.65,35.368,14.65c13.361,0,25.921-5.203,35.369-14.65  c3.872-3.871,7.064-8.328,9.491-13.246C97.826,68.608,97.611,67.309,96.76,66.458z"></path></svg></button></div></div><div class="explorer nav-files-container" data-behavior="collapse" data-collapsed="collapsed" data-savestate="true" data-data-fns="{&quot;order&quot;:[&quot;filter&quot;,&quot;map&quot;,&quot;sort&quot;],&quot;sortFn&quot;:&quot;(a2, b2) => {\n    if (!a2.isFolder &amp;&amp; !b2.isFolder || a2.isFolder &amp;&amp; b2.isFolder) {\n      return (a2.displayName || \&quot;\&quot;).localeCompare(b2.displayName || \&quot;\&quot;, void 0, {\n        numeric: true,\n        sensitivity: \&quot;base\&quot;\n      });\n    }\n    if (!a2.isFolder &amp;&amp; b2.isFolder) {\n      return 1;\n    }\n    return -1;\n  }&quot;,&quot;filterFn&quot;:&quot;(node) => node.slugSegment !== \&quot;tags\&quot;&quot;,&quot;mapFn&quot;:&quot;(node) => {\n    return node;\n  }&quot;}"><button type="button" class="explorer-toggle mobile-explorer hide-until-loaded" data-mobile="true" aria-controls="explorer-58" aria-label="探索"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide-menu"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg></button><button type="button" class="title-button explorer-toggle desktop-explorer" data-mobile="false" aria-expanded="true"><h2></h2><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><div id="explorer-58" class="explorer-content" aria-expanded="false" role="group"><ul class="explorer-ul overflow" id="list-0"><li class="overflow-end"></li></ul></div><template id="template-file"><li><a href="#" class="nav-file-title tree-item-self"></a></li></template><template id="template-folder"><li><div class="folder-container nav-folder-title tree-item-self"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="5 8 14 8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="folder-icon nav-folder-collapse-indicator collapse-icon"><polyline points="6 9 12 15 18 9"></polyline></svg><div><button class="folder-button"><span class="folder-title"></span></button></div></div><div class="folder-outer"><ul class="content tree-item-children"></ul></div></li></template></div></div><div class="center"><div class="page-header"><div class="popover-hint"><h1 class="article-title">README</h1><p show-comma="true" class="content-meta"><time datetime="2026-09-21T03:44:17.000Z">2026年9月21日</time><span>5分钟阅读</span></p></div></div><article class="popover-hint"><div class="markdown-preview-view markdown-rendered"><h1 id="双屏异显">双屏异显<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#双屏异显" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h1>
+<p>MIPI/LCD（screen0）+ HDMI（screen1），跨板共用。同显一度是：视频在 LCD，HDMI 靠 WB 镜像整屏；
+<strong>⑤ 起产品取消了同显</strong>，WB 降级成不自动启动的独立功能。</p>
+<p><strong>画面走了五轮</strong>，先看表，再进对应目录。当前产品行为以 <a href="../../../使用与构建" class="internal internal-link alias" data-slug="使用与构建">使用与构建.md</a> 为准。</p>
+<hr/>
+<h2 id="演进按代读">演进（按代读）<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#演进按代读" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="text" data-theme="github-light github-dark"><code data-language="text" data-theme="github-light github-dark" style="display:grid;"><span data-line><span>同显（基线）</span></span>
+<span data-line><span>  LCD：UI + 视频</span></span>
+<span data-line><span>  HDMI：WB 镜像整屏（UI+视频一起过去）</span></span>
+<span data-line><span>        │</span></span>
+<span data-line><span>        ▼</span></span>
+<span data-line><span>① 最小验证  20260805</span></span>
+<span data-line><span>  编译期关掉 WB，视频死贴 HDMI</span></span>
+<span data-line><span>  只证明「异显通路能出片、能流畅」</span></span>
+<span data-line><span>  LCD 无视频；未播时 HDMI 也没有 UI</span></span>
+<span data-line><span>        │</span></span>
+<span data-line><span>        ▼</span></span>
+<span data-line><span>② 第一版    20260806</span></span>
+<span data-line><span>  WB 常开，切模式只关/开 HDMI 上的 WB 层</span></span>
+<span data-line><span>  异显 video_screen=2：视频只上 HDMI</span></span>
+<span data-line><span>  LCD 只留 UI（点歌窗是空的）</span></span>
+<span data-line><span>        │</span></span>
+<span data-line><span>        ▼</span></span>
+<span data-line><span>③ 迭代      20260915</span></span>
+<span data-line><span>  仍用 ② 的 WB 常开 / SET_HDMI_OUT</span></span>
+<span data-line><span>  异显 video_screen=3：同一层视频同时贴 LCD + HDMI</span></span>
+<span data-line><span>  设置页「异屏」= 这一档</span></span>
+<span data-line><span>        │</span></span>
+<span data-line><span>        ▼</span></span>
+<span data-line><span>④ 扩充      20260918</span></span>
+<span data-line><span>  SAME / DIFF 不动</span></span>
+<span data-line><span>  加 DIFF_HDMI：video_screen=2，LCD 没视频（机上命令，设置页未接）</span></span>
+<span data-line><span>        │</span></span>
+<span data-line><span>        ▼</span></span>
+<span data-line><span>⑤ 取消同显  20260920   ← 当前</span></span>
+<span data-line><span>  WB 不再自动启动，也不再参与切模式</span></span>
+<span data-line><span>  只剩两种，名字不变但含义搬家：</span></span>
+<span data-line><span>    SAME（设置页「同屏」）= 旧 DIFF   → mask 3，LCD+HDMI 都有</span></span>
+<span data-line><span>    DIFF（设置页「异屏」）= 旧 DIFF_HDMI → mask 2，只上电视</span></span></code></pre></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>代</th><th>目录</th><th>异显 LCD</th><th>异显 HDMI</th><th>怎么贴视频</th></tr></thead><tbody><tr><td>① 最小验证</td><td><a href="../../../20260805-hdmi异显最小验证/" class="internal internal-link alias" data-slug="20260805-hdmi异显最小验证/index">20260805-HDMI异显最小验证/</a></td><td>无视频</td><td>有视频</td><td>编译期关 WB，写死 <code>disp_screen=2</code>（<strong>补丁已删</strong>）</td></tr><tr><td>② 第一版</td><td><a href="../../../20260806-同异显切换/" class="internal internal-link alias" data-slug="20260806-同异显切换/index">20260806-同异显切换/</a></td><td>无视频（只 UI）</td><td>有视频</td><td>WB 常开；<code>SET_HDMI_OUT=0</code>；mask=<strong>2</strong></td></tr><tr><td>③ 迭代</td><td><a href="../../../20260915-异显视频双贴lcd-hdmi/" class="internal internal-link alias" data-slug="20260915-异显视频双贴lcd-hdmi/index">20260915-异显视频双贴LCD-HDMI/</a></td><td><strong>有视频</strong></td><td><strong>有视频</strong></td><td>同上，只把 mask 改成 <strong>3</strong></td></tr><tr><td>④ 扩充</td><td><a href="../../../20260918-异显仅hdmi第三模式/" class="internal internal-link alias" data-slug="20260918-异显仅hdmi第三模式/index">20260918-异显仅HDMI第三模式/</a></td><td>DIFF：有；DIFF_HDMI：<strong>无</strong></td><td>有视频</td><td>加 <code>diff_hdmi</code>（mask=<strong>2</strong>）；<code>diff</code> 仍是 3</td></tr><tr><td>⑤ 取消同显</td><td><a href="../../../20260920-取消wb同显-两模式/" class="internal internal-link alias" data-slug="20260920-取消wb同显-两模式/index">20260920-取消WB同显-两模式/</a></td><td>同屏：有；异屏：<strong>无</strong></td><td>有视频</td><td><strong>WB 不再启动</strong>；<code>same</code>=mask 3，<code>diff</code>=mask 2，删 <code>diff_hdmi</code></td></tr></tbody></table></div>
+<p>① 补丁与 ② 冲突，只留文字记录。② 的切换框架③④ 还在用，但 <strong>⑤ 把其中的 WB 耦合层拆了</strong>；
+③ 只改选屏；④ 只加第三种模式；⑤ 取消同显并重新分配 <code>SAME</code> / <code>DIFF</code> 的含义。</p>
+<hr/>
+<h2 id="文档索引">文档索引<a role="anchor" aria-hidden="true" tabindex="-1" data-no-popover="true" href="#文档索引" class="internal internal-link"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg></a></h2>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="table-container"><table><thead><tr><th>文档</th><th>代次</th><th>说明</th></tr></thead><tbody><tr><td><a href="../../../使用与构建" class="internal internal-link alias" data-slug="使用与构建">使用与构建.md</a></td><td>⑤ 当前用法</td><td>怎么切、C API、编包</td></tr><tr><td><a href="../../../20260805-hdmi异显最小验证/" class="internal internal-link alias" data-slug="20260805-hdmi异显最小验证/index">20260805-HDMI异显最小验证/</a></td><td>①</td><td>TEMP 通路验证（无补丁）</td></tr><tr><td><a href="../../../20260806-同异显切换/" class="internal internal-link alias" data-slug="20260806-同异显切换/index">20260806-同异显切换/</a></td><td>②</td><td>第一版：HDMI 有视频，LCD 没有</td></tr><tr><td><a href="../../../20260915-异显视频双贴lcd-hdmi/" class="internal internal-link alias" data-slug="20260915-异显视频双贴lcd-hdmi/index">20260915-异显视频双贴LCD-HDMI/</a></td><td>③</td><td>迭代：两路都有视频</td></tr><tr><td><a href="../../../20260918-异显仅hdmi第三模式/" class="internal internal-link alias" data-slug="20260918-异显仅hdmi第三模式/index">20260918-异显仅HDMI第三模式/</a></td><td>④</td><td>加 DIFF_HDMI；设置页仍是 ③</td></tr><tr><td><a href="../../../20260920-取消wb同显-两模式/" class="internal internal-link alias" data-slug="20260920-取消wb同显-两模式/index">20260920-取消WB同显-两模式/</a></td><td>⑤</td><td>取消同显；WB 不自动启；两模式含义搬家</td></tr><tr><td><a href="../../../20260828-libuapi内核头对齐/" class="internal internal-link alias" data-slug="20260828-libuapi内核头对齐/index">20260828-libuapi内核头对齐/</a></td><td>（旁路）</td><td>合进内核后须换工具链头</td></tr></tbody></table></div>
+<p>干净树（还停留在 ④）才需要 ⑤ 的补丁（<strong>动内核，要整编</strong>）：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/专题开发记录/双屏异显/20260920-取消WB同显-两模式/patches/apply-drop-wb-same.sh</span></span>
+<span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#24292E;--shiki-dark:#E1E4E8;" data-token-type="punctuation"> &amp;&amp; </span><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">./build.sh</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> pack</span></span></code></pre></figure>
+<p>干净树（还停留在 ③）才需要 ④ 的补丁：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/专题开发记录/双屏异显/20260918-异显仅HDMI第三模式/patches/apply-diff-hdmi-mode.sh</span></span></code></pre></figure>
+<p>干净树（还停留在 ②）才需要 ③ 的补丁：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/专题开发记录/双屏异显/20260915-异显视频双贴LCD-HDMI/patches/apply-diff-video-both.sh</span></span></code></pre></figure>
+<p>从零合入 ② 的切换框架：</p>
+<figure data-rehype-pretty-code-figure><pre tabindex="0" data-language="bash" data-theme="github-light github-dark"><code data-language="bash" data-theme="github-light github-dark" style="display:grid;"><span data-line><span style="--shiki-light:#6F42C1;--shiki-dark:#B392F0;" data-token-type="function">bash</span><span style="--shiki-light:#032F62;--shiki-dark:#9ECBFF;" data-token-type="string"> AI-skiil/专题开发记录/双屏异显/20260806-同异显切换/patches/apply-disp-mode.sh</span></span></code></pre></figure></div></article><hr/><div class="page-footer"></div></div><div class="right sidebar"><div class="toc"><button type="button" class="toc-header" aria-controls="toc-43" aria-expanded="true"><h3>目录</h3><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="fold"><polyline points="6 9 12 15 18 9"></polyline></svg></button><ul id="list-0" class="toc-content overflow"><li class="depth-0"><a href="#双屏异显" data-for="双屏异显">双屏异显</a></li><li class="depth-1"><a href="#演进按代读" data-for="演进按代读">演进（按代读）</a></li><li class="depth-1"><a href="#文档索引" data-for="文档索引">文档索引</a></li><li class="overflow-end"></li></ul></div></div><footer class><p>Created with <a href="https://quartz.jzhao.xyz/">Quartz v5.0.0</a> © 2026</p><ul></ul></footer></div></div></body><script src="../../../static/resource-after-e13fffa1.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-8b336f9a.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-baba652b.js" type="application/javascript" data-persist="true"></script><script src="../../../static/resource-after-5eb75950.js" type="module" data-persist="true"></script><script src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/copy-tex.min.js" type="application/javascript" data-persist="true"></script><script src="../../../postscript-441eae38.js" type="module" data-persist="true"></script></html>

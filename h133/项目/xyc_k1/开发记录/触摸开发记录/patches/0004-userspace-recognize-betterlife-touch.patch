@@ -1,0 +1,15 @@
+Subject: [PATCH 4/4] userspace: recognize betterlife-touch
+
+diff --git a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
+index a833dd1d6..bcc3afc56 100755
+--- a/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
++++ b/openwrt/target/h133/h133-p1_nor_XYC_K1/busybox-init-base-files/usr/bin/input_symlink.sh
+@@ -53,7 +53,7 @@ esac
+ 
+ if nonzero_hex "$ABS"; then
+     case "$NAME" in
+-    *gsl*|*gslX680*|*gt9xx*|*Goodix*|*goodix*|*touch*|*Touch*)
++    *gsl*|*gslX680*|*gt9xx*|*Goodix*|*goodix*|*betterlife*|*touch*|*Touch*)
+         ln -sf "$DEV_NAME" "${INPUT_DIR}/touch"
+         exit 0
+         ;;

@@ -1,0 +1,12 @@
+--- a/build/pack
++++ b/build/pack
+@@ -815,7 +815,8 @@
+ 			cp -rf $CFG_TOP_DIR/${PACK_PLATFORM}/target/$PACK_IC/$PACK_IC-common/boot-resource/boot-resource.ini ${LICHEE_PACK_OUT_DIR}/boot-resource.ini
+ 		fi
+ 		# 京龙 MIPI 竖屏：板级 100x432，不要用 common 的 312x76 横图
+-		if [ x"${PACK_BOARD}" = x"p1_nor_JL_M101" ] && \
++		if { [ x"${PACK_BOARD}" = x"p1_nor_JL_M101" ] || \
++		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_M101" ]; } && \
+ 		   [ -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp ]; then
+ 			cp -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp \
+ 				${LICHEE_PACK_OUT_DIR}/boot-resource/bootlogo.bmp

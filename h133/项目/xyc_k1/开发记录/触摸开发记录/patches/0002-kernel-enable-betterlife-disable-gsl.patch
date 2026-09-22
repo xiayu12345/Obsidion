@@ -1,0 +1,36 @@
+Subject: [PATCH 2/4] kernel: enable Betterlife TS, disable GSLX680NEW
+
+diff --git a/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig b/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
+index 0af298d5f..72f130d56 100644
+--- a/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_XYC_K1/openwrt/bsp_defconfig
+@@ -98,8 +98,9 @@ CONFIG_INPUT_MOUSE=y
+ CONFIG_USB_HID=y
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_SUNXI=y
+-CONFIG_TOUCHSCREEN_GSLX680NEW=y
++# CONFIG_TOUCHSCREEN_GSLX680NEW is not set
+ # CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set
++CONFIG_TOUCHSCREEN_BETTERLIFE_TS=y
+ CONFIG_INPUT_SENSOR=y
+ CONFIG_SUNXI_GPADC=y
+ # CONFIG_LEGACY_PTYS is not set
+diff --git a/kernel/linux-5.4/drivers/input/touchscreen/Kconfig b/kernel/linux-5.4/drivers/input/touchscreen/Kconfig
+index fb9ca21c6..5876e4346 100644
+--- a/kernel/linux-5.4/drivers/input/touchscreen/Kconfig
++++ b/kernel/linux-5.4/drivers/input/touchscreen/Kconfig
+@@ -1327,4 +1327,5 @@ config TOUCHSCREEN_IQS5XX
+ source "drivers/input/touchscreen/gslx680new/Kconfig"
+ source "drivers/input/touchscreen/gt9xxnew/Kconfig"
+ source "drivers/input/touchscreen/focaltech_touch/Kconfig"
++source "drivers/input/touchscreen/betterlife_ts/Kconfig"
+ endif
+diff --git a/kernel/linux-5.4/drivers/input/touchscreen/Makefile b/kernel/linux-5.4/drivers/input/touchscreen/Makefile
+index d417e3445..69638058a 100644
+--- a/kernel/linux-5.4/drivers/input/touchscreen/Makefile
++++ b/kernel/linux-5.4/drivers/input/touchscreen/Makefile
+@@ -114,3 +114,4 @@ obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
+ obj-$(CONFIG_TOUCHSCREEN_GSLX680NEW)    += gslx680new/
+ obj-$(CONFIG_TOUCHSCREEN_FTS)    += focaltech_touch/
+ obj-$(CONFIG_INPUT_TOUCHSCREEN)    += gt9xxnew/
++obj-$(CONFIG_TOUCHSCREEN_BETTERLIFE_TS) += betterlife_ts/

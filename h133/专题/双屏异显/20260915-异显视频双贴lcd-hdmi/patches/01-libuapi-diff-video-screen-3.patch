@@ -1,0 +1,44 @@
+diff --git a/platform/allwinner/display/libuapi/src/disp_dual.c b/platform/allwinner/display/libuapi/src/disp_dual.c
+--- a/platform/allwinner/display/libuapi/src/disp_dual.c
++++ b/platform/allwinner/display/libuapi/src/disp_dual.c
+@@ -196,6 +196,6 @@ int sunxi_disp_video_screen_mask(void)
+ 	if (!sunxi_disp_hdmi_connected())
+ 		return 1;
+ 	if (mode == SUNXI_DISP_MODE_DIFF)
+-		return 2;
++		return 3;
+ 	return 1;
+ }
+ 
+diff --git a/platform/allwinner/display/libuapi/src/include/disp_dual.h b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+--- a/platform/allwinner/display/libuapi/src/include/disp_dual.h
++++ b/platform/allwinner/display/libuapi/src/include/disp_dual.h
+@@ -3,7 +3,7 @@
+  *
+  * WB 管道由内核启动后常开；切模式只显隐 HDMI 上的 WB 层 + 视频贴屏：
+  *   SAME：HDMI 显示 WB，视频 DE0
+- *   DIFF：关 HDMI 上 WB 层（腾 DE1），视频 DE1（须已插 HDMI）
++ *   DIFF：关 HDMI 上 WB 层（腾 DE1），视频同时贴 LCD+HDMI（须已插）
+  * 播中勿切；未插 HDMI 时视频强制 LCD
+  */
+ #ifndef __DISP_DUAL_H__
+@@ -44,6 +44,6 @@ int sunxi_disp_mode_apply(sunxi_disp_mode_t mode);
+ int sunxi_disp_mode_boot_sync(void);
+ 
+-/* LayerCreate：未插 HDMI→1；DIFF+已插→2；否则 1 */
++/* LayerCreate：未插 HDMI→1；DIFF+已插→3（两路都贴）；否则 1 */
+ int sunxi_disp_video_screen_mask(void);
+ 
+ #ifdef __cplusplus
+diff --git a/platform/allwinner/display/libuapi/src/disp_mode_cli.c b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+--- a/platform/allwinner/display/libuapi/src/disp_mode_cli.c
++++ b/platform/allwinner/display/libuapi/src/disp_mode_cli.c
+@@ -9,7 +9,7 @@ static void usage(const char *argv0)
+ 	fprintf(stderr,
+ 		"Usage: %s same|diff|get\n"
+ 		"  same  同显（WB→HDMI，视频贴 LCD）\n"
+-		"  diff  异显（关 HDMI 上 WB 层，视频贴 HDMI；未插仍上 LCD）\n"
++		"  diff  异显（关 HDMI WB；播片时视频 LCD+HDMI；未插仍上 LCD）\n"
+ 		"  get   查偏好 / HDMI / WB / hdmi_out / 视频屏\n"
+ 		"播中切换会失败（EBUSY）。切完需再播才会按新屏建层。\n",
+ 		argv0);

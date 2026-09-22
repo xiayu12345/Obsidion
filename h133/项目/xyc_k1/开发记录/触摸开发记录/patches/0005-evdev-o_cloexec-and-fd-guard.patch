@@ -1,0 +1,57 @@
+Subject: [PATCH 5/6] evdev: O_CLOEXEC + fd<0 REL（不再 EVIOCGRAB）
+
+子应用与桌面仍各 open 一次 /dev/input/touch。liblvgl 不再 ioctl(EVIOCGRAB)：
+hy_app 再拉 xyc_mix 时两边都会 grab，第二层报 Device or resource busy。
+点穿改由应用侧挡，见 0006。
+
+仍保留：
+- open(..., O_CLOEXEC)，避免 fork 把桌面触摸 fd 带进子进程
+- evdev_read() 在 evdev_fd < 0 时回 REL
+- liblvgl PKG_RELEASE 5 -> 7
+
+不改 TRACKING_ID / SYN_REPORT / scroll_limit。
+
+diff --git a/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c b/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c
+--- a/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c
++++ b/platform/thirdparty/gui/lvgl-8/lv_drivers/indev/evdev.c
+@@ -155,10 +155,10 @@
+         path = "/dev/input/touchscreen";
+ 
+ #if USE_BSD_EVDEV
+-     evdev_fd = open(path, O_RDWR | O_NOCTTY);
++     evdev_fd = open(path, O_RDWR | O_NOCTTY | O_CLOEXEC);
+ #else
+      /* 触摸与鼠标分 fd：此处仅打开 dev_name（gt9xx/GT911 等），勿换成 EVDEV_MOUSE_NAME */
+-     evdev_fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY);
++     evdev_fd = open(path, O_RDWR | O_NOCTTY | O_NDELAY | O_CLOEXEC);
+ #endif
+ 
+      if(evdev_fd == -1) {
+@@ -1243,6 +1243,15 @@
+ {
+     struct input_event in;
+ 
++    if (evdev_fd < 0) {
++        if (drv->type == LV_INDEV_TYPE_POINTER) {
++            data->point.x = evdev_root_x;
++            data->point.y = evdev_root_y;
++            data->state = LV_INDEV_STATE_REL;
++        }
++        return;
++    }
++
+     while(read(evdev_fd, &in, sizeof(struct input_event)) > 0) {
+         if(in.type == EV_REL) {
+             if(in.code == REL_X)
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
+--- a/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
++++ b/openwrt/package/thirdparty/gui/lvgl-8/liblvgl/Makefile
+@@ -8,7 +8,7 @@
+ 
+ PKG_NAME:=liblvgl
+ PKG_VERSION:=8.3.2
+-PKG_RELEASE:=5
++PKG_RELEASE:=7
+ 
+ PKG_BUILD_DIR := $(BUILD_DIR)/$(PKG_NAME)
+ LVGL8_DIR := $(LICHEE_PLATFORM_DIR)/thirdparty/gui/lvgl-8

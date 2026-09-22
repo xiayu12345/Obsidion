@@ -1,0 +1,30 @@
+From: AI-tq
+Subject: [PATCH] p1_emmc_JL_M101: usbc0 default Host for 2.4G USB Audio
+
+usbc0 was usb_port_type=0 (device). EHCI0/OHCI0 then stay off until
+someone does: cat .../usbc0@0/usb_host. Reading usb_device tears host
+down again.
+
+2.4G Tmall receiver plugs on this port (sunxi-ehci0/ohci0). Set
+usb_port_type=1 (host) so snd-usb-audio enumerates after boot without
+manual role switch. Keep ID GPIOs commented (PB11/PB12 used by LCD).
+
+---
+ device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/board.dts | 4 +++-
+ 1 file changed
+
+diff --git a/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/board.dts b/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/board.dts
+index 1111111..2222222 100644
+--- a/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_emmc_JL_M101/linux-5.4/board.dts
+@@ -1530,7 +1530,10 @@
+  */
+ &usbc0 {
+ 	device_type = "usbc0";
+-	usb_port_type = <0x0>;
++	/* 0-device 1-host 2-otg。接 2.4G 空鼠麦接收头，默认 Host；
++	 * 勿再依赖 cat .../usb_host，也勿 cat .../usb_device（会卸掉 EHCI/OHCI）。 */
++	usb_port_type = <0x1>;
+ 	usb_detect_type = <0x0>;
+ 	usb_detect_mode = <0>;
+ 	/* PB11=LCD-RST, PB12=LCD-PWM(京龙屏复用)。usb 若 request 会抢走 PB11，

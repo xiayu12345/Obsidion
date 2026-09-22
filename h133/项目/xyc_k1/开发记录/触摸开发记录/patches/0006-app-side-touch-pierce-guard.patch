@@ -1,0 +1,194 @@
+Subject: [PATCH 6/6] 应用侧挡点穿：hy_app return guard + 切页禁输入 + huiyin sleep(1)
+
+liblvgl 不再 EVIOCGRAB。当前工程：
+
+- 桌面「智能K歌」硬切 /usr/bin/hy_app（不在本补丁；见 desk_subapp_launch.c）
+- hy_app 从嵌套子应用（xyc_mix）回来：全屏透明挡板吃掉残留按下
+- hy_app 切页：关 indev 100ms + lv_indev_reset
+- huiyin_ktv 回桌面：shutdown 后 sleep(1) 再退（等松手）
+- hy_app 自己回桌面：sleep(1) 已注释，桌面无对等挡板，不在本补丁里加回去
+
+基线：已有 hy_app launcher（只做 zorder restore）和 page_nav_stack。
+工作树已合过再打会 already applied。
+
+diff --git a/platform/thirdparty/gui/lvgl-8/app/hy_app/src/launcher/lv_app_launcher.c b/platform/thirdparty/gui/lvgl-8/app/hy_app/src/launcher/lv_app_launcher.c
+--- a/platform/thirdparty/gui/lvgl-8/app/hy_app/src/launcher/lv_app_launcher.c
++++ b/platform/thirdparty/gui/lvgl-8/app/hy_app/src/launcher/lv_app_launcher.c
+@@ -10,8 +10,81 @@
+ #include <string.h>
+ #include <unistd.h>
+ 
++#define SUBAPP_RETURN_GUARD_RELEASE_MS  100U
++#define SUBAPP_RETURN_GUARD_TIMEOUT_MS  500U
++
+ static int g_subapp_saved_zorder = MS_VIDEO_ZORDER_ABOVE_UI;
+ static int g_subapp_zorder_saved;
++static lv_obj_t *g_subapp_return_guard;
++static lv_timer_t *g_subapp_return_guard_timer;
++
++static void lv_app_return_guard_drop(lv_timer_t *timer)
++{
++    if (timer == g_subapp_return_guard_timer) {
++        g_subapp_return_guard_timer = NULL;
++    }
++
++    if (g_subapp_return_guard != NULL &&
++        lv_obj_is_valid(g_subapp_return_guard)) {
++        lv_obj_del(g_subapp_return_guard);
++    }
++    g_subapp_return_guard = NULL;
++    lv_indev_reset(NULL, NULL);
++    LVGL8_APP_LOGI("hy_app", "launch", "return input guard dropped");
++}
++
++static void lv_app_return_guard_schedule(uint32_t delay_ms)
++{
++    if (g_subapp_return_guard_timer != NULL) {
++        lv_timer_del(g_subapp_return_guard_timer);
++        g_subapp_return_guard_timer = NULL;
++    }
++
++    g_subapp_return_guard_timer =
++        lv_timer_create(lv_app_return_guard_drop, delay_ms, NULL);
++    if (g_subapp_return_guard_timer != NULL) {
++        lv_timer_set_repeat_count(g_subapp_return_guard_timer, 1);
++    }
++}
++
++static void lv_app_return_guard_event(lv_event_t *event)
++{
++    if (lv_event_get_code(event) != LV_EVENT_RELEASED) {
++        return;
++    }
++
++    lv_indev_reset(lv_indev_get_act(), NULL);
++    lv_app_return_guard_schedule(SUBAPP_RETURN_GUARD_RELEASE_MS);
++}
++
++static void lv_app_return_guard_arm(void)
++{
++    lv_indev_reset(NULL, NULL);
++
++    if (g_subapp_return_guard == NULL ||
++        !lv_obj_is_valid(g_subapp_return_guard)) {
++        g_subapp_return_guard = lv_obj_create(lv_disp_get_layer_top(NULL));
++        if (g_subapp_return_guard == NULL) {
++            return;
++        }
++
++        lv_obj_set_pos(g_subapp_return_guard, 0, 0);
++        lv_obj_set_size(g_subapp_return_guard, LV_PCT(100), LV_PCT(100));
++        lv_obj_set_style_bg_opa(g_subapp_return_guard, LV_OPA_TRANSP, 0);
++        lv_obj_set_style_border_width(g_subapp_return_guard, 0, 0);
++        lv_obj_set_style_pad_all(g_subapp_return_guard, 0, 0);
++        lv_obj_clear_flag(g_subapp_return_guard, LV_OBJ_FLAG_SCROLLABLE);
++        lv_obj_add_flag(g_subapp_return_guard, LV_OBJ_FLAG_CLICKABLE);
++        lv_obj_add_event_cb(g_subapp_return_guard,
++                            lv_app_return_guard_event,
++                            LV_EVENT_RELEASED,
++                            NULL);
++    }
++
++    lv_obj_move_foreground(g_subapp_return_guard);
++    lv_app_return_guard_schedule(SUBAPP_RETURN_GUARD_TIMEOUT_MS);
++    LVGL8_APP_LOGI("hy_app", "launch", "return input guard armed");
++}
+ 
+ static void lv_app_launch_zorder_down(void)
+ {
+@@ -35,6 +108,12 @@
+     g_subapp_zorder_saved = 0;
+ }
+ 
++static void lv_app_launch_after_exit(void *user_data)
++{
++    lv_app_launch_zorder_restore(user_data);
++    lv_app_return_guard_arm();
++}
++
+ int lv_app_launcher_init(void)
+ {
+     int rc;
+@@ -43,7 +122,7 @@
+     if (rc != 0) {
+         return rc;
+     }
+-    subapp_mgr_set_hooks(NULL, lv_app_launch_zorder_restore, NULL);
++    subapp_mgr_set_hooks(NULL, lv_app_launch_after_exit, NULL);
+     return 0;
+ }
+ 
+diff --git a/platform/thirdparty/gui/lvgl-8/app/hy_app/src/ui/stack/page_nav_stack.c b/platform/thirdparty/gui/lvgl-8/app/hy_app/src/ui/stack/page_nav_stack.c
+--- a/platform/thirdparty/gui/lvgl-8/app/hy_app/src/ui/stack/page_nav_stack.c
++++ b/platform/thirdparty/gui/lvgl-8/app/hy_app/src/ui/stack/page_nav_stack.c
+@@ -27,6 +27,43 @@
+  */
+ static bool g_page_nav_loading = false;
+ 
++#ifndef PAGE_NAV_INPUT_BLOCK_MS
++#define PAGE_NAV_INPUT_BLOCK_MS  100  /* 切屏后屏蔽触摸，单位 ms */
++#endif
++
++static lv_timer_t *g_page_nav_indev_timer = NULL;
++
++static void page_nav_indev_restore_timer_cb(lv_timer_t *timer)
++{
++    if (timer == g_page_nav_indev_timer) {
++        g_page_nav_indev_timer = NULL;
++    }
++
++    lv_indev_enable(NULL, true);
++    lv_timer_del(timer);
++}
++
++static void page_nav_block_input_temporarily(void)
++{
++    if (g_page_nav_indev_timer != NULL) {
++        lv_timer_del(g_page_nav_indev_timer);
++        g_page_nav_indev_timer = NULL;
++    }
++
++    lv_indev_enable(NULL, false);
++    lv_indev_reset(NULL, NULL);
++    LVGL8_APP_LOGI("hy_app", "page_nav", "indev block %ums",
++                   (unsigned)PAGE_NAV_INPUT_BLOCK_MS);
++
++    g_page_nav_indev_timer = lv_timer_create(page_nav_indev_restore_timer_cb,
++                                             PAGE_NAV_INPUT_BLOCK_MS,
++                                             NULL);
++    if (g_page_nav_indev_timer != NULL) {
++        lv_timer_set_repeat_count(g_page_nav_indev_timer, 1);
++    } else {
++        lv_indev_enable(NULL, true);
++    }
++}
+ 
+ extern void ui_load_scr_animation(lv_ui *ui,
+                                   lv_obj_t **new_scr,
+@@ -136,6 +173,7 @@
+                           0,
+                           0);
+ 
++    page_nav_block_input_temporarily();
+ 
+     g_page_nav_loading = false;
+ 
+@@ -188,6 +226,7 @@
+                           0,
+                           0);
+ 
++    page_nav_block_input_temporarily();
+ 
+     g_page_nav_loading = false;
+ 
+diff --git a/platform/thirdparty/gui/lvgl-8/app/huiyin_ktv/src/ui/shell/huiyin_ui_nav.c b/platform/thirdparty/gui/lvgl-8/app/huiyin_ktv/src/ui/shell/huiyin_ui_nav.c
+--- a/platform/thirdparty/gui/lvgl-8/app/huiyin_ktv/src/ui/shell/huiyin_ui_nav.c
++++ b/platform/thirdparty/gui/lvgl-8/app/huiyin_ktv/src/ui/shell/huiyin_ui_nav.c
+@@ -150,6 +150,7 @@
+ void huiyin_exit_to_desktop(void)
+ {
+     huiyin_ktv_ui_shutdown();
++    (void)sleep(1);
+     huiyin_app_request_exit();
+ }
+ 
