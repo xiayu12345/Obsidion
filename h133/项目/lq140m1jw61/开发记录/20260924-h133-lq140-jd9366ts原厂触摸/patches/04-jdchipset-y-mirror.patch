@@ -1,0 +1,24 @@
+--- a/kernel/linux-5.4/drivers/input/touchscreen/jdchipset/jadard_common.c
++++ b/kernel/linux-5.4/drivers/input/touchscreen/jdchipset/jadard_common.c
+@@ -662,7 +662,8 @@
+             input_report_abs(ts->stylus_dev, ABS_Y, pjadard_host_data->stylus.y);
+         } else {
+             input_report_abs(ts->stylus_dev, ABS_X, pjadard_host_data->stylus.y);
+-            input_report_abs(ts->stylus_dev, ABS_Y, pjadard_host_data->stylus.x);
++            input_report_abs(ts->stylus_dev, ABS_Y,
++                             pjadard_ic_data->JD_Y_RES - 1 - pjadard_host_data->stylus.x);
+         }
+ 
+         if (pjadard_host_data->stylus.btn != pjadard_host_data->stylus.pre_btn) {
+@@ -803,8 +804,10 @@
+                 input_report_abs(ts->input_dev, ABS_MT_POSITION_X, pjadard_host_data->x[i]);
+                 input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, pjadard_host_data->y[i]);
+             } else {
++                /* 移植指南：X_RES>Y_RES 时交换 XY。本板横屏 UI 还需 Y 镜像（左上为原点） */
+                 input_report_abs(ts->input_dev, ABS_MT_POSITION_X, pjadard_host_data->y[i]);
+-                input_report_abs(ts->input_dev, ABS_MT_POSITION_Y, pjadard_host_data->x[i]);
++                input_report_abs(ts->input_dev, ABS_MT_POSITION_Y,
++                                 pjadard_ic_data->JD_Y_RES - 1 - pjadard_host_data->x[i]);
+             }
+ #ifndef JD_PROTOCOL_A
+             input_mt_report_slot_state(ts->input_dev, MT_TOOL_FINGER, 1);

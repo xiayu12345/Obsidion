@@ -1,0 +1,34 @@
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+index a922da3c6..51fea3bf1 100644
+--- a/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
++++ b/platform/thirdparty/gui/lvgl-8/lib/media_session/src/pro/ktv_player_ui.c
+@@ -271,26 +271,11 @@ static void ktv_player_ui_apply_cached_zorder(void)
+               ktv_player_ui_zorder_name(g_ktv_player_ui_ctx.video_zorder));
+ }
+ 
+-/* 板端后路：setting.ini [display] video_rotate=0..3；每次 apply 重读，与 UI disp_rotate 独立。
+- * 异显视频只贴 HDMI：ini 的 180 会倒着，强制 0；同显仍跟 ini。 */
++/* 按屏框架：解码贴屏方向恒 0；LCD/HDMI 朝向由 tlayer VIDEO_WB_MIRROR_ROTATE（lcd_rot）分路。
++ * setting.ini video_rotate 不再进 TPlayer（键可留，勿当贴屏角）。 */
+ static int ktv_player_ui_tplayer_rotate_degree(void)
+ {
+-    static const int deg_map[4] = {
+-        TPLAYER_VIDEO_ROTATE_DEGREE_0,
+-        TPLAYER_VIDEO_ROTATE_DEGREE_90,
+-        TPLAYER_VIDEO_ROTATE_DEGREE_180,
+-        TPLAYER_VIDEO_ROTATE_DEGREE_270,
+-    };
+-    lv_video_rect_config_t cfg;
+-    sunxi_disp_mode_t mode = SUNXI_DISP_MODE_SAME;
+-
+-    if (sunxi_disp_mode_get(&mode) == 0 && mode == SUNXI_DISP_MODE_DIFF) {
+-        return TPLAYER_VIDEO_ROTATE_DEGREE_0;
+-    }
+-    if (lv_video_rect_config_load(&cfg) != 0) {
+-        return TPLAYER_VIDEO_ROTATE_DEGREE_0;
+-    }
+-    return deg_map[cfg.rotate & 3];
++    return TPLAYER_VIDEO_ROTATE_DEGREE_0;
+ }
+ 
+ static int ktv_player_ui_apply_video_rotate(void)

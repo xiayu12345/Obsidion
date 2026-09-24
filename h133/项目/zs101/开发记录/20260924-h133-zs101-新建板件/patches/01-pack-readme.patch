@@ -1,0 +1,22 @@
+--- a/build/pack
++++ b/build/pack
+@@ -818,6 +818,7 @@
+ 		if { [ x"${PACK_BOARD}" = x"p1_nor_JL_M101" ] || \
+ 		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_M101" ] || \
+ 		     [ x"${PACK_BOARD}" = x"p1_nor_JL_HXR101" ] || \
+-		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_HXR101" ]; } && \
++		     [ x"${PACK_BOARD}" = x"p1_emmc_JL_HXR101" ] || \
++		     [ x"${PACK_BOARD}" = x"p1_nor_ZS101" ]; } && \
+ 		   [ -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp ]; then
+ 			cp -f ${LICHEE_CHIP_CONFIG_DIR}/configs/${PACK_BOARD}/bootlogo.bmp \
+ 				${LICHEE_PACK_OUT_DIR}/boot-resource/bootlogo.bmp
+--- a/openwrt/README.md
++++ b/openwrt/README.md
+@@ -9,6 +9,7 @@ lunch <下面 combo>
+ 3  h133-p1_nor_8733-tina          1280*800，app都在  platform/thirdparty/gui/lvgl-8/app
+ 4  h133-p1_nor_XYC_K1-tina        H133-K1 LVDS 1366x768 + BL3676
+ 5  h133-p1_nor_JL_M101-tina       京龙 JL-M101 JD9365DA MIPI 800x1280 + GSL3670
++   h133-p1_nor_ZS101-tina         群创 ILI9881C MIPI 800x1280 + GT928
+ 6  h133-p1_emmc_JL_M101-tina      京龙 JL-M101 eMMC 16G，屏驱同 NOR
+ 7  h133-p1_nor_JL_HXR101-tina     京龙 HXR10106B-28 ILI9881C MIPI 800x1280 + GSL3670
+ 8  h133-p1_emmc_JL_HXR101-tina    京龙 HXR10106B-28 eMMC 16G，屏驱同 NOR HXR

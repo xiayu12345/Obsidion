@@ -1,0 +1,260 @@
+diff --git a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+index 7c6d0ea3e..0da2c7698 100644
+--- a/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
++++ b/platform/allwinner/multimedia/libtmedia/tplayer/awsink/tlayer_ctrl.c
+@@ -55,8 +55,9 @@
+ #define DISPLAY_PICTURE_TIMEDIFF (0)
+ 
+ /*
+- * VIDEO_WB_MIRROR_ROTATE（度）：libtmedia/Makefile 按 target -D；未定义时默认 0。
+- * dualDispPreparePerScreen 消费。0=原 buffer 直填；90=DispNvRotate90；180/270 预留。
++ * VIDEO_WB_MIRROR_ROTATE（度）= 板级 lcd_rot：libtmedia/Makefile 按 target -D；未定义时默认 0。
++ * dualDispPreparePerScreen 只转 screen0；HDMI（per_screen[1]）恒原图（hdmi_rot=0）。
++ * 0=直填；90=DispNvRotate90；270=G2D180+DispNvRotate90（不直调 nv_rotage270）。
+  */
+ #ifndef VIDEO_WB_MIRROR_ROTATE
+ #define VIDEO_WB_MIRROR_ROTATE 0
+@@ -448,6 +449,57 @@ static int setLayerBuffer(LayerContext* lc,LayerBufMode mode)
+     return 0;
+ }
+ int createRotateBuf(LayerCtrl* l,int width,int height);
++#if G2D_ENBLE
++int hwG2dRotateVideoPicture(LayerCtrl* l, VideoPicture* pPictureIn,
++        VideoPicture* pPictureOut, int nRotateDegree);
++#endif
++
++/* 270° 中间图（G2D 180，尺寸与源同）；与 mRotateBufInfo 最终 90° 缓冲分开 */
++static int ensureDualDispMid180Buf(LayerContext *lc, const VideoPicture *src)
++{
++    VideoPicture *mid;
++    char *pVirBuf;
++    char *pPhyBuf;
++    int nBufferFd;
++    int w = src->nWidth;
++    int h = src->nHeight;
++
++    mid = &lc->mRotateExtraBufInfo.pPicture;
++    if (mid->pData0 != NULL && mid->nWidth == w && mid->nHeight == h
++            && mid->ePixelFormat == src->ePixelFormat)
++        return 0;
++
++    if (mid->pData0 != NULL) {
++        SunxiMemPfree(lc->pMemops, mid->pData0);
++        mid->pData0 = NULL;
++    }
++
++    pVirBuf = (char *)SunxiMemPalloc(lc->pMemops, (size_t)w * h * 3 / 2);
++    if (pVirBuf == NULL) {
++        loge("[MIPI-VID] mid180 SunxiMemPalloc fail %dx%d", w, h);
++        return -1;
++    }
++    nBufferFd = SunxiMemGetBufferFd(lc->pMemops, pVirBuf);
++    pPhyBuf = (char *)SunxiMemGetPhysicAddressCpu(lc->pMemops, pVirBuf);
++
++    memset(mid, 0, sizeof(*mid));
++    mid->nWidth = w;
++    mid->nHeight = h;
++    mid->nLineStride = w;
++    mid->pData0 = pVirBuf;
++    mid->pData1 = pVirBuf + (w * h);
++    mid->pData2 = mid->pData1 + (w * h) / 4;
++    mid->nBufFd = nBufferFd;
++    mid->phyYBufAddr = (uintptr_t)pPhyBuf;
++    mid->phyCBufAddr = mid->phyYBufAddr + (uintptr_t)(w * h);
++    mid->ePixelFormat = src->ePixelFormat;
++    mid->nLeftOffset = 0;
++    mid->nTopOffset = 0;
++    mid->nRightOffset = w;
++    mid->nBottomOffset = h;
++    return 0;
++}
++
+ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+         videoParam *landscape_vp, renderBuf *landscape_rb, int rot_index)
+ {
+@@ -457,7 +509,7 @@ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+     unsigned int bufferSize;
+ 
+     port = lc->mDispOutPort;
+-    /* disp_screen=1: WB mirror, rotate for MIPI only; 3: dual-diff both screens */
++    /* 只处理含 screen0 的贴屏：1=仅 LCD（未插 HDMI），3=LCD+HDMI；旋转只给 MIPI */
+     if (port == NULL || (port->disp_screen != 3 && port->disp_screen != 1))
+         return -1;
+ 
+@@ -555,8 +607,158 @@ static int dualDispPreparePerScreen(LayerContext *lc, VideoPicture *pPicture,
+     port->per_screen_rb[0].v_phaddr = port->per_screen_rb[0].u_phaddr
+             + (rotW * rotH) / 4;
+     port->per_screen_rb[0].isExtPhy = VIDEO_USE_EXTERN_ION_BUF;
+-#elif VIDEO_WB_MIRROR_ROTATE == 180 || VIDEO_WB_MIRROR_ROTATE == 270
+-    logw("[MIPI-VID] VIDEO_WB_MIRROR_ROTATE=%d not implemented", VIDEO_WB_MIRROR_ROTATE);
++#elif VIDEO_WB_MIRROR_ROTATE == 270
++    /*
++     * lcd_rot=270：等价旧「TPlayer 180 + DispNvRotate90」。
++     * 不直调 nv_rotage270（分块/重影/偏色）；G2D 180 后仍走已验证的 90° 核。
++     */
++#if !G2D_ENBLE
++    loge("[MIPI-VID] VIDEO_WB_MIRROR_ROTATE=270 needs G2D");
++    return -1;
++#else
++    {
++        VideoPicture *midPic;
++        int srcW = pPicture->nWidth;
++        int srcH = pPicture->nHeight;
++        int cx = landscape_vp->srcInfo.crop_x;
++        int cy = landscape_vp->srcInfo.crop_y;
++        int cw = landscape_vp->srcInfo.crop_w;
++        int ch = landscape_vp->srcInfo.crop_h;
++        int midCx, midCy;
++        static int s_padding_crop_logged_270;
++
++        if (pPicture->pData0 == NULL)
++            return -1;
++
++        if (lc->mCreateRotateBufFlag &&
++                (lc->mRotateBufInfo[0].pPicture.nWidth != ALIGN_32B(srcH) ||
++                 lc->mRotateBufInfo[0].pPicture.nHeight != ALIGN_32B(srcW))) {
++            int k;
++            for (k = 0; k < ROTATE_BUFFER_NUM; k++) {
++                if (lc->mRotateBufInfo[k].pPicture.pData0) {
++                    SunxiMemPfree(lc->pMemops, lc->mRotateBufInfo[k].pPicture.pData0);
++                    lc->mRotateBufInfo[k].pPicture.pData0 = NULL;
++                }
++            }
++            if (lc->mRotateExtraBufInfo.pPicture.pData0) {
++                SunxiMemPfree(lc->pMemops, lc->mRotateExtraBufInfo.pPicture.pData0);
++                lc->mRotateExtraBufInfo.pPicture.pData0 = NULL;
++            }
++            lc->mCreateRotateBufFlag = 0;
++        }
++        if (!lc->mCreateRotateBufFlag) {
++            if (createRotateBuf((LayerCtrl *)lc, srcH, srcW) != 0)
++                return -1;
++            lc->mCreateRotateBufFlag = 1;
++        }
++        if (ensureDualDispMid180Buf(lc, pPicture) != 0)
++            return -1;
++
++        midPic = &lc->mRotateExtraBufInfo.pPicture;
++        rotPic = &lc->mRotateBufInfo[rot_index].pPicture;
++        if (rotPic->pData0 == NULL)
++            return -1;
++
++        /*
++         * G2D 180 必须转整帧（含 decoder 底/右对齐填充），不能只 clip 可见 crop。
++         * hwG2dRotateVideoPicture 用 (0,0)+(Right-Left)×(Bottom-Top) 作 clip；
++         * 若 clip_h=crop_h < nHeight，mid 底边未写仍是垃圾，DispNvRotate90 把源底
++         * 映到 dest 左边 → 左边绿条（与 90° 路径「底边 padding→左边」同因）。
++         * 整帧 180 后底边 padding 到顶，再 90° 后到右边，由下面 crop 裁掉。
++         */
++        {
++            int saveL = pPicture->nLeftOffset;
++            int saveT = pPicture->nTopOffset;
++            int saveR = pPicture->nRightOffset;
++            int saveB = pPicture->nBottomOffset;
++
++            pPicture->nLeftOffset = 0;
++            pPicture->nTopOffset = 0;
++            pPicture->nRightOffset = srcW;
++            pPicture->nBottomOffset = srcH;
++            midPic->nLeftOffset = 0;
++            midPic->nTopOffset = 0;
++            midPic->nRightOffset = srcW;
++            midPic->nBottomOffset = srcH;
++            if (hwG2dRotateVideoPicture((LayerCtrl *)lc, pPicture, midPic, 180) != 0) {
++                pPicture->nLeftOffset = saveL;
++                pPicture->nTopOffset = saveT;
++                pPicture->nRightOffset = saveR;
++                pPicture->nBottomOffset = saveB;
++                loge("[MIPI-VID] G2D 180 failed");
++                return -1;
++            }
++            pPicture->nLeftOffset = saveL;
++            pPicture->nTopOffset = saveT;
++            pPicture->nRightOffset = saveR;
++            pPicture->nBottomOffset = saveB;
++        }
++        bufferSize = (unsigned int)srcW * srcH * 3 / 2;
++        SunxiMemFlushCache(lc->pMemops, midPic->pData0, bufferSize);
++
++        DispNvRotate90(srcW, srcH,
++                (unsigned char *)midPic->pData0, (unsigned char *)rotPic->pData0);
++        bufferSize = rotPic->nWidth * rotPic->nHeight * 3 / 2;
++        SunxiMemFlushCache(lc->pMemops, rotPic->pData0, bufferSize);
++
++        rotW = rotPic->nWidth;
++        rotH = rotPic->nHeight;
++
++        if (cw <= 0 || ch <= 0) {
++            cw = srcW;
++            ch = srcH;
++            cx = 0;
++            cy = 0;
++        }
++        /* 原图 crop 经整帧 180 后：再套与 90° 路径相同的 DispNvRotate90 crop 映射 */
++        midCx = srcW - cx - cw;
++        midCy = srcH - cy - ch;
++        if (midCx < 0)
++            midCx = 0;
++        if (midCy < 0)
++            midCy = 0;
++        {
++            int effW = ch;
++            int effH = cw;
++            /* 同 90°：dst_x = mid_h - mid_cy - mid_ch；整帧 180 后底边 padding 在右边 */
++            int rotCropX = srcH - midCy - ch; /* == cy */
++            int rotCropY = midCx;             /* == srcW - cx - cw */
++
++            if (rotCropX < 0)
++                rotCropX = 0;
++            if (rotCropY < 0)
++                rotCropY = 0;
++            if (rotCropX + effW > rotW)
++                effW = rotW - rotCropX;
++            if (rotCropY + effH > rotH)
++                effH = rotH - rotCropY;
++
++            if (!s_padding_crop_logged_270 &&
++                (effW != rotW || effH != rotH || rotCropX != 0 || rotCropY != 0)) {
++                logw("[MIPI-VID] crop 270: buffer=%dx%d crop=%d,%d %dx%d",
++                     rotW, rotH, rotCropX, rotCropY, effW, effH);
++                s_padding_crop_logged_270 = 1;
++            }
++
++            memcpy(&port->per_screen_vp[0], landscape_vp, sizeof(videoParam));
++            port->per_screen_vp[0].srcInfo.w = rotW;
++            port->per_screen_vp[0].srcInfo.h = rotH;
++            port->per_screen_vp[0].srcInfo.crop_x = rotCropX;
++            port->per_screen_vp[0].srcInfo.crop_y = rotCropY;
++            port->per_screen_vp[0].srcInfo.crop_w = effW;
++            port->per_screen_vp[0].srcInfo.crop_h = effH;
++        }
++
++        port->per_screen_rb[0].fd = rotPic->nBufFd;
++        port->per_screen_rb[0].y_phaddr = rotPic->phyYBufAddr + ve_offset;
++        port->per_screen_rb[0].u_phaddr = rotPic->phyCBufAddr + ve_offset;
++        port->per_screen_rb[0].v_phaddr = port->per_screen_rb[0].u_phaddr
++                + (rotW * rotH) / 4;
++        port->per_screen_rb[0].isExtPhy = VIDEO_USE_EXTERN_ION_BUF;
++    }
++#endif /* G2D_ENBLE */
++#elif VIDEO_WB_MIRROR_ROTATE == 180
++    logw("[MIPI-VID] VIDEO_WB_MIRROR_ROTATE=180 not implemented");
+     return -1;
+ #else
+     /* VIDEO_WB_MIRROR_ROTATE==0：per_screen_* 填原横屏 buffer，路径与旋转版一致 */
+@@ -766,13 +968,10 @@ static void __LayerRelease(LayerCtrl* l)
+         lc->picNodes[i].dequeueable  = 1;
+         lc->picNodes[i].pPicture     = NULL;
+     }
+-    /* WB 90° 旋转也占用了下面这 3 块中间内存。原厂 Release 只在打开了 tr/g2d 旋转时才释放它们，
+-     * Reset 时那几个标志都是 0，原先走不进这个分支，flag 也不会被清掉。
+-     * 你需要在 VIDEO_WB_MIRROR_ROTATE==90 时同样走进来，把旧块释放并清掉 flag。
+-     * 否则下一次播放更大的视频时，旋转内存仍是上一首的小尺寸，会被写爆。 */
++    /* lcd_rot 90/270 占用旋转中缓；Release 时须释放，否则下一首更大分辨率会写爆。 */
+     if(GetConfigParamterInt("tr_rotate_flag",0) == 1 ||
+ 			GetConfigParamterInt("g2d_rotate_flag",0) == 1 || lc->mG2dRotateDegree != 0 ||
+-			VIDEO_WB_MIRROR_ROTATE == 90){
++			VIDEO_WB_MIRROR_ROTATE == 90 || VIDEO_WB_MIRROR_ROTATE == 270){
+         for(j = 0 ; j < ROTATE_BUFFER_NUM;j++){
+             if(lc->mRotateBufInfo[j].pPicture.pData0){
+                 SunxiMemPfree(lc->pMemops, lc->mRotateBufInfo[j].pPicture.pData0);

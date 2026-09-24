@@ -1,0 +1,20 @@
+diff --git a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+index b71e1e741..74facd0c7 100644
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -65,9 +65,12 @@ ifeq ($(CONFIG_AW_ION_ALLOC_IOMMU),y)
+     KERNEL_VERSION_ION = CONF_KERNEL_IOMMU
+ endif
+ 
+-# WB mirror CPU 旋转角（度）；按 target -D，tlayer_ctrl #if VIDEO_WB_MIRROR_ROTATE
+-# JYY070 / p1_nor_4k=0；p1_nor / p1_nor_8733 / p1_nor_JL_M101=90（UI 旋转树内用头文件默认，不由此 mk 控制）
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_JL_M101),y)
++# lcd_rot（VIDEO_WB_MIRROR_ROTATE，度）；按 target -D，tlayer_ctrl #if
++# JL 竖屏：270（G2D180+DispNvRotate90）；p1_nor/8733：90；JYY070/4k：0
++ifeq ($(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_JL_HXR101),y)
++TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=270
++endif
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070)$(CONFIG_TARGET_h133_p1_nor_4k),y)

@@ -1,0 +1,12 @@
+# Jadard JD9366TP/JD9366TS I2C (vendor QZ_IIC_01.DE + host)
+ccflags-y += -DCONFIG_TOUCHSCREEN_JADARD_DEBUG=y
+ccflags-y += -DCONFIG_TOUCHSCREEN_JADARD_SORTING=y
+# linux-5.4 + GCC fortify 对 copy_from_user(len-1) 误报
+ccflags-y += -D_FORTIFY_SOURCE=0
+
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_module.o
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_ic_JD9366TP.o
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_common.o
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_platform.o
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_debug.o
+obj-$(CONFIG_TOUCHSCREEN_JADARD_MODULE) += jadard_sorting.o

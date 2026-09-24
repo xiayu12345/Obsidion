@@ -1,0 +1,51 @@
+--- a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts
++++ b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/linux-5.4/board.dts
+@@ -656,22 +656,18 @@
+ 	dma-names = "tx", "rx";
+ 	status = "okay";
+ 
+-	/* JD9366TS：I2C 7-bit 0x68，TWI1 PG8/PG9，RST PG2，INT PG3。屏 1200×1920 */
+-	ctp@68 {
+-		compatible = "jadard,jd9366ts";
+-		device_type = "ctp";
++	/* 原厂 Jadard JD9366TS：I2C 0x68，TWI1 PG8/PG9，RST PG2，INT PG3 */
++	jadard@68 {
++		compatible = "jadard,jdcommon";
+ 		reg = <0x68>;
+ 		status = "okay";
+-		ctp_name = "jd9366ts";
+-		ctp_twi_id = <0x1>;
+-		ctp_twi_addr = <0x68>;
+-		ctp_screen_max_x = <1200>;
+-		ctp_screen_max_y = <1920>;
+-		ctp_revert_x_flag = <0x0>;
+-		ctp_revert_y_flag = <0x0>;
+-		ctp_exchange_x_y_flag = <0x0>;
+-		ctp_int_port = <&pio PG 3 GPIO_ACTIVE_HIGH>;
+-		ctp_wakeup = <&pio PG 2 GPIO_ACTIVE_HIGH>;
++		/* 竖屏模组 1200×1920；UI 横置后按原厂指南对调 coords，驱动内交换 XY */
++		jadard,panel-sense-nums = <30 48>;
++		jadard,panel-coords = <0 1920 0 1200>;
++		jadard,panel-max-points = <10>;
++		jadard,int-is-edge = <1>;
++		jadard,irq-gpio = <&pio PG 3 GPIO_ACTIVE_HIGH>;
++		jadard,rst-gpio = <&pio PG 2 GPIO_ACTIVE_HIGH>;
+ 	};
+ };
+ 
+
+--- a/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/openwrt/bsp_defconfig
++++ b/device/config/chips/h133/configs/p1_nor_LQ140M1JW61/openwrt/bsp_defconfig
+@@ -96,8 +96,10 @@
+ CONFIG_INPUT_TOUCHSCREEN=y
+ CONFIG_TOUCHSCREEN_SUNXI=y
+ # CONFIG_TOUCHSCREEN_GSLX680NEW is not set
+-CONFIG_TOUCHSCREEN_GT9XXNEW_TS=y
+-CONFIG_TOUCHSCREEN_JD9366TS=y
++# CONFIG_TOUCHSCREEN_GT9XXNEW_TS is not set
++CONFIG_TOUCHSCREEN_JADARD_CHIPSET=y
++CONFIG_TOUCHSCREEN_JADARD_MODULE=y
++CONFIG_TOUCHSCREEN_JADARD_IC_JD9366TP=y
+ CONFIG_INPUT_SENSOR=y
+ CONFIG_SUNXI_GPADC=y
+ # CONFIG_LEGACY_PTYS is not set

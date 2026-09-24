@@ -1,0 +1,15 @@
+--- a/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
++++ b/openwrt/package/allwinner/multimedia/tina_multimedia/libtmedia/Makefile
+@@ -66,12 +66,12 @@ endif
+ 
+ # lcd_rot（VIDEO_WB_MIRROR_ROTATE，度）；按 target -D，tlayer_ctrl #if
+-# JL 竖屏：270（G2D180+DispNvRotate90）；p1_nor/8733：90；JYY070/4k：0
++# JL 竖屏：270（G2D180+DispNvRotate90）；ZS/p1_nor/8733：90；JYY070/4k：0
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JL_M101)$(CONFIG_TARGET_h133_p1_nor_JL_HXR101),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=270
+ endif
+-ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733),y)
++ifeq ($(CONFIG_TARGET_h133_p1_nor)$(CONFIG_TARGET_h133_p1_nor_8733)$(CONFIG_TARGET_h133_p1_nor_ZS101),y)
+ TARGET_CFLAGS+=-DVIDEO_WB_MIRROR_ROTATE=90
+ endif
+ ifeq ($(CONFIG_TARGET_h133_p1_nor_JYY070)$(CONFIG_TARGET_h133_p1_nor_4k),y)
