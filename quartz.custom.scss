@@ -817,3 +817,274 @@ nav.breadcrumb-container,
 .page-header .breadcrumb-container {
   display: none !important;
 }
+
+// ===== Dev-record pages (开发记录) =====
+// Presentation-only; markdown body text is unchanged.
+
+body[data-slug*="开发记录"] {
+  // Folder indexes: card grid instead of bare list
+  .page-listing > p {
+    color: var(--gray);
+    font-size: 0.9rem;
+    margin: 0.35rem 0 1rem;
+  }
+
+  .page-listing .section-ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.7rem;
+  }
+
+  .page-listing .section-li .section {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.35rem 1rem;
+    align-items: center;
+    padding: 0.95rem 1.1rem;
+    border-radius: 0.9rem;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 70%, transparent);
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--secondary) 8%, transparent),
+        transparent 42%
+      ),
+      color-mix(in srgb, var(--lightgray) 12%, transparent);
+    box-shadow: 0 10px 28px color-mix(in srgb, #000 16%, transparent);
+    transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+  }
+
+  .page-listing .section-li .section:hover {
+    border-color: color-mix(in srgb, var(--secondary) 45%, transparent);
+    transform: translateY(-1px);
+    background:
+      linear-gradient(
+        135deg,
+        color-mix(in srgb, var(--secondary) 14%, transparent),
+        transparent 48%
+      ),
+      color-mix(in srgb, var(--highlight) 70%, transparent);
+  }
+
+  .page-listing .section-li .desc h3 {
+    margin: 0;
+    font-size: 1.02rem;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+  }
+
+  .page-listing .section-li .desc h3 a {
+    text-decoration: none;
+    color: var(--dark);
+  }
+
+  .page-listing .section-li .meta {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    opacity: 0.7;
+    font-size: 0.82rem;
+    white-space: nowrap;
+  }
+
+  .page-listing .section-li .tags {
+    display: none;
+  }
+
+  // Soften useless chrome titles (filename) when body has the real H1
+  &:is([data-slug$="/开发记录"], [data-slug$="/readme"], [data-slug$="/README"]) {
+    .page-header .article-title {
+      position: absolute !important;
+      width: 1px !important;
+      height: 1px !important;
+      padding: 0 !important;
+      margin: -1px !important;
+      overflow: hidden !important;
+      clip: rect(0, 0, 0, 0) !important;
+      white-space: nowrap !important;
+      border: 0 !important;
+    }
+    .page-header .content-meta {
+      margin-top: 0.15rem;
+      margin-bottom: 0.85rem;
+    }
+  }
+
+  article {
+    max-width: 52rem;
+  }
+
+  // Lead meta table (项 | 内容) right under title → info card
+  article .markdown-preview-view > h1 + .table-container,
+  article .markdown-preview-view > .table-container:first-of-type {
+    margin: 0.85rem 0 1.35rem;
+    padding: 0;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 68%, transparent);
+    background:
+      radial-gradient(
+        120% 90% at 0% 0%,
+        color-mix(in srgb, var(--secondary) 14%, transparent),
+        transparent 55%
+      ),
+      color-mix(in srgb, var(--lightgray) 10%, transparent);
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--lightgray) 35%, transparent),
+      0 14px 36px color-mix(in srgb, #000 18%, transparent);
+    overflow: hidden;
+  }
+
+  article .markdown-preview-view > h1 + .table-container > table,
+  article .markdown-preview-view > .table-container:first-of-type > table {
+    margin: 0;
+    width: 100%;
+    border-radius: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+
+  article .markdown-preview-view > h1 + .table-container thead th,
+  article .markdown-preview-view > .table-container:first-of-type thead th {
+    background: color-mix(in srgb, var(--lightgray) 28%, transparent);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--gray);
+    padding: 0.55rem 1rem;
+  }
+
+  article .markdown-preview-view > h1 + .table-container tbody td,
+  article .markdown-preview-view > .table-container:first-of-type tbody td {
+    padding: 0.62rem 1rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 50%, transparent);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+
+  article .markdown-preview-view > h1 + .table-container tbody tr:last-child td,
+  article .markdown-preview-view > .table-container:first-of-type tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  article .markdown-preview-view > h1 + .table-container tbody td:first-child,
+  article .markdown-preview-view > .table-container:first-of-type tbody td:first-child {
+    width: 6.75rem;
+    min-width: 5.5rem;
+    color: var(--gray);
+    font-weight: 650;
+    font-size: 0.88rem;
+    white-space: nowrap;
+  }
+
+  // Later tables (产物 / 阅读顺序) keep rounded chrome
+  article .table-container {
+    margin: 1rem 0 1.25rem;
+  }
+
+  article h2 {
+    margin-top: 2rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+    font-size: 1.12rem;
+    font-weight: 700;
+  }
+
+  article h2::before {
+    content: "";
+    display: inline-block;
+    width: 0.28rem;
+    height: 0.95em;
+    margin-right: 0.55rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--secondary) 75%, transparent);
+    vertical-align: -0.08em;
+  }
+
+  article hr {
+    border: none;
+    height: 1px;
+    margin: 1.5rem 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      color-mix(in srgb, var(--lightgray) 80%, transparent) 20%,
+      color-mix(in srgb, var(--lightgray) 80%, transparent) 80%,
+      transparent
+    );
+  }
+
+  article pre {
+    margin: 0.85rem 0 1.2rem;
+    padding: 1rem 1.15rem !important;
+    border-radius: 0.9rem !important;
+    border: 1px solid color-mix(in srgb, var(--lightgray) 65%, transparent);
+    background: color-mix(in srgb, var(--lightgray) 14%, transparent) !important;
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 4%, transparent);
+    overflow-x: auto;
+  }
+
+  article :not(pre) > code {
+    font-size: 0.86em;
+    padding: 0.12rem 0.42rem;
+    border-radius: 0.4rem;
+    background: color-mix(in srgb, var(--lightgray) 38%, transparent);
+    border: 1px solid color-mix(in srgb, var(--lightgray) 55%, transparent);
+  }
+
+  article ul {
+    padding-left: 1.15rem;
+  }
+
+  article li {
+    margin: 0.35rem 0;
+    line-height: 1.55;
+  }
+
+  article li > code {
+    word-break: break-all;
+  }
+
+  article p {
+    max-width: 46rem;
+  }
+
+  // Note properties chip row (kind/status) a bit quieter
+  .properties,
+  .note-properties,
+  [class*="properties"] {
+    opacity: 0.92;
+  }
+}
+
+@media (max-width: 640px) {
+  body[data-slug*="开发记录"] {
+    article .markdown-preview-view > h1 + .table-container tbody td:first-child,
+    article .markdown-preview-view > .table-container:first-of-type tbody td:first-child {
+      width: auto;
+      white-space: normal;
+      display: block;
+      padding-bottom: 0.15rem;
+      border-bottom: none;
+    }
+    article .markdown-preview-view > h1 + .table-container tbody td,
+    article .markdown-preview-view > .table-container:first-of-type tbody td {
+      display: block;
+    }
+    article .markdown-preview-view > h1 + .table-container tbody tr,
+    article .markdown-preview-view > .table-container:first-of-type tbody tr {
+      display: block;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--lightgray) 50%, transparent);
+    }
+    .page-listing .section-li .section {
+      grid-template-columns: 1fr;
+    }
+    .page-listing .section-li .meta {
+      grid-column: 1;
+      grid-row: auto;
+    }
+  }
+}
