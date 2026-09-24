@@ -2,7 +2,7 @@
 +++ b/kernel/linux-5.4/drivers/video/fbdev/sunxi/disp2/disp/lcd/Kconfig
 @@ -235,6 +235,13 @@
  	---help---
- 		Newman ZS101 800x1280 MIPI (ILI9881C), board p1_nor_ZS101.
+ 		ZS101NI4042J4H8II-B 800x1280 MIPI (ILI9881C).
  
 +config LCD_SUPPORT_JL_HXR_ILI9881C
 +	bool "LCD support HXR10106B-28 ILI9881C 10.1inch MIPI panel"
@@ -52,7 +52,7 @@
 +++ b/brandy/brandy-2.0/u-boot-2018/drivers/video/sunxi/disp2/disp/lcd/Kconfig
 @@ -241,6 +241,13 @@
  	---help---
- 		Newman ZS101 800x1280 MIPI (ILI9881C), board p1_nor_ZS101.
+ 		ZS101NI4042J4H8II-B 800x1280 MIPI (ILI9881C).
  
 +config LCD_SUPPORT_JL_HXR_ILI9881C
 +	bool "LCD support HXR10106B-28 ILI9881C 10.1inch MIPI panel"

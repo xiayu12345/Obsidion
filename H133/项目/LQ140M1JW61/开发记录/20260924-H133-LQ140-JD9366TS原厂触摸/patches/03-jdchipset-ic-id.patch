@@ -1,0 +1,29 @@
+--- a/kernel/linux-5.4/drivers/input/touchscreen/jdchipset/jadard_ic_JD9366TP.c
++++ b/kernel/linux-5.4/drivers/input/touchscreen/jdchipset/jadard_ic_JD9366TP.c
+@@ -489,7 +489,7 @@ static int jd9366tp_GetID(uint16_t *pRomID, uint32_t offset)
+ 
+     *pRomID = (uint16_t)((rbuf[1] << 8) + rbuf[0]);
+ 
+-    if (*pRomID == JD9366TP_ID) {
++    if ((*pRomID == JD9366TP_ID) || (*pRomID == 0x9032)) {
+         if (JD9366TP_SLAVE_ADDR_OFFSET == offset)
+             JD_I("%s: Slave IC ID: %04x\n", __func__, *pRomID);
+         else
+@@ -3632,13 +3632,14 @@ static bool module_jd9366tp_chip_detect(void)
+         /* EnterBackDoor get IC ID */
+         jd9366tp_EnterBackDoor(&romid);
+ 
+-        if (romid == CHIP_ID) {
+-            JD_I("%s: detect IC %s successfully\n", __func__, JD9366TP_OUTER_ID);
++        /* 0x9386 = JD9366TP; 0x9032 seen on CSOT 13.36 JD9366TS module */
++        if ((romid == CHIP_ID) || (romid == 0x9032)) {
++            JD_I("%s: detect IC %s successfully (id=%04X)\n", __func__, JD9366TP_OUTER_ID, romid);
+             scnprintf(pjadard_ic_data->chip_id, sizeof(pjadard_ic_data->chip_id), JD9366TP_OUTER_ID);
+             jd9366tp_func_reinit();
+             ret = true;
+         } else {
+-            JD_E("%s:Read driver ID %04X not equal %04X\n", __func__, romid, CHIP_ID);
++            JD_E("%s:Read driver ID %04X not equal %04X/9032\n", __func__, romid, CHIP_ID);
+             msleep(1000);
+         }
+     } while ((++i < 3) && (ret == false));

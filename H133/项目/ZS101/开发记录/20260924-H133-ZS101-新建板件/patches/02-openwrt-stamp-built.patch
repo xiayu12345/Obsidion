@@ -1,0 +1,11 @@
+--- a/openwrt/openwrt/include/package.mk
++++ b/openwrt/openwrt/include/package.mk
+@@ -89,7 +89,7 @@ else
+ endif
+ STAMP_CONFIGURED=$(PKG_BUILD_DIR)/.configured$(if $(DUMP),,_$(call confvar,$(PKG_CONFIG_DEPENDS)))
+ STAMP_CONFIGURED_WILDCARD=$(PKG_BUILD_DIR)/.configured_*
+-STAMP_BUILT:=$(PKG_BUILD_DIR)/.built
++STAMP_BUILT=$(PKG_BUILD_DIR)/.built
+ STAMP_INSTALLED:=$(STAGING_DIR)/stamp/.$(PKG_DIR_NAME)$(if $(BUILD_VARIANT),.$(BUILD_VARIANT),)_installed
+ 
+ STAGING_FILES_LIST:=$(PKG_DIR_NAME)$(if $(BUILD_VARIANT),.$(BUILD_VARIANT),).list

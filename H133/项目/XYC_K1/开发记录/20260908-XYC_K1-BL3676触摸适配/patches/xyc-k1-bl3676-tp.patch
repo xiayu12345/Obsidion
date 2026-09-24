@@ -6747,7 +6747,6 @@ index 000000000..1993a5e5e
 +|------|------|------|------|------|------|
 +| `p1_nor_JYY070` | 未写明 | NOR | JYY070BD35L27A1-50，7" **1024×600 LVDS** 横屏，`jyy070_lvds` | **GSL1680**（映射到 UI 1280×800） | [档案](../skills/h133-display/board-profile-p1_nor_JYY070.md) · [记录](./板件开发记录/JYY070/README.md) |
 +| `p1_nor_JL_M101` | 四川京龙 | NOR | JL-M101B196-P21WX-M402632，10.1" **800×1280 MIPI**，IC **JD9365DA-H3**，`jl_m101_jd9365da` | **GSL3670** | [档案](../skills/h133-display/board-profile-p1_nor_JL_M101.md) · [记录](./板件开发记录/JL_M101/README.md) |
-+| `p1_nor_ZS101` | **纽曼** | NOR | 中深 ZS101NI4042J4H8II-B，10.1" **800×1280 MIPI**，IC **ILI9881C**，`zs101_ili9881c` | **FXT101041 GT928**（`gt928_fxt101041`，1280×800，`revert_y=1`） | [档案](../skills/h133-display/board-profile-p1_nor_ZS101.md) · [记录](./板件开发记录/ZS101/README.md) |
 +| `p1_nor_LQ140M1JW61` | 音乐骑士 | NOR | Sharp LQ140M1JW61，14" **1920×1080 eDP**，经 QE01MIPI001-V01，`lq140_mipi2edp` | **GT9110H**（`gt9110h_lq140`，1401598@1920×1080） | [档案](../skills/h133-display/board-profile-p1_nor_LQ140M1JW61.md) · [记录](./板件开发记录/LQ140M1JW61/README.md) |
 +| `p1_emmc_LQ140M1JW61` | 音乐骑士 | **eMMC**（三星 KLMAG1JETD-B041 16GB） | 同 `p1_nor_LQ140M1JW61` | 同 `p1_nor_LQ140M1JW61`（GT9110H） | [记录](./板件开发记录/p1_emmc_LQ140M1JW61/README.md) |
 +| `p1_nor_LQ190` | 鸿博芯业 | NOR | Sharp LQ190E1LX65 **1280×1024** 双 LVDS + GM8775C MIPI→LVDS，`lq190_mipi2edp` | **无**（`ctp@5d` disabled；PG2 作桥片 RST） | [档案](../skills/h133-display/board-profile-p1_nor_LQ190.md) · [记录](./板件开发记录/LQ190/README.md) |
@@ -6757,7 +6756,6 @@ index 000000000..1993a5e5e
 +
 +说明：
 +
-+- **纽曼** 在 ZS101 档案里写死；京龙 / 音乐骑士 / 鸿博芯业 按 `硬件资料/` 归属与各板开发记录。
 +- `p1_nor_WXY050`：资料在 `硬件资料/5寸屏幕/`，无客户目录；**2026-09-07 SDK 已克隆**，未点亮。
 +- `p1_nor_XYC_K1`：资料在 `硬件资料/鑫宇宸/`；**2026-09-08 LCD+HDMI 已出图**，背光 PB12 GPIO 常亮；触摸专题 [BL3676](./板件开发记录/XYC_K1/20260908-XYC_K1-BL3676触摸适配/README.md)。
 +- `p1_nor`、`p1_nor_8733`（拓步基线）与吴明才 12.1" 无独立 lunch 档案，不列入。
@@ -6785,13 +6783,13 @@ index 000000000..3ebf587db
 +
 +## 2. 与其它板对照
 +
-+| 项 | JYY070 | **本板 XYC_K1** | ZS101 |
-+|---|---|---|---|
-+| 芯片 | GSL1680 | **BL3676** | GT928 |
-+| 驱动 | `gslX680` | **`betterlife_ts`** | `gt9xxnew` |
-+| 地址 | `0x40` | **`0x2C`** | `0x5d` |
-+| 脚 | TWI1 + PG2/PG3 | **同脚，IC 不同** | 同 |
-+| 量程 | 1024×600 映到 1280×800 | **直接 1280×800** | 1280×800，`revert_y=1` |
++| 项 | JYY070 | **本板 XYC_K1** |
++|---|---|---|
++| 芯片 | GSL1680 | **BL3676** |
++| 驱动 | `gslX680` | **`betterlife_ts`** |
++| 地址 | `0x40` | **`0x2C`** |
++| 脚 | TWI1 + PG2/PG3 | **同脚，IC 不同** |
++| 量程 | 1024×600 映到 1280×800 | **直接 1280×800** |
 +
 +---
 +

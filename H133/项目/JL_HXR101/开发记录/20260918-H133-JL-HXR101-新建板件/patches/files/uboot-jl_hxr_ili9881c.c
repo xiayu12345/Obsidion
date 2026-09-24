@@ -1,6 +1,6 @@
 /*
  * HXR10106B-28 LB 10.1" 800x1280 MIPI panel (ILI9881C-0H).
- * Init copied from zs101_ili9881c (群创 ILI9881C-0D)；
+ * Init: 群创 ILI9881C-0D；
  * 板件 p1_nor_JL_HXR101 / p1_emmc_JL_HXR101。
  * Board: p1_nor_JL_HXR101 / p1_emmc_JL_HXR101; lcd_gpio_0=RESET(PB11); lcd_pwm_ch=0(PB12/LCD-PWM).
  */

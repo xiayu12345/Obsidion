@@ -6,7 +6,7 @@
 | 工程 | `/root/Work/AI-tq` |
 | 对照 | `/root/Work/H133-AIKTV`：`p1_nor_JL_HXR101` + `jl_hxr_ili9881c` |
 | 板型 | NOR `p1_nor_JL_HXR101`；eMMC `p1_emmc_JL_HXR101`。原 JL-M101 不动 |
-| 屏 | MIPI **800×1280**，开屏驱 `jl_hxr_ili9881c`（init 同 zs101；`dclk=49`） |
+| 屏 | MIPI **800×1280**，开屏驱 `jl_hxr_ili9881c`（`dclk=49`） |
 | 触摸 | GSL3670，不变 |
 | 状态 | 已出 eMMC / NOR 镜像 |
 | 正文 | [开发记录.md](./开发记录.md) |

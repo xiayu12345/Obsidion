@@ -20,7 +20,7 @@ bash AI-skiil/板件开发记录/JL_HXR101/20260918-H133-JL-HXR101-新建板件/
 
 `apply.sh` 另外会：复制板件和 OpenWrt target、把 lcd 改成 AIKTV 时序（`dclk=49`）、给其它板 `LCD_SUPPORT_JL_HXR` / `CONFIG_TARGET_*_JL_HXR101` 写 `is not set`。
 
-**不改：** `jl_m101_jd9365da.c`、`zs101_ili9881c.c`、GSL 固件内容、K1。
+**不改：** `jl_m101_jd9365da.c`、ILI9881C 屏驱、GSL 固件内容、K1。
 
 打完后：
 

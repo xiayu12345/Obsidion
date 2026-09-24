@@ -79,7 +79,7 @@ HXR_LINUX_LCD = '''	/* 京龙 HXR10106B-28 / ILI9881C-0H；init 见 jl_hxr_ili98
 	lcd_pwm_pol         = <1>;
 	lcd_pwm_max_limit   = <255>;
 
-	/* 与已点亮 ZS101/ILI9881C 同一套：HSA16 HBP60 HFP60 / VSA4 VBP10 VFP10 */
+	/* HSA16 HBP60 HFP60 / VSA4 VBP10 VFP10 */
 	lcd_hbp             = <76>;
 	lcd_ht              = <936>;
 	lcd_hspw            = <16>;

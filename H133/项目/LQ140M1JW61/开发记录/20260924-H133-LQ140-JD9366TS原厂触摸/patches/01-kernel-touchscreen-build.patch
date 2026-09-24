@@ -1,0 +1,27 @@
+--- a/kernel/linux-5.4/drivers/input/touchscreen/Kconfig
++++ b/kernel/linux-5.4/drivers/input/touchscreen/Kconfig
+@@ -1324,6 +1324,13 @@
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called iqs5xx.
+ 
++config TOUCHSCREEN_JADARD_CHIPSET
++	bool "Jadard touch chipset"
++	depends on I2C
++	help
++	  Jadard JD9366TP/JD9366TS official chipset driver (QZ_IIC_01.DE).
++
++source "drivers/input/touchscreen/jdchipset/Kconfig"
+ source "drivers/input/touchscreen/gslx680new/Kconfig"
+ source "drivers/input/touchscreen/gt9xxnew/Kconfig"
+ source "drivers/input/touchscreen/focaltech_touch/Kconfig"
+
+--- a/kernel/linux-5.4/drivers/input/touchscreen/Makefile
++++ b/kernel/linux-5.4/drivers/input/touchscreen/Makefile
+@@ -111,6 +111,7 @@
+ obj-$(CONFIG_TOUCHSCREEN_ROHM_BU21023)	+= rohm_bu21023.o
+ obj-$(CONFIG_TOUCHSCREEN_RASPBERRYPI_FW)	+= raspberrypi-ts.o
+ obj-$(CONFIG_TOUCHSCREEN_IQS5XX)	+= iqs5xx.o
++obj-$(CONFIG_TOUCHSCREEN_JADARD_CHIPSET) += jdchipset/
+ obj-$(CONFIG_TOUCHSCREEN_GSLX680NEW)    += gslx680new/
+ obj-$(CONFIG_TOUCHSCREEN_FTS)    += focaltech_touch/
+ obj-$(CONFIG_INPUT_TOUCHSCREEN)    += gt9xxnew/

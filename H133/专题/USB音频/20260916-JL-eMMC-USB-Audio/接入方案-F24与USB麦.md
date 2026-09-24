@@ -130,7 +130,7 @@ flowchart TB
 
 ### 6.1 ALSA（`asound.conf`）
 
-板级：`openwrt/target/h133/h133-p1_emmc_JL_M101/busybox-init-base-files/etc/asound.conf`
+板级：`openwrt/target/h133/h133-<板件>/busybox-init-base-files/etc/asound.conf`
 
 增加按**卡名**的逻辑 PCM，例如：
 
@@ -213,5 +213,5 @@ STOP 后确认 `/tmp/aas_voice.wav` 有声，再看 `/tmp/aas.evt`。
 | 采集 | `.../src/aas_capture.c` |
 | FIFO | `.../src/aas_cli_fifo.c`，路径 `/tmp/aas_cmd` |
 | 客户端 | `.../client/aas_client.h` |
-| JL asound | `openwrt/target/h133/h133-p1_emmc_JL_M101/.../etc/asound.conf` |
+| JL asound | `openwrt/target/h133/h133-<板件>/.../etc/asound.conf` |
 | 内核/USB 补丁 | [`patches/`](./patches/) |

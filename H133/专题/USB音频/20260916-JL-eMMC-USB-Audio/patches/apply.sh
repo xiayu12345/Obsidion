@@ -1,6 +1,6 @@
 #!/bin/sh
 set -e
-ROOT="$(cd "$(dirname "$0")/../../../.." && pwd)"
+ROOT="$(cd "$(dirname "$0")/../../../../.." && pwd)"
 cd "$ROOT"
 DIR="$(cd "$(dirname "$0")" && pwd)"
 patch -p1 < "$DIR/0001-jl-emmc-enable-snd-usb-audio.patch"
