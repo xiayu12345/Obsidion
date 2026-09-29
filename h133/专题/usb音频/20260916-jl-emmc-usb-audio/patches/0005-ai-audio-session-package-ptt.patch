@@ -1,0 +1,78 @@
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/Makefile b/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/Makefile
+--- a/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/Makefile
++++ b/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/Makefile
+@@ -1,5 +1,5 @@
+ #
+-# ai_audio_session — daemon + libaas_client
++# ai_audio_session — daemon + libaas_client + F24 PTT
+ #
+ include $(TOPDIR)/rules.mk
+ include $(INCLUDE_DIR)/package.mk
+@@ -22,7 +22,8 @@
+ endef
+ 
+ define Package/$(PKG_NAME)/description
+-  ai_audio_sessiond: AC107 capture + ASR/LLM + intent IPC.
++  ai_audio_sessiond: capture + ASR/LLM + intent IPC.
++  aas_f24_ptt: 2.4G KEY_F24 PTT -> VOICE START/STOP (no desktop).
+   libaas_client.so: FIFO client for apps (/tmp/aas_cmd, /tmp/aas.evt).
+ endef
+ 
+@@ -50,23 +51,34 @@
+ 		LDFLAGS="$(TARGET_LDFLAGS)" \
+ 		STAGING_DIR="$(STAGING_DIR)" \
+ 		all
++	$(MAKE) -C $(PKG_BUILD_DIR)/ptt clean
++	$(MAKE) -C $(PKG_BUILD_DIR)/ptt \
++		CC="$(TARGET_CC)" \
++		CFLAGS="$(TARGET_CFLAGS)" \
++		LDFLAGS="$(TARGET_LDFLAGS)" \
++		all
+ endef
+ 
+ define Build/InstallDev
+ 	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/include/ai_audio_session
+-	$(CP) $(PKG_BUILD_DIR)/client/build/libaas_client.so* $(1)/usr/lib/
++	$(CP) $(PKG_BUILD_DIR)/client/build/libaas_client.so $(1)/usr/lib/
++	$(LN) libaas_client.so $(1)/usr/lib/libaas_client.so.1
+ 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/client/aas_client.h $(1)/usr/include/ai_audio_session/
+ endef
+ 
+ define Package/$(PKG_NAME)/install
+ 	$(INSTALL_DIR) $(1)/usr/lib $(1)/usr/bin $(1)/usr/include/ai_audio_session
+ 	$(INSTALL_DIR) $(1)/etc/init.d $(1)/etc/rc.d
+-	$(CP) $(PKG_BUILD_DIR)/client/build/libaas_client.so* $(1)/usr/lib/
++	$(CP) $(PKG_BUILD_DIR)/client/build/libaas_client.so $(1)/usr/lib/
++	$(LN) libaas_client.so $(1)/usr/lib/libaas_client.so.1
+ 	$(INSTALL_BIN) $(PKG_BUILD_DIR)/daemon/build/ai_audio_sessiond $(1)/usr/bin/
++	$(INSTALL_BIN) $(PKG_BUILD_DIR)/ptt/build/aas_f24_ptt $(1)/usr/bin/
+ 	$(INSTALL_DATA) $(PKG_BUILD_DIR)/client/aas_client.h $(1)/usr/include/ai_audio_session/
+ 	$(INSTALL_BIN) ./files/ai_audio_sessiond.init $(1)/etc/init.d/ai_audio_sessiond
++	$(INSTALL_BIN) ./files/aas_f24_ptt.init $(1)/etc/init.d/aas_f24_ptt
+ 	# 直接打进 squashfs，避免只读根上 enable 无效
+ 	$(LN) ../init.d/ai_audio_sessiond $(1)/etc/rc.d/S83ai_audio_sessiond
++	$(LN) ../init.d/aas_f24_ptt $(1)/etc/rc.d/S84aas_f24_ptt
+ endef
+ 
+ $(eval $(call BuildPackage,$(PKG_NAME)))
+diff --git a/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/files/aas_f24_ptt.init b/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/files/aas_f24_ptt.init
+new file mode 100644
+--- a/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/files/aas_f24_ptt.init
++++ b/openwrt/package/thirdparty/gui/lvgl-8/ai_audio_session/files/aas_f24_ptt.init
+@@ -0,0 +1,16 @@
++#!/bin/sh /etc/rc.common
++# aas_f24_ptt —— 2.4G KEY_F24 → ai_audio_sessiond VOICE
++
++START=84
++USE_PROCD=1
++
++PROG=/usr/bin/aas_f24_ptt
++
++start_service() {
++	procd_open_instance
++	procd_set_param command "$PROG"
++	procd_set_param respawn
++	procd_set_param stdout 1
++	procd_set_param stderr 1
++	procd_close_instance
++}
