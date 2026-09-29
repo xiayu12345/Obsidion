@@ -1,0 +1,18 @@
+diff --git a/openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/etc/asound.conf b/openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/etc/asound.conf
+--- a/openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/etc/asound.conf
++++ b/openwrt/target/h133/h133-p1_nor_JL_M101/busybox-init-base-files/etc/asound.conf
+@@ -25,6 +25,14 @@
+     slave.channels 2
+ }
+ 
++# 2.4G USB 空鼠麦（snd-usb-audio，卡名常见 Mouse）；勿写死 card 号
++pcm.CaptureUSB {
++    type plug
++    slave.pcm "hw:Mouse,0"
++    slave.rate 16000
++    slave.format S16_LE
++    slave.channels 1
++}
+ 
+ pcm.CaptureDsnoop {
+     type plug

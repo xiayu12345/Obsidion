@@ -1,0 +1,233 @@
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/Makefile b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/Makefile
+new file mode 100644
+--- /dev/null
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/Makefile	2026-09-29 15:43:09.259968053 +0800
+@@ -0,0 +1,32 @@
++# aas_f24_ptt — KEY_F24 → aas_voice_start/stop (libaas_client)
++
++PTT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
++AAS_ROOT := $(abspath $(PTT_ROOT)/..)
++PTT_BUILD := $(PTT_ROOT)/build
++CLIENT_BUILD := $(AAS_ROOT)/client/build
++BIN := aas_f24_ptt
++
++CC ?= gcc
++override CFLAGS += -Wall -I$(AAS_ROOT)/client
++override LDFLAGS += -L$(CLIENT_BUILD) -Wl,-rpath,/usr/lib -laas_client -lpthread
++ifneq ($(STAGING_DIR),)
++override CFLAGS  += -I$(STAGING_DIR)/usr/include/ai_audio_session
++override LDFLAGS += -L$(STAGING_DIR)/usr/lib -Wl,-rpath-link,$(STAGING_DIR)/usr/lib
++endif
++
++.PHONY: all clean install
++
++all: $(PTT_BUILD)/$(BIN)
++
++$(PTT_BUILD):
++	mkdir -p $(PTT_BUILD)
++
++$(PTT_BUILD)/$(BIN): aas_f24_ptt.c | $(PTT_BUILD)
++	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)
++
++install: $(PTT_BUILD)/$(BIN)
++	install -d $(DESTDIR)/usr/bin
++	install -m 0755 $(PTT_BUILD)/$(BIN) $(DESTDIR)/usr/bin/
++
++clean:
++	rm -rf $(PTT_BUILD)
+diff --git a/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/aas_f24_ptt.c b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/aas_f24_ptt.c
+new file mode 100644
+--- /dev/null
++++ b/platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/ptt/aas_f24_ptt.c	2026-09-29 15:43:09.258827695 +0800
+@@ -0,0 +1,191 @@
++/*
++ * aas_f24_ptt — 2.4G KEY_F24 → aas_voice_start/stop（与雷石 UI 同一条 aas_client 路径）
++ * 不进入桌面 LVGL。
++ */
++#include "aas_client.h"
++
++#include <dirent.h>
++#include <errno.h>
++#include <fcntl.h>
++#include <linux/input.h>
++#include <poll.h>
++#include <signal.h>
++#include <stdio.h>
++#include <string.h>
++#include <sys/ioctl.h>
++#include <unistd.h>
++
++#define AAS_APP_ID "tmall"
++
++static volatile sig_atomic_t g_run = 1;
++static int g_recording = 0;
++
++static void on_signal(int sig)
++{
++    (void)sig;
++    g_run = 0;
++}
++
++static void voice_start(void)
++{
++    if (g_recording) {
++        return;
++    }
++    if (aas_voice_start(AAS_APP_ID) != 0) {
++        fprintf(stderr, "aas_f24_ptt: aas_voice_start failed\n");
++        return;
++    }
++    g_recording = 1;
++    fprintf(stderr, "aas_f24_ptt: F24 DOWN -> aas_voice_start(%s)\n", AAS_APP_ID);
++}
++
++static void voice_stop(void)
++{
++    if (!g_recording) {
++        return;
++    }
++    if (aas_voice_stop(AAS_APP_ID) != 0) {
++        fprintf(stderr, "aas_f24_ptt: aas_voice_stop failed\n");
++    } else {
++        fprintf(stderr, "aas_f24_ptt: F24 UP -> aas_voice_stop(%s)\n", AAS_APP_ID);
++    }
++    g_recording = 0;
++}
++
++static void voice_cancel(void)
++{
++    if (!g_recording) {
++        return;
++    }
++    (void)aas_voice_cancel(AAS_APP_ID);
++    g_recording = 0;
++    fprintf(stderr, "aas_f24_ptt: CANCEL\n");
++}
++
++static int device_has_f24(int fd)
++{
++    unsigned long bits[(KEY_MAX + 8 * sizeof(long) - 1) / (8 * sizeof(long))];
++
++    memset(bits, 0, sizeof(bits));
++    if (ioctl(fd, EVIOCGBIT(EV_KEY, sizeof(bits)), bits) < 0) {
++        return 0;
++    }
++    return (bits[KEY_F24 / (8 * (int)sizeof(long))] >>
++            (KEY_F24 % (8 * (int)sizeof(long)))) & 1UL;
++}
++
++static int open_f24_device(void)
++{
++    DIR *dir;
++    struct dirent *de;
++    char path[288];
++    char name[256];
++    int fd;
++    int best = -1;
++
++    dir = opendir("/dev/input");
++    if (!dir) {
++        return -1;
++    }
++
++    while ((de = readdir(dir)) != NULL) {
++        if (strncmp(de->d_name, "event", 5) != 0) {
++            continue;
++        }
++        snprintf(path, sizeof(path), "/dev/input/%s", de->d_name);
++        fd = open(path, O_RDONLY | O_NONBLOCK);
++        if (fd < 0) {
++            continue;
++        }
++        name[0] = '\0';
++        (void)ioctl(fd, EVIOCGNAME(sizeof(name) - 1U), name);
++        if (!device_has_f24(fd)) {
++            close(fd);
++            continue;
++        }
++        if (strstr(name, "Keyboard") != NULL || strstr(name, "keyboard") != NULL) {
++            if (best >= 0) {
++                close(best);
++            }
++            best = fd;
++            fprintf(stderr, "aas_f24_ptt: use %s (%s)\n", path, name);
++            break;
++        }
++        if (best < 0) {
++            best = fd;
++            fprintf(stderr, "aas_f24_ptt: candidate %s (%s)\n", path, name);
++        } else {
++            close(fd);
++        }
++    }
++    closedir(dir);
++    return best;
++}
++
++static void handle_event(const struct input_event *ev)
++{
++    if (ev->type != EV_KEY || ev->code != KEY_F24) {
++        return;
++    }
++    if (ev->value == 1) {
++        voice_start();
++    } else if (ev->value == 0) {
++        voice_stop();
++    }
++}
++
++int main(void)
++{
++    int fd = -1;
++    struct pollfd pfd;
++    struct input_event ev;
++    ssize_t n;
++
++    signal(SIGINT, on_signal);
++    signal(SIGTERM, on_signal);
++
++    fprintf(stderr, "aas_f24_ptt: ready via aas_client (app=%s)\n", AAS_APP_ID);
++
++    while (g_run) {
++        if (fd < 0) {
++            fd = open_f24_device();
++            if (fd < 0) {
++                usleep(500000);
++                continue;
++            }
++        }
++
++        pfd.fd = fd;
++        pfd.events = POLLIN;
++        if (poll(&pfd, 1, 1000) < 0) {
++            if (errno == EINTR) {
++                continue;
++            }
++            break;
++        }
++        if (!(pfd.revents & POLLIN)) {
++            continue;
++        }
++
++        n = read(fd, &ev, sizeof(ev));
++        if (n == (ssize_t)sizeof(ev)) {
++            handle_event(&ev);
++            continue;
++        }
++        if (n < 0 && (errno == EAGAIN || errno == EINTR)) {
++            continue;
++        }
++        fprintf(stderr, "aas_f24_ptt: input lost, reopen\n");
++        voice_cancel();
++        close(fd);
++        fd = -1;
++        usleep(300000);
++    }
++
++    voice_cancel();
++    if (fd >= 0) {
++        close(fd);
++    }
++    fprintf(stderr, "aas_f24_ptt: exit\n");
++    return 0;
++}

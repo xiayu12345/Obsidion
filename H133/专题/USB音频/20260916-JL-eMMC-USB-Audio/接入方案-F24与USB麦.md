@@ -1,11 +1,41 @@
 # 2.4G 空鼠麦接入 ai_audio_session 方案
 
 - 日期：2026-09-16（文档整理 2026-09-20）
-- 板级：`p1_emmc_JL_M101`
+- 板级：`p1_nor_JL_M101`（NOR；`CaptureUSB` 仅此板 asound）
 - 设备：`Tmall.c0m 2.4G Wireless Air Mouse`（`7045:2018`）
-- 状态：**方案备忘，尚未改业务代码接入**
+- 状态：**独立按键进程方案已验证采音**；开机自启未过（见 §7 / 开发记录 §7.5），后续再定
 
 驱动与试录前提见同目录 [`开发记录.md`](./开发记录.md)。
+
+### 已落地改动
+
+| 项 | 位置 | 补丁 |
+|---|---|---|
+| `pcm.CaptureUSB` | **仅** `h133-p1_nor_JL_M101/.../etc/asound.conf` | `patches/0006-*.patch` |
+| capture 优先 USB、跳过 MCU | `lib/ai_audio_session/src/aas_capture.c` | `patches/0003-*.patch` |
+| F24 → VOICE | `ptt/aas_f24_ptt.c`（独立进程） | `patches/0004-*.patch` |
+| 包装编 PTT + `libaas_client.so.1` | `openwrt/package/.../ai_audio_session/` | `patches/0005-*.patch` |
+
+**追溯**：源码以仓库路径为准；若 Review 未列出某文件，用补丁对照。重放见 `patches/README.md` / `patches/apply.sh`。
+
+NOR 镜像（2026-09-28）：`artifacts/h133_linux_p1_nor_JL_M101_uart0_nor.img`  
+MD5：`854f24e03ccd1ba911259d2fb8905cab`  
+有效录音样例：`artifacts/aas_voice_f24.wav`
+
+板端验收（若开机未起，先手动 start）：
+
+```sh
+ps | grep -E 'ai_audio_sessiond|aas_f24_ptt' | grep -v grep
+# 若无进程：
+/etc/init.d/ai_audio_sessiond start
+/etc/init.d/aas_f24_ptt start
+# 或：
+/usr/bin/ai_audio_sessiond >/tmp/aas_daemon.log 2>&1 &
+/usr/bin/aas_f24_ptt >/tmp/aas_ptt.log 2>&1 &
+ls -l /tmp/aas_cmd          # 必须是 prw
+# 长按 F24；勿用 echo> 测 FIFO
+ls -l /tmp/aas_voice.wav
+```
 
 ---
 
@@ -45,8 +75,7 @@ UI / aas_client
 | 识别对话 | `doubao_module.c` | 处理 wav / 文本 |
 | 意图 | `aas_intent.*` | 事件 → 业务命令 |
 
-当前采集设备写死为 **`CaptureAC107`**（`asound.conf` → `hw:sndi2s1`），并可能经 MCU（`/dev/ttyS3`）开录音通道。  
-**这是板载 I2S 麦路径，不是 USB 空鼠麦。**
+当前采集：无 USB 时仍为 **`CaptureAC107`**（`hw:sndi2s1`，可能经 MCU）；有 USB 空鼠麦时优先 **`CaptureUSB`**（`hw:Mouse`，不开 MCU）。
 
 代码根目录：
 
@@ -54,35 +83,33 @@ UI / aas_client
 
 ---
 
-## 3. 缺口（待接）
+## 3. 已补齐（相对旧板载麦方案）
 
-| 缺口 | 说明 |
+| 项 | 现状 |
 |---|---|
-| 麦源 | USB 声卡（常见名 `Mouse` / `USB-Audio`）未进 `aas_capture` |
-| 触发 | 无 F24 DOWN/UP → `VOICE START/STOP` |
-| 隔离 | 需保证 F24 不进桌面快捷键/长按 |
-
-驱动与 Host 已具备；产品接入 = **换麦 + 接键**。
+| 麦源 | `aas_capture` 优先 `CaptureUSB`（补丁 0003 + asound 0006） |
+| 触发 | 独立进程 `aas_f24_ptt`：F24 → `aas_voice_start/stop`（补丁 0004/0005） |
+| 隔离 | **不**进 desk / LVGL；**不**塞进 `ai_audio_sessiond` 内部线程 |
 
 ---
 
-## 4. 目标流程
+## 4. 目标流程（已落地）
 
 ```text
 KEY_F24 DOWN
-    → PTT 胶水（独立进程/daemon 线程，不进 desk）
-    → /tmp/aas_cmd : VOICE START app=tmall seq=N
+    → 独立进程 aas_f24_ptt
+    → aas_voice_start("tmall") → /tmp/aas_cmd
     → aas_capture : arecord -D CaptureUSB（优先）
     → /tmp/aas_voice.wav
 
 KEY_F24 UP
-    → VOICE STOP
+    → aas_voice_stop("tmall")
     → doubao_module_process_audio_file(wav)
     → aas_intent → 命令
     → /tmp/aas.evt（asr_text / llm_reply 等）
 ```
 
-回退：无 USB 声卡时仍可用 `CaptureAC107`（兼容旧麦）。
+回退：无 USB 声卡时仍可用 `CaptureAC107`。
 
 ---
 
@@ -95,8 +122,8 @@ flowchart TB
     UI["桌面/唱吧 / aas_client"]
   end
 
-  subgraph glue["待做：PTT"]
-    PTT["evdev 监听 F24<br/>DOWN→START UP→STOP"]
+  subgraph glue["独立 PTT"]
+    PTT["aas_f24_ptt<br/>DOWN→START UP→STOP"]
   end
 
   subgraph ipc["现成 IPC"]
@@ -111,97 +138,82 @@ flowchart TB
   end
 
   subgraph mic["麦源"]
-    USB["待接 CaptureUSB"]
-    AC107["现用 CaptureAC107"]
+    USB["CaptureUSB（优先）"]
+    AC107["CaptureAC107（回退）"]
   end
 
   F24 --> PTT
-  PTT -.->|待做| FIFO
+  PTT -->|aas_client| FIFO
   UI -->|已有| FIFO
   FIFO --> SES --> CAP
-  CAP -->|优先待做| USB
-  CAP -->|当前| AC107
+  CAP -->|有 USB| USB
+  CAP -->|无 USB| AC107
   SES -->|STOP| DB --> INT
 ```
 
 ---
 
-## 6. 建议改动点（后续实施）
+## 6. 实现要点（与补丁一致）
 
-### 6.1 ALSA（`asound.conf`）
+### 6.1 ALSA
 
-板级：`openwrt/target/h133/h133-<板件>/busybox-init-base-files/etc/asound.conf`
-
-增加按**卡名**的逻辑 PCM，例如：
-
-```text
-pcm.CaptureUSB {
-    type plug
-    slave.pcm "hw:Mouse,0"
-    slave.rate 16000
-    slave.format S16_LE
-    slave.channels 1
-}
-```
-
-勿写死 card 号。若卡名变更，探测逻辑需匹配 `Mouse` / `USB-Audio` / VID `7045`。
+**仅** `h133-p1_nor_JL_M101/.../etc/asound.conf` 增加 `pcm.CaptureUSB` → `hw:Mouse,0`（16k/mono）。勿写死 card 号。
 
 ### 6.2 `aas_capture.c`
 
-- `acquire`/`start`：有 USB 则用 `CaptureUSB`（16k/mono）；否则 `CaptureAC107`
-- **USB 路径不要调用** `aas_mcu_open_record_channel()`（MCU 路由仅服务 AC107）
-- 保持现有 owner / `CAPTURE_BUSY` 互斥
+有 USB 用 `CaptureUSB`；否则 `CaptureAC107`。USB 路径**不**开 MCU 录音通道。
 
-### 6.3 F24 PTT（独立）
+### 6.3 F24 PTT（独立进程，定案）
 
-- 扫 `/dev/input` 找 Keyboard / `KEY_F24`(194)
-- DOWN → `aas_voice_start("tmall")` 或写 FIFO
-- UP → `aas_voice_stop("tmall")`
-- 异常/超时 → `VOICE CANCEL`
-- **不**注册到 desk LVGL 按键
+- 二进制：`/usr/bin/aas_f24_ptt`（源码 `ptt/aas_f24_ptt.c`）
+- DOWN/UP → `aas_voice_start/stop("tmall")`
+- 开机：`S84aas_f24_ptt`（晚于 `S83ai_audio_sessiond`）
+- **不做**：desk 键盘钩子、daemon 内嵌线程
 
-可先手工验证：
-
-```sh
-echo 'VOICE START app=tmall seq=1' > /tmp/aas_cmd
-# 说话若干秒
-echo 'VOICE STOP app=tmall seq=1' > /tmp/aas_cmd
-```
+验收勿用 `echo > /tmp/aas_cmd`（会弄坏 FIFO）；用长按 F24 或 `aas_client`。
 
 ### 6.4 识别与意图
 
-优先不改 `doubao_module` / `aas_intent`。  
-STOP 后确认 `/tmp/aas_voice.wav` 有声，再看 `/tmp/aas.evt`。
+不改 `doubao_module` / `aas_intent`。无 ASR 密钥时可能 `missing credentials`，与采音无关。
 
 ---
 
-## 7. 推荐实施阶段
+## 7. 验收阶段
 
-| 阶段 | 内容 | 验收 |
+| 阶段 | 内容 | 状态 |
 |---|---|---|
-| A | `CaptureUSB` + capture 优先 USB | 手动 VOICE START/STOP，wav 为人声 |
-| B | F24 → VOICE，不进桌面 | 长按说话能出 asr_text |
-| C | 掉线/卡名/互斥稳态 | `-62` 后可恢复；与 AC107 不双开 |
-| D | 开机拉起 daemon + PTT | 产品路径可用 |
+| A | CaptureUSB + capture 优先 USB | 已验（0003/0006） |
+| B | 独立 F24 → VOICE + 有效 wav | 已验（0004/0005；样例 `artifacts/aas_voice_f24.wav`） |
+| C | 掉线/卡名/互斥稳态 | 按现场再验 |
+| D | 开机 S83+S84 自启 | **未过**（脚本已进包装，上电进程不在；见下） |
+| E | ASR `/etc/aas` | 未配，后续再定 |
+
+### 7.1 开机自启问题（待后续）
+
+- 板子 **busybox init**，无真实 procd；`rc.common` stub 里 `command` → `exec`。
+- 上电后 **S83/S84 未把进程留住**（手动 start 则正常）。
+- 详情与现场现象见 [`开发记录.md` §7.5](./开发记录.md)。**先不改代码**，方案与包装维持现状。
 
 ---
 
 ## 8. 明确不做
 
-1. 不把 F24 接到桌面长按再录音  
-2. 不另写一套 ASR HTTP  
-3. USB 录音时不开 MCU 录音通道  
-4. 不写死 `hw:3,0`
+1. 不把 F24 接到桌面 LVGL / desk 键盘钩子  
+2. 不把 F24 监听塞进 `ai_audio_sessiond` 内部线程  
+3. 不另写一套 ASR HTTP  
+4. USB 录音时不开 MCU 录音通道  
+5. 不写死 `hw:3,0`
 
 ---
 
 ## 9. 风险备忘
 
+- **开机自启未过**：见 §7.1 / 开发记录 §7.5
 - USB 空闲/`-62` 掉线：PTT 需 CANCEL/提示；录音前可 `power/control=on`
 - OHCI 全速 + UAC 有 `retire_capture_urb`：先保证短句（约 2～8s）
 - `usbc0` 已改 Host；勿再 `cat .../usb_device`
 - 遥控器若更换，以新设备卡名/按键为准
-
+- 无 `/etc/aas` 时 ASR 失败，不影响采音
 ---
 
 ## 10. 关键路径速查
@@ -209,9 +221,10 @@ STOP 后确认 `/tmp/aas_voice.wav` 有声，再看 `/tmp/aas.evt`。
 | 项 | 位置 |
 |---|---|
 | USB Audio 开发记录 | [`开发记录.md`](./开发记录.md) |
-| 会话库 | `platform/thirdparty/gui/lvgl-8/lib/ai_audio_session/` |
+| 会话库 | `platform/.../lib/ai_audio_session/` |
+| 独立 PTT | `.../ptt/aas_f24_ptt.c` |
 | 采集 | `.../src/aas_capture.c` |
-| FIFO | `.../src/aas_cli_fifo.c`，路径 `/tmp/aas_cmd` |
+| FIFO | `/tmp/aas_cmd`（`aas_cli_fifo.c`） |
 | 客户端 | `.../client/aas_client.h` |
-| JL asound | `openwrt/target/h133/h133-<板件>/.../etc/asound.conf` |
-| 内核/USB 补丁 | [`patches/`](./patches/) |
+| NOR asound | `openwrt/target/h133/h133-p1_nor_JL_M101/.../etc/asound.conf` |
+| 补丁 | [`patches/`](./patches/)（0001～0006） |
