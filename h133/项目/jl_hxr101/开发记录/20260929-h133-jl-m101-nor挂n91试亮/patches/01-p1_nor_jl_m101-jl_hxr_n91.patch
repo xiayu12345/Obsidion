@@ -1,0 +1,81 @@
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts	2026-09-29 17:24:47.878477428 +0800
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/linux-5.4/board.dts	2026-09-29 17:24:47.878572605 +0800
+@@ -1197,16 +1197,18 @@
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	/* 京龙 JL-M101B196 / JD9365DA-H3；init 见 jl_m101_jd9365da.c */
+-	lcd_driver_name     = "jl_m101_jd9365da";
+-	lcd_backlight       = <200>;
++	/* 试亮：HXR10106B-28 / ILI9881C-0H；N91 发码见 jl_hxr_n91.c。京龙 NOR 原屏是 JD9365DA */
++	lcd_driver_name     = "jl_hxr_n91";
++	/* 试机确认：pwm_pol=1 低有效，15→导通约94% */
++	lcd_backlight       = <15>;
+ 	lcd_if              = <4>;
+ 
+ 	lcd_x               = <800>;
+ 	lcd_y               = <1280>;
+ 	lcd_width           = <135>;
+ 	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	/* N91 PLL_CLOCK=421 → 像素钟约70.2MHz；dts×1.5，47→约70.5MHz≈60Hz。勿填 70 */
++	lcd_dclk_freq       = <47>;
+ 
+ 	/* s10：LCD-PWM=PB12/PWM0 → PT4117B EN，原理图 PWM_Frequence=50KHz */
+ 	lcd_pwm_used        = <1>;
+@@ -1215,12 +1217,12 @@
+ 	lcd_pwm_pol         = <1>;
+ 	lcd_pwm_max_limit   = <255>;
+ 
+-	/* vendor: HSA20 HBP20 HFP40 / VSA4 VBP20 VFP20 → Allwinner ht/hbp/vt/vbp */
++	/* N91: HSA20 HBP20 HFP40 / VSA4 VBP12 VFP30 */
+ 	lcd_hbp             = <40>;
+ 	lcd_ht              = <880>;
+ 	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
++	lcd_vbp             = <16>;
++	lcd_vt              = <1326>;
+ 	lcd_vspw            = <4>;
+ 
+ 	lcd_dsi_if          = <0>;
+--- a/device/config/chips/h133/configs/p1_nor_JL_M101/uboot-board.dts	2026-09-29 17:24:47.882629738 +0800
++++ b/device/config/chips/h133/configs/p1_nor_JL_M101/uboot-board.dts	2026-09-29 17:24:47.882671745 +0800
+@@ -389,16 +389,18 @@
+ &lcd0 {
+ 	lcd_used            = <1>;
+ 
+-	/* 与内核一致：京龙 JL-M101 / JD9365DA；U-Boot 侧 panel 见 jl_m101_jd9365da.c */
+-	lcd_driver_name     = "jl_m101_jd9365da";
+-	lcd_backlight       = <200>;
++	/* 与内核一致：试亮 HXR10106B-28 N91；U-Boot 侧 panel 见 jl_hxr_n91.c */
++	lcd_driver_name     = "jl_hxr_n91";
++	/* 试机确认：pwm_pol=1 低有效，15→导通约94% */
++	lcd_backlight       = <15>;
+ 	lcd_if              = <4>;
+ 
+ 	lcd_x               = <800>;
+ 	lcd_y               = <1280>;
+ 	lcd_width           = <135>;
+ 	lcd_height          = <216>;
+-	lcd_dclk_freq       = <70>;
++	/* N91 PLL_CLOCK=421 → 像素钟约70.2MHz；dts×1.5，47→约70.5MHz≈60Hz。勿填 70 */
++	lcd_dclk_freq       = <47>;
+ 
+ 	/* s10：LCD-PWM=PB12/PWM0，PWM_Frequence=50KHz */
+ 	lcd_pwm_used        = <1>;
+@@ -406,11 +408,12 @@
+ 	lcd_pwm_freq        = <50000>;
+ 	lcd_pwm_pol         = <1>;
+ 	lcd_pwm_max_limit   = <255>;
++	/* N91: HSA20 HBP20 HFP40 / VSA4 VBP12 VFP30 */
+ 	lcd_hbp             = <40>;
+ 	lcd_ht              = <880>;
+ 	lcd_hspw            = <20>;
+-	lcd_vbp             = <24>;
+-	lcd_vt              = <1324>;
++	lcd_vbp             = <16>;
++	lcd_vt              = <1326>;
+ 	lcd_vspw            = <4>;
+ 
+ 	lcd_dsi_if          = <0>;
